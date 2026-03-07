@@ -6,8 +6,8 @@ Last updated: 2026-03-07
 
 Current automated test surface:
 
-- `42` unit tests
-- `11` test files
+- `45` unit tests
+- `12` test files
 - all tests passing in the current tree
 
 The test suite is strongest on schema validation, core runtime mutations, baseline execution, and suite/submission packaging. It is weakest on evaluator nuance, adversarial scenario behavior, and broader scenario-corpus regression coverage.
@@ -78,6 +78,13 @@ The test suite is strongest on schema validation, core runtime mutations, baseli
 - [test_submission_builder.py](/C:/Users/USER/Desktop/startup-bench/tests/test_submission_builder.py): `1` test
   - submission assembly from suite report
 
+### Real-world-derived scenario pack
+
+- [test_real_world_scenarios.py](/C:/Users/USER/Desktop/startup-bench/tests/test_real_world_scenarios.py): `3` tests
+  - validates the eight real-world-derived scenarios
+  - lints the same scenario pack
+  - runs the real-world suite with the resilient baseline
+
 ## Smoke Test Commands
 
 Current note:
@@ -115,14 +122,18 @@ Observed on 2026-03-07:
   - scenario count: `5`
   - overall score mean: `0.7178`
   - overall pass-rate mean: `1.0`
+- `run-suite ...real_world_crisis_scenario_suite.json ... --seeds 1 --max-turns 3`: passed
+  - scenario count: `8`
+  - overall score mean: `0.7494`
+  - overall pass-rate mean: `1.0`
 - `redact-suite ...private_test_scenario_suite.json`: passed
 - `build-submission ...tmp_smoke/suite_report.json ...`: passed
   - repeat count: `2`
   - model id: `heuristic_resilient_operator`
   - contamination flag: `clean`
 - `python -m unittest discover -s tests -p "test_*.py"`: passed
-  - `42` tests
-  - `11` files
+  - `45` tests
+  - `12` files
 
 ## What Is Covered Well
 

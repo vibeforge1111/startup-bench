@@ -12,6 +12,7 @@ TheStartupBench is no longer just an RFC. It now has:
 - a stateful startup runtime with core operator tools
 - built-in heuristic baselines
 - a multi-scenario dev suite
+- a real-world-derived crisis scenario pack
 - private/test suite packaging and redacted public manifest generation
 - unit tests and executable smoke paths
 
@@ -99,6 +100,20 @@ Completed example tracks:
 - `scale`
 
 These are example-scale scenarios, not yet a production benchmark corpus.
+
+Completed real-world-derived scenario pack:
+
+- `8` executable scenarios grounded in documented startup crises
+- suite manifest in [real_world_crisis_scenario_suite.json](/C:/Users/USER/Desktop/startup-bench/examples/real_world_crisis_scenario_suite.json)
+- current pack coverage:
+  - demand collapse
+  - runway crunch
+  - security trust crisis
+  - peak-demand outage
+  - phishing-led compromise
+  - data-integrity recovery
+  - operator-caused deletion/restoration
+  - peak-event readiness
 
 ## What Is Partially Done
 

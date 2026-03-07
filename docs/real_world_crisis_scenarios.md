@@ -6,6 +6,10 @@ Last updated: 2026-03-07
 
 This document maps real startup and scale-up crises into benchmark-ready scenario archetypes for TheStartupBench.
 
+The first executable pack derived from this catalog now lives in:
+
+- [real_world_crisis_scenario_suite.json](/C:/Users/USER/Desktop/startup-bench/examples/real_world_crisis_scenario_suite.json)
+
 The point is not to copy any one company’s exact incident. The point is to identify repeatable patterns:
 
 - sudden demand collapse
