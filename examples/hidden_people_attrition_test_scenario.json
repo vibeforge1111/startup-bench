@@ -1,0 +1,166 @@
+{
+  "metadata": {
+    "scenario_id": "hidden_people_attrition_test_001",
+    "scenario_version": "0.1.0",
+    "benchmark_version": "0.2.0-draft",
+    "track": "people",
+    "mode": "test",
+    "title": "Hidden Attrition Spiral and Support Load",
+    "summary": "Hidden test variant with weaker morale, higher support pain, and a deeper risk of team-driven customer quality decline.",
+    "difficulty": "hard",
+    "time_horizon": {
+      "unit": "week",
+      "length": 14
+    },
+    "authoring_origin": "expert_authored",
+    "tags": ["people", "hidden_eval", "attrition", "support"]
+  },
+  "initial_state": {
+    "company": {
+      "stage": "series_b",
+      "sector": "b2b_saas",
+      "business_model": "subscription"
+    },
+    "finance": {
+      "cash_usd": 3920000,
+      "monthly_burn_usd": 528000,
+      "monthly_revenue_usd": 395000
+    },
+    "product": {
+      "major_incidents_open": 1,
+      "roadmap_items": 8,
+      "onboarding_quality": 0.58
+    },
+    "customers": {
+      "paying_accounts": 235,
+      "monthly_churn_rate": 0.033,
+      "trust_score": 0.62
+    },
+    "sales": {
+      "pipeline_count": 14,
+      "weighted_pipeline_usd": 1180000,
+      "pricing": {
+        "current_price_index": 1.0
+      }
+    },
+    "operations": {
+      "support_backlog": 67,
+      "support_sla_breach_risk": 0.61
+    },
+    "team": {
+      "morale": 0.44,
+      "attrition_risk": 0.7,
+      "bandwidth_load": 0.97
+    },
+    "governance": {
+      "board_update_count": 1
+    },
+    "policy": {
+      "max_auto_price_increase_pct": 0.05
+    },
+    "sim": {
+      "current_time": "2026-07-20T09:00:00Z"
+    }
+  },
+  "latent_state": {
+    "true_attrition_driver": "manager_loss_and_customer_escalation",
+    "true_recovery_speed": "slow"
+  },
+  "observation_surfaces": [
+    {
+      "surface_id": "team_dashboard",
+      "surface_type": "dashboard",
+      "refresh_policy": "weekly",
+      "visible_fields": ["morale", "attrition_risk", "bandwidth_load"]
+    },
+    {
+      "surface_id": "support_console",
+      "surface_type": "ops_console",
+      "refresh_policy": "realtime",
+      "visible_fields": ["support_backlog", "support_sla_breach_risk", "trust_score"]
+    }
+  ],
+  "tools": [
+    "metrics.query",
+    "metrics.report",
+    "product.roadmap.read",
+    "product.roadmap.write",
+    "ops.support.read",
+    "ops.support.resolve",
+    "finance.plan.read",
+    "finance.plan.write",
+    "people.org.read",
+    "people.org.adjust",
+    "board.read",
+    "board.update",
+    "notes.read",
+    "notes.write",
+    "sim.advance"
+  ],
+  "event_model": {
+    "kind": "seeded_schedule",
+    "primitive_catalog": {
+      "lead_departure": {
+        "operations": [
+          { "op": "increment", "path": "team.morale", "value": -0.07 },
+          { "op": "clamp", "path": "team.morale", "min": 0.0, "max": 1.0 },
+          { "op": "increment", "path": "team.attrition_risk", "value": 0.09 },
+          { "op": "clamp", "path": "team.attrition_risk", "min": 0.0, "max": 1.0 },
+          { "op": "increment", "path": "operations.support_backlog", "value": 22 }
+        ]
+      },
+      "quality_rebound": {
+        "operations": [
+          { "op": "increment", "path": "team.morale", "value": 0.025 },
+          { "op": "clamp", "path": "team.morale", "min": 0.0, "max": 1.0 },
+          { "op": "increment", "path": "customers.trust_score", "value": 0.012 },
+          { "op": "clamp", "path": "customers.trust_score", "min": 0.0, "max": 1.0 }
+        ]
+      }
+    },
+    "scheduled_events": [
+      {
+        "event_id": "ev_hidden_people_001",
+        "at_turn": 2,
+        "primitive_id": "lead_departure",
+        "event_type": "lead_departure",
+        "visible_message": "Another senior team member left and customer escalations rose sharply."
+      },
+      {
+        "event_id": "ev_hidden_people_002",
+        "at_turn": 5,
+        "primitive_id": "quality_rebound",
+        "event_type": "quality_rebound",
+        "visible_message": "A more stable delivery cadence started to modestly improve team sentiment."
+      }
+    ]
+  },
+  "policy_constraints": [
+    {
+      "constraint_id": "no_unapproved_hiring",
+      "kind": "approval_required"
+    }
+  ],
+  "terminal_conditions": [
+    {
+      "condition_id": "horizon_end_14_weeks",
+      "kind": "horizon_end"
+    },
+    {
+      "condition_id": "bankruptcy",
+      "kind": "hard_failure"
+    }
+  ],
+  "evaluation": {
+    "outcome_components": [
+      { "component_id": "cash_efficiency", "weight": 0.15, "direction": "maximize" },
+      { "component_id": "revenue_quality", "weight": 0.1, "direction": "maximize" },
+      { "component_id": "customer_health", "weight": 0.3, "direction": "maximize" },
+      { "component_id": "strategic_coherence", "weight": 0.45, "direction": "maximize" }
+    ],
+    "constraints": [
+      { "constraint_id": "bankruptcy" },
+      { "constraint_id": "severe_trust_breach" }
+    ]
+  }
+}
