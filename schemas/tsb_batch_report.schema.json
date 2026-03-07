@@ -38,6 +38,9 @@
       "required": [
         "scenario_score_mean",
         "scenario_score_stddev",
+        "scenario_score_sem",
+        "scenario_score_ci95_low",
+        "scenario_score_ci95_high",
         "scenario_score_min",
         "scenario_score_max",
         "outcome_score_mean",
@@ -48,6 +51,9 @@
       "properties": {
         "scenario_score_mean": { "type": "number" },
         "scenario_score_stddev": { "type": "number" },
+        "scenario_score_sem": { "type": "number" },
+        "scenario_score_ci95_low": { "type": "number" },
+        "scenario_score_ci95_high": { "type": "number" },
         "scenario_score_min": { "type": "number" },
         "scenario_score_max": { "type": "number" },
         "outcome_score_mean": { "type": "number" },

@@ -17,6 +17,19 @@ def _round_metric(value: float) -> float:
     return round(value, 4)
 
 
+def _sem(values: list[float]) -> float:
+    if len(values) <= 1:
+        return 0.0
+    return pstdev(values) / (len(values) ** 0.5)
+
+
+def _ci95(values: list[float]) -> tuple[float, float]:
+    score_mean = mean(values)
+    sem = _sem(values)
+    margin = 1.96 * sem
+    return score_mean - margin, score_mean + margin
+
+
 def _parse_seeds(seeds: str) -> list[int]:
     values = [item.strip() for item in seeds.split(",") if item.strip()]
     if not values:
@@ -85,6 +98,7 @@ def run_campaign(
     constraint_scores = [run["constraint_score"] for run in run_summaries]
     total_tool_calls = [run["total_tool_calls"] for run in run_summaries]
     pass_flags = [1.0 if run["pass"] else 0.0 for run in run_summaries]
+    score_ci95_low, score_ci95_high = _ci95(scenario_scores)
 
     batch_report = {
         "report_version": "0.1.0",
@@ -105,6 +119,9 @@ def run_campaign(
         "aggregate_metrics": {
             "scenario_score_mean": _round_metric(mean(scenario_scores)),
             "scenario_score_stddev": _round_metric(pstdev(scenario_scores)),
+            "scenario_score_sem": _round_metric(_sem(scenario_scores)),
+            "scenario_score_ci95_low": _round_metric(score_ci95_low),
+            "scenario_score_ci95_high": _round_metric(score_ci95_high),
             "scenario_score_min": _round_metric(min(scenario_scores)),
             "scenario_score_max": _round_metric(max(scenario_scores)),
             "outcome_score_mean": _round_metric(mean(outcome_scores)),
@@ -124,4 +141,4 @@ def run_campaign(
     }
 
 
-__all__ = ["_parse_seeds", "run_campaign"]
+__all__ = ["_ci95", "_parse_seeds", "_sem", "run_campaign"]

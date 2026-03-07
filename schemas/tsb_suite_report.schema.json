@@ -13,10 +13,13 @@
     "runner_id": { "type": "string" },
     "overall": {
       "type": "object",
-      "required": ["scenario_count", "scenario_score_mean", "pass_rate_mean"],
+      "required": ["scenario_count", "scenario_score_mean", "scenario_score_sem", "scenario_score_ci95_low", "scenario_score_ci95_high", "pass_rate_mean"],
       "properties": {
         "scenario_count": { "type": "integer", "minimum": 1 },
         "scenario_score_mean": { "type": "number" },
+        "scenario_score_sem": { "type": "number" },
+        "scenario_score_ci95_low": { "type": "number" },
+        "scenario_score_ci95_high": { "type": "number" },
         "pass_rate_mean": { "type": "number" }
       },
       "additionalProperties": false
@@ -25,11 +28,14 @@
       "type": "array",
       "items": {
         "type": "object",
-        "required": ["track", "scenario_count", "scenario_score_mean", "pass_rate_mean"],
+        "required": ["track", "scenario_count", "scenario_score_mean", "scenario_score_sem", "scenario_score_ci95_low", "scenario_score_ci95_high", "pass_rate_mean"],
         "properties": {
           "track": { "type": "string" },
           "scenario_count": { "type": "integer", "minimum": 1 },
           "scenario_score_mean": { "type": "number" },
+          "scenario_score_sem": { "type": "number" },
+          "scenario_score_ci95_low": { "type": "number" },
+          "scenario_score_ci95_high": { "type": "number" },
           "pass_rate_mean": { "type": "number" }
         },
         "additionalProperties": false
@@ -39,12 +45,15 @@
       "type": "array",
       "items": {
         "type": "object",
-        "required": ["scenario_id", "track", "run_count", "scenario_score_mean", "pass_rate"],
+        "required": ["scenario_id", "track", "run_count", "scenario_score_mean", "scenario_score_sem", "scenario_score_ci95_low", "scenario_score_ci95_high", "pass_rate"],
         "properties": {
           "scenario_id": { "type": "string" },
           "track": { "type": "string" },
           "run_count": { "type": "integer", "minimum": 1 },
           "scenario_score_mean": { "type": "number" },
+          "scenario_score_sem": { "type": "number" },
+          "scenario_score_ci95_low": { "type": "number" },
+          "scenario_score_ci95_high": { "type": "number" },
           "pass_rate": { "type": "number" }
         },
         "additionalProperties": false

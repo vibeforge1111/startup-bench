@@ -6,7 +6,7 @@ from collections import defaultdict
 from pathlib import Path
 from statistics import mean
 
-from .campaign_runner import run_campaign
+from .campaign_runner import _ci95, _sem, run_campaign
 from .scenario_loader import load_json
 from .validation import raise_if_invalid, validate_instance
 
@@ -50,6 +50,9 @@ def run_suite(
             "track": campaign["campaign"]["track"],
             "run_count": campaign["campaign"]["run_count"],
             "scenario_score_mean": campaign["aggregate_metrics"]["scenario_score_mean"],
+            "scenario_score_sem": campaign["aggregate_metrics"]["scenario_score_sem"],
+            "scenario_score_ci95_low": campaign["aggregate_metrics"]["scenario_score_ci95_low"],
+            "scenario_score_ci95_high": campaign["aggregate_metrics"]["scenario_score_ci95_high"],
             "pass_rate": campaign["aggregate_metrics"]["pass_rate"],
         }
         scenario_reports.append(report)
@@ -57,14 +60,22 @@ def run_suite(
 
     track_summaries = []
     for track, reports in sorted(track_groups.items()):
+        score_means = [report["scenario_score_mean"] for report in reports]
+        score_ci95_low, score_ci95_high = _ci95(score_means)
         track_summaries.append(
             {
                 "track": track,
                 "scenario_count": len(reports),
-                "scenario_score_mean": _round_metric(mean(report["scenario_score_mean"] for report in reports)),
+                "scenario_score_mean": _round_metric(mean(score_means)),
+                "scenario_score_sem": _round_metric(_sem(score_means)),
+                "scenario_score_ci95_low": _round_metric(score_ci95_low),
+                "scenario_score_ci95_high": _round_metric(score_ci95_high),
                 "pass_rate_mean": _round_metric(mean(report["pass_rate"] for report in reports)),
             }
         )
+
+    overall_score_means = [report["scenario_score_mean"] for report in scenario_reports]
+    overall_ci95_low, overall_ci95_high = _ci95(overall_score_means)
 
     suite_report = {
         "report_version": "0.1.0",
@@ -75,7 +86,10 @@ def run_suite(
         "runner_id": baseline_id if runner_type == "baseline" else (tool_calls_path.name if tool_calls_path else runner_type),
         "overall": {
             "scenario_count": len(scenario_reports),
-            "scenario_score_mean": _round_metric(mean(report["scenario_score_mean"] for report in scenario_reports)),
+            "scenario_score_mean": _round_metric(mean(overall_score_means)),
+            "scenario_score_sem": _round_metric(_sem(overall_score_means)),
+            "scenario_score_ci95_low": _round_metric(overall_ci95_low),
+            "scenario_score_ci95_high": _round_metric(overall_ci95_high),
             "pass_rate_mean": _round_metric(mean(report["pass_rate"] for report in scenario_reports)),
         },
         "track_summaries": track_summaries,

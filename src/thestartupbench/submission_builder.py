@@ -57,6 +57,8 @@ def build_submission(
                 "pass_at_1": _round_metric(mean(pass_rates)),
                 "pass_at_k": _round_metric(mean(pass_rates)),
                 "sem": _round_metric(sem),
+                "ci95_low": _round_metric(mean(scores) - (1.96 * sem)),
+                "ci95_high": _round_metric(mean(scores) + (1.96 * sem)),
                 "api_cost_usd": 0.0,
             }
         )

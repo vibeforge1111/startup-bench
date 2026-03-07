@@ -32,6 +32,9 @@ class CampaignRunnerTests(unittest.TestCase):
         self.assertEqual(report["campaign"]["runner_type"], "baseline")
         self.assertEqual(report["aggregate_metrics"]["pass_rate"], 1.0)
         self.assertGreater(report["aggregate_metrics"]["scenario_score_mean"], 0.6)
+        self.assertIn("scenario_score_sem", report["aggregate_metrics"])
+        self.assertIn("scenario_score_ci95_low", report["aggregate_metrics"])
+        self.assertIn("scenario_score_ci95_high", report["aggregate_metrics"])
 
 
 if __name__ == "__main__":

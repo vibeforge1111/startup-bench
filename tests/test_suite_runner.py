@@ -26,7 +26,11 @@ class SuiteRunnerTests(unittest.TestCase):
         self.assertTrue(result["validation"]["ok"])
         report = result["suite_report"]
         self.assertEqual(report["overall"]["scenario_count"], 5)
+        self.assertIn("scenario_score_sem", report["overall"])
+        self.assertIn("scenario_score_ci95_low", report["overall"])
+        self.assertIn("scenario_score_ci95_high", report["overall"])
         self.assertEqual(len(report["scenario_reports"]), 5)
+        self.assertIn("scenario_score_sem", report["scenario_reports"][0])
         tracks = {item["track"] for item in report["track_summaries"]}
         self.assertEqual(tracks, {"0to1", "b2b_saas", "board", "crisis", "scale"})
 
