@@ -38,6 +38,7 @@ Key documents:
 - `THE_STARTUP_BENCH_RFC.md`
 - `docs/benchmark_status.md`
 - `docs/sota_benchmark_audit.md`
+- `docs/sota_reaudit.md`
 - `docs/sota_task_roadmap.md`
 - `docs/testing_coverage.md`
 - `docs/pack_lifecycle_changelog.md`
