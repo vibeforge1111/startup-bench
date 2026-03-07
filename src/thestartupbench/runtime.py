@@ -7,6 +7,7 @@ from dataclasses import dataclass, field
 from datetime import datetime, timedelta, timezone
 
 from .observations import project_surfaces
+from .primitive_engine import apply_operations, resolve_event_operations
 from .runner import recalculate_derived_metrics
 
 
@@ -70,24 +71,6 @@ def _tool_result(tool_name: str, request_id: str, *, result: dict, state_delta_s
     }
 
 
-def _set_dotted_value(target: dict, dotted_path: str, delta_or_value) -> None:
-    parts = dotted_path.split(".")
-    cursor = target
-    for part in parts[:-1]:
-        cursor = cursor.setdefault(part, {})
-    leaf = parts[-1]
-    current = cursor.get(leaf)
-    if isinstance(delta_or_value, (int, float)) and isinstance(current, (int, float)):
-        cursor[leaf] = current + delta_or_value
-    else:
-        cursor[leaf] = delta_or_value
-
-
-def _apply_event_effects(session: RuntimeSession, effects: dict) -> None:
-    for path, delta_or_value in effects.items():
-        _set_dotted_value(session.world_state, path, delta_or_value)
-
-
 def _process_due_events(session: RuntimeSession) -> list[dict]:
     current_turn = int(session.world_state["sim"]["current_turn"])
     processed_ids = set(session.world_state["sim"].setdefault("processed_event_ids", []))
@@ -98,11 +81,15 @@ def _process_due_events(session: RuntimeSession) -> list[dict]:
             continue
         if int(event.get("at_turn", 0)) > current_turn:
             continue
-        _apply_event_effects(session, event.get("effects", {}))
+        operation_deltas = apply_operations(
+            session.world_state,
+            resolve_event_operations(scenario=session.scenario, event=event),
+        )
         visible_event = {
             "event_type": event.get("event_type", "scheduled_event"),
             "event_id": event_id,
             "message": event.get("visible_message", ""),
+            "operation_count": len(operation_deltas),
         }
         processed_ids.add(event_id)
         emitted.append(visible_event)
@@ -194,15 +181,20 @@ def execute_tool_call(session: RuntimeSession, tool_call: dict) -> dict:
         onboarding_quality_delta = float(arguments.get("onboarding_quality_delta", 0))
         major_incidents_delta = int(arguments.get("major_incidents_delta", 0))
         budget_change = float(arguments.get("budget_change_monthly_burn_usd", 0))
-
-        product["roadmap_items"] = max(0, int(product.get("roadmap_items", 0)) + roadmap_items_delta)
-        product["onboarding_quality"] = round(
-            max(0.0, min(1.0, float(product.get("onboarding_quality", 0.5)) + onboarding_quality_delta)),
-            4,
-        )
-        product["major_incidents_open"] = max(0, int(product.get("major_incidents_open", 0)) + major_incidents_delta)
+        operations = [
+            {"op": "increment", "path": "product.roadmap_items", "value": roadmap_items_delta},
+            {"op": "clamp", "path": "product.roadmap_items", "min": 0},
+            {"op": "increment", "path": "product.onboarding_quality", "value": onboarding_quality_delta},
+            {"op": "clamp", "path": "product.onboarding_quality", "min": 0.0, "max": 1.0},
+            {"op": "increment", "path": "product.major_incidents_open", "value": major_incidents_delta},
+            {"op": "clamp", "path": "product.major_incidents_open", "min": 0},
+        ]
         if budget_change:
-            finance["monthly_burn_usd"] = round(float(finance.get("monthly_burn_usd", 0)) + budget_change, 2)
+            operations.append({"op": "increment", "path": "finance.monthly_burn_usd", "value": budget_change})
+        apply_operations(session.world_state, operations)
+        product["onboarding_quality"] = round(float(product.get("onboarding_quality", 0.5)), 4)
+        if "monthly_burn_usd" in finance:
+            finance["monthly_burn_usd"] = round(float(finance.get("monthly_burn_usd", 0)), 2)
         recalculate_derived_metrics(session.world_state)
         return _tool_result(
             tool_name,
@@ -223,8 +215,8 @@ def execute_tool_call(session: RuntimeSession, tool_call: dict) -> dict:
         budget_changes = arguments.get("budget_changes", {})
         state_delta = {}
         for key, delta in budget_changes.items():
-            current = float(session.world_state["finance"].get(key, 0))
-            session.world_state["finance"][key] = round(current + float(delta), 2)
+            apply_operations(session.world_state, [{"op": "increment", "path": f"finance.{key}", "value": float(delta)}])
+            session.world_state["finance"][key] = round(float(session.world_state["finance"].get(key, 0)), 2)
             state_delta[f"finance.{key}"] = session.world_state["finance"][key]
         session.world_state["finance"]["last_plan_update"] = {
             "budget_changes": budget_changes,
@@ -246,14 +238,17 @@ def execute_tool_call(session: RuntimeSession, tool_call: dict) -> dict:
         pipeline_count_delta = int(arguments.get("pipeline_count_delta", 0))
         weighted_pipeline_usd_delta = float(arguments.get("weighted_pipeline_usd_delta", 0))
         closed_won_revenue_delta = float(arguments.get("closed_won_revenue_delta_usd", 0))
-
-        sales["pipeline_count"] = max(0, int(sales.get("pipeline_count", 0)) + pipeline_count_delta)
-        sales["weighted_pipeline_usd"] = round(float(sales.get("weighted_pipeline_usd", 0)) + weighted_pipeline_usd_delta, 2)
+        operations = [
+            {"op": "increment", "path": "sales.pipeline_count", "value": pipeline_count_delta},
+            {"op": "clamp", "path": "sales.pipeline_count", "min": 0},
+            {"op": "increment", "path": "sales.weighted_pipeline_usd", "value": weighted_pipeline_usd_delta},
+        ]
         if closed_won_revenue_delta:
-            finance["monthly_revenue_usd"] = round(
-                float(finance.get("monthly_revenue_usd", 0)) + closed_won_revenue_delta,
-                2,
-            )
+            operations.append({"op": "increment", "path": "finance.monthly_revenue_usd", "value": closed_won_revenue_delta})
+        apply_operations(session.world_state, operations)
+        sales["weighted_pipeline_usd"] = round(float(sales.get("weighted_pipeline_usd", 0)), 2)
+        if "monthly_revenue_usd" in finance:
+            finance["monthly_revenue_usd"] = round(float(finance.get("monthly_revenue_usd", 0)), 2)
         recalculate_derived_metrics(session.world_state)
         return _tool_result(
             tool_name,

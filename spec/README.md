@@ -61,6 +61,7 @@ Reference implementation status:
 - schema-backed validation is implemented
 - dry-run and scripted-run artifact generation is implemented
 - heuristic baseline and repeated-run campaign aggregation are implemented
+- reusable primitive-based event execution is implemented in the reference runtime
 - smoke tests exist under `tests/`
 
 ## Canonical terms

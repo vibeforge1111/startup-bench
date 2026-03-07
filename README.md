@@ -13,6 +13,7 @@ Current status:
 - programmatic scoring and runtime tests implemented
 - heuristic baseline runner implemented
 - repeated-run campaign aggregation implemented
+- generic primitive/event operation engine implemented
 
 Key documents:
 
@@ -87,3 +88,9 @@ Current reference runtime coverage:
 - `notes.read`
 - `notes.write`
 - `sim.advance`
+
+Current state-transition coverage:
+
+- tool handlers now route core mutations through a shared operation engine
+- scheduled events may reference reusable `event_model.primitive_catalog` entries
+- primitive operations currently support `set`, `increment`, `multiply`, `clamp`, and `append_unique`

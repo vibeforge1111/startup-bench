@@ -89,25 +89,50 @@
   ],
   "event_model": {
     "kind": "seeded_schedule",
+    "primitive_catalog": {
+      "infra_pricing_shock": {
+        "operations": [
+          {
+            "op": "increment",
+            "path": "finance.monthly_burn_usd",
+            "value": 18000
+          }
+        ]
+      },
+      "enterprise_deal_closed": {
+        "operations": [
+          {
+            "op": "increment",
+            "path": "finance.monthly_revenue_usd",
+            "value": 22000
+          },
+          {
+            "op": "increment",
+            "path": "sales.pipeline_count",
+            "value": -1
+          },
+          {
+            "op": "clamp",
+            "path": "sales.pipeline_count",
+            "min": 0
+          }
+        ]
+      }
+    },
     "scheduled_events": [
       {
         "event_id": "ev_001",
         "at_turn": 2,
+        "primitive_id": "infra_pricing_shock",
         "event_type": "infra_cost_shock",
-        "visible_message": "Hosting costs rose after a model provider repriced inference.",
-        "effects": {
-          "finance.monthly_burn_usd": 18000
-        }
+        "visible_message": "Hosting costs rose after a model provider repriced inference."
       },
       {
         "event_id": "ev_002",
         "at_turn": 4,
+        "primitive_id": "enterprise_deal_closed",
         "event_type": "enterprise_deal_closed",
-        "visible_message": "A late-stage enterprise opportunity closed successfully.",
-        "effects": {
-          "finance.monthly_revenue_usd": 22000,
-          "sales.pipeline_count": -1
-        }
+        "visible_message": "A late-stage enterprise opportunity closed successfully."
       }
     ]
   },

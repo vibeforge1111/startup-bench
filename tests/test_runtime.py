@@ -182,6 +182,7 @@ class RuntimeTests(unittest.TestCase):
         self.assertEqual(self.session.world_state["sim"]["processed_event_ids"], ["ev_001"])
         self.assertEqual(self.session.world_state["sim"]["pending_event_count"], 1)
         self.assertEqual(response["result"]["events_processed"][1]["event_id"], "ev_001")
+        self.assertEqual(response["result"]["events_processed"][1]["operation_count"], 1)
 
     def test_board_read_and_update_track_governance_state(self) -> None:
         read_before = execute_tool_call(
