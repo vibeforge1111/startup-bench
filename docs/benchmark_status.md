@@ -16,6 +16,7 @@ TheStartupBench is no longer just an RFC. It now has:
 - private/test suite packaging and redacted public manifest generation
 - operational `fresh` pack generation and public pack lifecycle tracking
 - hidden suite family integrity enforcement and uncertainty-aware reporting
+- official evaluation profile and run-manifest support
 - CI for tests, validation, and smoke suites
 - unit tests and executable smoke paths
 
@@ -50,6 +51,9 @@ Completed:
 - hidden-eval packaging helpers:
   - `redact-suite`
   - `build-submission`
+- official evaluation helpers:
+  - `show-official-profile`
+  - `emit-run-manifest`
 - GitHub Actions workflow in [.github/workflows/ci.yml](/C:/Users/USER/Desktop/startup-bench/.github/workflows/ci.yml#L1)
 - stateful runtime support for:
   - finance planning
@@ -88,6 +92,7 @@ Completed:
   - `heuristic_resilient_operator`
 - repeated-run aggregation in [campaign_runner.py](/C:/Users/USER/Desktop/startup-bench/src/thestartupbench/campaign_runner.py)
 - SEM and 95 percent confidence interval reporting in batch, suite, and submission artifacts
+- official evaluation profile loader and run-manifest builder in [official_eval.py](/C:/Users/USER/Desktop/startup-bench/src/thestartupbench/official_eval.py)
 
 ### 6. Suite packaging
 
@@ -101,6 +106,8 @@ Completed:
 - suite promotion helper in [pack_ops.py](/C:/Users/USER/Desktop/startup-bench/src/thestartupbench/pack_ops.py)
 - hidden suite family integrity checker in [pack_ops.py](/C:/Users/USER/Desktop/startup-bench/src/thestartupbench/pack_ops.py)
 - submission assembly in [submission_builder.py](/C:/Users/USER/Desktop/startup-bench/src/thestartupbench/submission_builder.py)
+- official hosted-eval profile example in [official_eval_profile.json](/C:/Users/USER/Desktop/startup-bench/examples/official_eval_profile.json)
+- official run-manifest example in [minimal_run_manifest.json](/C:/Users/USER/Desktop/startup-bench/examples/minimal_run_manifest.json)
 - hidden-eval policy in [hidden_eval_policy.md](/C:/Users/USER/Desktop/startup-bench/spec/hidden_eval_policy.md)
 - public lifecycle changelog in [pack_lifecycle_changelog.md](/C:/Users/USER/Desktop/startup-bench/docs/pack_lifecycle_changelog.md)
 
@@ -200,6 +207,7 @@ Partially done:
 - public lifecycle changelog exists
 - suite and submission artifacts exist
 - uncertainty-aware score reporting exists
+- official evaluation profile and run-manifest artifacts exist
 
 What remains inside this category:
 
@@ -277,8 +285,9 @@ If the goal is to make TheStartupBench materially stronger, the next steps shoul
 2. Add richer state transitions for people, fundraising, legal/compliance, and market dynamics.
 3. Strengthen evaluator design so survival, trust, compliance, and capital efficiency are explicit constraints rather than soft side effects.
 4. Add more baseline families, especially human-inspired scripted policies and crisis-specialist heuristics.
-5. Add benchmark governance artifacts: contamination policy, version policy, exploit review, and refresh cadence.
-6. Add artifact publishing and required-branch protections on top of the new CI workflow.
+5. Add official hosted-eval manifests and settings to model adapters beyond baselines.
+6. Add benchmark governance artifacts: contamination policy, version policy, exploit review, and refresh cadence.
+7. Add artifact publishing and required-branch protections on top of the new CI workflow.
 
 ## Definition Of “Done Enough” For A Credible v1
 

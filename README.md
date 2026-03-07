@@ -20,6 +20,7 @@ Current status:
 - SOTA benchmark audit and task roadmap documented
 - distinct hidden fresh pack variants and hidden-suite integrity enforcement implemented
 - uncertainty-aware reporting implemented for batch, suite, and submission artifacts
+- official evaluation profile and run-manifest support implemented
 
 Key documents:
 
@@ -57,6 +58,8 @@ Artifacts:
 - `schemas/tsb_batch_report.schema.json`
 - `schemas/tsb_scenario_suite.schema.json`
 - `schemas/tsb_public_suite_manifest.schema.json`
+- `schemas/tsb_official_eval_profile.schema.json`
+- `schemas/tsb_run_manifest.schema.json`
 - `schemas/tsb_suite_report.schema.json`
 - `schemas/tsb_trace.schema.json`
 - `schemas/tsb_submission.schema.json`
@@ -67,6 +70,8 @@ Artifacts:
 - `examples/minimal_scale_scenario.json`
 - `examples/dev_scenario_suite.json`
 - `examples/private_test_scenario_suite.json`
+- `examples/official_eval_profile.json`
+- `examples/minimal_run_manifest.json`
 - `examples/minimal_public_suite_manifest.json`
 - `examples/minimal_submission.json`
 - `examples/minimal_world_state.json`
@@ -93,7 +98,9 @@ python -m thestartupbench run-dry examples/minimal_b2b_saas_scenario.json --seed
 python -m thestartupbench run-script examples/minimal_b2b_saas_scenario.json examples/minimal_tool_script.json --seed 1 --output-dir tmp_out
 python -m thestartupbench run-baseline examples/minimal_crisis_scenario.json heuristic_resilient_operator --seed 1 --max-turns 6 --output-dir tmp_out
 python -m thestartupbench run-campaign examples/minimal_crisis_scenario.json baseline --baseline-id heuristic_resilient_operator --seeds 1,2,3 --max-turns 6 --output-dir tmp_out
-python -m thestartupbench run-suite examples/dev_scenario_suite.json baseline --baseline-id heuristic_resilient_operator --seeds 1,2 --max-turns 4 --output-dir tmp_out
+python -m thestartupbench show-official-profile examples/official_eval_profile.json
+python -m thestartupbench emit-run-manifest examples/dev_scenario_suite.json baseline --seeds 1,2,3,4,5 --baseline-id heuristic_resilient_operator --max-turns 8 --profile-path examples/official_eval_profile.json --output-dir tmp_out
+python -m thestartupbench run-suite examples/dev_scenario_suite.json baseline --baseline-id heuristic_resilient_operator --seeds 1,2 --max-turns 4 --profile-path examples/official_eval_profile.json --output-dir tmp_out
 python -m thestartupbench redact-suite examples/private_test_scenario_suite.json --output-dir tmp_out
 python -m thestartupbench check-suite-family examples/private_real_world_test_scenario_suite.json examples/private_real_world_fresh_scenario_suite.json
 python -m thestartupbench build-submission --suite-report-paths tmp_out/suite_report.json --model-id heuristic_resilient_operator --provider baseline --contamination-flag clean --output-dir tmp_out

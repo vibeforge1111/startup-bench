@@ -24,6 +24,8 @@ It is organized into:
 - `leaderboard_protocol.md`: submission, verification, contamination, and leaderboard policy
 - `hidden_eval_policy.md`: hidden test/fresh split operation, refresh cadence, and redaction policy
 - `../docs/pack_lifecycle_changelog.md`: public pack promotion, retirement, and contamination ledger
+- `../examples/official_eval_profile.json`: reference official evaluation settings bundle
+- `../examples/minimal_run_manifest.json`: reference official run-manifest artifact
 
 Machine-readable schemas:
 
@@ -39,6 +41,8 @@ Machine-readable schemas:
 - `../schemas/tsb_scenario_suite.schema.json`
 - `../schemas/tsb_public_suite_manifest.schema.json`
 - `../schemas/tsb_pack_changelog.schema.json`
+- `../schemas/tsb_official_eval_profile.schema.json`
+- `../schemas/tsb_run_manifest.schema.json`
 - `../schemas/tsb_suite_report.schema.json`
 - `../schemas/tsb_trace.schema.json`
 - `../schemas/tsb_submission.schema.json`
@@ -53,6 +57,8 @@ Example:
 - `../examples/dev_scenario_suite.json`
 - `../examples/private_test_scenario_suite.json`
 - `../examples/private_real_world_fresh_scenario_suite.json`
+- `../examples/official_eval_profile.json`
+- `../examples/minimal_run_manifest.json`
 - `../examples/minimal_public_suite_manifest.json`
 - `../examples/real_world_public_fresh_manifest.json`
 - `../examples/public_pack_changelog.json`
@@ -82,6 +88,7 @@ Reference implementation status:
 - suite-level scenario-pack execution and reporting are implemented
 - redacted public manifests and submission assembly are implemented
 - suite promotion and pack lifecycle validation are implemented
+- official evaluation profiles and run manifests are implemented
 - smoke tests exist under `tests/`
 
 ## Canonical terms

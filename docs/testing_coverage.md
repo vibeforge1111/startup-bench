@@ -6,8 +6,8 @@ Last updated: 2026-03-07
 
 Current automated test surface:
 
-- `61` unit tests
-- `13` test files
+- `67` unit tests
+- `14` test files
 - all tests passing in the current tree
 
 The test suite is strongest on schema validation, core runtime mutations, baseline execution, and suite/submission packaging. It is weakest on evaluator nuance, adversarial scenario behavior, and broader scenario-corpus regression coverage.
@@ -75,6 +75,12 @@ The test suite is strongest on schema validation, core runtime mutations, baseli
   - suite report emission
   - resilient baseline improves suite pass rate
 
+- [test_official_eval.py](/C:/Users/USER/Desktop/startup-bench/tests/test_official_eval.py): `4` tests
+  - official profile loading
+  - run-manifest generation
+  - disallowed runner rejection
+  - official-manifest-compatible suite flow
+
 ### Hidden-eval packaging
 
 - [test_suite_manifest.py](/C:/Users/USER/Desktop/startup-bench/tests/test_suite_manifest.py): `2` tests
@@ -111,7 +117,9 @@ PYTHONPATH=src python -m thestartupbench validate scenario examples/minimal_b2b_
 PYTHONPATH=src python -m thestartupbench lint-scenario examples/minimal_b2b_saas_scenario.json
 PYTHONPATH=src python -m thestartupbench run-baseline examples/minimal_crisis_scenario.json heuristic_resilient_operator --seed 1 --max-turns 6 --output-dir tmp_smoke
 PYTHONPATH=src python -m thestartupbench check-trace tmp_smoke/trace.json
-PYTHONPATH=src python -m thestartupbench run-suite examples/dev_scenario_suite.json baseline --baseline-id heuristic_resilient_operator --seeds 1,2 --max-turns 4 --output-dir tmp_smoke
+PYTHONPATH=src python -m thestartupbench show-official-profile examples/official_eval_profile.json
+PYTHONPATH=src python -m thestartupbench emit-run-manifest examples/dev_scenario_suite.json baseline --seeds 1,2,3,4,5 --baseline-id heuristic_resilient_operator --max-turns 8 --profile-path examples/official_eval_profile.json --output-dir tmp_smoke
+PYTHONPATH=src python -m thestartupbench run-suite examples/dev_scenario_suite.json baseline --baseline-id heuristic_resilient_operator --seeds 1,2 --max-turns 4 --profile-path examples/official_eval_profile.json --output-dir tmp_smoke
 PYTHONPATH=src python -m thestartupbench redact-suite examples/private_test_scenario_suite.json --output-dir tmp_smoke
 PYTHONPATH=src python -m thestartupbench check-suite-family examples/private_real_world_test_scenario_suite.json examples/private_real_world_fresh_scenario_suite.json
 PYTHONPATH=src python -m thestartupbench redact-suite examples/private_real_world_fresh_scenario_suite.json --output-dir tmp_smoke
@@ -133,10 +141,17 @@ Observed on 2026-03-07:
 - `check-trace tmp_smoke/trace.json`: passed
   - schema validation: `ok`
   - integrity validation: `ok`
-- `run-suite ...dev_scenario_suite.json ... --seeds 1,2 --max-turns 4`: passed
+- `show-official-profile ...official_eval_profile.json`: passed
+  - hosted evaluation: `true`
+  - allowed runner types: `baseline`, `script`
+- `emit-run-manifest ...dev_scenario_suite.json baseline --seeds 1,2,3,4,5 ...`: passed
+  - repeated run count: `5`
+  - profile id: `official-hosted-v0.1.0`
+- `run-suite ...dev_scenario_suite.json ... --seeds 1,2 --max-turns 4 --profile-path ...`: passed
   - scenario count: `5`
-  - overall score mean: `0.7178`
+  - overall score mean: `0.7056`
   - overall pass-rate mean: `1.0`
+  - emitted run manifest alongside suite report
 - `run-suite ...real_world_crisis_scenario_suite.json ... --seeds 1 --max-turns 3`: passed
   - scenario count: `10`
   - overall score mean: `0.719`
@@ -170,8 +185,8 @@ Observed on 2026-03-07:
 - `python -m thestartupbench version`: passed
   - reported version: `0.1.0`
 - `python -m unittest discover -s tests -p "test_*.py"`: passed
-  - `61` tests
-  - `13` files
+  - `67` tests
+  - `14` files
 
 ## What Is Covered Well
 
