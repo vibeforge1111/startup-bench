@@ -16,6 +16,10 @@ Reference manifest:
 
 - [operator_human_review_wave_001_manifest.json](/C:/Users/USER/Desktop/startup-bench/examples/operator_human_review_wave_001_manifest.json)
 
+Reviewer handoff copy:
+
+- [reviewer_outreach_wave_001.md](/C:/Users/USER/Desktop/startup-bench/docs/reviewer_outreach_wave_001.md)
+
 ## Included targets
 
 ### 1. Canary confirmation

@@ -45,6 +45,7 @@ Key documents:
 - `docs/operator_study_plan.md`
 - `docs/calibration_outcomes.md`
 - `docs/human_review_wave_001.md`
+- `docs/reviewer_outreach_wave_001.md`
 - `docs/calibration_taskforce_strategy.md`
 - `docs/reviewer_manual.md`
 - `docs/model_reviewer_panel.md`
@@ -160,6 +161,7 @@ python -m thestartupbench import-review-forms tmp_out --output-dir tmp_out
 python -m thestartupbench export-model-review-bundles tmp_out --output-dir tmp_model_bundles
 python -m thestartupbench import-model-reviews tmp_model_outputs --output-dir tmp_model_import
 python -m thestartupbench compile-calibration-study examples/operator_calibration_study_manifest.json --study-run-dir tmp_out --review-paths examples/minimal_operator_review.json --output-dir tmp_out
+powershell -File scripts/compile_human_review_wave_001.ps1 -CompletedFormsDir tmp_human_wave_completed_forms
 python -m thestartupbench build-submission --suite-report-paths tmp_out/suite_report.json --model-id heuristic_resilient_operator --provider baseline --contamination-flag clean --output-dir tmp_out
 python -m unittest discover -s tests -p "test_*.py"
 ```
