@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://thestartupbench.org/schemas/tsb_review_form_import.schema.json",
+  "title": "TheStartupBench Review Form Import Result",
+  "type": "object",
+  "required": ["import_version", "review_count", "review_paths"],
+  "properties": {
+    "import_version": { "type": "string" },
+    "review_count": { "type": "integer", "minimum": 0 },
+    "review_paths": {
+      "type": "array",
+      "items": { "type": "string" }
+    }
+  },
+  "additionalProperties": false
+}

@@ -75,6 +75,9 @@ def run_calibration_study(*, study_manifest_path: Path, output_dir: Path) -> dic
             "focus": target["focus"],
             "suite_path": str(suite_path),
             "suite_report_path": str(suite_report_path),
+            "scenario_pack_version": suite_report["scenario_pack_version"],
+            "split": suite_report["split"],
+            "runner_type": suite_report["runner_type"],
             "runner_id": target["baseline_runner_id"],
             "seed": int(target["seed"]),
             "required_scenarios": target.get(

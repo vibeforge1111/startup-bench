@@ -136,6 +136,20 @@ def _build_parser() -> argparse.ArgumentParser:
     study_compile_parser.add_argument("--review-paths", required=True, help="Comma-separated operator review JSON paths")
     study_compile_parser.add_argument("--output-dir", required=True, help="Directory to write calibration study report artifacts")
 
+    assign_parser = subparsers.add_parser("assign-reviewers", help="Assign reviewers from a roster to a calibration study run")
+    assign_parser.add_argument("study_manifest_path", help="Path to a calibration-study JSON manifest")
+    assign_parser.add_argument("--study-run-dir", required=True, help="Directory containing calibration study run artifacts")
+    assign_parser.add_argument("--roster-path", required=True, help="CSV roster path")
+    assign_parser.add_argument("--output-dir", required=True, help="Directory to write assignment artifacts")
+
+    export_forms_parser = subparsers.add_parser("export-review-forms", help="Export reviewer-facing markdown and CSV forms from assignments")
+    export_forms_parser.add_argument("assignment_manifest_path", help="Path to a review assignment manifest JSON file")
+    export_forms_parser.add_argument("--output-dir", required=True, help="Directory to write reviewer-facing forms")
+
+    import_forms_parser = subparsers.add_parser("import-review-forms", help="Import completed reviewer CSV forms into operator-review JSON artifacts")
+    import_forms_parser.add_argument("forms_dir", help="Directory containing completed review_form.csv files")
+    import_forms_parser.add_argument("--output-dir", required=True, help="Directory to write imported operator-review JSON artifacts")
+
     return parser
 
 
@@ -564,6 +578,46 @@ def _cmd_compile_calibration_study(
     return 0 if result["validation"]["ok"] else 1
 
 
+def _cmd_assign_reviewers(
+    study_manifest_path: str,
+    study_run_dir: str,
+    roster_path: str,
+    output_dir: str,
+) -> int:
+    from .reviewer_ops import assign_reviewer_taskforce
+
+    result = assign_reviewer_taskforce(
+        study_manifest_path=Path(study_manifest_path),
+        study_run_dir=Path(study_run_dir),
+        roster_path=Path(roster_path),
+        output_dir=Path(output_dir),
+    )
+    print(json.dumps(result, indent=2))
+    return 0 if result["validation"]["ok"] else 1
+
+
+def _cmd_export_review_forms(assignment_manifest_path: str, output_dir: str) -> int:
+    from .reviewer_ops import export_review_forms
+
+    result = export_review_forms(
+        assignment_manifest_path=Path(assignment_manifest_path),
+        output_dir=Path(output_dir),
+    )
+    print(json.dumps(result, indent=2))
+    return 0 if result["validation"]["ok"] else 1
+
+
+def _cmd_import_review_forms(forms_dir: str, output_dir: str) -> int:
+    from .reviewer_ops import import_review_forms
+
+    result = import_review_forms(
+        forms_dir=Path(forms_dir),
+        output_dir=Path(output_dir),
+    )
+    print(json.dumps(result, indent=2))
+    return 0 if result["validation"]["ok"] else 1
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = _build_parser()
     args = parser.parse_args(argv)
@@ -673,6 +727,17 @@ def main(argv: list[str] | None = None) -> int:
             args.review_paths,
             args.output_dir,
         )
+    if args.command == "assign-reviewers":
+        return _cmd_assign_reviewers(
+            args.study_manifest_path,
+            args.study_run_dir,
+            args.roster_path,
+            args.output_dir,
+        )
+    if args.command == "export-review-forms":
+        return _cmd_export_review_forms(args.assignment_manifest_path, args.output_dir)
+    if args.command == "import-review-forms":
+        return _cmd_import_review_forms(args.forms_dir, args.output_dir)
 
     parser.print_help()
     return 1
