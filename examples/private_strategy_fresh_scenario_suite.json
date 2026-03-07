@@ -1,12 +1,18 @@
 {
   "suite_version": "0.1.0",
   "benchmark_version": "0.2.0-draft",
-  "scenario_pack_version": "strategy-fresh-pack-0.1.0",
+  "scenario_pack_version": "strategy-fresh-pack-0.2.0",
   "split": "fresh",
   "scenarios": [
     {
       "scenario_id": "hidden_board_stakeholder_conflict_fresh_001",
       "path": "hidden_board_stakeholder_conflict_fresh_scenario.json",
+      "track": "board",
+      "mode": "fresh"
+    },
+    {
+      "scenario_id": "hidden_board_financing_truth_fresh_001",
+      "path": "hidden_board_financing_truth_fresh_scenario.json",
       "track": "board",
       "mode": "fresh"
     },
