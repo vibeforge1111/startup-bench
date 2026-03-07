@@ -18,6 +18,8 @@ Current status:
 - multi-scenario suite packaging and reporting implemented
 - private/public suite packaging and submission assembly implemented
 - SOTA benchmark audit and task roadmap documented
+- distinct hidden fresh pack variants and hidden-suite integrity enforcement implemented
+- uncertainty-aware reporting implemented for batch, suite, and submission artifacts
 
 Key documents:
 
@@ -93,6 +95,7 @@ python -m thestartupbench run-baseline examples/minimal_crisis_scenario.json heu
 python -m thestartupbench run-campaign examples/minimal_crisis_scenario.json baseline --baseline-id heuristic_resilient_operator --seeds 1,2,3 --max-turns 6 --output-dir tmp_out
 python -m thestartupbench run-suite examples/dev_scenario_suite.json baseline --baseline-id heuristic_resilient_operator --seeds 1,2 --max-turns 4 --output-dir tmp_out
 python -m thestartupbench redact-suite examples/private_test_scenario_suite.json --output-dir tmp_out
+python -m thestartupbench check-suite-family examples/private_real_world_test_scenario_suite.json examples/private_real_world_fresh_scenario_suite.json
 python -m thestartupbench build-submission --suite-report-paths tmp_out/suite_report.json --model-id heuristic_resilient_operator --provider baseline --contamination-flag clean --output-dir tmp_out
 python -m unittest discover -s tests -p "test_*.py"
 ```

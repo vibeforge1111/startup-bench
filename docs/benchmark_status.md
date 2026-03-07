@@ -15,6 +15,7 @@ TheStartupBench is no longer just an RFC. It now has:
 - a real-world-derived crisis scenario pack
 - private/test suite packaging and redacted public manifest generation
 - operational `fresh` pack generation and public pack lifecycle tracking
+- hidden suite family integrity enforcement and uncertainty-aware reporting
 - CI for tests, validation, and smoke suites
 - unit tests and executable smoke paths
 
@@ -86,6 +87,7 @@ Completed:
   - `heuristic_b2b_operator`
   - `heuristic_resilient_operator`
 - repeated-run aggregation in [campaign_runner.py](/C:/Users/USER/Desktop/startup-bench/src/thestartupbench/campaign_runner.py)
+- SEM and 95 percent confidence interval reporting in batch, suite, and submission artifacts
 
 ### 6. Suite packaging
 
@@ -97,6 +99,7 @@ Completed:
 - private real-world fresh suite manifest in [private_real_world_fresh_scenario_suite.json](/C:/Users/USER/Desktop/startup-bench/examples/private_real_world_fresh_scenario_suite.json)
 - redacted public manifest generation in [suite_manifest.py](/C:/Users/USER/Desktop/startup-bench/src/thestartupbench/suite_manifest.py)
 - suite promotion helper in [pack_ops.py](/C:/Users/USER/Desktop/startup-bench/src/thestartupbench/pack_ops.py)
+- hidden suite family integrity checker in [pack_ops.py](/C:/Users/USER/Desktop/startup-bench/src/thestartupbench/pack_ops.py)
 - submission assembly in [submission_builder.py](/C:/Users/USER/Desktop/startup-bench/src/thestartupbench/submission_builder.py)
 - hidden-eval policy in [hidden_eval_policy.md](/C:/Users/USER/Desktop/startup-bench/spec/hidden_eval_policy.md)
 - public lifecycle changelog in [pack_lifecycle_changelog.md](/C:/Users/USER/Desktop/startup-bench/docs/pack_lifecycle_changelog.md)
@@ -140,6 +143,17 @@ Completed hidden real-world test pack:
   - restoration backlog
   - peak readiness under lower headroom
 
+Completed hidden real-world fresh pack:
+
+- `5` fresh hidden scenarios with distinct scenario ids and distinct scenario files from the hidden `test` pack
+- public redacted manifest in [real_world_public_fresh_manifest.json](/C:/Users/USER/Desktop/startup-bench/examples/real_world_public_fresh_manifest.json)
+- current hidden fresh pack coverage:
+  - bridge financing with harsher board terms
+  - treasury freeze with payroll cascade risk
+  - security backlash with enterprise procurement freeze
+  - restoration collapse with repeated tooling slippage
+  - peak readiness with support spike and fatigue
+
 ## What Is Partially Done
 
 ### 1. World realism
@@ -181,9 +195,11 @@ Partially done:
 
 - private/test suite format exists
 - fresh hidden suite format exists
+- hidden `test` and `fresh` suites are now distinct in ids and files
 - public redacted suite manifest exists
 - public lifecycle changelog exists
 - suite and submission artifacts exist
+- uncertainty-aware score reporting exists
 
 What remains inside this category:
 
@@ -216,6 +232,7 @@ Not done:
 
 - a large public dev set
 - a large hidden official test set
+- a larger distinct hidden fresh set
 - broad scenario coverage across product, GTM, finance, people, legal, and crisis operations
 - difficulty tiering and refresh lineages
 

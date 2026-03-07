@@ -6,7 +6,7 @@ Last updated: 2026-03-07
 
 Current automated test surface:
 
-- `58` unit tests
+- `61` unit tests
 - `13` test files
 - all tests passing in the current tree
 
@@ -80,8 +80,11 @@ The test suite is strongest on schema validation, core runtime mutations, baseli
 - [test_suite_manifest.py](/C:/Users/USER/Desktop/startup-bench/tests/test_suite_manifest.py): `2` tests
   - redacted manifest generation
 
-- [test_pack_ops.py](/C:/Users/USER/Desktop/startup-bench/tests/test_pack_ops.py): `2` tests
-  - fresh-pack promotion emits a valid suite and public manifest
+- [test_pack_ops.py](/C:/Users/USER/Desktop/startup-bench/tests/test_pack_ops.py): `5` tests
+  - hidden split cloning is rejected by default
+  - draft-only split cloning is explicit
+  - distinct hidden `test` and `fresh` packs validate cleanly
+  - duplicate hidden ids and paths are rejected
   - public pack changelog validates cleanly
 
 - [test_submission_builder.py](/C:/Users/USER/Desktop/startup-bench/tests/test_submission_builder.py): `1` test
@@ -110,7 +113,8 @@ PYTHONPATH=src python -m thestartupbench run-baseline examples/minimal_crisis_sc
 PYTHONPATH=src python -m thestartupbench check-trace tmp_smoke/trace.json
 PYTHONPATH=src python -m thestartupbench run-suite examples/dev_scenario_suite.json baseline --baseline-id heuristic_resilient_operator --seeds 1,2 --max-turns 4 --output-dir tmp_smoke
 PYTHONPATH=src python -m thestartupbench redact-suite examples/private_test_scenario_suite.json --output-dir tmp_smoke
-PYTHONPATH=src python -m thestartupbench promote-suite examples/private_real_world_test_scenario_suite.json --split fresh --scenario-pack-version real-world-fresh-pack-0.1.0 --output-dir tmp_smoke
+PYTHONPATH=src python -m thestartupbench check-suite-family examples/private_real_world_test_scenario_suite.json examples/private_real_world_fresh_scenario_suite.json
+PYTHONPATH=src python -m thestartupbench redact-suite examples/private_real_world_fresh_scenario_suite.json --output-dir tmp_smoke
 PYTHONPATH=src python -m thestartupbench check-pack-changelog examples/public_pack_changelog.json
 PYTHONPATH=src python -m thestartupbench build-submission --suite-report-paths tmp_smoke/suite_report.json --model-id heuristic_resilient_operator --provider baseline --contamination-flag clean --output-dir tmp_smoke
 python -m unittest discover -s tests -p "test_*.py"
@@ -144,10 +148,16 @@ Observed on 2026-03-07:
   - scenario count: `5`
   - overall score mean: `0.7351`
   - overall pass-rate mean: `1.0`
-- `promote-suite ...private_real_world_test_scenario_suite.json --split fresh --scenario-pack-version real-world-fresh-pack-0.1.0`: passed
-  - emitted schema-valid promoted suite and public manifest
-  - target split: `fresh`
-  - target scenario pack version: `real-world-fresh-pack-0.1.0`
+- `run-suite ...private_real_world_fresh_scenario_suite.json ... --seeds 1 --max-turns 3`: passed
+  - scenario count: `5`
+  - overall score mean: `0.7186`
+  - overall pass-rate mean: `1.0`
+- `check-suite-family ...private_real_world_test_scenario_suite.json ...private_real_world_fresh_scenario_suite.json`: passed
+  - suite count: `2`
+  - issues: `0`
+- `promote-suite ...private_real_world_test_scenario_suite.json --split fresh --scenario-pack-version real-world-fresh-pack-0.1.0`: correctly rejected by default
+  - result: `ok: false`
+  - reason: hidden split cloning now requires explicit draft-only override
 - `check-pack-changelog ...public_pack_changelog.json`: passed
   - changelog entry count: `3`
   - validation: `ok`
@@ -160,7 +170,7 @@ Observed on 2026-03-07:
 - `python -m thestartupbench version`: passed
   - reported version: `0.1.0`
 - `python -m unittest discover -s tests -p "test_*.py"`: passed
-  - `58` tests
+  - `61` tests
   - `13` files
 
 ## What Is Covered Well
