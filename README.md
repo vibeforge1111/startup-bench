@@ -1,43 +1,61 @@
 # TheStartupBench
 
-TheStartupBench is a benchmark design project for evaluating AI agents on startup and business decision-making under uncertainty.
+TheStartupBench is a benchmark project for evaluating how well agents and LLMs direct a startup under uncertainty.
 
-Current freeze state: `v0.9-precalibration`
+Current release state:
 
-Current status:
+- freeze label: `v0.9-precalibration`
+- package version: `0.9.0`
+- maturity: strong pre-human-calibration benchmark prototype
 
-- benchmark RFC drafted
-- implementation-oriented spec package drafted
-- machine-readable schemas added
-- example scenario added
-- reference CLI and validation runtime implemented
-- stateful business transition runtime implemented for core startup tools
-- programmatic scoring and runtime tests implemented
-- heuristic baseline runner implemented
-- multiple heuristic baseline families implemented
-- repeated-run campaign aggregation implemented
-- generic primitive/event operation engine implemented
-- multi-scenario suite packaging and reporting implemented
-- private/public suite packaging and submission assembly implemented
-- SOTA benchmark audit and task roadmap documented
-- distinct hidden fresh pack variants and hidden-suite integrity enforcement implemented
-- uncertainty-aware reporting implemented for batch, suite, and submission artifacts
-- official evaluation profile and run-manifest support implemented
-- expanded benchmark coverage across GTM, finance, and people tracks
-- added a second hidden pack family for operator-style GTM, finance, and people evaluation
-- added first-pass hiring funnel, customer segmentation, and market/competitor mechanics to the reference runtime
-- added a product track plus a hidden strategy pack family for long-horizon board, product, and scale evaluation
-- added a long-horizon baseline family for multi-quarter startup planning behavior
-- added hidden canary pack families for exploit and overfit detection across pricing and hiring traps
-- added operator/founder calibration artifacts, schemas, and review aggregation support
-- added calibration reports and study manifests for hidden-pack operator alignment work
-- added executable study runs, review packets, and study-level compilation for operator calibration waves
-- added reviewer assignment, exportable review forms, and review-form import workflows
-- added model-review prompt bundle export and raw model-review import workflows
+What this means:
+
+- ready for technical contributors and early volunteers
+- ready for research benchmarking
+- not yet a finished public leaderboard benchmark
+
+## Start Here
+
+- Quick start: [docs/getting_started.md](/C:/Users/USER/Desktop/startup-bench/docs/getting_started.md)
+- Evaluation flow: [docs/evaluation_modes.md](/C:/Users/USER/Desktop/startup-bench/docs/evaluation_modes.md)
+- Contribution guide: [CONTRIBUTING.md](/C:/Users/USER/Desktop/startup-bench/CONTRIBUTING.md)
+
+## Current Snapshot
+
+- executable reference runtime
+- hidden `test` and `fresh` packs
+- canary anti-gaming packs
+- official eval profile and run-manifest support
+- multiple heuristic baseline families
+- synthetic calibration completed on the clearest evaluator mismatches
+- human review workflow prepared for later operator calibration
+
+## Quick Commands
+
+Install:
+
+```bash
+python -m pip install -e .
+python -m thestartupbench version
+```
+
+Run one baseline:
+
+```bash
+python -m thestartupbench run-baseline examples/minimal_crisis_scenario.json heuristic_resilient_operator --seed 1 --max-turns 6 --output-dir tmp_out
+```
+
+Run the public dev suite:
+
+```bash
+python -m thestartupbench run-suite examples/dev_scenario_suite.json baseline --baseline-id heuristic_resilient_operator --seeds 1,2 --max-turns 4 --profile-path examples/official_eval_profile.json --output-dir tmp_out
+```
 
 Key documents:
 
 - `THE_STARTUP_BENCH_RFC.md`
+- `docs/getting_started.md`
+- `docs/evaluation_modes.md`
 - `docs/benchmark_status.md`
 - `docs/sota_benchmark_audit.md`
 - `docs/sota_reaudit.md`
@@ -58,6 +76,7 @@ Key documents:
 - `docs/reviewer_manual.md`
 - `docs/model_reviewer_panel.md`
 - `docs/model_review_prompt_guide.md`
+- `CONTRIBUTING.md`
 - `spec/README.md`
 - `spec/benchmark_contract.md`
 - `spec/scenario_spec.md`
@@ -142,7 +161,7 @@ Implementation package:
 - `src/thestartupbench/`
 - `tests/`
 
-Current CLI examples:
+More CLI examples:
 
 ```bash
 python -m thestartupbench version
