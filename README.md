@@ -47,6 +47,9 @@ Key documents:
 - `docs/human_review_wave_001.md`
 - `docs/reviewer_outreach_wave_001.md`
 - `docs/pre_human_calibration_execution_plan.md`
+- `docs/benchmark_known_issues.md`
+- `docs/evaluator_adjudication_log.md`
+- `docs/pre_freeze_checklist.md`
 - `docs/calibration_taskforce_strategy.md`
 - `docs/reviewer_manual.md`
 - `docs/model_reviewer_panel.md`

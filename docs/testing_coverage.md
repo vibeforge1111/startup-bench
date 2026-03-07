@@ -6,7 +6,7 @@ Last updated: 2026-03-07
 
 Current automated test surface:
 
-- `108` unit tests
+- `116` unit tests
 - `23` test files
 - all tests passing in the current tree
 
@@ -16,7 +16,7 @@ The test suite is strongest on schema validation, core runtime mutations, baseli
 
 ### Validation and artifacts
 
-- [test_validation.py](/C:/Users/USER/Desktop/startup-bench/tests/test_validation.py): `21` tests
+- [test_validation.py](/C:/Users/USER/Desktop/startup-bench/tests/test_validation.py): `23` tests
   - validates example scenarios
   - validates world state and suite artifacts
   - validates public manifests, pack changelog, submission examples, operator-review summaries, calibration reports, and calibration-study manifests
@@ -65,16 +65,22 @@ The test suite is strongest on schema validation, core runtime mutations, baseli
 
 ### Baselines and aggregation
 
-- [test_evaluators.py](/C:/Users/USER/Desktop/startup-bench/tests/test_evaluators.py): `2` tests
+- [test_evaluators.py](/C:/Users/USER/Desktop/startup-bench/tests/test_evaluators.py): `7` tests
   - GTM revenue and customer scores fall under stronger market and segment pressure
   - people-track strategic coherence improves after hiring and market-response actions
+  - canary GTM pricing-trap penalty
+  - canary people hiring-trap penalty
+  - Zoom crisis penalty
+  - Brex treasury-shock penalty
+  - board/governance penalty for repeated boilerplate and missing follow-through
 
-- [test_baseline_runner.py](/C:/Users/USER/Desktop/startup-bench/tests/test_baseline_runner.py): `5` tests
+- [test_baseline_runner.py](/C:/Users/USER/Desktop/startup-bench/tests/test_baseline_runner.py): `6` tests
   - baseline registry
   - baseline artifact emission and improvement over dry-run
   - resilient baseline outperforming generic baseline on crisis
   - market-aware baseline outperforming generic baseline on GTM
   - long-horizon baseline outperforming generic baseline on delayed-consequence product work
+  - long-horizon baseline emits state-aware board updates on board-track work
 
 - [test_campaign_runner.py](/C:/Users/USER/Desktop/startup-bench/tests/test_campaign_runner.py): `2` tests
   - seed parsing
