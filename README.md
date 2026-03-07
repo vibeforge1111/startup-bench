@@ -18,8 +18,12 @@ Key documents:
 - `spec/state_model.md`
 - `spec/scenario_primitives.md`
 - `spec/tool_contract.md`
+- `spec/tool_schema_catalog.md`
 - `spec/scoring_contract.md`
 - `spec/trace_spec.md`
+- `spec/runner_contract.md`
+- `spec/evaluator_contract.md`
+- `spec/validation_contract.md`
 - `spec/leaderboard_protocol.md`
 
 Artifacts:
@@ -27,8 +31,15 @@ Artifacts:
 - `schemas/tsb_scenario.schema.json`
 - `schemas/tsb_world_state.schema.json`
 - `schemas/tsb_primitives.schema.json`
+- `schemas/tsb_tool_manifest.schema.json`
+- `schemas/tsb_tool_call.schema.json`
+- `schemas/tsb_tool_response.schema.json`
+- `schemas/tsb_evaluator_result.schema.json`
+- `schemas/tsb_score_report.schema.json`
 - `schemas/tsb_trace.schema.json`
 - `schemas/tsb_submission.schema.json`
 - `examples/minimal_b2b_saas_scenario.json`
 - `examples/minimal_world_state.json`
 - `examples/minimal_primitives.json`
+- `examples/minimal_tool_manifest.json`
+- `examples/minimal_score_report.json`

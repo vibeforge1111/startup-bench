@@ -15,8 +15,12 @@ It is organized into:
 - `state_model.md`: canonical business world state partitions and visibility model
 - `scenario_primitives.md`: reusable primitive library and composition rules
 - `tool_contract.md`: tool surface, request/response semantics, and permissions
+- `tool_schema_catalog.md`: canonical tool envelopes and domain-specific payload conventions
 - `scoring_contract.md`: scoring, constraints, reporting, and evaluator behavior
 - `trace_spec.md`: run trace format and logging requirements
+- `runner_contract.md`: canonical execution lifecycle and runtime components
+- `evaluator_contract.md`: evaluator types, interfaces, and aggregation rules
+- `validation_contract.md`: validation pipeline and leaderboard eligibility checks
 - `leaderboard_protocol.md`: submission, verification, contamination, and leaderboard policy
 
 Machine-readable schemas:
@@ -24,6 +28,11 @@ Machine-readable schemas:
 - `../schemas/tsb_scenario.schema.json`
 - `../schemas/tsb_world_state.schema.json`
 - `../schemas/tsb_primitives.schema.json`
+- `../schemas/tsb_tool_manifest.schema.json`
+- `../schemas/tsb_tool_call.schema.json`
+- `../schemas/tsb_tool_response.schema.json`
+- `../schemas/tsb_evaluator_result.schema.json`
+- `../schemas/tsb_score_report.schema.json`
 - `../schemas/tsb_trace.schema.json`
 - `../schemas/tsb_submission.schema.json`
 
@@ -32,6 +41,8 @@ Example:
 - `../examples/minimal_b2b_saas_scenario.json`
 - `../examples/minimal_world_state.json`
 - `../examples/minimal_primitives.json`
+- `../examples/minimal_tool_manifest.json`
+- `../examples/minimal_score_report.json`
 
 ## Package goals
 
