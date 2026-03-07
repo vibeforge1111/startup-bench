@@ -1,0 +1,136 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://thestartupbench.org/schemas/tsb_scenario.schema.json",
+  "title": "TheStartupBench Scenario",
+  "type": "object",
+  "required": [
+    "metadata",
+    "initial_state",
+    "latent_state",
+    "observation_surfaces",
+    "tools",
+    "event_model",
+    "policy_constraints",
+    "terminal_conditions",
+    "evaluation"
+  ],
+  "properties": {
+    "metadata": {
+      "type": "object",
+      "required": [
+        "scenario_id",
+        "scenario_version",
+        "benchmark_version",
+        "track",
+        "mode",
+        "title",
+        "summary",
+        "difficulty",
+        "time_horizon",
+        "authoring_origin",
+        "tags"
+      ],
+      "properties": {
+        "scenario_id": { "type": "string", "pattern": "^[a-z0-9_\\-]+$" },
+        "scenario_version": { "type": "string" },
+        "benchmark_version": { "type": "string" },
+        "track": {
+          "type": "string",
+          "enum": ["0to1", "b2b_saas", "consumer", "deeptech", "marketplace", "crisis", "scale", "board"]
+        },
+        "mode": { "type": "string", "enum": ["dev", "test", "fresh"] },
+        "title": { "type": "string" },
+        "summary": { "type": "string" },
+        "difficulty": { "type": "string", "enum": ["easy", "medium", "hard", "frontier"] },
+        "time_horizon": {
+          "type": "object",
+          "required": ["unit", "length"],
+          "properties": {
+            "unit": { "type": "string", "enum": ["day", "week", "month", "quarter"] },
+            "length": { "type": "integer", "minimum": 1 }
+          },
+          "additionalProperties": false
+        },
+        "authoring_origin": { "type": "string" },
+        "tags": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      },
+      "additionalProperties": true
+    },
+    "initial_state": { "type": "object" },
+    "latent_state": { "type": "object" },
+    "observation_surfaces": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["surface_id", "surface_type", "refresh_policy", "visible_fields"],
+        "properties": {
+          "surface_id": { "type": "string" },
+          "surface_type": { "type": "string" },
+          "refresh_policy": { "type": "string" },
+          "visible_fields": {
+            "type": "array",
+            "items": { "type": "string" }
+          }
+        },
+        "additionalProperties": true
+      }
+    },
+    "tools": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "event_model": { "type": "object" },
+    "policy_constraints": {
+      "type": "array",
+      "items": { "type": "object" }
+    },
+    "terminal_conditions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["condition_id", "kind"],
+        "properties": {
+          "condition_id": { "type": "string" },
+          "kind": { "type": "string", "enum": ["horizon_end", "hard_failure", "soft_failure", "success"] }
+        },
+        "additionalProperties": true
+      }
+    },
+    "evaluation": {
+      "type": "object",
+      "required": ["outcome_components", "constraints"],
+      "properties": {
+        "outcome_components": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["component_id", "weight", "direction"],
+            "properties": {
+              "component_id": { "type": "string" },
+              "weight": { "type": "number", "minimum": 0 },
+              "direction": { "type": "string", "enum": ["maximize", "minimize", "target"] }
+            },
+            "additionalProperties": true
+          }
+        },
+        "constraints": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["constraint_id"],
+            "properties": {
+              "constraint_id": { "type": "string" }
+            },
+            "additionalProperties": true
+          }
+        }
+      },
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": false
+}
+

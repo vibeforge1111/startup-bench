@@ -1,0 +1,112 @@
+{
+  "metadata": {
+    "scenario_id": "b2b_saas_runway_pricing_001",
+    "scenario_version": "0.1.0",
+    "benchmark_version": "0.2.0-draft",
+    "track": "b2b_saas",
+    "mode": "dev",
+    "title": "Pricing and Runway Reset",
+    "summary": "A seed-stage B2B SaaS company has 18 weeks of runway, weakening conversion, and enterprise prospects asking for annual contracts.",
+    "difficulty": "medium",
+    "time_horizon": {
+      "unit": "week",
+      "length": 24
+    },
+    "authoring_origin": "expert_authored",
+    "tags": ["pricing", "runway", "enterprise_sales", "retention"]
+  },
+  "initial_state": {
+    "company": {
+      "stage": "seed",
+      "cash_usd": 920000,
+      "monthly_burn_usd": 205000
+    },
+    "product": {
+      "major_incidents_open": 1,
+      "roadmap_items": 5
+    },
+    "customers": {
+      "paying_accounts": 41,
+      "monthly_churn_rate": 0.032
+    }
+  },
+  "latent_state": {
+    "true_enterprise_procurement_delay_weeks": 7,
+    "true_churn_driver": "poor_onboarding"
+  },
+  "observation_surfaces": [
+    {
+      "surface_id": "finance_dashboard",
+      "surface_type": "dashboard",
+      "refresh_policy": "daily",
+      "visible_fields": ["cash_usd", "monthly_burn_usd", "runway_weeks"]
+    },
+    {
+      "surface_id": "crm_pipeline",
+      "surface_type": "crm",
+      "refresh_policy": "realtime",
+      "visible_fields": ["deal_stage", "expected_contract_value", "owner"]
+    }
+  ],
+  "tools": [
+    "metrics.query",
+    "sales.pipeline.read",
+    "sales.pricing.propose",
+    "finance.plan.read",
+    "finance.plan.write",
+    "board.update",
+    "sim.advance"
+  ],
+  "event_model": {
+    "kind": "seeded_schedule"
+  },
+  "policy_constraints": [
+    {
+      "constraint_id": "no_unapproved_hiring",
+      "kind": "approval_required"
+    }
+  ],
+  "terminal_conditions": [
+    {
+      "condition_id": "horizon_end_24_weeks",
+      "kind": "horizon_end"
+    },
+    {
+      "condition_id": "bankruptcy",
+      "kind": "hard_failure"
+    }
+  ],
+  "evaluation": {
+    "outcome_components": [
+      {
+        "component_id": "cash_efficiency",
+        "weight": 0.25,
+        "direction": "maximize"
+      },
+      {
+        "component_id": "revenue_quality",
+        "weight": 0.25,
+        "direction": "maximize"
+      },
+      {
+        "component_id": "customer_health",
+        "weight": 0.25,
+        "direction": "maximize"
+      },
+      {
+        "component_id": "strategic_coherence",
+        "weight": 0.25,
+        "direction": "maximize"
+      }
+    ],
+    "constraints": [
+      {
+        "constraint_id": "bankruptcy"
+      },
+      {
+        "constraint_id": "severe_trust_breach"
+      }
+    ]
+  }
+}
+

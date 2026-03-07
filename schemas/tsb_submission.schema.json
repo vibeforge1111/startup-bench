@@ -1,0 +1,75 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://thestartupbench.org/schemas/tsb_submission.schema.json",
+  "title": "TheStartupBench Leaderboard Submission",
+  "type": "object",
+  "required": [
+    "submission_version",
+    "benchmark_version",
+    "scenario_pack_version",
+    "scaffold_version",
+    "model",
+    "evaluation",
+    "contamination"
+  ],
+  "properties": {
+    "submission_version": { "type": "string" },
+    "benchmark_version": { "type": "string" },
+    "scenario_pack_version": { "type": "string" },
+    "scaffold_version": { "type": "string" },
+    "model": {
+      "type": "object",
+      "required": ["model_id", "provider"],
+      "properties": {
+        "model_id": { "type": "string" },
+        "provider": { "type": "string" },
+        "release_date": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "evaluation": {
+      "type": "object",
+      "required": ["repeat_count", "track_summaries"],
+      "properties": {
+        "repeat_count": { "type": "integer", "minimum": 1 },
+        "track_summaries": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["track", "mean_score", "median_score", "pass_at_1"],
+            "properties": {
+              "track": { "type": "string" },
+              "mean_score": { "type": "number" },
+              "median_score": { "type": "number" },
+              "pass_at_1": { "type": "number", "minimum": 0, "maximum": 1 },
+              "pass_at_k": { "type": "number", "minimum": 0, "maximum": 1 },
+              "sem": { "type": "number", "minimum": 0 },
+              "api_cost_usd": { "type": "number", "minimum": 0 }
+            },
+            "additionalProperties": false
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "contamination": {
+      "type": "object",
+      "required": ["flag"],
+      "properties": {
+        "flag": { "type": "string", "enum": ["clean", "possible_contamination", "known_contamination"] },
+        "notes": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "artifacts": {
+      "type": "object",
+      "properties": {
+        "trace_manifest_url": { "type": "string" },
+        "source_url": { "type": "string" }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}
+

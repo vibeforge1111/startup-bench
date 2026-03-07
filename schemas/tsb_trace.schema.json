@@ -1,0 +1,105 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://thestartupbench.org/schemas/tsb_trace.schema.json",
+  "title": "TheStartupBench Trace",
+  "type": "object",
+  "required": [
+    "trace_version",
+    "benchmark",
+    "scenario",
+    "agent",
+    "runtime",
+    "turns",
+    "state_snapshots",
+    "evaluation"
+  ],
+  "properties": {
+    "trace_version": { "type": "string" },
+    "benchmark": {
+      "type": "object",
+      "required": ["benchmark_name", "benchmark_version", "scaffold_version"],
+      "properties": {
+        "benchmark_name": { "type": "string" },
+        "benchmark_version": { "type": "string" },
+        "scaffold_version": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "scenario": {
+      "type": "object",
+      "required": ["scenario_id", "scenario_version", "track", "mode", "seed"],
+      "properties": {
+        "scenario_id": { "type": "string" },
+        "scenario_version": { "type": "string" },
+        "track": { "type": "string" },
+        "mode": { "type": "string" },
+        "seed": { "type": "integer" }
+      },
+      "additionalProperties": false
+    },
+    "agent": {
+      "type": "object",
+      "required": ["model_id", "provider", "agent_config_hash", "system_prompt_hash"],
+      "properties": {
+        "model_id": { "type": "string" },
+        "provider": { "type": "string" },
+        "agent_config_hash": { "type": "string" },
+        "system_prompt_hash": { "type": "string" },
+        "agent_name": { "type": "string" },
+        "agent_version": { "type": "string" },
+        "source_url": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "runtime": {
+      "type": "object",
+      "required": ["started_at", "ended_at", "wall_clock_seconds", "api_cost_usd", "total_tool_calls"],
+      "properties": {
+        "started_at": { "type": "string" },
+        "ended_at": { "type": "string" },
+        "wall_clock_seconds": { "type": "number", "minimum": 0 },
+        "api_cost_usd": { "type": "number", "minimum": 0 },
+        "total_tool_calls": { "type": "integer", "minimum": 0 }
+      },
+      "additionalProperties": false
+    },
+    "turns": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["turn_index", "sim_time_before", "sim_time_after", "observations", "actions", "events"],
+        "properties": {
+          "turn_index": { "type": "integer", "minimum": 0 },
+          "sim_time_before": { "type": "string" },
+          "sim_time_after": { "type": "string" },
+          "observations": { "type": "array", "items": { "type": "object" } },
+          "actions": { "type": "array", "items": { "type": "object" } },
+          "events": { "type": "array", "items": { "type": "object" } },
+          "notes": { "type": "array", "items": { "type": "string" } }
+        },
+        "additionalProperties": false
+      }
+    },
+    "state_snapshots": {
+      "type": "array",
+      "items": { "type": "object" }
+    },
+    "evaluation": {
+      "type": "object",
+      "required": ["scenario_score", "outcome_score", "constraint_score", "subscores", "violations", "pass"],
+      "properties": {
+        "scenario_score": { "type": "number" },
+        "outcome_score": { "type": "number" },
+        "constraint_score": { "type": "number" },
+        "subscores": { "type": "object" },
+        "violations": { "type": "array", "items": { "type": "object" } },
+        "pass": { "type": "boolean" },
+        "judge_versions": { "type": "array", "items": { "type": "string" } },
+        "judge_inputs_hashes": { "type": "array", "items": { "type": "string" } }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}
+
