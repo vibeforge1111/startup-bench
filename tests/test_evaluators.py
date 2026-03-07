@@ -19,6 +19,7 @@ PEOPLE_SCENARIO_PATH = REPO_ROOT / "examples" / "minimal_people_scenario.json"
 CANARY_GTM_SCENARIO_PATH = REPO_ROOT / "examples" / "hidden_canary_pricing_trap_test_scenario.json"
 CANARY_PEOPLE_SCENARIO_PATH = REPO_ROOT / "examples" / "hidden_canary_hiring_trap_test_scenario.json"
 ZOOM_CRISIS_SCENARIO_PATH = REPO_ROOT / "examples" / "real_world_zoom_security_freeze_test_scenario.json"
+BREX_CRISIS_SCENARIO_PATH = REPO_ROOT / "examples" / "real_world_brex_svb_treasury_shock_test_scenario.json"
 
 
 class EvaluatorTests(unittest.TestCase):
@@ -138,6 +139,25 @@ class EvaluatorTests(unittest.TestCase):
         self.assertEqual(strategic_details["product_response_count"], 0)
         self.assertEqual(strategic_details["board_update_after_crisis_count"], 0)
         self.assertEqual(strategic_details["legal_follow_up_count"], 0)
+
+    def test_brex_treasury_shock_penalizes_rebalance_only_liquidity_response(self) -> None:
+        result = run_baseline(
+            scenario_path=BREX_CRISIS_SCENARIO_PATH,
+            baseline_id="heuristic_resilient_operator",
+            seed=1,
+            max_turns=3,
+        )
+
+        score_report = result["score_report"]
+        outcome_evaluator = score_report["evaluator_results"][0]
+        strategic_details = outcome_evaluator["outputs"]["component_details"]["strategic_coherence"]
+
+        self.assertLess(score_report["scenario_score"], 0.625)
+        self.assertGreater(strategic_details["behavioral_penalty"], 0.0)
+        self.assertTrue(strategic_details["liquidity_crisis_detected"])
+        self.assertEqual(strategic_details["finance_follow_up_count"], 0)
+        self.assertGreaterEqual(strategic_details["final_financing_pressure"], 0.85)
+        self.assertLessEqual(strategic_details["liquid_cash_months"], 4.0)
 
 
 if __name__ == "__main__":

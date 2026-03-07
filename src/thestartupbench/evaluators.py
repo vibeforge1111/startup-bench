@@ -394,13 +394,27 @@ def _behavioral_penalty(
         }
 
     if track == "crisis":
-        crisis_event_types = {"trust_shock", "security_backlash", "privacy_backlash"}
+        security_event_types = {"trust_shock", "security_backlash", "privacy_backlash"}
+        liquidity_event_types = {"bank_freeze", "treasury_freeze", "counterparty_freeze"}
         crisis_turn_indices = [
             index
             for index, turn in enumerate(turns)
-            if any(event.get("event_type") in crisis_event_types for event in turn.get("events", []))
+            if any(
+                event.get("event_type") in security_event_types.union(liquidity_event_types)
+                for event in turn.get("events", [])
+            )
         ]
         first_crisis_turn = crisis_turn_indices[0] if crisis_turn_indices else None
+        security_crisis_detected = any(
+            event.get("event_type") in security_event_types
+            for turn in turns
+            for event in turn.get("events", [])
+        )
+        liquidity_crisis_detected = any(
+            event.get("event_type") in liquidity_event_types
+            for turn in turns
+            for event in turn.get("events", [])
+        )
 
         product_response_count = sum(
             1
@@ -410,44 +424,67 @@ def _behavioral_penalty(
         )
         board_update_after_crisis_count = 0
         legal_follow_up_count = 0
+        finance_follow_up_count = 0
         pipeline_actions_during_trust_crisis = 0
+        pipeline_actions_during_liquidity_crisis = 0
         market_read_count = 0
         if first_crisis_turn is not None:
             for turn in turns[first_crisis_turn + 1 :]:
                 report = _extract_metrics_report(turn)
                 current_trust = float(report.get("customers", {}).get("trust_score", 0.0) or 0.0)
+                current_financing_pressure = float(report.get("risk", {}).get("financing_pressure", 0.0) or 0.0)
                 for action in turn.get("actions", []):
                     tool_name = str(action.get("tool_name", ""))
                     if tool_name == "board.update":
                         board_update_after_crisis_count += 1
                     elif tool_name == "legal.compliance.respond":
                         legal_follow_up_count += 1
+                    elif tool_name in {"finance.plan.write", "finance.raise.propose", "finance.treasury.rebalance"}:
+                        finance_follow_up_count += 1
                     elif tool_name == "research.market.read":
                         market_read_count += 1
                     elif tool_name == "sales.pipeline.update" and current_trust <= 0.62:
                         pipeline_actions_during_trust_crisis += 1
+                    elif tool_name == "sales.pipeline.update" and current_financing_pressure >= 0.8:
+                        pipeline_actions_during_liquidity_crisis += 1
 
         first_report = _extract_metrics_report(turns[0])
         initial_trust = float(first_report.get("customers", {}).get("trust_score", 0.0) or 0.0)
         final_trust = float(world_state.get("customers", {}).get("trust_score", 0.0))
         trust_recovery = max(0.0, final_trust - initial_trust)
         final_regulatory_pressure = float(world_state.get("risk", {}).get("regulatory_pressure", 0.0))
+        final_financing_pressure = float(world_state.get("risk", {}).get("financing_pressure", 0.0))
+        final_counterparty_risk = float(world_state.get("risk", {}).get("counterparty_risk", 0.0))
+        finance_state = world_state.get("finance", {})
+        monthly_burn_usd = float(finance_state.get("monthly_burn_usd", 0.0))
+        liquid_cash_usd = float(finance_state.get("liquid_cash_usd", finance_state.get("cash_usd", 0.0)))
+        liquid_cash_months = liquid_cash_usd / monthly_burn_usd if monthly_burn_usd > 0 else 0.0
 
         penalty = 0.0
-        if first_crisis_turn is not None and product_response_count == 0:
+        if security_crisis_detected and product_response_count == 0:
             penalty += 0.18
         if first_crisis_turn is not None and board_update_after_crisis_count == 0:
             penalty += 0.12
-        if first_crisis_turn is not None and final_regulatory_pressure >= 0.5 and legal_follow_up_count == 0:
+        if security_crisis_detected and final_regulatory_pressure >= 0.5 and legal_follow_up_count == 0:
             penalty += 0.08
-        if first_crisis_turn is not None and pipeline_actions_during_trust_crisis >= 1 and product_response_count == 0:
+        if security_crisis_detected and pipeline_actions_during_trust_crisis >= 1 and product_response_count == 0:
             penalty += 0.08
-        if first_crisis_turn is not None and market_read_count == 0:
+        if security_crisis_detected and market_read_count == 0:
             penalty += 0.04
         if rigid_loop_penalty_applied and first_crisis_turn is not None:
             penalty += 0.04
-        if first_crisis_turn is not None and trust_recovery < 0.12 and product_response_count == 0:
+        if security_crisis_detected and trust_recovery < 0.12 and product_response_count == 0:
             penalty += 0.04
+        if liquidity_crisis_detected and finance_follow_up_count == 0:
+            penalty += 0.12
+        if liquidity_crisis_detected and final_financing_pressure >= 0.85 and finance_follow_up_count == 0:
+            penalty += 0.08
+        if liquidity_crisis_detected and final_counterparty_risk >= 0.9 and finance_follow_up_count == 0:
+            penalty += 0.05
+        if liquidity_crisis_detected and liquid_cash_months <= 4.0 and finance_follow_up_count == 0:
+            penalty += 0.04
+        if liquidity_crisis_detected and pipeline_actions_during_liquidity_crisis >= 1 and finance_follow_up_count == 0:
+            penalty += 0.03
 
         penalty = _round_score(penalty)
         return penalty, {
@@ -467,8 +504,15 @@ def _behavioral_penalty(
             "product_response_count": product_response_count,
             "board_update_after_crisis_count": board_update_after_crisis_count,
             "legal_follow_up_count": legal_follow_up_count,
+            "finance_follow_up_count": finance_follow_up_count,
             "pipeline_actions_during_trust_crisis": pipeline_actions_during_trust_crisis,
+            "pipeline_actions_during_liquidity_crisis": pipeline_actions_during_liquidity_crisis,
             "market_read_count": market_read_count,
+            "security_crisis_detected": security_crisis_detected,
+            "liquidity_crisis_detected": liquidity_crisis_detected,
+            "final_financing_pressure": round(final_financing_pressure, 4),
+            "final_counterparty_risk": round(final_counterparty_risk, 4),
+            "liquid_cash_months": round(liquid_cash_months, 4),
             "rigid_loop_penalty_applied": rigid_loop_penalty_applied,
         }
 
@@ -489,8 +533,15 @@ def _behavioral_penalty(
         "product_response_count": 0,
         "board_update_after_crisis_count": 0,
         "legal_follow_up_count": 0,
+        "finance_follow_up_count": 0,
         "pipeline_actions_during_trust_crisis": 0,
+        "pipeline_actions_during_liquidity_crisis": 0,
         "market_read_count": 0,
+        "security_crisis_detected": False,
+        "liquidity_crisis_detected": False,
+        "final_financing_pressure": 0.0,
+        "final_counterparty_risk": 0.0,
+        "liquid_cash_months": 0.0,
         "rigid_loop_penalty_applied": rigid_loop_penalty_applied,
     }
 
