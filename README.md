@@ -26,6 +26,7 @@ Current status:
 - added first-pass hiring funnel, customer segmentation, and market/competitor mechanics to the reference runtime
 - added a product track plus a hidden strategy pack family for long-horizon board, product, and scale evaluation
 - added a long-horizon baseline family for multi-quarter startup planning behavior
+- added hidden canary pack families for exploit and overfit detection across pricing and hiring traps
 
 Key documents:
 
@@ -83,6 +84,8 @@ Artifacts:
 - `examples/private_operator_fresh_scenario_suite.json`
 - `examples/private_strategy_test_scenario_suite.json`
 - `examples/private_strategy_fresh_scenario_suite.json`
+- `examples/private_canary_test_scenario_suite.json`
+- `examples/private_canary_fresh_scenario_suite.json`
 - `examples/official_eval_profile.json`
 - `examples/minimal_run_manifest.json`
 - `examples/minimal_public_suite_manifest.json`
@@ -116,6 +119,7 @@ python -m thestartupbench emit-run-manifest examples/dev_scenario_suite.json bas
 python -m thestartupbench run-suite examples/dev_scenario_suite.json baseline --baseline-id heuristic_resilient_operator --seeds 1,2 --max-turns 4 --profile-path examples/official_eval_profile.json --output-dir tmp_out
 python -m thestartupbench redact-suite examples/private_test_scenario_suite.json --output-dir tmp_out
 python -m thestartupbench check-suite-family examples/private_real_world_test_scenario_suite.json examples/private_real_world_fresh_scenario_suite.json
+python -m thestartupbench check-suite-family examples/private_canary_test_scenario_suite.json examples/private_canary_fresh_scenario_suite.json
 python -m thestartupbench build-submission --suite-report-paths tmp_out/suite_report.json --model-id heuristic_resilient_operator --provider baseline --contamination-flag clean --output-dir tmp_out
 python -m unittest discover -s tests -p "test_*.py"
 ```

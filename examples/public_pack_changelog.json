@@ -83,6 +83,29 @@
       "predecessor_pack_version": "strategy-test-pack-0.1.0",
       "manifest_path": "examples/strategy_public_fresh_manifest.json",
       "notes": "Supplemental hidden strategy fresh pack for contamination-resistant long-horizon startup evaluation."
+    },
+    {
+      "effective_date": "2026-03-07",
+      "pack_version": "canary-test-pack-0.1.0",
+      "split": "test",
+      "visibility": "hidden",
+      "action": "created",
+      "lifecycle_state": "active",
+      "contamination_status": "clean",
+      "manifest_path": "examples/canary_public_test_manifest.json",
+      "notes": "Hidden canary test pack for exploit and overfitting detection across pricing and hiring traps."
+    },
+    {
+      "effective_date": "2026-03-07",
+      "pack_version": "canary-fresh-pack-0.1.0",
+      "split": "fresh",
+      "visibility": "hidden",
+      "action": "created",
+      "lifecycle_state": "active",
+      "contamination_status": "clean",
+      "predecessor_pack_version": "canary-test-pack-0.1.0",
+      "manifest_path": "examples/canary_public_fresh_manifest.json",
+      "notes": "Fresh hidden canary pack for short-window exploit detection and overfit screening."
     }
   ]
 }

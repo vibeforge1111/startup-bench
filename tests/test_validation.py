@@ -165,6 +165,22 @@ class ValidationTests(unittest.TestCase):
         self.assertTrue(result.ok)
         self.assertEqual(result.issues, [])
 
+    def test_canary_public_test_manifest_example_validates(self) -> None:
+        result = validate_artifact_file(
+            artifact_type="public-suite-manifest",
+            path=REPO_ROOT / "examples" / "canary_public_test_manifest.json",
+        )
+        self.assertTrue(result.ok)
+        self.assertEqual(result.issues, [])
+
+    def test_canary_public_fresh_manifest_example_validates(self) -> None:
+        result = validate_artifact_file(
+            artifact_type="public-suite-manifest",
+            path=REPO_ROOT / "examples" / "canary_public_fresh_manifest.json",
+        )
+        self.assertTrue(result.ok)
+        self.assertEqual(result.issues, [])
+
     def test_public_pack_changelog_example_validates(self) -> None:
         result = validate_artifact_file(
             artifact_type="pack-changelog",

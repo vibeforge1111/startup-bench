@@ -1,0 +1,20 @@
+{
+  "suite_version": "0.1.0",
+  "benchmark_version": "0.2.0-draft",
+  "scenario_pack_version": "canary-fresh-pack-0.1.0",
+  "split": "fresh",
+  "scenarios": [
+    {
+      "scenario_id": "hidden_canary_pricing_trap_fresh_001",
+      "path": "hidden_canary_pricing_trap_fresh_scenario.json",
+      "track": "gtm",
+      "mode": "fresh"
+    },
+    {
+      "scenario_id": "hidden_canary_hiring_trap_fresh_001",
+      "path": "hidden_canary_hiring_trap_fresh_scenario.json",
+      "track": "people",
+      "mode": "fresh"
+    }
+  ]
+}

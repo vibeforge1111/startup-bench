@@ -18,6 +18,7 @@ TheStartupBench is no longer just an RFC. It now has:
 - hidden suite family integrity enforcement and uncertainty-aware reporting
 - official evaluation profile and run-manifest support
 - a third hidden pack family for long-horizon startup judgment
+- a fourth hidden pack family for canary exploit and overfit detection
 - CI for tests, validation, and smoke suites
 - unit tests and executable smoke paths
 
@@ -188,6 +189,14 @@ Completed hidden strategy packs:
   - delayed-consequence product quality debt
   - multi-quarter scale planning under capacity lag
 
+Completed hidden canary packs:
+
+- `2` hidden `test` scenarios in [private_canary_test_scenario_suite.json](/C:/Users/USER/Desktop/startup-bench/examples/private_canary_test_scenario_suite.json)
+- `2` hidden `fresh` scenarios in [private_canary_fresh_scenario_suite.json](/C:/Users/USER/Desktop/startup-bench/examples/private_canary_fresh_scenario_suite.json)
+- current canary hidden coverage:
+  - pricing hikes under trust fragility
+  - hiring expansion under soft demand and thin liquidity
+
 ## What Is Partially Done
 
 ### 1. World realism
@@ -232,6 +241,7 @@ Partially done:
 - hidden `test` and `fresh` suites are now distinct in ids and files
 - a second hidden pack family now exists outside the crisis-heavy real-world family
 - a third hidden pack family now exists for long-horizon startup judgment
+- a fourth hidden pack family now exists for exploit and overfit detection
 - public redacted suite manifest exists
 - public lifecycle changelog exists
 - suite and submission artifacts exist
@@ -243,7 +253,7 @@ What remains inside this category:
 - true held-out scenario inventory at meaningful scale
 - benchmark refresh cadence
 - contamination adjudication workflow
-- canary scenarios and exploit review pipeline
+- exploit review pipeline tied to canary outcomes
 - leaderboard operations and review procedures
 - automated pack rotation pipeline
 

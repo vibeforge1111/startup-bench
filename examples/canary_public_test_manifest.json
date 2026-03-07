@@ -1,0 +1,21 @@
+{
+  "manifest_version": "0.1.0",
+  "benchmark_version": "0.2.0-draft",
+  "scenario_pack_version": "canary-test-pack-0.1.0",
+  "split": "test",
+  "scenario_count": 2,
+  "scenarios": [
+    {
+      "scenario_id": "hidden_canary_pricing_trap_test_001",
+      "track": "gtm",
+      "mode": "test",
+      "hidden_ref": "test_000"
+    },
+    {
+      "scenario_id": "hidden_canary_hiring_trap_test_001",
+      "track": "people",
+      "mode": "test",
+      "hidden_ref": "test_001"
+    }
+  ]
+}

@@ -6,8 +6,8 @@ Last updated: 2026-03-07
 
 Current automated test surface:
 
-- `88` unit tests
-- `17` test files
+- `94` unit tests
+- `18` test files
 - all tests passing in the current tree
 
 The test suite is strongest on schema validation, core runtime mutations, baseline execution, and suite/submission packaging. It is weakest on evaluator nuance, adversarial scenario behavior, and broader scenario-corpus regression coverage.
@@ -126,6 +126,12 @@ The test suite is strongest on schema validation, core runtime mutations, baseli
   - validates and runs hidden strategy `fresh` suite
   - checks hidden strategy `test` and `fresh` suite-family integrity
 
+- [test_canary_hidden_suite.py](/C:/Users/USER/Desktop/startup-bench/tests/test_canary_hidden_suite.py): `4` tests
+  - validates hidden canary `test` suite
+  - runs hidden canary `test` suite with the market-aware baseline
+  - validates and runs hidden canary `fresh` suite
+  - checks hidden canary `test` and `fresh` suite-family integrity
+
 ## Smoke Test Commands
 
 Current note:
@@ -152,6 +158,9 @@ PYTHONPATH=src python -m thestartupbench check-suite-family examples/private_rea
 PYTHONPATH=src python -m thestartupbench check-suite-family examples/private_operator_test_scenario_suite.json examples/private_operator_fresh_scenario_suite.json
 PYTHONPATH=src python -m thestartupbench run-suite examples/private_operator_test_scenario_suite.json baseline --baseline-id heuristic_resilient_operator --seeds 1 --max-turns 3 --output-dir tmp_smoke
 PYTHONPATH=src python -m thestartupbench run-suite examples/private_operator_fresh_scenario_suite.json baseline --baseline-id heuristic_resilient_operator --seeds 1 --max-turns 3 --output-dir tmp_smoke
+PYTHONPATH=src python -m thestartupbench check-suite-family examples/private_canary_test_scenario_suite.json examples/private_canary_fresh_scenario_suite.json
+PYTHONPATH=src python -m thestartupbench run-suite examples/private_canary_test_scenario_suite.json baseline --baseline-id heuristic_market_aware_operator --seeds 1 --max-turns 4 --output-dir tmp_smoke
+PYTHONPATH=src python -m thestartupbench run-suite examples/private_canary_fresh_scenario_suite.json baseline --baseline-id heuristic_market_aware_operator --seeds 1 --max-turns 4 --output-dir tmp_smoke
 PYTHONPATH=src python -m thestartupbench check-suite-family examples/private_strategy_test_scenario_suite.json examples/private_strategy_fresh_scenario_suite.json
 PYTHONPATH=src python -m thestartupbench run-suite examples/private_strategy_test_scenario_suite.json baseline --baseline-id heuristic_long_horizon_operator --seeds 1 --max-turns 6 --output-dir tmp_smoke
 PYTHONPATH=src python -m thestartupbench run-suite examples/private_strategy_fresh_scenario_suite.json baseline --baseline-id heuristic_long_horizon_operator --seeds 1 --max-turns 6 --output-dir tmp_smoke
@@ -215,6 +224,17 @@ Observed on 2026-03-07:
   - scenario count: `3`
   - overall score mean: `0.7099`
   - overall pass-rate mean: `1.0`
+- `check-suite-family ...private_canary_test_scenario_suite.json ...private_canary_fresh_scenario_suite.json`: passed
+  - suite count: `2`
+  - issues: `0`
+- `run-suite ...private_canary_test_scenario_suite.json ...heuristic_market_aware_operator --seeds 1 --max-turns 4`: passed
+  - scenario count: `2`
+  - overall score mean: `0.6469`
+  - overall pass-rate mean: `1.0`
+- `run-suite ...private_canary_fresh_scenario_suite.json ...heuristic_market_aware_operator --seeds 1 --max-turns 4`: passed
+  - scenario count: `2`
+  - overall score mean: `0.6084`
+  - overall pass-rate mean: `1.0`
 - `check-suite-family ...private_strategy_test_scenario_suite.json ...private_strategy_fresh_scenario_suite.json`: passed
   - suite count: `2`
   - issues: `0`
@@ -241,8 +261,8 @@ Observed on 2026-03-07:
 - `python -m thestartupbench version`: passed
   - reported version: `0.1.0`
 - `python -m unittest discover -s tests -p "test_*.py"`: passed
-  - `88` tests
-  - `17` files
+  - `94` tests
+  - `18` files
 
 ## What Is Covered Well
 
