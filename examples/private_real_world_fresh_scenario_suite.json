@@ -1,7 +1,7 @@
 {
   "suite_version": "0.1.0",
   "benchmark_version": "0.2.0-draft",
-  "scenario_pack_version": "real-world-fresh-pack-0.2.0",
+  "scenario_pack_version": "real-world-fresh-pack-0.3.0",
   "split": "fresh",
   "scenarios": [
     {
@@ -25,6 +25,12 @@
     {
       "scenario_id": "real_world_dropbox_phishing_fresh_001",
       "path": "real_world_dropbox_phishing_fresh_scenario.json",
+      "track": "crisis",
+      "mode": "fresh"
+    },
+    {
+      "scenario_id": "real_world_github_failover_fresh_001",
+      "path": "real_world_github_failover_fresh_scenario.json",
       "track": "crisis",
       "mode": "fresh"
     },
