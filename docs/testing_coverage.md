@@ -6,8 +6,8 @@ Last updated: 2026-03-07
 
 Current automated test surface:
 
-- `94` unit tests
-- `18` test files
+- `98` unit tests
+- `19` test files
 - all tests passing in the current tree
 
 The test suite is strongest on schema validation, core runtime mutations, baseline execution, and suite/submission packaging. It is weakest on evaluator nuance, adversarial scenario behavior, and broader scenario-corpus regression coverage.
@@ -16,10 +16,10 @@ The test suite is strongest on schema validation, core runtime mutations, baseli
 
 ### Validation and artifacts
 
-- [test_validation.py](/C:/Users/USER/Desktop/startup-bench/tests/test_validation.py): `18` tests
+- [test_validation.py](/C:/Users/USER/Desktop/startup-bench/tests/test_validation.py): `19` tests
   - validates example scenarios
   - validates world state and suite artifacts
-  - validates public manifests, pack changelog, and submission examples
+  - validates public manifests, pack changelog, submission examples, and operator-review summaries
 
 ### Core runner flows
 
@@ -89,6 +89,11 @@ The test suite is strongest on schema validation, core runtime mutations, baseli
   - run-manifest generation
   - disallowed runner rejection
   - official-manifest-compatible suite flow
+
+- [test_human_eval.py](/C:/Users/USER/Desktop/startup-bench/tests/test_human_eval.py): `3` tests
+  - validates operator-review and summary examples
+  - aggregates multiple operator reviews into a calibration summary
+  - flags reviewer disagreement at the scenario level
 
 ### Hidden-eval packaging
 
@@ -167,6 +172,7 @@ PYTHONPATH=src python -m thestartupbench run-suite examples/private_strategy_fre
 PYTHONPATH=src python -m thestartupbench redact-suite examples/private_real_world_fresh_scenario_suite.json --output-dir tmp_smoke
 PYTHONPATH=src python -m thestartupbench redact-suite examples/private_operator_fresh_scenario_suite.json --output-dir tmp_smoke
 PYTHONPATH=src python -m thestartupbench check-pack-changelog examples/public_pack_changelog.json
+PYTHONPATH=src python -m thestartupbench aggregate-operator-reviews examples/minimal_operator_review.json --output-dir tmp_smoke
 PYTHONPATH=src python -m thestartupbench build-submission --suite-report-paths tmp_smoke/suite_report.json --model-id heuristic_resilient_operator --provider baseline --contamination-flag clean --output-dir tmp_smoke
 python -m unittest discover -s tests -p "test_*.py"
 ```
@@ -250,8 +256,12 @@ Observed on 2026-03-07:
   - result: `ok: false`
   - reason: hidden split cloning now requires explicit draft-only override
 - `check-pack-changelog ...public_pack_changelog.json`: passed
-  - changelog entry count: `7`
+  - changelog entry count: `9`
   - validation: `ok`
+- `aggregate-operator-reviews ...minimal_operator_review.json`: passed
+  - review count: `1`
+  - reviewer count: `1`
+  - scenario count: `1`
 - `redact-suite ...private_test_scenario_suite.json`: passed
 - `build-submission ...tmp_smoke/suite_report.json ...`: passed
   - repeat count: `2`
@@ -261,8 +271,8 @@ Observed on 2026-03-07:
 - `python -m thestartupbench version`: passed
   - reported version: `0.1.0`
 - `python -m unittest discover -s tests -p "test_*.py"`: passed
-  - `94` tests
-  - `18` files
+  - `98` tests
+  - `19` files
 
 ## What Is Covered Well
 

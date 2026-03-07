@@ -23,6 +23,7 @@ It is organized into:
 - `validation_contract.md`: validation pipeline and leaderboard eligibility checks
 - `leaderboard_protocol.md`: submission, verification, contamination, and leaderboard policy
 - `hidden_eval_policy.md`: hidden test/fresh split operation, refresh cadence, and redaction policy
+- `operator_eval_protocol.md`: founder/operator review capture, calibration rubric, and promotion bar
 - `../docs/pack_lifecycle_changelog.md`: public pack promotion, retirement, and contamination ledger
 - `../examples/official_eval_profile.json`: reference official evaluation settings bundle
 - `../examples/minimal_run_manifest.json`: reference official run-manifest artifact
@@ -46,6 +47,8 @@ Machine-readable schemas:
 - `../schemas/tsb_suite_report.schema.json`
 - `../schemas/tsb_trace.schema.json`
 - `../schemas/tsb_submission.schema.json`
+- `../schemas/tsb_operator_review.schema.json`
+- `../schemas/tsb_operator_review_summary.schema.json`
 
 Example:
 
@@ -63,6 +66,8 @@ Example:
 - `../examples/real_world_public_fresh_manifest.json`
 - `../examples/public_pack_changelog.json`
 - `../examples/minimal_submission.json`
+- `../examples/minimal_operator_review.json`
+- `../examples/minimal_operator_review_summary.json`
 - `../examples/minimal_world_state.json`
 - `../examples/minimal_primitives.json`
 - `../examples/minimal_tool_manifest.json`
@@ -89,6 +94,7 @@ Reference implementation status:
 - redacted public manifests and submission assembly are implemented
 - suite promotion and pack lifecycle validation are implemented
 - official evaluation profiles and run manifests are implemented
+- operator review aggregation and calibration artifacts are implemented
 - smoke tests exist under `tests/`
 
 ## Canonical terms

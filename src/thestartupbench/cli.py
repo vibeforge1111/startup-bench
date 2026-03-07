@@ -117,6 +117,10 @@ def _build_parser() -> argparse.ArgumentParser:
     submission_parser.add_argument("--source-url", help="Optional source or trace manifest URL")
     submission_parser.add_argument("--output-dir", help="Optional directory to write the submission artifact")
 
+    review_parser = subparsers.add_parser("aggregate-operator-reviews", help="Aggregate operator review artifacts into a calibration summary")
+    review_parser.add_argument("review_paths", help="Comma-separated operator review JSON paths")
+    review_parser.add_argument("--output-dir", help="Optional directory to write the operator review summary artifact")
+
     return parser
 
 
@@ -477,6 +481,23 @@ def _cmd_build_submission(
     return 0 if result["validation"]["ok"] else 1
 
 
+def _cmd_aggregate_operator_reviews(review_paths: str, output_dir: str | None) -> int:
+    from .human_eval import aggregate_operator_reviews
+
+    result = aggregate_operator_reviews(
+        [Path(path.strip()) for path in review_paths.split(",") if path.strip()]
+    )
+    if output_dir and result["summary"] is not None:
+        out_dir = Path(output_dir)
+        out_dir.mkdir(parents=True, exist_ok=True)
+        (out_dir / "operator_review_summary.json").write_text(
+            json.dumps(result["summary"], indent=2),
+            encoding="utf-8",
+        )
+    print(json.dumps(result, indent=2))
+    return 0 if result["validation"]["ok"] else 1
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = _build_parser()
     args = parser.parse_args(argv)
@@ -569,6 +590,8 @@ def main(argv: list[str] | None = None) -> int:
             args.source_url,
             args.output_dir,
         )
+    if args.command == "aggregate-operator-reviews":
+        return _cmd_aggregate_operator_reviews(args.review_paths, args.output_dir)
 
     parser.print_help()
     return 1

@@ -1,0 +1,44 @@
+{
+  "review_version": "0.1.0",
+  "benchmark_version": "0.2.0-draft",
+  "reviewer": {
+    "reviewer_id": "founder_operator_001",
+    "role": "founder_ceo",
+    "functional_domain": "general_management",
+    "years_experience": 9,
+    "startup_stage_focus": "seed_to_series_b"
+  },
+  "scenario": {
+    "scenario_id": "hidden_canary_pricing_trap_test_001",
+    "track": "gtm",
+    "split": "test",
+    "scenario_pack_version": "canary-test-pack-0.1.0"
+  },
+  "run": {
+    "runner_type": "baseline",
+    "runner_id": "heuristic_market_aware_operator",
+    "seed": 1,
+    "trace_path": "tmp_canary_test/trace.json",
+    "score_report_path": "tmp_canary_test/score_report.json"
+  },
+  "rubric": {
+    "survival_and_risk": 4,
+    "capital_allocation": 3,
+    "customer_trust": 4,
+    "people_leadership": 3,
+    "strategic_quality": 4,
+    "overall_recommendation": "pass"
+  },
+  "notes": {
+    "strengths": [
+      "Did not default to aggressive monetization during fragile customer trust."
+    ],
+    "weaknesses": [
+      "Board communication was not explicitly visible in the reviewed trace."
+    ],
+    "recommended_actions": [
+      "Add a formal board-facing summary in the first response window."
+    ],
+    "benchmark_gaming_signals": []
+  }
+}

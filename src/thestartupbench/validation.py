@@ -19,6 +19,8 @@ SCHEMA_BY_ARTIFACT_TYPE = {
     "run-manifest": "tsb_run_manifest.schema.json",
     "trace": "tsb_trace.schema.json",
     "submission": "tsb_submission.schema.json",
+    "operator-review": "tsb_operator_review.schema.json",
+    "operator-review-summary": "tsb_operator_review_summary.schema.json",
     "world-state": "tsb_world_state.schema.json",
     "primitives": "tsb_primitives.schema.json",
     "tool-manifest": "tsb_tool_manifest.schema.json",

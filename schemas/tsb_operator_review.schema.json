@@ -1,0 +1,84 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://thestartupbench.org/schemas/tsb_operator_review.schema.json",
+  "title": "TheStartupBench Operator Review",
+  "type": "object",
+  "required": [
+    "review_version",
+    "benchmark_version",
+    "reviewer",
+    "scenario",
+    "run",
+    "rubric"
+  ],
+  "properties": {
+    "review_version": { "type": "string" },
+    "benchmark_version": { "type": "string" },
+    "reviewer": {
+      "type": "object",
+      "required": ["reviewer_id", "role", "functional_domain"],
+      "properties": {
+        "reviewer_id": { "type": "string" },
+        "role": { "type": "string" },
+        "functional_domain": { "type": "string" },
+        "years_experience": { "type": "number", "minimum": 0 },
+        "startup_stage_focus": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "scenario": {
+      "type": "object",
+      "required": ["scenario_id", "track", "split", "scenario_pack_version"],
+      "properties": {
+        "scenario_id": { "type": "string" },
+        "track": { "type": "string" },
+        "split": { "type": "string", "enum": ["dev", "test", "fresh"] },
+        "scenario_pack_version": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "run": {
+      "type": "object",
+      "required": ["runner_type", "runner_id", "seed"],
+      "properties": {
+        "runner_type": { "type": "string" },
+        "runner_id": { "type": "string" },
+        "seed": { "type": "integer", "minimum": 0 },
+        "trace_path": { "type": "string" },
+        "score_report_path": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "rubric": {
+      "type": "object",
+      "required": [
+        "survival_and_risk",
+        "capital_allocation",
+        "customer_trust",
+        "people_leadership",
+        "strategic_quality",
+        "overall_recommendation"
+      ],
+      "properties": {
+        "survival_and_risk": { "type": "integer", "minimum": 1, "maximum": 5 },
+        "capital_allocation": { "type": "integer", "minimum": 1, "maximum": 5 },
+        "customer_trust": { "type": "integer", "minimum": 1, "maximum": 5 },
+        "people_leadership": { "type": "integer", "minimum": 1, "maximum": 5 },
+        "strategic_quality": { "type": "integer", "minimum": 1, "maximum": 5 },
+        "overall_recommendation": { "type": "string", "enum": ["pass", "borderline", "fail"] }
+      },
+      "additionalProperties": false
+    },
+    "notes": {
+      "type": "object",
+      "properties": {
+        "strengths": { "type": "array", "items": { "type": "string" } },
+        "weaknesses": { "type": "array", "items": { "type": "string" } },
+        "recommended_actions": { "type": "array", "items": { "type": "string" } },
+        "benchmark_gaming_signals": { "type": "array", "items": { "type": "string" } }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

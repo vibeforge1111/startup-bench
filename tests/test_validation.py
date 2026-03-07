@@ -213,6 +213,14 @@ class ValidationTests(unittest.TestCase):
         self.assertTrue(result.ok)
         self.assertEqual(result.issues, [])
 
+    def test_operator_review_summary_example_validates(self) -> None:
+        result = validate_artifact_file(
+            artifact_type="operator-review-summary",
+            path=REPO_ROOT / "examples" / "minimal_operator_review_summary.json",
+        )
+        self.assertTrue(result.ok)
+        self.assertEqual(result.issues, [])
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -1,0 +1,44 @@
+{
+  "summary_version": "0.1.0",
+  "benchmark_version": "0.2.0-draft",
+  "scenario_pack_versions": [
+    "canary-test-pack-0.1.0"
+  ],
+  "review_count": 1,
+  "reviewer_count": 1,
+  "scenario_count": 1,
+  "overall": {
+    "mean_scores": {
+      "survival_and_risk": 4.0,
+      "capital_allocation": 3.0,
+      "customer_trust": 4.0,
+      "people_leadership": 3.0,
+      "strategic_quality": 4.0
+    },
+    "recommendation_distribution": {
+      "pass": 1,
+      "borderline": 0,
+      "fail": 0
+    }
+  },
+  "scenario_summaries": [
+    {
+      "scenario_id": "hidden_canary_pricing_trap_test_001",
+      "track": "gtm",
+      "review_count": 1,
+      "mean_scores": {
+        "survival_and_risk": 4.0,
+        "capital_allocation": 3.0,
+        "customer_trust": 4.0,
+        "people_leadership": 3.0,
+        "strategic_quality": 4.0
+      },
+      "recommendation_distribution": {
+        "pass": 1,
+        "borderline": 0,
+        "fail": 0
+      },
+      "disagreement_flag": false
+    }
+  ]
+}

@@ -1,0 +1,114 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://thestartupbench.org/schemas/tsb_operator_review_summary.schema.json",
+  "title": "TheStartupBench Operator Review Summary",
+  "type": "object",
+  "required": [
+    "summary_version",
+    "benchmark_version",
+    "scenario_pack_versions",
+    "review_count",
+    "reviewer_count",
+    "scenario_count",
+    "overall",
+    "scenario_summaries"
+  ],
+  "properties": {
+    "summary_version": { "type": "string" },
+    "benchmark_version": { "type": "string" },
+    "scenario_pack_versions": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "type": "string" }
+    },
+    "review_count": { "type": "integer", "minimum": 1 },
+    "reviewer_count": { "type": "integer", "minimum": 1 },
+    "scenario_count": { "type": "integer", "minimum": 1 },
+    "overall": {
+      "type": "object",
+      "required": ["mean_scores", "recommendation_distribution"],
+      "properties": {
+        "mean_scores": {
+          "type": "object",
+          "required": [
+            "survival_and_risk",
+            "capital_allocation",
+            "customer_trust",
+            "people_leadership",
+            "strategic_quality"
+          ],
+          "properties": {
+            "survival_and_risk": { "type": "number", "minimum": 1, "maximum": 5 },
+            "capital_allocation": { "type": "number", "minimum": 1, "maximum": 5 },
+            "customer_trust": { "type": "number", "minimum": 1, "maximum": 5 },
+            "people_leadership": { "type": "number", "minimum": 1, "maximum": 5 },
+            "strategic_quality": { "type": "number", "minimum": 1, "maximum": 5 }
+          },
+          "additionalProperties": false
+        },
+        "recommendation_distribution": {
+          "type": "object",
+          "required": ["pass", "borderline", "fail"],
+          "properties": {
+            "pass": { "type": "integer", "minimum": 0 },
+            "borderline": { "type": "integer", "minimum": 0 },
+            "fail": { "type": "integer", "minimum": 0 }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "scenario_summaries": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "scenario_id",
+          "track",
+          "review_count",
+          "mean_scores",
+          "recommendation_distribution",
+          "disagreement_flag"
+        ],
+        "properties": {
+          "scenario_id": { "type": "string" },
+          "track": { "type": "string" },
+          "review_count": { "type": "integer", "minimum": 1 },
+          "mean_scores": {
+            "type": "object",
+            "required": [
+              "survival_and_risk",
+              "capital_allocation",
+              "customer_trust",
+              "people_leadership",
+              "strategic_quality"
+            ],
+            "properties": {
+              "survival_and_risk": { "type": "number", "minimum": 1, "maximum": 5 },
+              "capital_allocation": { "type": "number", "minimum": 1, "maximum": 5 },
+              "customer_trust": { "type": "number", "minimum": 1, "maximum": 5 },
+              "people_leadership": { "type": "number", "minimum": 1, "maximum": 5 },
+              "strategic_quality": { "type": "number", "minimum": 1, "maximum": 5 }
+            },
+            "additionalProperties": false
+          },
+          "recommendation_distribution": {
+            "type": "object",
+            "required": ["pass", "borderline", "fail"],
+            "properties": {
+              "pass": { "type": "integer", "minimum": 0 },
+              "borderline": { "type": "integer", "minimum": 0 },
+              "fail": { "type": "integer", "minimum": 0 }
+            },
+            "additionalProperties": false
+          },
+          "disagreement_flag": { "type": "boolean" }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

@@ -27,6 +27,7 @@ Current status:
 - added a product track plus a hidden strategy pack family for long-horizon board, product, and scale evaluation
 - added a long-horizon baseline family for multi-quarter startup planning behavior
 - added hidden canary pack families for exploit and overfit detection across pricing and hiring traps
+- added operator/founder calibration artifacts, schemas, and review aggregation support
 
 Key documents:
 
@@ -50,6 +51,7 @@ Key documents:
 - `spec/validation_contract.md`
 - `spec/leaderboard_protocol.md`
 - `spec/hidden_eval_policy.md`
+- `spec/operator_eval_protocol.md`
 
 Artifacts:
 
@@ -69,6 +71,8 @@ Artifacts:
 - `schemas/tsb_suite_report.schema.json`
 - `schemas/tsb_trace.schema.json`
 - `schemas/tsb_submission.schema.json`
+- `schemas/tsb_operator_review.schema.json`
+- `schemas/tsb_operator_review_summary.schema.json`
 - `examples/minimal_b2b_saas_scenario.json`
 - `examples/minimal_crisis_scenario.json`
 - `examples/minimal_0to1_scenario.json`
@@ -90,6 +94,8 @@ Artifacts:
 - `examples/minimal_run_manifest.json`
 - `examples/minimal_public_suite_manifest.json`
 - `examples/minimal_submission.json`
+- `examples/minimal_operator_review.json`
+- `examples/minimal_operator_review_summary.json`
 - `examples/minimal_world_state.json`
 - `examples/minimal_primitives.json`
 - `examples/minimal_tool_manifest.json`
@@ -120,6 +126,7 @@ python -m thestartupbench run-suite examples/dev_scenario_suite.json baseline --
 python -m thestartupbench redact-suite examples/private_test_scenario_suite.json --output-dir tmp_out
 python -m thestartupbench check-suite-family examples/private_real_world_test_scenario_suite.json examples/private_real_world_fresh_scenario_suite.json
 python -m thestartupbench check-suite-family examples/private_canary_test_scenario_suite.json examples/private_canary_fresh_scenario_suite.json
+python -m thestartupbench aggregate-operator-reviews examples/minimal_operator_review.json --output-dir tmp_out
 python -m thestartupbench build-submission --suite-report-paths tmp_out/suite_report.json --model-id heuristic_resilient_operator --provider baseline --contamination-flag clean --output-dir tmp_out
 python -m unittest discover -s tests -p "test_*.py"
 ```
