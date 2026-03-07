@@ -1,0 +1,79 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://thestartupbench.org/schemas/tsb_batch_report.schema.json",
+  "title": "TheStartupBench Batch Report",
+  "type": "object",
+  "required": ["report_version", "benchmark", "campaign", "aggregate_metrics", "runs"],
+  "properties": {
+    "report_version": { "type": "string" },
+    "benchmark": {
+      "type": "object",
+      "required": ["benchmark_name", "benchmark_version", "scaffold_version"],
+      "properties": {
+        "benchmark_name": { "type": "string" },
+        "benchmark_version": { "type": "string" },
+        "scaffold_version": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "campaign": {
+      "type": "object",
+      "required": ["runner_type", "runner_id", "scenario_id", "scenario_version", "track", "seeds", "run_count"],
+      "properties": {
+        "runner_type": { "type": "string", "enum": ["dry", "script", "baseline"] },
+        "runner_id": { "type": "string" },
+        "scenario_id": { "type": "string" },
+        "scenario_version": { "type": "string" },
+        "track": { "type": "string" },
+        "seeds": {
+          "type": "array",
+          "items": { "type": "integer" }
+        },
+        "run_count": { "type": "integer", "minimum": 1 }
+      },
+      "additionalProperties": false
+    },
+    "aggregate_metrics": {
+      "type": "object",
+      "required": [
+        "scenario_score_mean",
+        "scenario_score_stddev",
+        "scenario_score_min",
+        "scenario_score_max",
+        "outcome_score_mean",
+        "constraint_score_mean",
+        "pass_rate",
+        "total_tool_calls_mean"
+      ],
+      "properties": {
+        "scenario_score_mean": { "type": "number" },
+        "scenario_score_stddev": { "type": "number" },
+        "scenario_score_min": { "type": "number" },
+        "scenario_score_max": { "type": "number" },
+        "outcome_score_mean": { "type": "number" },
+        "constraint_score_mean": { "type": "number" },
+        "pass_rate": { "type": "number" },
+        "total_tool_calls_mean": { "type": "number" }
+      },
+      "additionalProperties": false
+    },
+    "runs": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["run_id", "seed", "scenario_score", "outcome_score", "constraint_score", "pass", "total_tool_calls"],
+        "properties": {
+          "run_id": { "type": "string" },
+          "seed": { "type": "integer" },
+          "scenario_score": { "type": "number" },
+          "outcome_score": { "type": "number" },
+          "constraint_score": { "type": "number" },
+          "pass": { "type": "boolean" },
+          "total_tool_calls": { "type": "integer" }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

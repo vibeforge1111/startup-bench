@@ -33,6 +33,7 @@ Machine-readable schemas:
 - `../schemas/tsb_tool_response.schema.json`
 - `../schemas/tsb_evaluator_result.schema.json`
 - `../schemas/tsb_score_report.schema.json`
+- `../schemas/tsb_batch_report.schema.json`
 - `../schemas/tsb_trace.schema.json`
 - `../schemas/tsb_submission.schema.json`
 
@@ -59,6 +60,7 @@ Reference implementation status:
 - a Python reference package now exists under `src/thestartupbench/`
 - schema-backed validation is implemented
 - dry-run and scripted-run artifact generation is implemented
+- heuristic baseline and repeated-run campaign aggregation are implemented
 - smoke tests exist under `tests/`
 
 ## Canonical terms

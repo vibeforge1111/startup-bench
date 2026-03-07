@@ -21,6 +21,7 @@ SCHEMA_BY_ARTIFACT_TYPE = {
     "tool-response": "tsb_tool_response.schema.json",
     "evaluator-result": "tsb_evaluator_result.schema.json",
     "score-report": "tsb_score_report.schema.json",
+    "batch-report": "tsb_batch_report.schema.json",
 }
 
 
@@ -103,4 +104,3 @@ __all__ = [
     "validate_artifact_file",
     "validate_instance",
 ]
-

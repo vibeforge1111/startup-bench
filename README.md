@@ -12,6 +12,7 @@ Current status:
 - stateful business transition runtime implemented for core startup tools
 - programmatic scoring and runtime tests implemented
 - heuristic baseline runner implemented
+- repeated-run campaign aggregation implemented
 
 Key documents:
 
@@ -40,6 +41,7 @@ Artifacts:
 - `schemas/tsb_tool_response.schema.json`
 - `schemas/tsb_evaluator_result.schema.json`
 - `schemas/tsb_score_report.schema.json`
+- `schemas/tsb_batch_report.schema.json`
 - `schemas/tsb_trace.schema.json`
 - `schemas/tsb_submission.schema.json`
 - `examples/minimal_b2b_saas_scenario.json`
@@ -65,6 +67,7 @@ python -m thestartupbench list-baselines
 python -m thestartupbench run-dry examples/minimal_b2b_saas_scenario.json --seed 1 --output-dir tmp_out
 python -m thestartupbench run-script examples/minimal_b2b_saas_scenario.json examples/minimal_tool_script.json --seed 1 --output-dir tmp_out
 python -m thestartupbench run-baseline examples/minimal_b2b_saas_scenario.json heuristic_b2b_operator --seed 1 --max-turns 6 --output-dir tmp_out
+python -m thestartupbench run-campaign examples/minimal_b2b_saas_scenario.json baseline --baseline-id heuristic_b2b_operator --seeds 1,2,3 --max-turns 6 --output-dir tmp_out
 python -m unittest discover -s tests -p "test_*.py"
 ```
 
