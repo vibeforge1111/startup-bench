@@ -34,8 +34,9 @@ class ScriptRunnerTests(unittest.TestCase):
         final_state = result["trace"]["state_snapshots"][-1]["state"]
         self.assertEqual(final_state["sim"]["current_time"], "2026-01-08T09:00:00Z")
         self.assertEqual(final_state["sim"]["current_turn"], 1)
+        self.assertEqual(final_state["finance"]["cash_usd"], 886500.0)
+        self.assertGreater(result["score_report"]["scenario_score"], 0.0)
 
 
 if __name__ == "__main__":
     unittest.main()
-

@@ -20,6 +20,7 @@ class RunnerTests(unittest.TestCase):
 
         self.assertEqual(result["scenario_id"], "b2b_saas_runway_pricing_001")
         self.assertEqual(result["turn_count"], 0)
+        self.assertGreater(result["score_report"]["scenario_score"], 0.0)
         self.assertTrue(result["artifact_validation"]["trace"]["ok"])
         self.assertTrue(result["artifact_validation"]["score_report"]["ok"])
         self.assertTrue(result["artifact_validation"]["tool_manifest"]["ok"])
@@ -35,6 +36,9 @@ class RunnerTests(unittest.TestCase):
         finance_surface = result["observation_surfaces"][0]
         self.assertEqual(finance_surface["surface_id"], "finance_dashboard")
         self.assertEqual(finance_surface["values"]["cash_usd"], 920000)
+        final_state = result["trace"]["state_snapshots"][-1]["state"]
+        self.assertEqual(final_state["sim"]["pending_event_count"], 2)
+        self.assertAlmostEqual(final_state["finance"]["runway_weeks"], 27.46, places=2)
 
     def test_tool_manifest_contains_declared_tools(self) -> None:
         result = run_dry_scenario(SCENARIO_PATH, seed=19)
