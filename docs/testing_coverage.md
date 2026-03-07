@@ -1,13 +1,13 @@
 # TheStartupBench Testing And Smoke Coverage
 
-Last updated: 2026-03-07
+Last updated: 2026-03-08
 
 ## Current Snapshot
 
 Current automated test surface:
 
-- `116` unit tests
-- `23` test files
+- `122` unit tests
+- `24` test files
 - all tests passing in the current tree
 
 The test suite is strongest on schema validation, core runtime mutations, baseline execution, and suite/submission packaging. It is weakest on evaluator nuance, adversarial scenario behavior, and broader scenario-corpus regression coverage.
@@ -208,7 +208,7 @@ python -m unittest discover -s tests -p "test_*.py"
 
 ## Smoke Test Results Observed In This Tree
 
-Observed on 2026-03-07:
+Observed on 2026-03-08:
 
 - `validate scenario ...minimal_b2b_saas_scenario.json`: passed
 - `lint-scenario ...minimal_b2b_saas_scenario.json`: passed
@@ -235,16 +235,16 @@ Observed on 2026-03-07:
   - overall score mean: `0.719`
   - overall pass-rate mean: `1.0`
 - `redact-suite ...private_real_world_test_scenario_suite.json`: passed
-  - scenario count: `7`
-  - scenario pack version: `real-world-test-pack-0.2.0`
+  - scenario count: `8`
+  - scenario pack version: `real-world-test-pack-0.3.0`
 - `run-suite ...private_real_world_test_scenario_suite.json ... --seeds 1 --max-turns 3`: passed
-  - scenario count: `7`
-  - overall score mean: `0.6957`
+  - scenario count: `8`
+  - overall score mean: `0.7093`
   - overall pass-rate mean: `1.0`
 - `run-suite ...private_real_world_fresh_scenario_suite.json ... --seeds 1 --max-turns 3`: passed
-  - scenario count: `7`
-  - overall score mean: `0.6802`
-  - overall pass-rate mean: `0.8571`
+  - scenario count: `8`
+  - overall score mean: `0.6943`
+  - overall pass-rate mean: `0.875`
 - `check-suite-family ...private_real_world_test_scenario_suite.json ...private_real_world_fresh_scenario_suite.json`: passed
   - suite count: `2`
   - issues: `0`
@@ -273,19 +273,19 @@ Observed on 2026-03-07:
 - `check-suite-family ...private_strategy_test_scenario_suite.json ...private_strategy_fresh_scenario_suite.json`: passed
   - suite count: `2`
   - issues: `0`
-- `run-suite ...private_strategy_test_scenario_suite.json ...heuristic_long_horizon_operator --seeds 1 --max-turns 6`: passed
-  - scenario count: `3`
-  - overall score mean: `0.7771`
+- `run-suite ...private_strategy_test_scenario_suite.json ...heuristic_governance_operator --seeds 1 --max-turns 6`: passed
+  - scenario count: `5`
+  - overall score mean: `0.763`
   - overall pass-rate mean: `1.0`
-- `run-suite ...private_strategy_fresh_scenario_suite.json ...heuristic_long_horizon_operator --seeds 1 --max-turns 6`: passed
-  - scenario count: `3`
-  - overall score mean: `0.7721`
+- `run-suite ...private_strategy_fresh_scenario_suite.json ...heuristic_governance_operator --seeds 1 --max-turns 6`: passed
+  - scenario count: `5`
+  - overall score mean: `0.7588`
   - overall pass-rate mean: `1.0`
 - `promote-suite ...private_real_world_test_scenario_suite.json --split fresh --scenario-pack-version real-world-fresh-pack-0.2.0`: correctly rejected by default
   - result: `ok: false`
   - reason: hidden split cloning now requires explicit draft-only override
 - `check-pack-changelog ...public_pack_changelog.json`: passed
-  - changelog entry count: `17`
+  - changelog entry count: `21`
   - validation: `ok`
 - `aggregate-operator-reviews ...minimal_operator_review.json`: passed
   - review count: `1`

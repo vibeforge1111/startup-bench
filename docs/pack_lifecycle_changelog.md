@@ -1,18 +1,18 @@
 # TheStartupBench Pack Lifecycle Changelog
 
-Last updated: 2026-03-07
+Last updated: 2026-03-08
 
 This document is the public-facing summary of hidden-pack promotions, fresh-pack creation, and retirement events. The machine-readable source of truth is [public_pack_changelog.json](/C:/Users/USER/Desktop/startup-bench/examples/public_pack_changelog.json).
 
 ## Active packs
 
-- `real-world-test-pack-0.2.0`
+- `real-world-test-pack-0.3.0`
   - split: `test`
   - visibility: `hidden`
   - public manifest: [real_world_public_test_manifest.json](/C:/Users/USER/Desktop/startup-bench/examples/real_world_public_test_manifest.json)
   - status: active, clean
 
-- `real-world-fresh-pack-0.2.0`
+- `real-world-fresh-pack-0.3.0`
   - split: `fresh`
   - visibility: `hidden`
   - public manifest: [real_world_public_fresh_manifest.json](/C:/Users/USER/Desktop/startup-bench/examples/real_world_public_fresh_manifest.json)
@@ -30,13 +30,13 @@ This document is the public-facing summary of hidden-pack promotions, fresh-pack
   - public manifest: [operator_public_fresh_manifest.json](/C:/Users/USER/Desktop/startup-bench/examples/operator_public_fresh_manifest.json)
   - status: active, clean
 
-- `strategy-test-pack-0.2.0`
+- `strategy-test-pack-0.3.0`
   - split: `test`
   - visibility: `hidden`
   - public manifest: [strategy_public_test_manifest.json](/C:/Users/USER/Desktop/startup-bench/examples/strategy_public_test_manifest.json)
   - status: active, clean
 
-- `strategy-fresh-pack-0.2.0`
+- `strategy-fresh-pack-0.3.0`
   - split: `fresh`
   - visibility: `hidden`
   - public manifest: [strategy_public_fresh_manifest.json](/C:/Users/USER/Desktop/startup-bench/examples/strategy_public_fresh_manifest.json)
@@ -68,11 +68,23 @@ This document is the public-facing summary of hidden-pack promotions, fresh-pack
   - status: retired
   - successor: `real-world-test-pack-0.2.0`
 
+- `real-world-test-pack-0.2.0`
+  - split: `test`
+  - visibility: `hidden`
+  - status: retired
+  - successor: `real-world-test-pack-0.3.0`
+
 - `real-world-fresh-pack-0.1.0`
   - split: `fresh`
   - visibility: `hidden`
   - status: retired
   - successor: `real-world-fresh-pack-0.2.0`
+
+- `real-world-fresh-pack-0.2.0`
+  - split: `fresh`
+  - visibility: `hidden`
+  - status: retired
+  - successor: `real-world-fresh-pack-0.3.0`
 
 - `operator-test-pack-0.1.0`
   - split: `test`
@@ -104,11 +116,23 @@ This document is the public-facing summary of hidden-pack promotions, fresh-pack
   - status: retired
   - successor: `strategy-test-pack-0.2.0`
 
+- `strategy-test-pack-0.2.0`
+  - split: `test`
+  - visibility: `hidden`
+  - status: retired
+  - successor: `strategy-test-pack-0.3.0`
+
 - `strategy-fresh-pack-0.1.0`
   - split: `fresh`
   - visibility: `hidden`
   - status: retired
   - successor: `strategy-fresh-pack-0.2.0`
+
+- `strategy-fresh-pack-0.2.0`
+  - split: `fresh`
+  - visibility: `hidden`
+  - status: retired
+  - successor: `strategy-fresh-pack-0.3.0`
 
 ## Operational notes
 

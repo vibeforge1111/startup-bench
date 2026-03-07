@@ -1,6 +1,6 @@
 # TheStartupBench Status Map
 
-Last updated: 2026-03-07
+Last updated: 2026-03-08
 
 ## Current Snapshot
 
@@ -54,6 +54,7 @@ Synthetic calibration status:
   - strategy board stakeholder conflict
 - added during pre-human hardening and not yet calibration-reviewed:
   - strategy board financing truth
+  - strategy board incident truth
 
 Human handoff artifacts now exist:
 
@@ -159,7 +160,7 @@ Completed:
 - private test suite manifest in [private_test_scenario_suite.json](/C:/Users/USER/Desktop/startup-bench/examples/private_test_scenario_suite.json)
 - private real-world test suite manifest in [private_real_world_test_scenario_suite.json](/C:/Users/USER/Desktop/startup-bench/examples/private_real_world_test_scenario_suite.json)
 - private real-world fresh suite manifest in [private_real_world_fresh_scenario_suite.json](/C:/Users/USER/Desktop/startup-bench/examples/private_real_world_fresh_scenario_suite.json)
-- expanded hidden real-world coverage now includes runway-crunch finance and internal-compromise crisis slices
+- expanded hidden real-world coverage now includes runway-crunch finance, internal-compromise crisis, and integrity-first failover slices
 - redacted public manifest generation in [suite_manifest.py](/C:/Users/USER/Desktop/startup-bench/src/thestartupbench/suite_manifest.py)
 - suite promotion helper in [pack_ops.py](/C:/Users/USER/Desktop/startup-bench/src/thestartupbench/pack_ops.py)
 - hidden suite family integrity checker in [pack_ops.py](/C:/Users/USER/Desktop/startup-bench/src/thestartupbench/pack_ops.py)
@@ -209,44 +210,53 @@ Completed real-world-derived scenario pack:
 
 Completed hidden real-world test pack:
 
-- `5` hidden test scenarios with non-dev ids and altered operating conditions
+- `8` hidden test scenarios with non-dev ids and altered operating conditions
 - public redacted manifest in [real_world_public_test_manifest.json](/C:/Users/USER/Desktop/startup-bench/examples/real_world_public_test_manifest.json)
 - current hidden pack coverage:
   - emergency financing
   - treasury concentration shock
+  - runway crunch
+  - phishing-led compromise
+  - integrity-first failover recovery
   - security backlash
   - restoration backlog
   - peak readiness under lower headroom
 
 Completed hidden real-world fresh pack:
 
-- `5` fresh hidden scenarios with distinct scenario ids and distinct scenario files from the hidden `test` pack
+- `8` fresh hidden scenarios with distinct scenario ids and distinct scenario files from the hidden `test` pack
 - public redacted manifest in [real_world_public_fresh_manifest.json](/C:/Users/USER/Desktop/startup-bench/examples/real_world_public_fresh_manifest.json)
 - current hidden fresh pack coverage:
   - bridge financing with harsher board terms
   - treasury freeze with payroll cascade risk
+  - runway reset with harsher burn and morale drag
+  - phishing compromise with deeper disclosure aftershock
+  - integrity-first failover with stronger trust aftershock
   - security backlash with enterprise procurement freeze
   - restoration collapse with repeated tooling slippage
   - peak readiness with support spike and fatigue
 
 Completed hidden operator breadth packs:
 
-- `5` hidden `test` scenarios in [private_operator_test_scenario_suite.json](/C:/Users/USER/Desktop/startup-bench/examples/private_operator_test_scenario_suite.json)
-- `5` hidden `fresh` scenarios in [private_operator_fresh_scenario_suite.json](/C:/Users/USER/Desktop/startup-bench/examples/private_operator_fresh_scenario_suite.json)
+- `7` hidden `test` scenarios in [private_operator_test_scenario_suite.json](/C:/Users/USER/Desktop/startup-bench/examples/private_operator_test_scenario_suite.json)
+- `7` hidden `fresh` scenarios in [private_operator_fresh_scenario_suite.json](/C:/Users/USER/Desktop/startup-bench/examples/private_operator_fresh_scenario_suite.json)
 - current operator hidden coverage:
   - GTM pipeline reset
   - GTM enterprise freeze under trust fragility
+  - GTM reference decay under pipeline erosion
   - finance liquidity and treasury tradeoffs
   - finance margin shock under payment delay
   - people attrition and support-load stabilization
+  - people reorg drag under morale pressure
 
 Completed hidden strategy packs:
 
-- `4` hidden `test` scenarios in [private_strategy_test_scenario_suite.json](/C:/Users/USER/Desktop/startup-bench/examples/private_strategy_test_scenario_suite.json)
-- `4` hidden `fresh` scenarios in [private_strategy_fresh_scenario_suite.json](/C:/Users/USER/Desktop/startup-bench/examples/private_strategy_fresh_scenario_suite.json)
+- `5` hidden `test` scenarios in [private_strategy_test_scenario_suite.json](/C:/Users/USER/Desktop/startup-bench/examples/private_strategy_test_scenario_suite.json)
+- `5` hidden `fresh` scenarios in [private_strategy_fresh_scenario_suite.json](/C:/Users/USER/Desktop/startup-bench/examples/private_strategy_fresh_scenario_suite.json)
 - current strategy hidden coverage:
   - board stakeholder conflict
   - board financing truth under narrative pressure
+  - board incident truth under customer escalation
   - delayed-consequence product quality debt
   - multi-quarter scale planning under capacity lag
 

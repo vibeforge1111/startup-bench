@@ -1,6 +1,6 @@
 # Evaluator Adjudication Log
 
-Last updated: 2026-03-07
+Last updated: 2026-03-08
 
 This log records evaluator disputes, the evidence used, and the disposition.
 
@@ -117,3 +117,27 @@ Result:
 
 - benchmark moved to `borderline`
 - recommendation-level alignment reached
+
+## 2026-03-08
+
+### ADJ-006: Board-governance hardening follow-up
+
+Disposition:
+
+- deferred
+
+Evidence:
+
+- governance-specialist baseline now outperforms the long-horizon baseline on `hidden_board_stakeholder_conflict_test_001`
+- strategy hidden family now includes `hidden_board_incident_truth_*` to broaden governance pressure beyond the original watchlist slice
+- synthetic review still does not justify a targeted reweighting beyond the existing board-track penalties
+
+Decision:
+
+- keep `GOV-001` open until human review
+- accept broader board corpus expansion and governance-baseline evidence as sufficient pre-human mitigation
+
+Result:
+
+- governance watchlist remains narrow instead of expanding
+- no additional evaluator weight mutation applied before human/operator review

@@ -1,6 +1,6 @@
 # Benchmark Known Issues
 
-Last updated: 2026-03-07
+Last updated: 2026-03-08
 
 This ledger records benchmark issues that are still open, materially relevant, or intentionally deferred.
 
@@ -25,6 +25,8 @@ Current mitigation:
 
 - board-track evaluator is now trace-aware
 - long-horizon baseline board updates are now state-aware instead of fully boilerplate
+- governance-specialist baseline now outperforms the long-horizon baseline on the watchlist slice
+- hidden strategy coverage now includes a second board-governance variant focused on incident truth
 
 Exit condition:
 
