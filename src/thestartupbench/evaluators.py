@@ -393,6 +393,85 @@ def _behavioral_penalty(
             "rigid_loop_penalty_applied": rigid_loop_penalty_applied,
         }
 
+    if track == "crisis":
+        crisis_event_types = {"trust_shock", "security_backlash", "privacy_backlash"}
+        crisis_turn_indices = [
+            index
+            for index, turn in enumerate(turns)
+            if any(event.get("event_type") in crisis_event_types for event in turn.get("events", []))
+        ]
+        first_crisis_turn = crisis_turn_indices[0] if crisis_turn_indices else None
+
+        product_response_count = sum(
+            1
+            for turn in turns
+            for action in turn.get("actions", [])
+            if action.get("tool_name") == "product.roadmap.write"
+        )
+        board_update_after_crisis_count = 0
+        legal_follow_up_count = 0
+        pipeline_actions_during_trust_crisis = 0
+        market_read_count = 0
+        if first_crisis_turn is not None:
+            for turn in turns[first_crisis_turn + 1 :]:
+                report = _extract_metrics_report(turn)
+                current_trust = float(report.get("customers", {}).get("trust_score", 0.0) or 0.0)
+                for action in turn.get("actions", []):
+                    tool_name = str(action.get("tool_name", ""))
+                    if tool_name == "board.update":
+                        board_update_after_crisis_count += 1
+                    elif tool_name == "legal.compliance.respond":
+                        legal_follow_up_count += 1
+                    elif tool_name == "research.market.read":
+                        market_read_count += 1
+                    elif tool_name == "sales.pipeline.update" and current_trust <= 0.62:
+                        pipeline_actions_during_trust_crisis += 1
+
+        first_report = _extract_metrics_report(turns[0])
+        initial_trust = float(first_report.get("customers", {}).get("trust_score", 0.0) or 0.0)
+        final_trust = float(world_state.get("customers", {}).get("trust_score", 0.0))
+        trust_recovery = max(0.0, final_trust - initial_trust)
+        final_regulatory_pressure = float(world_state.get("risk", {}).get("regulatory_pressure", 0.0))
+
+        penalty = 0.0
+        if first_crisis_turn is not None and product_response_count == 0:
+            penalty += 0.18
+        if first_crisis_turn is not None and board_update_after_crisis_count == 0:
+            penalty += 0.12
+        if first_crisis_turn is not None and final_regulatory_pressure >= 0.5 and legal_follow_up_count == 0:
+            penalty += 0.08
+        if first_crisis_turn is not None and pipeline_actions_during_trust_crisis >= 1 and product_response_count == 0:
+            penalty += 0.08
+        if first_crisis_turn is not None and market_read_count == 0:
+            penalty += 0.04
+        if rigid_loop_penalty_applied and first_crisis_turn is not None:
+            penalty += 0.04
+        if first_crisis_turn is not None and trust_recovery < 0.12 and product_response_count == 0:
+            penalty += 0.04
+
+        penalty = _round_score(penalty)
+        return penalty, {
+            "behavioral_penalty": penalty,
+            "adverse_event_count": len(crisis_turn_indices),
+            "unanswered_adverse_events": 0,
+            "support_alert_turn_count": 0,
+            "support_actions_after_adverse_event": 0,
+            "trust_decline": 0.0,
+            "soft_demand_alert_turn_count": 0,
+            "demand_decline": 0.0,
+            "pipeline_decline_ratio": 0.0,
+            "hiring_response_count": 0,
+            "finance_response_count": 0,
+            "unresolved_hiring_pressure": False,
+            "trust_recovery": round(trust_recovery, 4),
+            "product_response_count": product_response_count,
+            "board_update_after_crisis_count": board_update_after_crisis_count,
+            "legal_follow_up_count": legal_follow_up_count,
+            "pipeline_actions_during_trust_crisis": pipeline_actions_during_trust_crisis,
+            "market_read_count": market_read_count,
+            "rigid_loop_penalty_applied": rigid_loop_penalty_applied,
+        }
+
     return 0.0, {
         "behavioral_penalty": 0.0,
         "adverse_event_count": 0,
@@ -406,6 +485,12 @@ def _behavioral_penalty(
         "hiring_response_count": 0,
         "finance_response_count": 0,
         "unresolved_hiring_pressure": False,
+        "trust_recovery": 0.0,
+        "product_response_count": 0,
+        "board_update_after_crisis_count": 0,
+        "legal_follow_up_count": 0,
+        "pipeline_actions_during_trust_crisis": 0,
+        "market_read_count": 0,
         "rigid_loop_penalty_applied": rigid_loop_penalty_applied,
     }
 
