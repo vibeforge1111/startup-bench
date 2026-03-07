@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://thestartupbench.org/schemas/tsb_evaluator_result.schema.json",
+  "title": "TheStartupBench Evaluator Result",
+  "type": "object",
+  "required": ["evaluator_id", "evaluator_version", "status", "outputs"],
+  "properties": {
+    "evaluator_id": { "type": "string" },
+    "evaluator_version": { "type": "string" },
+    "status": { "type": "string", "enum": ["ok", "warning", "failed"] },
+    "outputs": { "type": "object" },
+    "violations": {
+      "type": "array",
+      "items": { "type": "object" }
+    },
+    "rationale_metadata": { "type": "object" },
+    "referenced_artifact_ids": {
+      "type": "array",
+      "items": { "type": "string" }
+    }
+  },
+  "additionalProperties": false
+}
+

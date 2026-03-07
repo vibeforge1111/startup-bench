@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://thestartupbench.org/schemas/tsb_tool_call.schema.json",
+  "title": "TheStartupBench Tool Call",
+  "type": "object",
+  "required": ["tool_name", "request_id", "arguments"],
+  "properties": {
+    "tool_name": { "type": "string" },
+    "request_id": { "type": "string" },
+    "arguments": { "type": "object" },
+    "reason": { "type": "string" },
+    "expected_outcome": { "type": "string" }
+  },
+  "additionalProperties": false
+}
+

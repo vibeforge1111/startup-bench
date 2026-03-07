@@ -1,0 +1,35 @@
+{
+  "scenario_id": "b2b_saas_runway_pricing_001",
+  "scenario_version": "0.1.0",
+  "run_id": "run_0001",
+  "scenario_score": 73.5,
+  "outcome_score": 81.7,
+  "constraint_score": 0.9,
+  "subscores": {
+    "cash_efficiency": 76.0,
+    "revenue_quality": 82.0,
+    "customer_health": 74.0,
+    "strategic_coherence": 94.0
+  },
+  "violations": [
+    {
+      "violation_id": "late_board_reforecast",
+      "severity": "medium"
+    }
+  ],
+  "pass": true,
+  "evaluator_results": [
+    {
+      "evaluator_id": "cash_efficiency_v1",
+      "evaluator_version": "0.1.0",
+      "status": "ok",
+      "outputs": {
+        "component_score": 76.0
+      },
+      "violations": [],
+      "rationale_metadata": {},
+      "referenced_artifact_ids": []
+    }
+  ]
+}
+

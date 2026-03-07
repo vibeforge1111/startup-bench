@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://thestartupbench.org/schemas/tsb_tool_response.schema.json",
+  "title": "TheStartupBench Tool Response",
+  "type": "object",
+  "required": ["ok", "request_id", "tool_name", "timestamp", "result"],
+  "properties": {
+    "ok": { "type": "boolean" },
+    "request_id": { "type": "string" },
+    "tool_name": { "type": "string" },
+    "timestamp": { "type": "string" },
+    "result": { "type": "object" },
+    "error_code": { "type": "string" },
+    "error_message": { "type": "string" },
+    "state_delta_summary": { "type": "object" }
+  },
+  "additionalProperties": false
+}
+

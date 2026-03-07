@@ -1,0 +1,26 @@
+{
+  "manifest_version": "0.1.0",
+  "tools": [
+    {
+      "tool_name": "metrics.query",
+      "description": "Query business metrics over a time range.",
+      "request_schema_ref": "tsb_tool_call.schema.json#/definitions/metrics_query",
+      "response_schema_ref": "tsb_tool_response.schema.json",
+      "mutability": "read",
+      "approval_sensitivity": "low",
+      "budget_sensitive": false,
+      "notes": "Read-only metrics access."
+    },
+    {
+      "tool_name": "sim.advance",
+      "description": "Advance simulation time and process due events.",
+      "request_schema_ref": "tsb_tool_call.schema.json#/definitions/sim_advance",
+      "response_schema_ref": "tsb_tool_response.schema.json",
+      "mutability": "write",
+      "approval_sensitivity": "low",
+      "budget_sensitive": false,
+      "notes": "Time progression tool."
+    }
+  ]
+}
+

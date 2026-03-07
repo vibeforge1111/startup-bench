@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://thestartupbench.org/schemas/tsb_score_report.schema.json",
+  "title": "TheStartupBench Score Report",
+  "type": "object",
+  "required": [
+    "scenario_id",
+    "scenario_version",
+    "run_id",
+    "scenario_score",
+    "outcome_score",
+    "constraint_score",
+    "subscores",
+    "violations",
+    "pass",
+    "evaluator_results"
+  ],
+  "properties": {
+    "scenario_id": { "type": "string" },
+    "scenario_version": { "type": "string" },
+    "run_id": { "type": "string" },
+    "scenario_score": { "type": "number" },
+    "outcome_score": { "type": "number" },
+    "constraint_score": { "type": "number" },
+    "subscores": { "type": "object" },
+    "violations": {
+      "type": "array",
+      "items": { "type": "object" }
+    },
+    "pass": { "type": "boolean" },
+    "evaluator_results": {
+      "type": "array",
+      "items": {
+        "$ref": "https://thestartupbench.org/schemas/tsb_evaluator_result.schema.json"
+      }
+    }
+  },
+  "additionalProperties": false
+}
+

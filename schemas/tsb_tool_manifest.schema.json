@@ -1,0 +1,37 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://thestartupbench.org/schemas/tsb_tool_manifest.schema.json",
+  "title": "TheStartupBench Tool Manifest",
+  "type": "object",
+  "required": ["manifest_version", "tools"],
+  "properties": {
+    "manifest_version": { "type": "string" },
+    "tools": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "tool_name",
+          "description",
+          "request_schema_ref",
+          "response_schema_ref",
+          "mutability",
+          "approval_sensitivity"
+        ],
+        "properties": {
+          "tool_name": { "type": "string" },
+          "description": { "type": "string" },
+          "request_schema_ref": { "type": "string" },
+          "response_schema_ref": { "type": "string" },
+          "mutability": { "type": "string", "enum": ["read", "write", "mixed"] },
+          "approval_sensitivity": { "type": "string", "enum": ["low", "medium", "high"] },
+          "budget_sensitive": { "type": "boolean" },
+          "notes": { "type": "string" }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}
+
