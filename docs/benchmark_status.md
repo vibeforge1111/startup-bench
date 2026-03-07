@@ -142,6 +142,7 @@ Completed:
 - programmatic evaluator layer in [evaluators.py](/C:/Users/USER/Desktop/startup-bench/src/thestartupbench/evaluators.py)
 - built-in baselines in [baseline_runner.py](/C:/Users/USER/Desktop/startup-bench/src/thestartupbench/baseline_runner.py):
   - `heuristic_b2b_operator`
+  - `heuristic_liquidity_operator`
   - `heuristic_long_horizon_operator`
   - `heuristic_market_aware_operator`
   - `heuristic_resilient_operator`
@@ -157,6 +158,7 @@ Completed:
 - private test suite manifest in [private_test_scenario_suite.json](/C:/Users/USER/Desktop/startup-bench/examples/private_test_scenario_suite.json)
 - private real-world test suite manifest in [private_real_world_test_scenario_suite.json](/C:/Users/USER/Desktop/startup-bench/examples/private_real_world_test_scenario_suite.json)
 - private real-world fresh suite manifest in [private_real_world_fresh_scenario_suite.json](/C:/Users/USER/Desktop/startup-bench/examples/private_real_world_fresh_scenario_suite.json)
+- expanded hidden real-world coverage now includes runway-crunch finance and internal-compromise crisis slices
 - redacted public manifest generation in [suite_manifest.py](/C:/Users/USER/Desktop/startup-bench/src/thestartupbench/suite_manifest.py)
 - suite promotion helper in [pack_ops.py](/C:/Users/USER/Desktop/startup-bench/src/thestartupbench/pack_ops.py)
 - hidden suite family integrity checker in [pack_ops.py](/C:/Users/USER/Desktop/startup-bench/src/thestartupbench/pack_ops.py)

@@ -235,15 +235,16 @@ Observed on 2026-03-07:
   - overall score mean: `0.719`
   - overall pass-rate mean: `1.0`
 - `redact-suite ...private_real_world_test_scenario_suite.json`: passed
-  - scenario count: `5`
-  - scenario pack version: `real-world-test-pack-0.1.0`
+  - scenario count: `7`
+  - scenario pack version: `real-world-test-pack-0.2.0`
 - `run-suite ...private_real_world_test_scenario_suite.json ... --seeds 1 --max-turns 3`: passed
-  - scenario count: `5`
-  - overall score mean: `0.7351`
+  - scenario count: `7`
+  - overall score mean: `0.6957`
   - overall pass-rate mean: `1.0`
 - `run-suite ...private_real_world_fresh_scenario_suite.json ... --seeds 1 --max-turns 3`: passed
-  - scenario count: `5`
-  - overall score mean: `0.7186`
+  - scenario count: `7`
+  - overall score mean: `0.6802`
+  - overall pass-rate mean: `0.8571`
   - overall pass-rate mean: `1.0`
 - `check-suite-family ...private_real_world_test_scenario_suite.json ...private_real_world_fresh_scenario_suite.json`: passed
   - suite count: `2`
@@ -281,11 +282,11 @@ Observed on 2026-03-07:
   - scenario count: `3`
   - overall score mean: `0.7721`
   - overall pass-rate mean: `1.0`
-- `promote-suite ...private_real_world_test_scenario_suite.json --split fresh --scenario-pack-version real-world-fresh-pack-0.1.0`: correctly rejected by default
+- `promote-suite ...private_real_world_test_scenario_suite.json --split fresh --scenario-pack-version real-world-fresh-pack-0.2.0`: correctly rejected by default
   - result: `ok: false`
   - reason: hidden split cloning now requires explicit draft-only override
 - `check-pack-changelog ...public_pack_changelog.json`: passed
-  - changelog entry count: `9`
+  - changelog entry count: `15`
   - validation: `ok`
 - `aggregate-operator-reviews ...minimal_operator_review.json`: passed
   - review count: `1`
@@ -325,8 +326,8 @@ Observed on 2026-03-07:
 - `python -m thestartupbench version`: passed
   - reported version: `0.9.0`
 - `python -m unittest discover -s tests -p "test_*.py"`: passed
-  - `116` tests
-  - `23` files
+  - `121` tests
+  - `24` files
 
 ## What Is Covered Well
 

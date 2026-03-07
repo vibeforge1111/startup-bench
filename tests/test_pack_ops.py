@@ -43,7 +43,7 @@ class PackOpsTests(unittest.TestCase):
         self.assertTrue(result["public_manifest_validation"]["ok"])
         manifest = result["public_manifest"]
         self.assertEqual(manifest["split"], "fresh")
-        self.assertEqual(manifest["scenario_count"], 5)
+        self.assertEqual(manifest["scenario_count"], 7)
         self.assertEqual(manifest["scenarios"][0]["hidden_ref"], "fresh_000")
 
     def test_validate_suite_family_accepts_distinct_hidden_test_and_fresh_packs(self) -> None:

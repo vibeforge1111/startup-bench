@@ -214,6 +214,7 @@ Current state-transition coverage:
 Current built-in baselines:
 
 - `heuristic_b2b_operator`
+- `heuristic_liquidity_operator`
 - `heuristic_long_horizon_operator`
 - `heuristic_market_aware_operator`
 - `heuristic_resilient_operator`
