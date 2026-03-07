@@ -215,6 +215,37 @@ class RuntimeTests(unittest.TestCase):
             "Reset burn and tighten onboarding execution.",
         )
 
+    def test_ops_incident_read_and_respond_updates_crisis_state(self) -> None:
+        read_before = execute_tool_call(
+            self.session,
+            {
+                "tool_name": "ops.incident.read",
+                "request_id": "req_ops_001",
+                "arguments": {},
+            },
+        )
+        self.assertTrue(read_before["ok"])
+        self.assertEqual(read_before["result"]["incident_state"]["major_incidents_open"], 1)
+
+        response = execute_tool_call(
+            self.session,
+            {
+                "tool_name": "ops.incident.respond",
+                "request_id": "req_ops_002",
+                "arguments": {
+                    "incident_reduction": 1,
+                    "trust_recovery": 0.04,
+                    "churn_reduction": 0.006,
+                    "monthly_burn_increase_usd": 10000,
+                },
+            },
+        )
+        self.assertTrue(response["ok"])
+        self.assertEqual(self.session.world_state["product"]["major_incidents_open"], 0)
+        self.assertEqual(self.session.world_state["customers"]["trust_score"], 0.78)
+        self.assertEqual(self.session.world_state["customers"]["monthly_churn_rate"], 0.026)
+        self.assertEqual(self.session.world_state["finance"]["monthly_burn_usd"], 215000.0)
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -296,6 +296,74 @@ def execute_tool_call(session: RuntimeSession, tool_call: dict) -> dict:
             },
         )
 
+    if tool_name == "ops.incident.read":
+        product = session.world_state.setdefault("product", {})
+        operations = session.world_state.setdefault("operations", {})
+        customers = session.world_state.setdefault("customers", {})
+        return _tool_result(
+            tool_name,
+            request_id,
+            result={
+                "incident_state": {
+                    "major_incidents_open": product.get("major_incidents_open", 0),
+                    "trust_score": customers.get("trust_score"),
+                    "monthly_churn_rate": customers.get("monthly_churn_rate"),
+                    "incident_response_count": operations.get("incident_response_count", 0),
+                    "last_incident_response": deepcopy(operations.get("last_incident_response")),
+                }
+            },
+        )
+
+    if tool_name == "ops.incident.respond":
+        product = session.world_state.setdefault("product", {})
+        customers = session.world_state.setdefault("customers", {})
+        finance = session.world_state.setdefault("finance", {})
+        operations = session.world_state.setdefault("operations", {})
+        response_plan = {
+            "incident_reduction": int(arguments.get("incident_reduction", 1)),
+            "trust_recovery": float(arguments.get("trust_recovery", 0.05)),
+            "churn_reduction": float(arguments.get("churn_reduction", 0.008)),
+            "monthly_burn_increase_usd": float(arguments.get("monthly_burn_increase_usd", 12000)),
+        }
+        apply_operations(
+            session.world_state,
+            [
+                {"op": "increment", "path": "product.major_incidents_open", "value": -response_plan["incident_reduction"]},
+                {"op": "clamp", "path": "product.major_incidents_open", "min": 0},
+                {"op": "increment", "path": "customers.trust_score", "value": response_plan["trust_recovery"]},
+                {"op": "clamp", "path": "customers.trust_score", "min": 0.0, "max": 1.0},
+                {"op": "increment", "path": "customers.monthly_churn_rate", "value": -response_plan["churn_reduction"]},
+                {"op": "clamp", "path": "customers.monthly_churn_rate", "min": 0.0, "max": 1.0},
+                {"op": "increment", "path": "finance.monthly_burn_usd", "value": response_plan["monthly_burn_increase_usd"]},
+                {"op": "increment", "path": "operations.incident_response_count", "value": 1},
+            ],
+        )
+        finance["monthly_burn_usd"] = round(float(finance.get("monthly_burn_usd", 0)), 2)
+        customers["trust_score"] = round(float(customers.get("trust_score", 0)), 4)
+        customers["monthly_churn_rate"] = round(float(customers.get("monthly_churn_rate", 0)), 4)
+        operations["last_incident_response"] = response_plan
+        recalculate_derived_metrics(session.world_state)
+        return _tool_result(
+            tool_name,
+            request_id,
+            result={
+                "incident_state": {
+                    "major_incidents_open": product.get("major_incidents_open", 0),
+                    "trust_score": customers.get("trust_score"),
+                    "monthly_churn_rate": customers.get("monthly_churn_rate"),
+                    "monthly_burn_usd": finance.get("monthly_burn_usd"),
+                    "incident_response_count": operations.get("incident_response_count", 0),
+                }
+            },
+            state_delta_summary={
+                "product.major_incidents_open": product.get("major_incidents_open", 0),
+                "customers.trust_score": customers.get("trust_score"),
+                "customers.monthly_churn_rate": customers.get("monthly_churn_rate"),
+                "finance.monthly_burn_usd": finance.get("monthly_burn_usd"),
+                "operations.incident_response_count": operations.get("incident_response_count", 0),
+            },
+        )
+
     if tool_name == "notes.read":
         return _tool_result(tool_name, request_id, result={"notes": list(session.notes)})
 

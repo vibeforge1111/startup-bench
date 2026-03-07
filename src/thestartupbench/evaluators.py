@@ -119,25 +119,38 @@ def _score_customer_health(world_state: dict) -> tuple[float, dict]:
     return score, details
 
 
-def _score_strategic_coherence(world_state: dict) -> tuple[float, dict]:
+def _score_strategic_coherence(world_state: dict, *, scenario: dict) -> tuple[float, dict]:
     governance = world_state.get("governance", {})
     finance = world_state.get("finance", {})
+    operations = world_state.get("operations", {})
+    product = world_state.get("product", {})
 
     board_update_count = int(governance.get("board_update_count", 0))
     has_latest_update = bool(governance.get("latest_board_update"))
     has_finance_plan = bool(finance.get("last_plan_update"))
+    incident_response_count = int(operations.get("incident_response_count", 0))
+    major_incidents_open = int(product.get("major_incidents_open", 0))
+    track = scenario["metadata"]["track"]
 
     board_signal = _clamp(board_update_count / 2.0)
-    score = _round_score(
+    base_score = (
         board_signal * 0.5
         + (0.3 if has_latest_update else 0.0)
         + (0.2 if has_finance_plan else 0.0)
     )
+    if track == "crisis":
+        incident_signal = _clamp(incident_response_count / 2.0)
+        resolution_signal = 1.0 if major_incidents_open == 0 else _clamp(1.0 - (major_incidents_open / 3.0))
+        score = _round_score(base_score * 0.55 + incident_signal * 0.2 + resolution_signal * 0.25)
+    else:
+        score = _round_score(base_score)
     details = {
         "board_update_count": board_update_count,
         "has_latest_board_update": has_latest_update,
         "has_finance_plan_update": has_finance_plan,
         "board_signal_score": _round_score(board_signal),
+        "incident_response_count": incident_response_count,
+        "major_incidents_open": major_incidents_open,
     }
     return score, details
 
@@ -150,7 +163,7 @@ def evaluate_dry_run(*, scenario: dict, world_state: dict) -> dict:
     cash_efficiency, cash_details = _score_cash_efficiency(world_state)
     revenue_quality, revenue_details = _score_revenue_quality(world_state)
     customer_health, customer_details = _score_customer_health(world_state)
-    strategic_coherence, strategy_details = _score_strategic_coherence(world_state)
+    strategic_coherence, strategy_details = _score_strategic_coherence(world_state, scenario=scenario)
 
     component_scores = {
         "cash_efficiency": cash_efficiency,

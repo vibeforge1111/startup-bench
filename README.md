@@ -12,6 +12,7 @@ Current status:
 - stateful business transition runtime implemented for core startup tools
 - programmatic scoring and runtime tests implemented
 - heuristic baseline runner implemented
+- multiple heuristic baseline families implemented
 - repeated-run campaign aggregation implemented
 - generic primitive/event operation engine implemented
 - multi-scenario suite packaging and reporting implemented
@@ -97,6 +98,8 @@ Current reference runtime coverage:
 - `sales.pricing.propose`
 - `finance.plan.read`
 - `finance.plan.write`
+- `ops.incident.read`
+- `ops.incident.respond`
 - `board.read`
 - `board.update`
 - `notes.read`
@@ -108,3 +111,8 @@ Current state-transition coverage:
 - tool handlers now route core mutations through a shared operation engine
 - scheduled events may reference reusable `event_model.primitive_catalog` entries
 - primitive operations currently support `set`, `increment`, `multiply`, `clamp`, and `append_unique`
+
+Current built-in baselines:
+
+- `heuristic_b2b_operator`
+- `heuristic_resilient_operator`

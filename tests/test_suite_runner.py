@@ -30,6 +30,27 @@ class SuiteRunnerTests(unittest.TestCase):
         tracks = {item["track"] for item in report["track_summaries"]}
         self.assertEqual(tracks, {"b2b_saas", "crisis"})
 
+    def test_resilient_baseline_improves_suite_pass_rate(self) -> None:
+        b2b_style = run_suite(
+            suite_path=SUITE_PATH,
+            runner_type="baseline",
+            seeds=[1, 2],
+            baseline_id="heuristic_b2b_operator",
+            max_turns=4,
+        )
+        resilient = run_suite(
+            suite_path=SUITE_PATH,
+            runner_type="baseline",
+            seeds=[1, 2],
+            baseline_id="heuristic_resilient_operator",
+            max_turns=4,
+        )
+
+        self.assertGreaterEqual(
+            resilient["suite_report"]["overall"]["pass_rate_mean"],
+            b2b_style["suite_report"]["overall"]["pass_rate_mean"],
+        )
+
 
 if __name__ == "__main__":
     unittest.main()

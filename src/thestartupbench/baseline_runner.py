@@ -16,7 +16,7 @@ from .trace_validation import validate_trace_integrity
 from .validation import validate_instance
 
 
-_BASELINE_IDS = {"heuristic_b2b_operator"}
+_BASELINE_IDS = {"heuristic_b2b_operator", "heuristic_resilient_operator"}
 
 
 def list_baselines() -> list[str]:
@@ -123,6 +123,123 @@ def _heuristic_b2b_actions(session: RuntimeSession, *, turn_index: int) -> list[
     return actions
 
 
+def _heuristic_resilient_actions(session: RuntimeSession, *, turn_index: int) -> list[dict]:
+    finance = session.world_state.get("finance", {})
+    product = session.world_state.get("product", {})
+    customers = session.world_state.get("customers", {})
+    sales = session.world_state.get("sales", {})
+    governance = session.world_state.get("governance", {})
+    actions: list[dict] = []
+    action_index = 0
+
+    actions.append(
+        {
+            "tool_name": "metrics.report",
+            "request_id": _next_request_id(turn_index, action_index),
+            "arguments": {},
+        }
+    )
+    action_index += 1
+
+    if int(product.get("major_incidents_open", 0)) > 0:
+        actions.append(
+            {
+                "tool_name": "ops.incident.respond",
+                "request_id": _next_request_id(turn_index, action_index),
+                "arguments": {
+                    "incident_reduction": 1,
+                    "trust_recovery": 0.06,
+                    "churn_reduction": 0.01,
+                    "monthly_burn_increase_usd": 9000,
+                },
+            }
+        )
+        action_index += 1
+
+    if float(finance.get("runway_weeks", 0)) < 34 and not finance.get("last_plan_update"):
+        actions.append(
+            {
+                "tool_name": "finance.plan.write",
+                "request_id": _next_request_id(turn_index, action_index),
+                "arguments": {"budget_changes": {"monthly_burn_usd": -18000}},
+            }
+        )
+        action_index += 1
+
+    if float(product.get("onboarding_quality", 0.5)) < 0.7 and int(product.get("major_incidents_open", 0)) <= 1:
+        actions.append(
+            {
+                "tool_name": "product.roadmap.write",
+                "request_id": _next_request_id(turn_index, action_index),
+                "arguments": {
+                    "roadmap_items_delta": -1,
+                    "onboarding_quality_delta": 0.07,
+                    "major_incidents_delta": 0,
+                    "budget_change_monthly_burn_usd": 5000,
+                },
+            }
+        )
+        action_index += 1
+
+    if float(customers.get("trust_score", 0.0)) >= 0.7 and float(sales.get("pricing", {}).get("current_price_index", 1.0)) < 1.05:
+        actions.append(
+            {
+                "tool_name": "sales.pricing.propose",
+                "request_id": _next_request_id(turn_index, action_index),
+                "arguments": {"price_change_pct": 0.04},
+            }
+        )
+        action_index += 1
+
+    if float(sales.get("weighted_pipeline_usd", 0.0)) < float(finance.get("monthly_burn_usd", 0.0)) * 5.5:
+        actions.append(
+            {
+                "tool_name": "sales.pipeline.update",
+                "request_id": _next_request_id(turn_index, action_index),
+                "arguments": {
+                    "pipeline_count_delta": 1,
+                    "weighted_pipeline_usd_delta": 50000,
+                },
+            }
+        )
+        action_index += 1
+
+    if turn_index % 3 == 0 or int(governance.get("board_update_count", 0)) < 2:
+        actions.append(
+            {
+                "tool_name": "board.update",
+                "request_id": _next_request_id(turn_index, action_index),
+                "arguments": {
+                    "summary": "Stabilized incidents first, protected trust, and tightened spend while recovering pipeline quality.",
+                    "forecast": {
+                        "runway_weeks": finance.get("runway_weeks"),
+                        "major_incidents_open": product.get("major_incidents_open"),
+                        "trust_score": customers.get("trust_score"),
+                    },
+                    "asks": ["support temporary incident-focused resource allocation"],
+                },
+            }
+        )
+        action_index += 1
+
+    actions.append(
+        {
+            "tool_name": "sim.advance",
+            "request_id": _next_request_id(turn_index, action_index),
+            "arguments": {"advance_by": 1, "unit": "week"},
+        }
+    )
+    return actions
+
+
+def _proposed_actions_for_baseline(session: RuntimeSession, *, baseline_id: str, turn_index: int) -> list[dict]:
+    if baseline_id == "heuristic_b2b_operator":
+        return _heuristic_b2b_actions(session, turn_index=turn_index)
+    if baseline_id == "heuristic_resilient_operator":
+        return _heuristic_resilient_actions(session, turn_index=turn_index)
+    raise ValueError(f"Unknown baseline_id '{baseline_id}'.")
+
+
 def run_baseline(*, scenario_path: Path, baseline_id: str, seed: int, max_turns: int | None = None) -> dict:
     if baseline_id not in _BASELINE_IDS:
         raise ValueError(f"Unknown baseline_id '{baseline_id}'. Available baselines: {', '.join(list_baselines())}")
@@ -144,7 +261,7 @@ def run_baseline(*, scenario_path: Path, baseline_id: str, seed: int, max_turns:
     for turn_index in range(total_turns):
         before_time = session.world_state["sim"]["current_time"]
         observations = session.visible_observations()
-        proposed_actions = _heuristic_b2b_actions(session, turn_index=turn_index)
+        proposed_actions = _proposed_actions_for_baseline(session, baseline_id=baseline_id, turn_index=turn_index)
         events: list[dict] = []
         actions: list[dict] = []
 

@@ -12,11 +12,13 @@ from thestartupbench.runner import run_dry_scenario
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 SCENARIO_PATH = REPO_ROOT / "examples" / "minimal_b2b_saas_scenario.json"
+CRISIS_SCENARIO_PATH = REPO_ROOT / "examples" / "minimal_crisis_scenario.json"
 
 
 class BaselineRunnerTests(unittest.TestCase):
     def test_list_baselines_contains_heuristic_operator(self) -> None:
         self.assertIn("heuristic_b2b_operator", list_baselines())
+        self.assertIn("heuristic_resilient_operator", list_baselines())
 
     def test_baseline_run_emits_valid_artifacts_and_improves_on_dry_run(self) -> None:
         dry_result = run_dry_scenario(SCENARIO_PATH, seed=37)
@@ -35,6 +37,29 @@ class BaselineRunnerTests(unittest.TestCase):
             dry_result["score_report"]["scenario_score"],
         )
         self.assertTrue(any(turn["actions"] for turn in baseline_result["trace"]["turns"]))
+
+    def test_resilient_baseline_outperforms_b2b_baseline_on_crisis_scenario(self) -> None:
+        b2b_style = run_baseline(
+            scenario_path=CRISIS_SCENARIO_PATH,
+            baseline_id="heuristic_b2b_operator",
+            seed=41,
+            max_turns=4,
+        )
+        resilient = run_baseline(
+            scenario_path=CRISIS_SCENARIO_PATH,
+            baseline_id="heuristic_resilient_operator",
+            seed=41,
+            max_turns=4,
+        )
+
+        self.assertGreater(
+            resilient["score_report"]["scenario_score"],
+            b2b_style["score_report"]["scenario_score"],
+        )
+        self.assertGreaterEqual(
+            resilient["trace"]["state_snapshots"][-1]["state"]["operations"].get("incident_response_count", 0),
+            1,
+        )
 
 
 if __name__ == "__main__":
