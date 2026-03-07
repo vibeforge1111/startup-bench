@@ -76,6 +76,15 @@ def _build_parser() -> argparse.ArgumentParser:
     redact_parser.add_argument("suite_path", help="Path to the private scenario suite JSON file")
     redact_parser.add_argument("--output-dir", help="Optional directory to write the public manifest artifact")
 
+    promote_parser = subparsers.add_parser("promote-suite", help="Clone a suite into a new split/pack version")
+    promote_parser.add_argument("suite_path", help="Path to the source scenario suite JSON file")
+    promote_parser.add_argument("--split", required=True, choices=["dev", "test", "fresh"], help="Target split")
+    promote_parser.add_argument("--scenario-pack-version", required=True, help="Target scenario pack version")
+    promote_parser.add_argument("--output-dir", help="Optional directory to write the promoted suite artifact")
+
+    changelog_parser = subparsers.add_parser("check-pack-changelog", help="Validate a public pack lifecycle changelog")
+    changelog_parser.add_argument("path", help="Path to the pack changelog JSON file")
+
     submission_parser = subparsers.add_parser("build-submission", help="Build a leaderboard submission from suite reports")
     submission_parser.add_argument("--suite-report-paths", required=True, help="Comma-separated suite report paths")
     submission_parser.add_argument("--model-id", required=True, help="Model id for the submission")
@@ -301,6 +310,42 @@ def _cmd_redact_suite(suite_path: str, output_dir: str | None) -> int:
     return 0 if result["validation"]["ok"] else 1
 
 
+def _cmd_promote_suite(
+    suite_path: str,
+    split: str,
+    scenario_pack_version: str,
+    output_dir: str | None,
+) -> int:
+    from .pack_ops import promote_suite_pack
+
+    result = promote_suite_pack(
+        Path(suite_path),
+        split=split,
+        scenario_pack_version=scenario_pack_version,
+    )
+    if output_dir:
+        out_dir = Path(output_dir)
+        out_dir.mkdir(parents=True, exist_ok=True)
+        (out_dir / "scenario_suite.json").write_text(json.dumps(result["suite"], indent=2), encoding="utf-8")
+        if "public_manifest" in result:
+            (out_dir / "public_suite_manifest.json").write_text(
+                json.dumps(result["public_manifest"], indent=2),
+                encoding="utf-8",
+            )
+    print(json.dumps(result, indent=2))
+    suite_ok = result["validation"]["ok"]
+    manifest_ok = result.get("public_manifest_validation", {}).get("ok", True)
+    return 0 if suite_ok and manifest_ok else 1
+
+
+def _cmd_check_pack_changelog(path: str) -> int:
+    from .pack_ops import validate_pack_changelog
+
+    result = validate_pack_changelog(Path(path))
+    print(json.dumps(result, indent=2))
+    return 0 if result["validation"]["ok"] else 1
+
+
 def _cmd_build_submission(
     suite_report_paths: str,
     model_id: str,
@@ -385,6 +430,15 @@ def main(argv: list[str] | None = None) -> int:
         )
     if args.command == "redact-suite":
         return _cmd_redact_suite(args.suite_path, args.output_dir)
+    if args.command == "promote-suite":
+        return _cmd_promote_suite(
+            args.suite_path,
+            args.split,
+            args.scenario_pack_version,
+            args.output_dir,
+        )
+    if args.command == "check-pack-changelog":
+        return _cmd_check_pack_changelog(args.path)
     if args.command == "build-submission":
         return _cmd_build_submission(
             args.suite_report_paths,

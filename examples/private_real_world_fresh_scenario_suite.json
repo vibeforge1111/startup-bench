@@ -1,0 +1,38 @@
+{
+  "suite_version": "0.1.0",
+  "benchmark_version": "0.2.0-draft",
+  "scenario_pack_version": "real-world-fresh-pack-0.1.0",
+  "split": "fresh",
+  "scenarios": [
+    {
+      "scenario_id": "real_world_airbnb_emergency_financing_test_001",
+      "path": "real_world_airbnb_emergency_financing_test_scenario.json",
+      "track": "board",
+      "mode": "fresh"
+    },
+    {
+      "scenario_id": "real_world_brex_svb_treasury_shock_test_001",
+      "path": "real_world_brex_svb_treasury_shock_test_scenario.json",
+      "track": "crisis",
+      "mode": "fresh"
+    },
+    {
+      "scenario_id": "real_world_zoom_security_freeze_test_001",
+      "path": "real_world_zoom_security_freeze_test_scenario.json",
+      "track": "crisis",
+      "mode": "fresh"
+    },
+    {
+      "scenario_id": "real_world_atlassian_restoration_test_001",
+      "path": "real_world_atlassian_restoration_test_scenario.json",
+      "track": "crisis",
+      "mode": "fresh"
+    },
+    {
+      "scenario_id": "real_world_shopify_peak_readiness_test_001",
+      "path": "real_world_shopify_peak_readiness_test_scenario.json",
+      "track": "scale",
+      "mode": "fresh"
+    }
+  ]
+}

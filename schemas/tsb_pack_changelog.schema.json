@@ -1,0 +1,44 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://thestartupbench.org/schemas/tsb_pack_changelog.schema.json",
+  "title": "TheStartupBench Pack Lifecycle Changelog",
+  "type": "object",
+  "required": ["changelog_version", "benchmark_version", "generated_at", "entries"],
+  "properties": {
+    "changelog_version": { "type": "string" },
+    "benchmark_version": { "type": "string" },
+    "generated_at": { "type": "string" },
+    "entries": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "effective_date",
+          "pack_version",
+          "split",
+          "visibility",
+          "action",
+          "lifecycle_state",
+          "contamination_status",
+          "notes"
+        ],
+        "properties": {
+          "effective_date": { "type": "string" },
+          "pack_version": { "type": "string" },
+          "split": { "type": "string", "enum": ["dev", "test", "fresh"] },
+          "visibility": { "type": "string", "enum": ["public", "hidden"] },
+          "action": { "type": "string", "enum": ["created", "promoted", "retired", "contaminated"] },
+          "lifecycle_state": { "type": "string", "enum": ["active", "retired", "contaminated"] },
+          "contamination_status": { "type": "string", "enum": ["clean", "possible_contamination", "known_contamination"] },
+          "predecessor_pack_version": { "type": "string" },
+          "successor_pack_version": { "type": "string" },
+          "manifest_path": { "type": "string" },
+          "notes": { "type": "string" }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

@@ -14,6 +14,7 @@ SCHEMA_BY_ARTIFACT_TYPE = {
     "scenario": "tsb_scenario.schema.json",
     "scenario-suite": "tsb_scenario_suite.schema.json",
     "public-suite-manifest": "tsb_public_suite_manifest.schema.json",
+    "pack-changelog": "tsb_pack_changelog.schema.json",
     "trace": "tsb_trace.schema.json",
     "submission": "tsb_submission.schema.json",
     "world-state": "tsb_world_state.schema.json",

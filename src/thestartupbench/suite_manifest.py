@@ -8,8 +8,7 @@ from .suite_runner import load_scenario_suite
 from .validation import validate_instance
 
 
-def redact_suite_manifest(path: Path) -> dict:
-    suite = load_scenario_suite(path)
+def build_public_suite_manifest(suite: dict) -> dict:
     scenarios = []
     for index, entry in enumerate(suite["scenarios"]):
         scenarios.append(
@@ -39,4 +38,9 @@ def redact_suite_manifest(path: Path) -> dict:
     }
 
 
-__all__ = ["redact_suite_manifest"]
+def redact_suite_manifest(path: Path) -> dict:
+    suite = load_scenario_suite(path)
+    return build_public_suite_manifest(suite)
+
+
+__all__ = ["build_public_suite_manifest", "redact_suite_manifest"]
