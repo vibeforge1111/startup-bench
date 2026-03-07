@@ -114,16 +114,29 @@
       "notes": "Expanded operator hidden test pack retired after adding a second GTM trust-proof slice and a second people/org slice."
     },
     {
-      "effective_date": "2026-03-07",
+      "effective_date": "2026-03-08",
       "pack_version": "operator-test-pack-0.3.0",
+      "split": "test",
+      "visibility": "hidden",
+      "action": "retired",
+      "lifecycle_state": "retired",
+      "contamination_status": "clean",
+      "predecessor_pack_version": "operator-test-pack-0.2.0",
+      "manifest_path": "examples/operator_public_test_manifest.json",
+      "successor_pack_version": "operator-test-pack-0.4.0",
+      "notes": "Expanded operator hidden test pack retired after adding a third finance slice and a third people/org slice."
+    },
+    {
+      "effective_date": "2026-03-08",
+      "pack_version": "operator-test-pack-0.4.0",
       "split": "test",
       "visibility": "hidden",
       "action": "created",
       "lifecycle_state": "active",
       "contamination_status": "clean",
-      "predecessor_pack_version": "operator-test-pack-0.2.0",
+      "predecessor_pack_version": "operator-test-pack-0.3.0",
       "manifest_path": "examples/operator_public_test_manifest.json",
-      "notes": "Expanded operator hidden test pack covering three GTM slices, two finance slices, and two people/org slices."
+      "notes": "Expanded operator hidden test pack covering three GTM slices, three finance slices, and three people/org slices."
     },
     {
       "effective_date": "2026-03-07",
@@ -151,14 +164,27 @@
       "notes": "Expanded operator hidden fresh pack retired after adding a second GTM trust-proof slice and a second people/org slice."
     },
     {
-      "effective_date": "2026-03-07",
+      "effective_date": "2026-03-08",
       "pack_version": "operator-fresh-pack-0.3.0",
+      "split": "fresh",
+      "visibility": "hidden",
+      "action": "retired",
+      "lifecycle_state": "retired",
+      "contamination_status": "clean",
+      "predecessor_pack_version": "operator-test-pack-0.3.0",
+      "manifest_path": "examples/operator_public_fresh_manifest.json",
+      "successor_pack_version": "operator-fresh-pack-0.4.0",
+      "notes": "Expanded operator hidden fresh pack retired after adding a third finance slice and a third people/org slice."
+    },
+    {
+      "effective_date": "2026-03-08",
+      "pack_version": "operator-fresh-pack-0.4.0",
       "split": "fresh",
       "visibility": "hidden",
       "action": "created",
       "lifecycle_state": "active",
       "contamination_status": "clean",
-      "predecessor_pack_version": "operator-test-pack-0.3.0",
+      "predecessor_pack_version": "operator-test-pack-0.4.0",
       "manifest_path": "examples/operator_public_fresh_manifest.json",
       "notes": "Expanded operator hidden fresh pack for contamination-resistant evaluation across broader GTM, finance, and people/org coverage."
     },

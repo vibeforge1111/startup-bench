@@ -1,9 +1,9 @@
 {
   "manifest_version": "0.1.0",
   "benchmark_version": "0.2.0-draft",
-  "scenario_pack_version": "operator-test-pack-0.3.0",
+  "scenario_pack_version": "operator-test-pack-0.4.0",
   "split": "test",
-  "scenario_count": 7,
+  "scenario_count": 9,
   "scenarios": [
     {
       "scenario_id": "hidden_gtm_pipeline_reset_test_001",
@@ -36,16 +36,28 @@
       "hidden_ref": "test_004"
     },
     {
+      "scenario_id": "hidden_finance_covenant_squeeze_test_001",
+      "track": "finance",
+      "mode": "test",
+      "hidden_ref": "test_005"
+    },
+    {
       "scenario_id": "hidden_people_attrition_test_001",
       "track": "people",
       "mode": "test",
-      "hidden_ref": "test_005"
+      "hidden_ref": "test_006"
     },
     {
       "scenario_id": "hidden_people_reorg_drag_test_001",
       "track": "people",
       "mode": "test",
-      "hidden_ref": "test_006"
+      "hidden_ref": "test_007"
+    },
+    {
+      "scenario_id": "hidden_people_manager_span_test_001",
+      "track": "people",
+      "mode": "test",
+      "hidden_ref": "test_008"
     }
   ]
 }
