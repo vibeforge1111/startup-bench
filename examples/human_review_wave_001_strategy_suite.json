@@ -1,0 +1,26 @@
+{
+  "suite_version": "0.1.0",
+  "benchmark_version": "0.2.0-draft",
+  "scenario_pack_version": "human-review-wave-001-strategy",
+  "split": "test",
+  "scenarios": [
+    {
+      "scenario_id": "hidden_board_stakeholder_conflict_test_001",
+      "path": "hidden_board_stakeholder_conflict_test_scenario.json",
+      "track": "board",
+      "mode": "test"
+    },
+    {
+      "scenario_id": "hidden_product_delayed_consequence_test_001",
+      "path": "hidden_product_delayed_consequence_test_scenario.json",
+      "track": "product",
+      "mode": "test"
+    },
+    {
+      "scenario_id": "hidden_scale_multi_quarter_test_001",
+      "path": "hidden_scale_multi_quarter_test_scenario.json",
+      "track": "scale",
+      "mode": "test"
+    }
+  ]
+}

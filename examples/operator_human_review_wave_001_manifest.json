@@ -1,0 +1,76 @@
+{
+  "study_version": "0.1.0",
+  "benchmark_version": "0.2.0-draft",
+  "study_id": "operator-human-review-wave-001",
+  "study_title": "Human Review Wave 001",
+  "review_targets": [
+    {
+      "target_id": "human-canary-wave",
+      "suite_path": "examples/human_review_wave_001_canary_suite.json",
+      "focus": "confirm exploit-resistance evaluator corrections on hidden canaries",
+      "baseline_runner_id": "heuristic_market_aware_operator",
+      "seed": 1,
+      "max_turns": 4,
+      "required_scenarios": [
+        "hidden_canary_pricing_trap_test_001",
+        "hidden_canary_hiring_trap_test_001"
+      ]
+    },
+    {
+      "target_id": "human-strategy-wave",
+      "suite_path": "examples/human_review_wave_001_strategy_suite.json",
+      "focus": "validate long-horizon strategy slices and scrutinize governance severity",
+      "baseline_runner_id": "heuristic_long_horizon_operator",
+      "seed": 1,
+      "max_turns": 6,
+      "required_scenarios": [
+        "hidden_board_stakeholder_conflict_test_001",
+        "hidden_product_delayed_consequence_test_001",
+        "hidden_scale_multi_quarter_test_001"
+      ]
+    },
+    {
+      "target_id": "human-real-world-wave",
+      "suite_path": "examples/human_review_wave_001_real_world_suite.json",
+      "focus": "confirm crisis corrections on security backlash and treasury shock scenarios",
+      "baseline_runner_id": "heuristic_resilient_operator",
+      "seed": 1,
+      "max_turns": 3,
+      "required_scenarios": [
+        "real_world_zoom_security_freeze_test_001",
+        "real_world_brex_svb_treasury_shock_test_001"
+      ]
+    }
+  ],
+  "reviewer_targets": [
+    {
+      "role": "founder_ceo",
+      "functional_domain": "general_management",
+      "target_count": 3,
+      "stage_focus": "series_a_to_growth"
+    },
+    {
+      "role": "vp_product",
+      "functional_domain": "product",
+      "target_count": 2,
+      "stage_focus": "series_a_to_series_c"
+    },
+    {
+      "role": "finance_or_ops_lead",
+      "functional_domain": "finance_operations",
+      "target_count": 3,
+      "stage_focus": "series_a_to_growth"
+    }
+  ],
+  "promotion_gates": {
+    "minimum_reviewers_per_target": 2,
+    "maximum_mean_absolute_rubric_gap": 0.6,
+    "minimum_recommendation_agreement_rate": 0.67,
+    "allow_disagreement_flags": true
+  },
+  "notes": [
+    "This wave is intentionally narrower than operator-calibration-wave-001 because it focuses on slices that already received synthetic-panel scrutiny.",
+    "The board stakeholder conflict scenario remains on a governance watchlist even though recommendation-level synthetic agreement was pass.",
+    "Zoom security backlash and Brex treasury shock were both evaluator-corrected before this human wave."
+  ]
+}
