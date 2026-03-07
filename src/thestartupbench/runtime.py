@@ -7,6 +7,7 @@ from dataclasses import dataclass, field
 from datetime import datetime, timedelta, timezone
 
 from .observations import project_surfaces
+from .runner import recalculate_derived_metrics
 
 
 def _parse_iso8601(value: str) -> datetime:
@@ -64,6 +65,64 @@ def _tool_result(tool_name: str, request_id: str, *, result: dict, state_delta_s
     }
 
 
+def _set_dotted_value(target: dict, dotted_path: str, delta_or_value) -> None:
+    parts = dotted_path.split(".")
+    cursor = target
+    for part in parts[:-1]:
+        cursor = cursor.setdefault(part, {})
+    leaf = parts[-1]
+    current = cursor.get(leaf)
+    if isinstance(delta_or_value, (int, float)) and isinstance(current, (int, float)):
+        cursor[leaf] = current + delta_or_value
+    else:
+        cursor[leaf] = delta_or_value
+
+
+def _apply_event_effects(session: RuntimeSession, effects: dict) -> None:
+    for path, delta_or_value in effects.items():
+        _set_dotted_value(session.world_state, path, delta_or_value)
+
+
+def _process_due_events(session: RuntimeSession) -> list[dict]:
+    current_turn = int(session.world_state["sim"]["current_turn"])
+    processed_ids = set(session.world_state["sim"].setdefault("processed_event_ids", []))
+    emitted: list[dict] = []
+    for event in session.scenario.get("event_model", {}).get("scheduled_events", []):
+        event_id = event["event_id"]
+        if event_id in processed_ids:
+            continue
+        if int(event.get("at_turn", 0)) > current_turn:
+            continue
+        _apply_event_effects(session, event.get("effects", {}))
+        visible_event = {
+            "event_type": event.get("event_type", "scheduled_event"),
+            "event_id": event_id,
+            "message": event.get("visible_message", ""),
+        }
+        processed_ids.add(event_id)
+        emitted.append(visible_event)
+        session.event_log.append(visible_event)
+    session.world_state["sim"]["processed_event_ids"] = sorted(processed_ids)
+    total_events = len(session.scenario.get("event_model", {}).get("scheduled_events", []))
+    session.world_state["sim"]["pending_event_count"] = total_events - len(processed_ids)
+    return emitted
+
+
+def _apply_weekly_business_drift(session: RuntimeSession, *, weeks: int) -> None:
+    finance = session.world_state.setdefault("finance", {})
+    customers = session.world_state.setdefault("customers", {})
+    monthly_revenue = float(finance.get("monthly_revenue_usd", 0))
+    monthly_burn = float(finance.get("monthly_burn_usd", 0))
+    cash = float(finance.get("cash_usd", 0))
+    cash += ((monthly_revenue - monthly_burn) / 4.0) * weeks
+    finance["cash_usd"] = round(cash, 2)
+
+    paying_accounts = int(customers.get("paying_accounts", 0))
+    churn = float(customers.get("monthly_churn_rate", 0))
+    accounts_lost = int(round(paying_accounts * (churn / 4.0) * weeks))
+    customers["paying_accounts"] = max(0, paying_accounts - accounts_lost)
+
+
 def execute_tool_call(session: RuntimeSession, tool_call: dict) -> dict:
     tool_name = tool_call["tool_name"]
     request_id = tool_call["request_id"]
@@ -78,8 +137,61 @@ def execute_tool_call(session: RuntimeSession, tool_call: dict) -> dict:
     if tool_name == "finance.plan.read":
         return _tool_result(tool_name, request_id, result={"finance": deepcopy(session.world_state["finance"])})
 
+    if tool_name == "finance.plan.write":
+        budget_changes = arguments.get("budget_changes", {})
+        state_delta = {}
+        for key, delta in budget_changes.items():
+            current = float(session.world_state["finance"].get(key, 0))
+            session.world_state["finance"][key] = round(current + float(delta), 2)
+            state_delta[f"finance.{key}"] = session.world_state["finance"][key]
+        session.world_state["finance"]["last_plan_update"] = {
+            "budget_changes": budget_changes,
+        }
+        recalculate_derived_metrics(session.world_state)
+        return _tool_result(
+            tool_name,
+            request_id,
+            result={"finance": deepcopy(session.world_state["finance"])},
+            state_delta_summary=state_delta,
+        )
+
     if tool_name == "sales.pipeline.read":
         return _tool_result(tool_name, request_id, result={"sales": deepcopy(session.world_state["sales"])})
+
+    if tool_name == "sales.pricing.propose":
+        change_pct = float(arguments.get("price_change_pct", 0))
+        max_auto = float(session.world_state.get("policy", {}).get("max_auto_price_increase_pct", 0.2))
+        if change_pct > max_auto:
+            return {
+                "ok": False,
+                "request_id": request_id,
+                "tool_name": tool_name,
+                "timestamp": _format_iso8601(datetime.now(timezone.utc)),
+                "result": {},
+                "error_code": "approval_required",
+                "error_message": f"price_change_pct {change_pct} exceeds auto-approval limit {max_auto}",
+                "state_delta_summary": {},
+            }
+
+        pricing = session.world_state.setdefault("sales", {}).setdefault("pricing", {"current_price_index": 1.0})
+        pricing["current_price_index"] = round(float(pricing.get("current_price_index", 1.0)) * (1.0 + change_pct), 4)
+        finance = session.world_state.setdefault("finance", {})
+        customers = session.world_state.setdefault("customers", {})
+        finance["monthly_revenue_usd"] = round(float(finance.get("monthly_revenue_usd", 0)) * (1.0 + change_pct * 0.55), 2)
+        customers["monthly_churn_rate"] = round(float(customers.get("monthly_churn_rate", 0)) + max(0.0, change_pct) * 0.01, 4)
+        customers["trust_score"] = round(max(0.0, float(customers.get("trust_score", 0.7)) - max(0.0, change_pct) * 0.08), 4)
+        recalculate_derived_metrics(session.world_state)
+        return _tool_result(
+            tool_name,
+            request_id,
+            result={"pricing": deepcopy(pricing), "finance": deepcopy(finance), "customers": deepcopy(customers)},
+            state_delta_summary={
+                "sales.pricing.current_price_index": pricing["current_price_index"],
+                "finance.monthly_revenue_usd": finance["monthly_revenue_usd"],
+                "customers.monthly_churn_rate": customers["monthly_churn_rate"],
+                "customers.trust_score": customers["trust_score"],
+            },
+        )
 
     if tool_name == "notes.read":
         return _tool_result(tool_name, request_id, result={"notes": list(session.notes)})
@@ -101,11 +213,17 @@ def execute_tool_call(session: RuntimeSession, tool_call: dict) -> dict:
             "asks": arguments.get("asks", []),
         }
         session.world_state["governance"]["latest_board_update"] = update
+        session.world_state["governance"]["board_update_count"] = int(
+            session.world_state["governance"].get("board_update_count", 0)
+        ) + 1
         return _tool_result(
             tool_name,
             request_id,
             result={"board_update": update},
-            state_delta_summary={"governance.latest_board_update": "updated"},
+            state_delta_summary={
+                "governance.latest_board_update": "updated",
+                "governance.board_update_count": session.world_state["governance"]["board_update_count"],
+            },
         )
 
     if tool_name == "sim.advance":
@@ -113,25 +231,39 @@ def execute_tool_call(session: RuntimeSession, tool_call: dict) -> dict:
         unit = arguments.get("unit", "week")
         before = session.world_state["sim"]["current_time"]
         after = _advance_time(before, amount=amount, unit=unit)
+        weeks = amount
+        if unit == "day":
+            weeks = max(1, amount // 7)
+        elif unit == "month":
+            weeks = amount * 4
+        elif unit == "quarter":
+            weeks = amount * 13
+        _apply_weekly_business_drift(session, weeks=weeks)
         session.world_state["sim"]["current_time"] = after
         session.world_state["sim"]["current_turn"] = int(session.world_state["sim"]["current_turn"]) + 1
-        visible_event = {
+        visible_events = [{
             "event_type": "time_advanced",
             "before": before,
             "after": after,
             "unit": unit,
             "amount": amount,
-        }
-        session.event_log.append(visible_event)
+        }]
+        visible_events.extend(_process_due_events(session))
+        recalculate_derived_metrics(session.world_state)
+        session.event_log.extend(visible_events)
         return _tool_result(
             tool_name,
             request_id,
-            result={"sim_time_before": before, "sim_time_after": after, "events_processed": [visible_event]},
-            state_delta_summary={"sim.current_time": after, "sim.current_turn": session.world_state["sim"]["current_turn"]},
+            result={"sim_time_before": before, "sim_time_after": after, "events_processed": visible_events},
+            state_delta_summary={
+                "sim.current_time": after,
+                "sim.current_turn": session.world_state["sim"]["current_turn"],
+                "finance.cash_usd": session.world_state["finance"].get("cash_usd"),
+                "finance.runway_weeks": session.world_state["finance"].get("runway_weeks"),
+            },
         )
 
     raise KeyError(f"Tool not implemented in reference runtime: {tool_name}")
 
 
 __all__ = ["RuntimeSession", "execute_tool_call"]
-

@@ -18,16 +18,39 @@
   "initial_state": {
     "company": {
       "stage": "seed",
+      "sector": "b2b_saas",
+      "business_model": "subscription"
+    },
+    "finance": {
       "cash_usd": 920000,
-      "monthly_burn_usd": 205000
+      "monthly_burn_usd": 205000,
+      "monthly_revenue_usd": 71000
     },
     "product": {
       "major_incidents_open": 1,
-      "roadmap_items": 5
+      "roadmap_items": 5,
+      "onboarding_quality": 0.55
     },
     "customers": {
       "paying_accounts": 41,
-      "monthly_churn_rate": 0.032
+      "monthly_churn_rate": 0.032,
+      "trust_score": 0.74
+    },
+    "sales": {
+      "pipeline_count": 14,
+      "weighted_pipeline_usd": 380000,
+      "pricing": {
+        "current_price_index": 1.0
+      }
+    },
+    "governance": {
+      "board_update_count": 0
+    },
+    "policy": {
+      "max_auto_price_increase_pct": 0.2
+    },
+    "sim": {
+      "current_time": "2026-01-01T09:00:00Z"
     }
   },
   "latent_state": {
@@ -58,7 +81,28 @@
     "sim.advance"
   ],
   "event_model": {
-    "kind": "seeded_schedule"
+    "kind": "seeded_schedule",
+    "scheduled_events": [
+      {
+        "event_id": "ev_001",
+        "at_turn": 2,
+        "event_type": "infra_cost_shock",
+        "visible_message": "Hosting costs rose after a model provider repriced inference.",
+        "effects": {
+          "finance.monthly_burn_usd": 18000
+        }
+      },
+      {
+        "event_id": "ev_002",
+        "at_turn": 4,
+        "event_type": "enterprise_deal_closed",
+        "visible_message": "A late-stage enterprise opportunity closed successfully.",
+        "effects": {
+          "finance.monthly_revenue_usd": 22000,
+          "sales.pipeline_count": -1
+        }
+      }
+    ]
   },
   "policy_constraints": [
     {
@@ -109,4 +153,3 @@
     ]
   }
 }
-

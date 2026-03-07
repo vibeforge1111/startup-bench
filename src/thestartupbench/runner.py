@@ -43,6 +43,26 @@ def _derive_horizon_end(*, current_time: str, time_horizon: dict) -> str:
     return _format_iso8601(start + delta)
 
 
+def recalculate_derived_metrics(world_state: dict) -> None:
+    finance = world_state.setdefault("finance", {})
+    customers = world_state.setdefault("customers", {})
+
+    cash_usd = float(finance.get("cash_usd", 0))
+    monthly_burn = float(finance.get("monthly_burn_usd", 0))
+    monthly_revenue = float(finance.get("monthly_revenue_usd", 0))
+    net_burn = monthly_burn - monthly_revenue
+    finance["net_burn_usd"] = round(net_burn, 2)
+    if net_burn <= 0:
+        finance["runway_weeks"] = 999.0
+    else:
+        finance["runway_weeks"] = round((cash_usd / net_burn) * 4, 2)
+
+    churn = float(customers.get("monthly_churn_rate", 0))
+    trust = float(customers.get("trust_score", 0.7))
+    health_index = max(0.0, min(1.0, (1 - churn * 4.0) * 0.6 + trust * 0.4))
+    customers["health_index"] = round(health_index, 4)
+
+
 def initialize_world_state(scenario: dict, *, seed: int) -> dict:
     metadata = scenario["metadata"]
     initial = deepcopy(scenario["initial_state"])
@@ -82,8 +102,11 @@ def initialize_world_state(scenario: dict, *, seed: int) -> dict:
             "current_turn": 0,
             "horizon_end": horizon_end,
             "seed": seed,
+            "processed_event_ids": [],
+            "pending_event_count": len(scenario.get("event_model", {}).get("scheduled_events", [])),
         },
     }
+    recalculate_derived_metrics(state)
     return state
 
 
@@ -136,4 +159,4 @@ def run_dry_scenario(path: Path, *, seed: int) -> dict:
     }
 
 
-__all__ = ["build_observation_surfaces", "initialize_world_state", "run_dry_scenario"]
+__all__ = ["build_observation_surfaces", "initialize_world_state", "recalculate_derived_metrics", "run_dry_scenario"]
