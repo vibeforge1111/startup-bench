@@ -245,7 +245,6 @@ Observed on 2026-03-07:
   - scenario count: `7`
   - overall score mean: `0.6802`
   - overall pass-rate mean: `0.8571`
-  - overall pass-rate mean: `1.0`
 - `check-suite-family ...private_real_world_test_scenario_suite.json ...private_real_world_fresh_scenario_suite.json`: passed
   - suite count: `2`
   - issues: `0`
@@ -253,12 +252,12 @@ Observed on 2026-03-07:
   - suite count: `2`
   - issues: `0`
 - `run-suite ...private_operator_test_scenario_suite.json ... --seeds 1 --max-turns 3`: passed
-  - scenario count: `3`
-  - overall score mean: `0.7334`
+  - scenario count: `7`
+  - overall score mean: `0.7298`
   - overall pass-rate mean: `1.0`
 - `run-suite ...private_operator_fresh_scenario_suite.json ... --seeds 1 --max-turns 3`: passed
-  - scenario count: `3`
-  - overall score mean: `0.7099`
+  - scenario count: `7`
+  - overall score mean: `0.7119`
   - overall pass-rate mean: `1.0`
 - `check-suite-family ...private_canary_test_scenario_suite.json ...private_canary_fresh_scenario_suite.json`: passed
   - suite count: `2`
@@ -286,7 +285,7 @@ Observed on 2026-03-07:
   - result: `ok: false`
   - reason: hidden split cloning now requires explicit draft-only override
 - `check-pack-changelog ...public_pack_changelog.json`: passed
-  - changelog entry count: `15`
+  - changelog entry count: `17`
   - validation: `ok`
 - `aggregate-operator-reviews ...minimal_operator_review.json`: passed
   - review count: `1`
@@ -326,7 +325,7 @@ Observed on 2026-03-07:
 - `python -m thestartupbench version`: passed
   - reported version: `0.9.0`
 - `python -m unittest discover -s tests -p "test_*.py"`: passed
-  - `121` tests
+  - `122` tests
   - `24` files
 
 ## What Is Covered Well

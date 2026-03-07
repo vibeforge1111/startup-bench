@@ -142,6 +142,7 @@ Completed:
 - programmatic evaluator layer in [evaluators.py](/C:/Users/USER/Desktop/startup-bench/src/thestartupbench/evaluators.py)
 - built-in baselines in [baseline_runner.py](/C:/Users/USER/Desktop/startup-bench/src/thestartupbench/baseline_runner.py):
   - `heuristic_b2b_operator`
+  - `heuristic_governance_operator`
   - `heuristic_liquidity_operator`
   - `heuristic_long_horizon_operator`
   - `heuristic_market_aware_operator`
