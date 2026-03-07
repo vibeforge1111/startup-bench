@@ -20,6 +20,7 @@ TheStartupBench is no longer just an RFC. It now has:
 - a third hidden pack family for long-horizon startup judgment
 - a fourth hidden pack family for canary exploit and overfit detection
 - operator/founder calibration protocol and machine-readable review artifacts
+- calibration reports and study manifests for hidden-pack operator alignment
 - CI for tests, validation, and smoke suites
 - unit tests and executable smoke paths
 
@@ -42,7 +43,8 @@ Completed:
 
 - JSON schemas for scenarios, world state, primitives, tool calls/responses, traces, score reports, batch reports, suite reports, manifests, and submissions under [schemas](/C:/Users/USER/Desktop/startup-bench/schemas)
 - JSON schemas for operator reviews and review summaries under [schemas](/C:/Users/USER/Desktop/startup-bench/schemas)
-- example artifacts for individual scenarios, suites, manifests, score reports, submissions, and operator reviews under [examples](/C:/Users/USER/Desktop/startup-bench/examples)
+- JSON schemas for calibration reports and calibration studies under [schemas](/C:/Users/USER/Desktop/startup-bench/schemas)
+- example artifacts for individual scenarios, suites, manifests, score reports, submissions, operator reviews, and calibration studies under [examples](/C:/Users/USER/Desktop/startup-bench/examples)
 
 ### 3. Reference tooling and runtime
 
@@ -57,6 +59,7 @@ Completed:
   - `build-submission`
 - operator calibration helpers:
   - `aggregate-operator-reviews`
+  - `build-calibration-report`
 - official evaluation helpers:
   - `show-official-profile`
   - `emit-run-manifest`
@@ -120,6 +123,7 @@ Completed:
 - official run-manifest example in [minimal_run_manifest.json](/C:/Users/USER/Desktop/startup-bench/examples/minimal_run_manifest.json)
 - hidden-eval policy in [hidden_eval_policy.md](/C:/Users/USER/Desktop/startup-bench/spec/hidden_eval_policy.md)
 - operator calibration protocol in [operator_eval_protocol.md](/C:/Users/USER/Desktop/startup-bench/spec/operator_eval_protocol.md)
+- operator study plan in [operator_study_plan.md](/C:/Users/USER/Desktop/startup-bench/docs/operator_study_plan.md)
 - public lifecycle changelog in [pack_lifecycle_changelog.md](/C:/Users/USER/Desktop/startup-bench/docs/pack_lifecycle_changelog.md)
 
 ### 7. Current scenario coverage
@@ -321,6 +325,8 @@ Partially done:
 - operator calibration protocol now exists
 - machine-readable operator review and review-summary artifacts now exist
 - the reference CLI can aggregate operator reviews into a calibration summary
+- calibration reports can now compare operator judgments against suite scores
+- a concrete study manifest now exists for canary, strategy, and real-world hidden packs
 
 What remains inside this category:
 

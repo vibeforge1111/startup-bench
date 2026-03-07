@@ -41,6 +41,10 @@ jobs:
           python -m thestartupbench validate scenario-suite examples/private_canary_fresh_scenario_suite.json
           python -m thestartupbench validate official-eval-profile examples/official_eval_profile.json
           python -m thestartupbench validate run-manifest examples/minimal_run_manifest.json
+          python -m thestartupbench validate operator-review examples/minimal_operator_review.json
+          python -m thestartupbench validate operator-review-summary examples/minimal_operator_review_summary.json
+          python -m thestartupbench validate calibration-report examples/minimal_calibration_report.json
+          python -m thestartupbench validate calibration-study examples/operator_calibration_study_manifest.json
 
       - name: Lint scenarios
         run: |
@@ -67,5 +71,7 @@ jobs:
           python -m thestartupbench redact-suite examples/private_real_world_fresh_scenario_suite.json --output-dir tmp_ci_fresh
           python -m thestartupbench redact-suite examples/private_operator_fresh_scenario_suite.json --output-dir tmp_ci_operator_fresh
           python -m thestartupbench redact-suite examples/private_canary_fresh_scenario_suite.json --output-dir tmp_ci_canary_fresh
+          python -m thestartupbench aggregate-operator-reviews examples/minimal_operator_review.json --output-dir tmp_ci_operator_review
+          python -m thestartupbench build-calibration-report --suite-report-path tmp_ci_canary/suite_report.json --review-paths examples/minimal_operator_review.json --output-dir tmp_ci_calibration
           python -m thestartupbench emit-run-manifest examples/dev_scenario_suite.json baseline --seeds 1,2,3,4,5 --baseline-id heuristic_resilient_operator --max-turns 8 --profile-path examples/official_eval_profile.json --output-dir tmp_ci_manifest
           python -m thestartupbench build-submission --suite-report-paths tmp_ci_real/suite_report.json --model-id heuristic_resilient_operator --provider baseline --contamination-flag clean --output-dir tmp_ci_submission

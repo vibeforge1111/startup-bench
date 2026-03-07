@@ -28,6 +28,7 @@ Current status:
 - added a long-horizon baseline family for multi-quarter startup planning behavior
 - added hidden canary pack families for exploit and overfit detection across pricing and hiring traps
 - added operator/founder calibration artifacts, schemas, and review aggregation support
+- added calibration reports and study manifests for hidden-pack operator alignment work
 
 Key documents:
 
@@ -37,6 +38,7 @@ Key documents:
 - `docs/sota_task_roadmap.md`
 - `docs/testing_coverage.md`
 - `docs/pack_lifecycle_changelog.md`
+- `docs/operator_study_plan.md`
 - `spec/README.md`
 - `spec/benchmark_contract.md`
 - `spec/scenario_spec.md`
@@ -73,6 +75,8 @@ Artifacts:
 - `schemas/tsb_submission.schema.json`
 - `schemas/tsb_operator_review.schema.json`
 - `schemas/tsb_operator_review_summary.schema.json`
+- `schemas/tsb_calibration_report.schema.json`
+- `schemas/tsb_calibration_study.schema.json`
 - `examples/minimal_b2b_saas_scenario.json`
 - `examples/minimal_crisis_scenario.json`
 - `examples/minimal_0to1_scenario.json`
@@ -96,6 +100,8 @@ Artifacts:
 - `examples/minimal_submission.json`
 - `examples/minimal_operator_review.json`
 - `examples/minimal_operator_review_summary.json`
+- `examples/minimal_calibration_report.json`
+- `examples/operator_calibration_study_manifest.json`
 - `examples/minimal_world_state.json`
 - `examples/minimal_primitives.json`
 - `examples/minimal_tool_manifest.json`
@@ -127,6 +133,7 @@ python -m thestartupbench redact-suite examples/private_test_scenario_suite.json
 python -m thestartupbench check-suite-family examples/private_real_world_test_scenario_suite.json examples/private_real_world_fresh_scenario_suite.json
 python -m thestartupbench check-suite-family examples/private_canary_test_scenario_suite.json examples/private_canary_fresh_scenario_suite.json
 python -m thestartupbench aggregate-operator-reviews examples/minimal_operator_review.json --output-dir tmp_out
+python -m thestartupbench build-calibration-report --suite-report-path tmp_out/suite_report.json --review-paths examples/minimal_operator_review.json --output-dir tmp_out
 python -m thestartupbench build-submission --suite-report-paths tmp_out/suite_report.json --model-id heuristic_resilient_operator --provider baseline --contamination-flag clean --output-dir tmp_out
 python -m unittest discover -s tests -p "test_*.py"
 ```

@@ -6,8 +6,8 @@ Last updated: 2026-03-07
 
 Current automated test surface:
 
-- `98` unit tests
-- `19` test files
+- `102` unit tests
+- `20` test files
 - all tests passing in the current tree
 
 The test suite is strongest on schema validation, core runtime mutations, baseline execution, and suite/submission packaging. It is weakest on evaluator nuance, adversarial scenario behavior, and broader scenario-corpus regression coverage.
@@ -16,10 +16,10 @@ The test suite is strongest on schema validation, core runtime mutations, baseli
 
 ### Validation and artifacts
 
-- [test_validation.py](/C:/Users/USER/Desktop/startup-bench/tests/test_validation.py): `19` tests
+- [test_validation.py](/C:/Users/USER/Desktop/startup-bench/tests/test_validation.py): `21` tests
   - validates example scenarios
   - validates world state and suite artifacts
-  - validates public manifests, pack changelog, submission examples, and operator-review summaries
+  - validates public manifests, pack changelog, submission examples, operator-review summaries, calibration reports, and calibration-study manifests
 
 ### Core runner flows
 
@@ -94,6 +94,10 @@ The test suite is strongest on schema validation, core runtime mutations, baseli
   - validates operator-review and summary examples
   - aggregates multiple operator reviews into a calibration summary
   - flags reviewer disagreement at the scenario level
+
+- [test_calibration.py](/C:/Users/USER/Desktop/startup-bench/tests/test_calibration.py): `2` tests
+  - aligns operator reviews to suite reports and emits a calibration report
+  - validates the example calibration report artifact
 
 ### Hidden-eval packaging
 
@@ -173,6 +177,7 @@ PYTHONPATH=src python -m thestartupbench redact-suite examples/private_real_worl
 PYTHONPATH=src python -m thestartupbench redact-suite examples/private_operator_fresh_scenario_suite.json --output-dir tmp_smoke
 PYTHONPATH=src python -m thestartupbench check-pack-changelog examples/public_pack_changelog.json
 PYTHONPATH=src python -m thestartupbench aggregate-operator-reviews examples/minimal_operator_review.json --output-dir tmp_smoke
+PYTHONPATH=src python -m thestartupbench build-calibration-report --suite-report-path tmp_smoke/suite_report.json --review-paths examples/minimal_operator_review.json --output-dir tmp_smoke
 PYTHONPATH=src python -m thestartupbench build-submission --suite-report-paths tmp_smoke/suite_report.json --model-id heuristic_resilient_operator --provider baseline --contamination-flag clean --output-dir tmp_smoke
 python -m unittest discover -s tests -p "test_*.py"
 ```
@@ -262,6 +267,10 @@ Observed on 2026-03-07:
   - review count: `1`
   - reviewer count: `1`
   - scenario count: `1`
+- `build-calibration-report --suite-report-path ... --review-paths ...minimal_operator_review.json`: passed
+  - matched scenario count: `1`
+  - mean absolute rubric gap: `0.0684`
+  - recommendation agreement rate: `1.0`
 - `redact-suite ...private_test_scenario_suite.json`: passed
 - `build-submission ...tmp_smoke/suite_report.json ...`: passed
   - repeat count: `2`
@@ -271,8 +280,8 @@ Observed on 2026-03-07:
 - `python -m thestartupbench version`: passed
   - reported version: `0.1.0`
 - `python -m unittest discover -s tests -p "test_*.py"`: passed
-  - `98` tests
-  - `19` files
+  - `102` tests
+  - `20` files
 
 ## What Is Covered Well
 

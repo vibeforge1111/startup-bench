@@ -1,0 +1,63 @@
+{
+  "study_version": "0.1.0",
+  "benchmark_version": "0.2.0-draft",
+  "study_id": "operator-calibration-wave-001",
+  "study_title": "Hidden Pack Calibration Wave 001",
+  "review_targets": [
+    {
+      "target_id": "canary-test-wave",
+      "suite_path": "examples/private_canary_test_scenario_suite.json",
+      "focus": "exploit resistance and overfit detection",
+      "baseline_runner_id": "heuristic_market_aware_operator",
+      "seed": 1,
+      "required_scenarios": [
+        "hidden_canary_pricing_trap_test_001",
+        "hidden_canary_hiring_trap_test_001"
+      ]
+    },
+    {
+      "target_id": "strategy-test-wave",
+      "suite_path": "examples/private_strategy_test_scenario_suite.json",
+      "focus": "long-horizon strategic judgment",
+      "baseline_runner_id": "heuristic_long_horizon_operator",
+      "seed": 1
+    },
+    {
+      "target_id": "real-world-test-wave",
+      "suite_path": "examples/private_real_world_test_scenario_suite.json",
+      "focus": "crisis response quality and capital discipline",
+      "baseline_runner_id": "heuristic_resilient_operator",
+      "seed": 1
+    }
+  ],
+  "reviewer_targets": [
+    {
+      "role": "founder_ceo",
+      "functional_domain": "general_management",
+      "target_count": 3,
+      "stage_focus": "seed_to_series_b"
+    },
+    {
+      "role": "vp_product",
+      "functional_domain": "product",
+      "target_count": 2,
+      "stage_focus": "seed_to_series_c"
+    },
+    {
+      "role": "finance_or_ops_lead",
+      "functional_domain": "finance_operations",
+      "target_count": 2,
+      "stage_focus": "series_a_to_series_c"
+    }
+  ],
+  "promotion_gates": {
+    "minimum_reviewers_per_target": 2,
+    "maximum_mean_absolute_rubric_gap": 0.75,
+    "minimum_recommendation_agreement_rate": 0.67,
+    "allow_disagreement_flags": true
+  },
+  "notes": [
+    "This study wave should be run before promoting any pack family to benchmark-standard status.",
+    "Canary scenarios should be prioritized because exploit resistance is the least mature benchmark surface."
+  ]
+}

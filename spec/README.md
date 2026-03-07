@@ -24,6 +24,7 @@ It is organized into:
 - `leaderboard_protocol.md`: submission, verification, contamination, and leaderboard policy
 - `hidden_eval_policy.md`: hidden test/fresh split operation, refresh cadence, and redaction policy
 - `operator_eval_protocol.md`: founder/operator review capture, calibration rubric, and promotion bar
+- `../docs/operator_study_plan.md`: concrete study wave for canary, strategy, and real-world hidden packs
 - `../docs/pack_lifecycle_changelog.md`: public pack promotion, retirement, and contamination ledger
 - `../examples/official_eval_profile.json`: reference official evaluation settings bundle
 - `../examples/minimal_run_manifest.json`: reference official run-manifest artifact
@@ -49,6 +50,8 @@ Machine-readable schemas:
 - `../schemas/tsb_submission.schema.json`
 - `../schemas/tsb_operator_review.schema.json`
 - `../schemas/tsb_operator_review_summary.schema.json`
+- `../schemas/tsb_calibration_report.schema.json`
+- `../schemas/tsb_calibration_study.schema.json`
 
 Example:
 
@@ -68,6 +71,8 @@ Example:
 - `../examples/minimal_submission.json`
 - `../examples/minimal_operator_review.json`
 - `../examples/minimal_operator_review_summary.json`
+- `../examples/minimal_calibration_report.json`
+- `../examples/operator_calibration_study_manifest.json`
 - `../examples/minimal_world_state.json`
 - `../examples/minimal_primitives.json`
 - `../examples/minimal_tool_manifest.json`
@@ -95,6 +100,7 @@ Reference implementation status:
 - suite promotion and pack lifecycle validation are implemented
 - official evaluation profiles and run manifests are implemented
 - operator review aggregation and calibration artifacts are implemented
+- calibration-study manifests are implemented
 - smoke tests exist under `tests/`
 
 ## Canonical terms
