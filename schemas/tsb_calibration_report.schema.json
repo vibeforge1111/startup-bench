@@ -1,0 +1,106 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://thestartupbench.org/schemas/tsb_calibration_report.schema.json",
+  "title": "TheStartupBench Calibration Report",
+  "type": "object",
+  "required": [
+    "report_version",
+    "benchmark_version",
+    "scenario_pack_version",
+    "split",
+    "runner_type",
+    "runner_id",
+    "review_count",
+    "reviewer_count",
+    "matched_scenario_count",
+    "unmatched_review_scenario_count",
+    "overall",
+    "track_alignments",
+    "scenario_alignments"
+  ],
+  "properties": {
+    "report_version": { "type": "string" },
+    "benchmark_version": { "type": "string" },
+    "scenario_pack_version": { "type": "string" },
+    "split": { "type": "string" },
+    "runner_type": { "type": "string" },
+    "runner_id": { "type": "string" },
+    "review_count": { "type": "integer", "minimum": 1 },
+    "reviewer_count": { "type": "integer", "minimum": 1 },
+    "matched_scenario_count": { "type": "integer", "minimum": 0 },
+    "unmatched_review_scenario_count": { "type": "integer", "minimum": 0 },
+    "overall": {
+      "type": "object",
+      "required": [
+        "mean_benchmark_rubric_equivalent",
+        "mean_operator_rubric",
+        "mean_absolute_rubric_gap",
+        "recommendation_agreement_rate"
+      ],
+      "properties": {
+        "mean_benchmark_rubric_equivalent": { "type": "number", "minimum": 0 },
+        "mean_operator_rubric": { "type": "number", "minimum": 0 },
+        "mean_absolute_rubric_gap": { "type": "number", "minimum": 0 },
+        "recommendation_agreement_rate": { "type": "number", "minimum": 0, "maximum": 1 }
+      },
+      "additionalProperties": false
+    },
+    "track_alignments": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "track",
+          "scenario_count",
+          "mean_benchmark_rubric_equivalent",
+          "mean_operator_rubric",
+          "mean_absolute_rubric_gap",
+          "recommendation_agreement_rate"
+        ],
+        "properties": {
+          "track": { "type": "string" },
+          "scenario_count": { "type": "integer", "minimum": 1 },
+          "mean_benchmark_rubric_equivalent": { "type": "number", "minimum": 0 },
+          "mean_operator_rubric": { "type": "number", "minimum": 0 },
+          "mean_absolute_rubric_gap": { "type": "number", "minimum": 0 },
+          "recommendation_agreement_rate": { "type": "number", "minimum": 0, "maximum": 1 }
+        },
+        "additionalProperties": false
+      }
+    },
+    "scenario_alignments": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "scenario_id",
+          "track",
+          "review_count",
+          "benchmark_score",
+          "benchmark_rubric_equivalent",
+          "operator_mean_rubric",
+          "operator_recommendation",
+          "benchmark_recommendation",
+          "recommendation_agreement",
+          "absolute_rubric_gap",
+          "disagreement_flag"
+        ],
+        "properties": {
+          "scenario_id": { "type": "string" },
+          "track": { "type": "string" },
+          "review_count": { "type": "integer", "minimum": 1 },
+          "benchmark_score": { "type": "number", "minimum": 0 },
+          "benchmark_rubric_equivalent": { "type": "number", "minimum": 0 },
+          "operator_mean_rubric": { "type": "number", "minimum": 0 },
+          "operator_recommendation": { "type": "string", "enum": ["pass", "borderline", "fail"] },
+          "benchmark_recommendation": { "type": "string", "enum": ["pass", "borderline", "fail"] },
+          "recommendation_agreement": { "type": "boolean" },
+          "absolute_rubric_gap": { "type": "number", "minimum": 0 },
+          "disagreement_flag": { "type": "boolean" }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

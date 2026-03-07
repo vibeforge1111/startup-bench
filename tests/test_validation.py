@@ -221,6 +221,14 @@ class ValidationTests(unittest.TestCase):
         self.assertTrue(result.ok)
         self.assertEqual(result.issues, [])
 
+    def test_calibration_report_example_validates(self) -> None:
+        result = validate_artifact_file(
+            artifact_type="calibration-report",
+            path=REPO_ROOT / "examples" / "minimal_calibration_report.json",
+        )
+        self.assertTrue(result.ok)
+        self.assertEqual(result.issues, [])
+
 
 if __name__ == "__main__":
     unittest.main()

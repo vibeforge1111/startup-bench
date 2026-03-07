@@ -121,6 +121,11 @@ def _build_parser() -> argparse.ArgumentParser:
     review_parser.add_argument("review_paths", help="Comma-separated operator review JSON paths")
     review_parser.add_argument("--output-dir", help="Optional directory to write the operator review summary artifact")
 
+    calibration_parser = subparsers.add_parser("build-calibration-report", help="Compare operator reviews against a suite report")
+    calibration_parser.add_argument("--suite-report-path", required=True, help="Path to a suite report JSON artifact")
+    calibration_parser.add_argument("--review-paths", required=True, help="Comma-separated operator review JSON paths")
+    calibration_parser.add_argument("--output-dir", help="Optional directory to write the calibration report artifact")
+
     return parser
 
 
@@ -498,6 +503,28 @@ def _cmd_aggregate_operator_reviews(review_paths: str, output_dir: str | None) -
     return 0 if result["validation"]["ok"] else 1
 
 
+def _cmd_build_calibration_report(
+    suite_report_path: str,
+    review_paths: str,
+    output_dir: str | None,
+) -> int:
+    from .calibration import build_calibration_report
+
+    result = build_calibration_report(
+        suite_report_path=Path(suite_report_path),
+        review_paths=[Path(path.strip()) for path in review_paths.split(",") if path.strip()],
+    )
+    if output_dir and result["report"] is not None:
+        out_dir = Path(output_dir)
+        out_dir.mkdir(parents=True, exist_ok=True)
+        (out_dir / "calibration_report.json").write_text(
+            json.dumps(result["report"], indent=2),
+            encoding="utf-8",
+        )
+    print(json.dumps(result, indent=2))
+    return 0 if result["validation"]["ok"] else 1
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = _build_parser()
     args = parser.parse_args(argv)
@@ -592,6 +619,12 @@ def main(argv: list[str] | None = None) -> int:
         )
     if args.command == "aggregate-operator-reviews":
         return _cmd_aggregate_operator_reviews(args.review_paths, args.output_dir)
+    if args.command == "build-calibration-report":
+        return _cmd_build_calibration_report(
+            args.suite_report_path,
+            args.review_paths,
+            args.output_dir,
+        )
 
     parser.print_help()
     return 1

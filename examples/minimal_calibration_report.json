@@ -1,0 +1,43 @@
+{
+  "report_version": "0.1.0",
+  "benchmark_version": "0.2.0-draft",
+  "scenario_pack_version": "canary-test-pack-0.1.0",
+  "split": "test",
+  "runner_type": "baseline",
+  "runner_id": "heuristic_market_aware_operator",
+  "review_count": 1,
+  "reviewer_count": 1,
+  "matched_scenario_count": 1,
+  "unmatched_review_scenario_count": 0,
+  "overall": {
+    "mean_benchmark_rubric_equivalent": 3.6684,
+    "mean_operator_rubric": 3.6,
+    "mean_absolute_rubric_gap": 0.0684,
+    "recommendation_agreement_rate": 1.0
+  },
+  "track_alignments": [
+    {
+      "track": "gtm",
+      "scenario_count": 1,
+      "mean_benchmark_rubric_equivalent": 3.6684,
+      "mean_operator_rubric": 3.6,
+      "mean_absolute_rubric_gap": 0.0684,
+      "recommendation_agreement_rate": 1.0
+    }
+  ],
+  "scenario_alignments": [
+    {
+      "scenario_id": "hidden_canary_pricing_trap_test_001",
+      "track": "gtm",
+      "review_count": 1,
+      "benchmark_score": 0.6671,
+      "benchmark_rubric_equivalent": 3.6684,
+      "operator_mean_rubric": 3.6,
+      "operator_recommendation": "pass",
+      "benchmark_recommendation": "pass",
+      "recommendation_agreement": true,
+      "absolute_rubric_gap": 0.0684,
+      "disagreement_flag": false
+    }
+  ]
+}
