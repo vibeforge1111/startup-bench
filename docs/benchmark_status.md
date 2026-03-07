@@ -14,6 +14,7 @@ TheStartupBench is no longer just an RFC. It now has:
 - a multi-scenario dev suite
 - a real-world-derived crisis scenario pack
 - private/test suite packaging and redacted public manifest generation
+- operational `fresh` pack generation and public pack lifecycle tracking
 - CI for tests, validation, and smoke suites
 - unit tests and executable smoke paths
 
@@ -93,9 +94,12 @@ Completed:
 - dev suite manifest in [dev_scenario_suite.json](/C:/Users/USER/Desktop/startup-bench/examples/dev_scenario_suite.json)
 - private test suite manifest in [private_test_scenario_suite.json](/C:/Users/USER/Desktop/startup-bench/examples/private_test_scenario_suite.json)
 - private real-world test suite manifest in [private_real_world_test_scenario_suite.json](/C:/Users/USER/Desktop/startup-bench/examples/private_real_world_test_scenario_suite.json)
+- private real-world fresh suite manifest in [private_real_world_fresh_scenario_suite.json](/C:/Users/USER/Desktop/startup-bench/examples/private_real_world_fresh_scenario_suite.json)
 - redacted public manifest generation in [suite_manifest.py](/C:/Users/USER/Desktop/startup-bench/src/thestartupbench/suite_manifest.py)
+- suite promotion helper in [pack_ops.py](/C:/Users/USER/Desktop/startup-bench/src/thestartupbench/pack_ops.py)
 - submission assembly in [submission_builder.py](/C:/Users/USER/Desktop/startup-bench/src/thestartupbench/submission_builder.py)
 - hidden-eval policy in [hidden_eval_policy.md](/C:/Users/USER/Desktop/startup-bench/spec/hidden_eval_policy.md)
+- public lifecycle changelog in [pack_lifecycle_changelog.md](/C:/Users/USER/Desktop/startup-bench/docs/pack_lifecycle_changelog.md)
 
 ### 7. Current scenario coverage
 
@@ -176,17 +180,19 @@ What remains inside this category:
 Partially done:
 
 - private/test suite format exists
+- fresh hidden suite format exists
 - public redacted suite manifest exists
+- public lifecycle changelog exists
 - suite and submission artifacts exist
 
 What remains inside this category:
 
 - true held-out scenario inventory at meaningful scale
 - benchmark refresh cadence
-- contamination policy and disclosure workflow
+- contamination adjudication workflow
 - canary scenarios and exploit review pipeline
 - leaderboard operations and review procedures
-- operational `fresh` pack generation
+- automated pack rotation pipeline
 
 ### 4. Baseline depth
 

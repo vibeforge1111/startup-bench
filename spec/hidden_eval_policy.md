@@ -114,12 +114,14 @@ Current repository support now includes:
 
 - public `dev` packs
 - hidden `test` suite packaging
+- hidden `fresh` suite packaging
 - redacted public manifest generation
 - a private real-world hidden test pack
+- a private real-world fresh pack
+- suite promotion helpers for `test` and `fresh` pack generation
+- a public pack lifecycle changelog
 
 What still remains:
 
-- rolling `fresh` pack generation
-- explicit retirement ledger
-- public contamination changelog
-- hidden-pack review checklist automation
+- automated hidden-pack review checklist enforcement
+- broader pack rotation cadence across multiple hidden families

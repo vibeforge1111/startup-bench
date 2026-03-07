@@ -6,8 +6,8 @@ Last updated: 2026-03-07
 
 Current automated test surface:
 
-- `53` unit tests
-- `12` test files
+- `58` unit tests
+- `13` test files
 - all tests passing in the current tree
 
 The test suite is strongest on schema validation, core runtime mutations, baseline execution, and suite/submission packaging. It is weakest on evaluator nuance, adversarial scenario behavior, and broader scenario-corpus regression coverage.
@@ -16,11 +16,10 @@ The test suite is strongest on schema validation, core runtime mutations, baseli
 
 ### Validation and artifacts
 
-- [test_validation.py](/C:/Users/USER/Desktop/startup-bench/tests/test_validation.py): `10` tests
-- [test_validation.py](/C:/Users/USER/Desktop/startup-bench/tests/test_validation.py): `12` tests
+- [test_validation.py](/C:/Users/USER/Desktop/startup-bench/tests/test_validation.py): `15` tests
   - validates example scenarios
   - validates world state and suite artifacts
-  - validates public manifest and submission examples
+  - validates public manifests, pack changelog, and submission examples
 
 ### Core runner flows
 
@@ -78,9 +77,12 @@ The test suite is strongest on schema validation, core runtime mutations, baseli
 
 ### Hidden-eval packaging
 
-- [test_suite_manifest.py](/C:/Users/USER/Desktop/startup-bench/tests/test_suite_manifest.py): `1` test
 - [test_suite_manifest.py](/C:/Users/USER/Desktop/startup-bench/tests/test_suite_manifest.py): `2` tests
   - redacted manifest generation
+
+- [test_pack_ops.py](/C:/Users/USER/Desktop/startup-bench/tests/test_pack_ops.py): `2` tests
+  - fresh-pack promotion emits a valid suite and public manifest
+  - public pack changelog validates cleanly
 
 - [test_submission_builder.py](/C:/Users/USER/Desktop/startup-bench/tests/test_submission_builder.py): `1` test
   - submission assembly from suite report
@@ -108,6 +110,8 @@ PYTHONPATH=src python -m thestartupbench run-baseline examples/minimal_crisis_sc
 PYTHONPATH=src python -m thestartupbench check-trace tmp_smoke/trace.json
 PYTHONPATH=src python -m thestartupbench run-suite examples/dev_scenario_suite.json baseline --baseline-id heuristic_resilient_operator --seeds 1,2 --max-turns 4 --output-dir tmp_smoke
 PYTHONPATH=src python -m thestartupbench redact-suite examples/private_test_scenario_suite.json --output-dir tmp_smoke
+PYTHONPATH=src python -m thestartupbench promote-suite examples/private_real_world_test_scenario_suite.json --split fresh --scenario-pack-version real-world-fresh-pack-0.1.0 --output-dir tmp_smoke
+PYTHONPATH=src python -m thestartupbench check-pack-changelog examples/public_pack_changelog.json
 PYTHONPATH=src python -m thestartupbench build-submission --suite-report-paths tmp_smoke/suite_report.json --model-id heuristic_resilient_operator --provider baseline --contamination-flag clean --output-dir tmp_smoke
 python -m unittest discover -s tests -p "test_*.py"
 ```
@@ -140,6 +144,13 @@ Observed on 2026-03-07:
   - scenario count: `5`
   - overall score mean: `0.7351`
   - overall pass-rate mean: `1.0`
+- `promote-suite ...private_real_world_test_scenario_suite.json --split fresh --scenario-pack-version real-world-fresh-pack-0.1.0`: passed
+  - emitted schema-valid promoted suite and public manifest
+  - target split: `fresh`
+  - target scenario pack version: `real-world-fresh-pack-0.1.0`
+- `check-pack-changelog ...public_pack_changelog.json`: passed
+  - changelog entry count: `3`
+  - validation: `ok`
 - `redact-suite ...private_test_scenario_suite.json`: passed
 - `build-submission ...tmp_smoke/suite_report.json ...`: passed
   - repeat count: `2`
@@ -149,8 +160,8 @@ Observed on 2026-03-07:
 - `python -m thestartupbench version`: passed
   - reported version: `0.1.0`
 - `python -m unittest discover -s tests -p "test_*.py"`: passed
-  - `53` tests
-  - `12` files
+  - `58` tests
+  - `13` files
 
 ## What Is Covered Well
 

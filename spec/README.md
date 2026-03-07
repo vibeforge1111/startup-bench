@@ -23,6 +23,7 @@ It is organized into:
 - `validation_contract.md`: validation pipeline and leaderboard eligibility checks
 - `leaderboard_protocol.md`: submission, verification, contamination, and leaderboard policy
 - `hidden_eval_policy.md`: hidden test/fresh split operation, refresh cadence, and redaction policy
+- `../docs/pack_lifecycle_changelog.md`: public pack promotion, retirement, and contamination ledger
 
 Machine-readable schemas:
 
@@ -37,6 +38,7 @@ Machine-readable schemas:
 - `../schemas/tsb_batch_report.schema.json`
 - `../schemas/tsb_scenario_suite.schema.json`
 - `../schemas/tsb_public_suite_manifest.schema.json`
+- `../schemas/tsb_pack_changelog.schema.json`
 - `../schemas/tsb_suite_report.schema.json`
 - `../schemas/tsb_trace.schema.json`
 - `../schemas/tsb_submission.schema.json`
@@ -50,7 +52,10 @@ Example:
 - `../examples/minimal_scale_scenario.json`
 - `../examples/dev_scenario_suite.json`
 - `../examples/private_test_scenario_suite.json`
+- `../examples/private_real_world_fresh_scenario_suite.json`
 - `../examples/minimal_public_suite_manifest.json`
+- `../examples/real_world_public_fresh_manifest.json`
+- `../examples/public_pack_changelog.json`
 - `../examples/minimal_submission.json`
 - `../examples/minimal_world_state.json`
 - `../examples/minimal_primitives.json`
@@ -76,6 +81,7 @@ Reference implementation status:
 - reusable primitive-based event execution is implemented in the reference runtime
 - suite-level scenario-pack execution and reporting are implemented
 - redacted public manifests and submission assembly are implemented
+- suite promotion and pack lifecycle validation are implemented
 - smoke tests exist under `tests/`
 
 ## Canonical terms
