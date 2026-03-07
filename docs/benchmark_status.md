@@ -31,6 +31,25 @@ TheStartupBench is no longer just an RFC. It now has:
 
 The project is in the `reference implementation + benchmark hardening` phase, not the `fully benchmark-complete` phase.
 
+Synthetic calibration status:
+
+- corrected and recommendation-aligned:
+  - canary pricing trap
+  - canary hiring trap
+  - Zoom security backlash
+  - Brex treasury shock
+- healthy under synthetic calibration:
+  - strategy product delayed consequence
+  - strategy scale multi-quarter
+- healthy but on governance watchlist:
+  - strategy board stakeholder conflict
+
+Human handoff artifacts now exist:
+
+- [calibration_outcomes.md](/C:/Users/USER/Desktop/startup-bench/docs/calibration_outcomes.md)
+- [human_review_wave_001.md](/C:/Users/USER/Desktop/startup-bench/docs/human_review_wave_001.md)
+- [operator_human_review_wave_001_manifest.json](/C:/Users/USER/Desktop/startup-bench/examples/operator_human_review_wave_001_manifest.json)
+
 ## What Is Done
 
 ### 1. Benchmark framing and methodology

@@ -43,6 +43,8 @@ Key documents:
 - `docs/testing_coverage.md`
 - `docs/pack_lifecycle_changelog.md`
 - `docs/operator_study_plan.md`
+- `docs/calibration_outcomes.md`
+- `docs/human_review_wave_001.md`
 - `docs/calibration_taskforce_strategy.md`
 - `docs/reviewer_manual.md`
 - `docs/model_reviewer_panel.md`
@@ -116,6 +118,7 @@ Artifacts:
 - `examples/minimal_operator_review_summary.json`
 - `examples/minimal_calibration_report.json`
 - `examples/operator_calibration_study_manifest.json`
+- `examples/operator_human_review_wave_001_manifest.json`
 - `examples/reviewer_roster_template.csv`
 - `examples/operator_review_fill_template.json`
 - `examples/minimal_world_state.json`

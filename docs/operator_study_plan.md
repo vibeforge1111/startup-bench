@@ -63,6 +63,23 @@ TheStartupBench is now closer to modern benchmark practice in two ways:
 
 Without the second part, the benchmark can still look polished while being wrong in exactly the places that matter.
 
+## Post-synthetic handoff
+
+The initial synthetic panel work has now been used to correct or validate the highest-signal slices.
+
+Current follow-on manifest:
+
+- [operator_human_review_wave_001_manifest.json](/C:/Users/USER/Desktop/startup-bench/examples/operator_human_review_wave_001_manifest.json)
+
+Current outcome summary:
+
+- [calibration_outcomes.md](/C:/Users/USER/Desktop/startup-bench/docs/calibration_outcomes.md)
+
+The practical implication is:
+
+- do not keep spending large amounts of time on synthetic review by default
+- use humans next on the corrected canary/crisis slices and on the board governance watchlist
+
 ## Immediate next execution steps
 
 1. Run the three target hidden suites with the intended baseline runners and fixed seed.
