@@ -1,0 +1,21 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "thestartupbench"
+version = "0.1.0"
+description = "Reference implementation scaffolding for TheStartupBench"
+readme = "README.md"
+requires-python = ">=3.12"
+license = { text = "MIT" }
+dependencies = [
+    "jsonschema>=4.25",
+]
+
+[project.scripts]
+tsb = "thestartupbench.cli:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/thestartupbench"]
+
