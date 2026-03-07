@@ -1,0 +1,49 @@
+name: ci
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+
+jobs:
+  test-and-smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Install package
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e .
+
+      - name: Run unit tests
+        run: python -m unittest discover -s tests -p "test_*.py"
+
+      - name: Validate core scenarios
+        run: |
+          python -m thestartupbench validate scenario examples/minimal_b2b_saas_scenario.json
+          python -m thestartupbench validate scenario examples/real_world_brex_svb_treasury_shock_scenario.json
+          python -m thestartupbench validate scenario-suite examples/dev_scenario_suite.json
+          python -m thestartupbench validate scenario-suite examples/real_world_crisis_scenario_suite.json
+
+      - name: Lint scenarios
+        run: |
+          python -m thestartupbench lint-scenario examples/minimal_b2b_saas_scenario.json
+          python -m thestartupbench lint-scenario examples/real_world_airbnb_emergency_financing_scenario.json
+          python -m thestartupbench lint-scenario examples/real_world_brex_svb_treasury_shock_scenario.json
+
+      - name: Run benchmark smoke suites
+        run: |
+          python -m thestartupbench run-suite examples/dev_scenario_suite.json baseline --baseline-id heuristic_resilient_operator --seeds 1 --max-turns 3 --output-dir tmp_ci_dev
+          python -m thestartupbench run-suite examples/real_world_crisis_scenario_suite.json baseline --baseline-id heuristic_resilient_operator --seeds 1 --max-turns 3 --output-dir tmp_ci_real
+
+      - name: Build hidden-eval artifacts
+        run: |
+          python -m thestartupbench redact-suite examples/private_test_scenario_suite.json --output-dir tmp_ci_private
+          python -m thestartupbench build-submission --suite-report-paths tmp_ci_real/suite_report.json --model-id heuristic_resilient_operator --provider baseline --contamination-flag clean --output-dir tmp_ci_submission

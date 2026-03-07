@@ -6,7 +6,7 @@ Last updated: 2026-03-07
 
 Current automated test surface:
 
-- `49` unit tests
+- `50` unit tests
 - `12` test files
 - all tests passing in the current tree
 
@@ -36,7 +36,7 @@ The test suite is strongest on schema validation, core runtime mutations, baseli
 
 ### Runtime mechanics
 
-- [test_runtime.py](/C:/Users/USER/Desktop/startup-bench/tests/test_runtime.py): `15` tests
+- [test_runtime.py](/C:/Users/USER/Desktop/startup-bench/tests/test_runtime.py): `16` tests
   - finance plan write behavior
   - metrics querying and reporting
   - immutable read snapshots
@@ -47,6 +47,7 @@ The test suite is strongest on schema validation, core runtime mutations, baseli
   - incident read/respond behavior
   - support backlog resolution
   - treasury rebalancing
+  - financing proposals
   - org health adjustments
   - legal/compliance response
 
@@ -85,7 +86,7 @@ The test suite is strongest on schema validation, core runtime mutations, baseli
 ### Real-world-derived scenario pack
 
 - [test_real_world_scenarios.py](/C:/Users/USER/Desktop/startup-bench/tests/test_real_world_scenarios.py): `3` tests
-  - validates the eight real-world-derived scenarios
+  - validates the ten real-world-derived scenarios
   - lints the same scenario pack
   - runs the real-world suite with the resilient baseline
 
@@ -94,7 +95,7 @@ The test suite is strongest on schema validation, core runtime mutations, baseli
 Current note:
 
 - from a raw checkout, the CLI currently needs `PYTHONPATH=src` or an editable install
-- `python -m thestartupbench ...` does not yet work from a clean shell without installation
+- `python -m pip install -e .` was verified locally and enables clean-shell `python -m thestartupbench ...`
 
 The following smoke commands are the minimum end-to-end checks worth preserving as a release gate:
 
@@ -127,20 +128,19 @@ Observed on 2026-03-07:
   - overall score mean: `0.7178`
   - overall pass-rate mean: `1.0`
 - `run-suite ...real_world_crisis_scenario_suite.json ... --seeds 1 --max-turns 3`: passed
-  - scenario count: `8`
-  - overall score mean: `0.7494`
-  - overall pass-rate mean: `1.0`
-- updated real-world suite after runtime hardening: passed
-  - scenario count: `8`
-  - overall score mean: `0.7135`
+  - scenario count: `10`
+  - overall score mean: `0.719`
   - overall pass-rate mean: `1.0`
 - `redact-suite ...private_test_scenario_suite.json`: passed
 - `build-submission ...tmp_smoke/suite_report.json ...`: passed
   - repeat count: `2`
   - model id: `heuristic_resilient_operator`
   - contamination flag: `clean`
+- `python -m pip install -e .`: passed
+- `python -m thestartupbench version`: passed
+  - reported version: `0.1.0`
 - `python -m unittest discover -s tests -p "test_*.py"`: passed
-  - `49` tests
+  - `50` tests
   - `12` files
 
 ## What Is Covered Well
@@ -171,7 +171,6 @@ Not covered yet:
 
 - human baseline reproducibility
 - contamination and leaderboard workflow checks
-- CI-based release gating
 - performance/load testing of the runner itself
 - reproducibility across different environments
 - semantic judging for communication artifacts
@@ -182,7 +181,7 @@ Not covered yet:
 2. Add multi-turn crisis regression tests with stacked events and delayed consequences.
 3. Add suite-level regression snapshots so track coverage changes are deliberate.
 4. Add tests for future people, fundraising, compliance, and market-state mechanics as those subsystems land.
-5. Add CI to run validation, smoke commands, and unit tests automatically.
+5. Add artifact upload and branch-protection enforcement on top of the new CI workflow.
 
 ## Bottom Line
 

@@ -14,6 +14,7 @@ TheStartupBench is no longer just an RFC. It now has:
 - a multi-scenario dev suite
 - a real-world-derived crisis scenario pack
 - private/test suite packaging and redacted public manifest generation
+- CI for tests, validation, and smoke suites
 - unit tests and executable smoke paths
 
 The project is in the `reference implementation + benchmark hardening` phase, not the `fully benchmark-complete` phase.
@@ -47,6 +48,7 @@ Completed:
 - hidden-eval packaging helpers:
   - `redact-suite`
   - `build-submission`
+- GitHub Actions workflow in [.github/workflows/ci.yml](/C:/Users/USER/Desktop/startup-bench/.github/workflows/ci.yml#L1)
 - stateful runtime support for:
   - finance planning
   - treasury concentration and liquidity rebalancing
@@ -107,16 +109,18 @@ These are example-scale scenarios, not yet a production benchmark corpus.
 
 Completed real-world-derived scenario pack:
 
-- `8` executable scenarios grounded in documented startup crises
+- `10` executable scenarios grounded in documented startup crises
 - suite manifest in [real_world_crisis_scenario_suite.json](/C:/Users/USER/Desktop/startup-bench/examples/real_world_crisis_scenario_suite.json)
 - current pack coverage:
   - demand collapse
+  - emergency financing under market shock
   - runway crunch
   - security trust crisis
   - peak-demand outage
   - phishing-led compromise
   - data-integrity recovery
   - operator-caused deletion/restoration
+  - treasury concentration shock
   - peak-event readiness
 
 ## What Is Partially Done
@@ -210,7 +214,7 @@ Not done:
 
 ### 3. CI and release hardening
 
-Not done:
+Partially done:
 
 - automated CI for validation, smoke runs, and tests
 - release packaging
@@ -237,7 +241,7 @@ If the goal is to make TheStartupBench materially stronger, the next steps shoul
 3. Strengthen evaluator design so survival, trust, compliance, and capital efficiency are explicit constraints rather than soft side effects.
 4. Add more baseline families, especially human-inspired scripted policies and crisis-specialist heuristics.
 5. Add benchmark governance artifacts: contamination policy, version policy, exploit review, and refresh cadence.
-6. Add CI so schema validation, smoke runs, and unit tests are automatic on every change.
+6. Add artifact publishing and required-branch protections on top of the new CI workflow.
 
 ## Definition Of “Done Enough” For A Credible v1
 
