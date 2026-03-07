@@ -65,6 +65,7 @@ python -m thestartupbench version
 python -m thestartupbench validate scenario examples/minimal_b2b_saas_scenario.json
 python -m thestartupbench manifest examples/minimal_b2b_saas_scenario.json
 python -m thestartupbench list-baselines
+python -m thestartupbench lint-scenario examples/minimal_b2b_saas_scenario.json
 python -m thestartupbench run-dry examples/minimal_b2b_saas_scenario.json --seed 1 --output-dir tmp_out
 python -m thestartupbench run-script examples/minimal_b2b_saas_scenario.json examples/minimal_tool_script.json --seed 1 --output-dir tmp_out
 python -m thestartupbench run-baseline examples/minimal_b2b_saas_scenario.json heuristic_b2b_operator --seed 1 --max-turns 6 --output-dir tmp_out

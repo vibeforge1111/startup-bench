@@ -1,0 +1,35 @@
+from __future__ import annotations
+
+import sys
+import unittest
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
+
+from thestartupbench.scenario_lint import lint_scenario_instance
+from thestartupbench.scenario_loader import load_scenario
+
+
+REPO_ROOT = Path(__file__).resolve().parents[1]
+SCENARIO_PATH = REPO_ROOT / "examples" / "minimal_b2b_saas_scenario.json"
+
+
+class ScenarioLintTests(unittest.TestCase):
+    def test_example_scenario_passes_lint(self) -> None:
+        scenario = load_scenario(SCENARIO_PATH)
+        result = lint_scenario_instance(scenario)
+
+        self.assertTrue(result.ok)
+        self.assertEqual(result.issues, [])
+
+    def test_lint_catches_unknown_primitive_reference(self) -> None:
+        scenario = load_scenario(SCENARIO_PATH)
+        scenario["event_model"]["scheduled_events"][0]["primitive_id"] = "missing_primitive"
+        result = lint_scenario_instance(scenario)
+
+        self.assertFalse(result.ok)
+        self.assertEqual(result.issues[0].path, ["event_model", "scheduled_events", "0", "primitive_id"])
+
+
+if __name__ == "__main__":
+    unittest.main()

@@ -33,6 +33,9 @@ def _build_parser() -> argparse.ArgumentParser:
     inspect_parser = subparsers.add_parser("inspect-scenario", help="Print selected scenario metadata")
     inspect_parser.add_argument("path", help="Path to the scenario JSON file")
 
+    lint_parser = subparsers.add_parser("lint-scenario", help="Run authoring-time lint checks on a scenario")
+    lint_parser.add_argument("path", help="Path to the scenario JSON file")
+
     run_parser = subparsers.add_parser("run-dry", help="Run a zero-action dry execution for a scenario")
     run_parser.add_argument("scenario_path", help="Path to the scenario JSON file")
     run_parser.add_argument("--seed", type=int, default=0, help="Seed used for the dry run")
@@ -101,6 +104,14 @@ def _cmd_inspect_scenario(path: str) -> int:
     }
     print(json.dumps(payload, indent=2))
     return 0
+
+
+def _cmd_lint_scenario(path: str) -> int:
+    from .scenario_lint import lint_scenario_file
+
+    result = lint_scenario_file(Path(path))
+    print(json.dumps(result.to_dict(), indent=2))
+    return 0 if result.ok else 1
 
 
 def _cmd_check_trace(path: str) -> int:
@@ -246,6 +257,8 @@ def main(argv: list[str] | None = None) -> int:
         return _cmd_list_baselines()
     if args.command == "inspect-scenario":
         return _cmd_inspect_scenario(args.path)
+    if args.command == "lint-scenario":
+        return _cmd_lint_scenario(args.path)
     if args.command == "run-dry":
         return _cmd_run_dry(args.scenario_path, args.seed, args.output_dir)
     if args.command == "run-script":
