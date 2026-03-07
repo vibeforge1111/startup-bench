@@ -84,8 +84,8 @@ Outcome:
 Notes:
 
 - Claude was materially harsher on governance quality
-- repeated templated board communication and under-addressed post-pushback follow-through remain concerns
-- current evidence does not justify an evaluator mutation yet
+- this scenario triggered the later governance hardening pass
+- current watchlist concern has narrowed from generic boilerplate to remaining human-review scrutiny on board/governance severity
 
 #### `hidden_scale_multi_quarter_test_001`
 
@@ -123,6 +123,31 @@ Current status:
 - benchmark recommendation: `borderline`
 - panel recommendation: `borderline`
 - calibration state: aligned
+
+## Post-synthetic hardening additions
+
+These additions landed after the synthetic calibration wave and before the first real human wave.
+
+They are intentionally marked as `pre-human hardening`, not as already-calibrated slices.
+
+### Hidden strategy pack expansion
+
+Added:
+
+- `hidden_board_financing_truth_test_001`
+- `hidden_board_financing_truth_fresh_001`
+
+Purpose:
+
+- broaden board/governance coverage beyond one stakeholder-conflict slice
+- test whether the benchmark rewards transparent financing truth over narrative management under board pressure
+
+Status:
+
+- executable and validated
+- included in the hidden strategy packs
+- not yet synthetic-panel reviewed
+- not yet part of human review wave 001
 
 #### `real_world_brex_svb_treasury_shock_test_001`
 

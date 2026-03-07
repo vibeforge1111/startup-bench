@@ -46,6 +46,7 @@ Key documents:
 - `docs/calibration_outcomes.md`
 - `docs/human_review_wave_001.md`
 - `docs/reviewer_outreach_wave_001.md`
+- `docs/pre_human_calibration_execution_plan.md`
 - `docs/calibration_taskforce_strategy.md`
 - `docs/reviewer_manual.md`
 - `docs/model_reviewer_panel.md`

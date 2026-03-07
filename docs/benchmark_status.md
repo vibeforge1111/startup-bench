@@ -26,6 +26,7 @@ TheStartupBench is no longer just an RFC. It now has:
 - reviewer assignment, exportable review forms, and import back into benchmark artifacts
 - synthetic reviewer panel guidance and fillable JSON template for LLM-based shadow review
 - model-review prompt bundle export and raw model-review import for synthetic panels
+- a tracked pre-human hardening plan in [pre_human_calibration_execution_plan.md](/C:/Users/USER/Desktop/startup-bench/docs/pre_human_calibration_execution_plan.md)
 - CI for tests, validation, and smoke suites
 - unit tests and executable smoke paths
 
@@ -43,6 +44,8 @@ Synthetic calibration status:
   - strategy scale multi-quarter
 - healthy but on governance watchlist:
   - strategy board stakeholder conflict
+- added during pre-human hardening and not yet calibration-reviewed:
+  - strategy board financing truth
 
 Human handoff artifacts now exist:
 
@@ -226,10 +229,11 @@ Completed hidden operator breadth packs:
 
 Completed hidden strategy packs:
 
-- `3` hidden `test` scenarios in [private_strategy_test_scenario_suite.json](/C:/Users/USER/Desktop/startup-bench/examples/private_strategy_test_scenario_suite.json)
-- `3` hidden `fresh` scenarios in [private_strategy_fresh_scenario_suite.json](/C:/Users/USER/Desktop/startup-bench/examples/private_strategy_fresh_scenario_suite.json)
+- `4` hidden `test` scenarios in [private_strategy_test_scenario_suite.json](/C:/Users/USER/Desktop/startup-bench/examples/private_strategy_test_scenario_suite.json)
+- `4` hidden `fresh` scenarios in [private_strategy_fresh_scenario_suite.json](/C:/Users/USER/Desktop/startup-bench/examples/private_strategy_fresh_scenario_suite.json)
 - current strategy hidden coverage:
   - board stakeholder conflict
+  - board financing truth under narrative pressure
   - delayed-consequence product quality debt
   - multi-quarter scale planning under capacity lag
 
@@ -267,13 +271,14 @@ Partially done:
 
 - there is a real programmatic scoring path
 - crisis-aware behavior is now distinguishable from generic heuristics
+- board/governance scenarios now have a dedicated trace-aware penalty path instead of fully inheriting generic non-crisis scoring
 
 What remains inside this category:
 
 - stronger multi-objective scoring weights
 - explicit constraint scoring for compliance/trust/survival
 - better calibration around delayed effects
-- track-specific evaluator bundles
+- fuller track-specific evaluator bundles
 - limited semantic-judge use for memos, board updates, and stakeholder communication
 
 ### 3. Benchmark integrity
