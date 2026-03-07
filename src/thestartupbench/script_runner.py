@@ -65,7 +65,15 @@ def run_tool_script(*, scenario_path: Path, tool_calls_path: Path, seed: int) ->
         )
 
     run_id = f"script-{uuid4()}"
-    evaluation = evaluate_dry_run(scenario=scenario, world_state=session.world_state)
+    final_snapshots = snapshots + [{"snapshot_id": "final", "kind": "final", "state": deepcopy(session.world_state)}]
+    evaluation = evaluate_dry_run(
+        scenario=scenario,
+        world_state=session.world_state,
+        trace_evidence={
+            "turns": turns,
+            "state_snapshots": final_snapshots,
+        },
+    )
     trace = build_trace(
         scenario=scenario,
         seed=seed,
@@ -75,7 +83,7 @@ def run_tool_script(*, scenario_path: Path, tool_calls_path: Path, seed: int) ->
         world_state=session.world_state,
     )
     trace["turns"] = turns
-    trace["state_snapshots"] = snapshots + [{"snapshot_id": "final", "kind": "final", "state": deepcopy(session.world_state)}]
+    trace["state_snapshots"] = final_snapshots
     trace["runtime"]["total_tool_calls"] = len(tool_calls)
 
     score_report = build_score_report(scenario=scenario, run_id=run_id, evaluation=evaluation)

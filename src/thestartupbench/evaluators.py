@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from typing import Any
 
 
 @dataclass(frozen=True)
@@ -194,7 +195,126 @@ def _score_customer_health(world_state: dict) -> tuple[float, dict]:
     return score, details
 
 
-def _score_strategic_coherence(world_state: dict, *, scenario: dict) -> tuple[float, dict]:
+def _extract_alerts(turn: dict) -> list[str]:
+    alerts: list[str] = []
+    for action in turn.get("actions", []):
+        if action.get("tool_name") != "metrics.report":
+            continue
+        report = action.get("response", {}).get("result", {}).get("report", {})
+        raw_alerts = report.get("alerts", [])
+        if isinstance(raw_alerts, list):
+            alerts.extend(str(item) for item in raw_alerts)
+    return alerts
+
+
+def _behavioral_penalty(
+    *,
+    world_state: dict,
+    trace_evidence: dict[str, Any] | None,
+    scenario: dict,
+) -> tuple[float, dict]:
+    track = scenario["metadata"]["track"]
+    if trace_evidence is None or track != "gtm":
+        return 0.0, {
+            "behavioral_penalty": 0.0,
+            "adverse_event_count": 0,
+            "unanswered_adverse_events": 0,
+            "support_alert_turn_count": 0,
+            "support_actions_after_adverse_event": 0,
+            "trust_decline": 0.0,
+            "rigid_loop_penalty_applied": False,
+        }
+
+    turns = trace_evidence.get("turns", [])
+    if not isinstance(turns, list) or not turns:
+        return 0.0, {
+            "behavioral_penalty": 0.0,
+            "adverse_event_count": 0,
+            "unanswered_adverse_events": 0,
+            "support_alert_turn_count": 0,
+            "support_actions_after_adverse_event": 0,
+            "trust_decline": 0.0,
+            "rigid_loop_penalty_applied": False,
+        }
+
+    adverse_event_types = {"pricing_backlash", "customer_backlash", "trust_backlash", "retention_shock"}
+    substantive_response_tools = {
+        "ops.support.resolve",
+        "sales.pricing.propose",
+        "product.roadmap.write",
+        "people.hiring.update",
+        "finance.plan.write",
+        "notes.write",
+    }
+    adverse_turn_indices = [
+        index
+        for index, turn in enumerate(turns)
+        if any(event.get("event_type") in adverse_event_types for event in turn.get("events", []))
+    ]
+    response_tools_after_adverse_event: list[str] = []
+    if adverse_turn_indices:
+        first_adverse_turn = adverse_turn_indices[0]
+        for turn in turns[first_adverse_turn + 1 :]:
+            for action in turn.get("actions", []):
+                response_tools_after_adverse_event.append(str(action.get("tool_name", "")))
+    support_actions_after_adverse_event = sum(
+        1 for tool_name in response_tools_after_adverse_event if tool_name == "ops.support.resolve"
+    )
+    unanswered_adverse_events = (
+        len(adverse_turn_indices)
+        if adverse_turn_indices and not any(tool in substantive_response_tools for tool in response_tools_after_adverse_event)
+        else 0
+    )
+
+    support_alert_turn_count = sum(1 for turn in turns if "support_backlog_above_50" in _extract_alerts(turn))
+    has_any_support_action = any(
+        action.get("tool_name") == "ops.support.resolve"
+        for turn in turns
+        for action in turn.get("actions", [])
+    )
+    initial_trust = 0.0
+    first_turn_observations = turns[0].get("observations", [])
+    if first_turn_observations:
+        initial_values = first_turn_observations[0].get("values", {})
+        initial_trust = float(initial_values.get("trust_score", 0.0) or 0.0)
+    final_trust = float(world_state.get("customers", {}).get("trust_score", 0.0))
+    trust_decline = max(0.0, initial_trust - final_trust)
+
+    normalized_sequences = [
+        tuple(str(action.get("tool_name", "")) for action in turn.get("actions", []))
+        for turn in turns
+    ]
+    dominant_sequence_count = max((normalized_sequences.count(sequence) for sequence in set(normalized_sequences)), default=0)
+    rigid_loop_penalty_applied = dominant_sequence_count >= 3 and len(set(normalized_sequences)) <= 2
+
+    penalty = 0.0
+    if unanswered_adverse_events > 0:
+        penalty += 0.4
+    if support_alert_turn_count >= 2 and not has_any_support_action:
+        penalty += 0.15
+    if trust_decline >= 0.1 and unanswered_adverse_events > 0:
+        penalty += 0.1
+    if rigid_loop_penalty_applied and unanswered_adverse_events > 0:
+        penalty += 0.05
+
+    penalty = _round_score(penalty)
+    return penalty, {
+        "behavioral_penalty": penalty,
+        "adverse_event_count": len(adverse_turn_indices),
+        "unanswered_adverse_events": unanswered_adverse_events,
+        "support_alert_turn_count": support_alert_turn_count,
+        "support_actions_after_adverse_event": support_actions_after_adverse_event,
+        "trust_decline": round(trust_decline, 4),
+        "rigid_loop_penalty_applied": rigid_loop_penalty_applied,
+    }
+
+
+def _score_strategic_coherence(
+    world_state: dict,
+    *,
+    scenario: dict,
+    trace_evidence: dict[str, Any] | None = None,
+) -> tuple[float, dict]:
     governance = world_state.get("governance", {})
     finance = world_state.get("finance", {})
     operations = world_state.get("operations", {})
@@ -291,6 +411,12 @@ def _score_strategic_coherence(world_state: dict, *, scenario: dict) -> tuple[fl
                 + market_signal * 0.1
                 + hiring_signal * 0.08
             )
+    behavioral_penalty, behavioral_details = _behavioral_penalty(
+        world_state=world_state,
+        trace_evidence=trace_evidence,
+        scenario=scenario,
+    )
+    score = _round_score(score - behavioral_penalty)
     details = {
         "board_update_count": board_update_count,
         "has_latest_board_update": has_latest_update,
@@ -309,11 +435,12 @@ def _score_strategic_coherence(world_state: dict, *, scenario: dict) -> tuple[fl
         "hiring_actions_count": hiring_actions_count,
         "open_roles": open_roles,
         "hiring_capacity_index": round(hiring_capacity_index, 4),
+        **behavioral_details,
     }
     return score, details
 
 
-def evaluate_dry_run(*, scenario: dict, world_state: dict) -> dict:
+def evaluate_dry_run(*, scenario: dict, world_state: dict, trace_evidence: dict[str, Any] | None = None) -> dict:
     finance = world_state.get("finance", {})
     customers = world_state.get("customers", {})
     weights = _weight_map(scenario)
@@ -321,7 +448,11 @@ def evaluate_dry_run(*, scenario: dict, world_state: dict) -> dict:
     cash_efficiency, cash_details = _score_cash_efficiency(world_state)
     revenue_quality, revenue_details = _score_revenue_quality(world_state)
     customer_health, customer_details = _score_customer_health(world_state)
-    strategic_coherence, strategy_details = _score_strategic_coherence(world_state, scenario=scenario)
+    strategic_coherence, strategy_details = _score_strategic_coherence(
+        world_state,
+        scenario=scenario,
+        trace_evidence=trace_evidence,
+    )
 
     component_scores = {
         "cash_efficiency": cash_efficiency,

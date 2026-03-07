@@ -813,7 +813,15 @@ def run_baseline(*, scenario_path: Path, baseline_id: str, seed: int, max_turns:
         )
 
     run_id = f"baseline-{uuid4()}"
-    evaluation = evaluate_dry_run(scenario=scenario, world_state=session.world_state)
+    final_snapshots = snapshots + [{"snapshot_id": "final", "kind": "final", "state": deepcopy(session.world_state)}]
+    evaluation = evaluate_dry_run(
+        scenario=scenario,
+        world_state=session.world_state,
+        trace_evidence={
+            "turns": turns,
+            "state_snapshots": final_snapshots,
+        },
+    )
     trace = build_trace(
         scenario=scenario,
         seed=seed,
@@ -823,7 +831,7 @@ def run_baseline(*, scenario_path: Path, baseline_id: str, seed: int, max_turns:
         world_state=session.world_state,
     )
     trace["turns"] = turns
-    trace["state_snapshots"] = snapshots + [{"snapshot_id": "final", "kind": "final", "state": deepcopy(session.world_state)}]
+    trace["state_snapshots"] = final_snapshots
     trace["runtime"]["total_tool_calls"] = total_tool_calls
     trace["agent"]["provider"] = "baseline"
     trace["agent"]["agent_name"] = baseline_id

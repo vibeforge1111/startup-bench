@@ -47,7 +47,7 @@ class CalibrationTests(unittest.TestCase):
         self.assertEqual(report["matched_scenario_count"], 1)
         self.assertEqual(report["review_count"], 1)
         self.assertEqual(report["scenario_alignments"][0]["scenario_id"], "hidden_canary_pricing_trap_test_001")
-        self.assertEqual(report["scenario_alignments"][0]["benchmark_recommendation"], "pass")
+        self.assertEqual(report["scenario_alignments"][0]["benchmark_recommendation"], "borderline")
 
     def test_validation_accepts_example_calibration_report(self) -> None:
         result = validate_artifact_file(

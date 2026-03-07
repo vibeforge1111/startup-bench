@@ -6,6 +6,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
+from thestartupbench.baseline_runner import run_baseline
 from thestartupbench.evaluators import evaluate_dry_run
 from thestartupbench.runner import initialize_world_state
 from thestartupbench.runtime import RuntimeSession, execute_tool_call
@@ -15,6 +16,7 @@ from thestartupbench.scenario_loader import load_scenario
 REPO_ROOT = Path(__file__).resolve().parents[1]
 GTM_SCENARIO_PATH = REPO_ROOT / "examples" / "minimal_gtm_scenario.json"
 PEOPLE_SCENARIO_PATH = REPO_ROOT / "examples" / "minimal_people_scenario.json"
+CANARY_GTM_SCENARIO_PATH = REPO_ROOT / "examples" / "hidden_canary_pricing_trap_test_scenario.json"
 
 
 class EvaluatorTests(unittest.TestCase):
@@ -77,6 +79,24 @@ class EvaluatorTests(unittest.TestCase):
         self.assertGreater(after["subscores"]["strategic_coherence"], before["subscores"]["strategic_coherence"])
         self.assertGreater(after["subscores"]["customer_health"], before["subscores"]["customer_health"])
         self.assertGreater(after["scenario_score"], before["scenario_score"])
+
+    def test_canary_pricing_trap_penalizes_unanswered_backlash_loop(self) -> None:
+        result = run_baseline(
+            scenario_path=CANARY_GTM_SCENARIO_PATH,
+            baseline_id="heuristic_market_aware_operator",
+            seed=1,
+            max_turns=4,
+        )
+
+        score_report = result["score_report"]
+        outcome_evaluator = score_report["evaluator_results"][0]
+        strategic_details = outcome_evaluator["outputs"]["component_details"]["strategic_coherence"]
+
+        self.assertLess(score_report["scenario_score"], 0.55)
+        self.assertFalse(score_report["pass"])
+        self.assertGreater(strategic_details["behavioral_penalty"], 0.0)
+        self.assertGreaterEqual(strategic_details["unanswered_adverse_events"], 1)
+        self.assertGreaterEqual(strategic_details["support_alert_turn_count"], 2)
 
 
 if __name__ == "__main__":
