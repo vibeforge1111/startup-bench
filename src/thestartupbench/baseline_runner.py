@@ -16,7 +16,11 @@ from .trace_validation import validate_trace_integrity
 from .validation import validate_instance
 
 
-_BASELINE_IDS = {"heuristic_b2b_operator", "heuristic_resilient_operator"}
+_BASELINE_IDS = {
+    "heuristic_b2b_operator",
+    "heuristic_market_aware_operator",
+    "heuristic_resilient_operator",
+}
 
 
 def list_baselines() -> list[str]:
@@ -354,9 +358,176 @@ def _heuristic_resilient_actions(session: RuntimeSession, *, turn_index: int) ->
     return actions
 
 
+def _heuristic_market_aware_actions(session: RuntimeSession, *, turn_index: int) -> list[dict]:
+    finance = session.world_state.get("finance", {})
+    product = session.world_state.get("product", {})
+    customers = session.world_state.get("customers", {})
+    sales = session.world_state.get("sales", {})
+    governance = session.world_state.get("governance", {})
+    market = session.world_state.get("market", {})
+    team = session.world_state.get("team", {})
+    hiring = team.get("hiring", {})
+    risk = session.world_state.get("risk", {})
+    actions: list[dict] = []
+    action_index = 0
+
+    actions.append(
+        {
+            "tool_name": "metrics.report",
+            "request_id": _next_request_id(turn_index, action_index),
+            "arguments": {},
+        }
+    )
+    action_index += 1
+
+    actions.append(
+        {
+            "tool_name": "research.market.read",
+            "request_id": _next_request_id(turn_index, action_index),
+            "arguments": {},
+        }
+    )
+    action_index += 1
+
+    competitor_pressure = float(market.get("competitor_pressure_index", market.get("competitor_pressure", 0.0)))
+    pricing_pressure = float(market.get("pricing_pressure_index", market.get("pricing_pressure", 0.0)))
+    demand_index = float(market.get("demand_index", 0.85))
+
+    if float(finance.get("treasury_concentration", 0.0)) > 0.78:
+        actions.append(
+            {
+                "tool_name": "finance.treasury.rebalance",
+                "request_id": _next_request_id(turn_index, action_index),
+                "arguments": {"target_concentration": 0.42, "rebalance_cost_usd": 7000},
+            }
+        )
+        action_index += 1
+
+    if float(finance.get("runway_weeks", 999.0)) < 20 or float(risk.get("financing_pressure", 0.0)) > 0.72:
+        if not finance.get("last_raise_plan"):
+            actions.append(
+                {
+                    "tool_name": "finance.raise.propose",
+                    "request_id": _next_request_id(turn_index, action_index),
+                    "arguments": {
+                        "raise_amount_usd": max(750000.0, float(finance.get("monthly_burn_usd", 0.0)) * 5.5),
+                        "dilution_pct": 0.11,
+                        "monthly_burn_change_usd": 0,
+                        "financing_risk_reduction": 0.24,
+                        "transaction_cost_usd": 26000,
+                    },
+                }
+            )
+            action_index += 1
+
+    if float(finance.get("runway_weeks", 0.0)) < 30 and not finance.get("last_plan_update"):
+        burn_cut = -22000 if demand_index < 0.78 else -14000
+        actions.append(
+            {
+                "tool_name": "finance.plan.write",
+                "request_id": _next_request_id(turn_index, action_index),
+                "arguments": {"budget_changes": {"monthly_burn_usd": burn_cut}},
+            }
+        )
+        action_index += 1
+
+    if float(product.get("onboarding_quality", 0.0)) < 0.69 and competitor_pressure > 0.55:
+        actions.append(
+            {
+                "tool_name": "product.roadmap.write",
+                "request_id": _next_request_id(turn_index, action_index),
+                "arguments": {
+                    "roadmap_items_delta": -1,
+                    "onboarding_quality_delta": 0.08,
+                    "major_incidents_delta": 0,
+                    "budget_change_monthly_burn_usd": 5000,
+                },
+            }
+        )
+        action_index += 1
+
+    if int(hiring.get("open_roles", team.get("open_roles", 0))) > 0 and float(team.get("bandwidth_load", 0.0)) > 0.76:
+        actions.append(
+            {
+                "tool_name": "people.hiring.update",
+                "request_id": _next_request_id(turn_index, action_index),
+                "arguments": {
+                    "sourced_candidates_delta": 5 if int(hiring.get("sourced_candidates", 0)) < 6 else 0,
+                    "onsite_candidates_delta": 2 if int(hiring.get("sourced_candidates", 0)) >= 5 else 0,
+                    "offers_out_delta": 1 if int(hiring.get("onsite_candidates", 0)) >= 2 else 0,
+                    "accepted_hires": 1 if int(hiring.get("offers_out", 0)) >= 1 else 0,
+                    "monthly_burn_change_usd": 14500 if int(hiring.get("offers_out", 0)) >= 1 else 3500,
+                    "morale_delta": 0.03 if int(hiring.get("offers_out", 0)) >= 1 else 0.008,
+                    "bandwidth_load_delta": -0.05 if int(hiring.get("offers_out", 0)) >= 1 else -0.01,
+                    "support_backlog_delta": -3 if int(hiring.get("offers_out", 0)) >= 1 else 0,
+                    "onboarding_quality_delta": 0.012 if int(hiring.get("offers_out", 0)) >= 1 else 0.0,
+                },
+            }
+        )
+        action_index += 1
+
+    pipeline_threshold = float(finance.get("monthly_burn_usd", 0.0)) * (6.8 if competitor_pressure > 0.65 else 5.8)
+    if float(sales.get("weighted_pipeline_usd", 0.0)) < pipeline_threshold:
+        actions.append(
+            {
+                "tool_name": "sales.pipeline.update",
+                "request_id": _next_request_id(turn_index, action_index),
+                "arguments": {
+                    "pipeline_count_delta": 1 if demand_index >= 0.72 else 0,
+                    "weighted_pipeline_usd_delta": 70000 if demand_index >= 0.8 else 50000,
+                },
+            }
+        )
+        action_index += 1
+
+    if (
+        float(customers.get("trust_score", 0.0)) >= 0.74
+        and pricing_pressure < 0.52
+        and competitor_pressure < 0.62
+        and float(sales.get("pricing", {}).get("current_price_index", 1.0)) < 1.04
+    ):
+        actions.append(
+            {
+                "tool_name": "sales.pricing.propose",
+                "request_id": _next_request_id(turn_index, action_index),
+                "arguments": {"price_change_pct": 0.03},
+            }
+        )
+        action_index += 1
+
+    if turn_index % 3 == 0 or int(governance.get("board_update_count", 0)) == 0:
+        actions.append(
+            {
+                "tool_name": "board.update",
+                "request_id": _next_request_id(turn_index, action_index),
+                "arguments": {
+                    "summary": "Adjusted to market pressure, protected distribution quality, and kept financing optionality open.",
+                    "forecast": {
+                        "runway_weeks": finance.get("runway_weeks"),
+                        "competitor_pressure_index": market.get("competitor_pressure_index"),
+                        "demand_index": market.get("demand_index"),
+                    },
+                    "asks": ["support selective hiring and GTM focus shifts"],
+                },
+            }
+        )
+        action_index += 1
+
+    actions.append(
+        {
+            "tool_name": "sim.advance",
+            "request_id": _next_request_id(turn_index, action_index),
+            "arguments": {"advance_by": 1, "unit": "week"},
+        }
+    )
+    return actions
+
+
 def _proposed_actions_for_baseline(session: RuntimeSession, *, baseline_id: str, turn_index: int) -> list[dict]:
     if baseline_id == "heuristic_b2b_operator":
         return _heuristic_b2b_actions(session, turn_index=turn_index)
+    if baseline_id == "heuristic_market_aware_operator":
+        return _heuristic_market_aware_actions(session, turn_index=turn_index)
     if baseline_id == "heuristic_resilient_operator":
         return _heuristic_resilient_actions(session, turn_index=turn_index)
     raise ValueError(f"Unknown baseline_id '{baseline_id}'.")
