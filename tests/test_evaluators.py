@@ -20,6 +20,7 @@ CANARY_GTM_SCENARIO_PATH = REPO_ROOT / "examples" / "hidden_canary_pricing_trap_
 CANARY_PEOPLE_SCENARIO_PATH = REPO_ROOT / "examples" / "hidden_canary_hiring_trap_test_scenario.json"
 ZOOM_CRISIS_SCENARIO_PATH = REPO_ROOT / "examples" / "real_world_zoom_security_freeze_test_scenario.json"
 BREX_CRISIS_SCENARIO_PATH = REPO_ROOT / "examples" / "real_world_brex_svb_treasury_shock_test_scenario.json"
+BOARD_STRATEGY_SCENARIO_PATH = REPO_ROOT / "examples" / "hidden_board_stakeholder_conflict_test_scenario.json"
 
 
 class EvaluatorTests(unittest.TestCase):
@@ -158,6 +159,54 @@ class EvaluatorTests(unittest.TestCase):
         self.assertEqual(strategic_details["finance_follow_up_count"], 0)
         self.assertGreaterEqual(strategic_details["final_financing_pressure"], 0.85)
         self.assertLessEqual(strategic_details["liquid_cash_months"], 4.0)
+
+    def test_board_track_penalizes_repeated_boilerplate_without_governance_follow_through(self) -> None:
+        scenario = load_scenario(BOARD_STRATEGY_SCENARIO_PATH)
+        world_state = initialize_world_state(scenario, seed=1)
+        world_state["product"]["major_incidents_open"] = 1
+        world_state["operations"]["support_backlog"] = 31
+        world_state["risk"] = {"financing_pressure": 0.79, "regulatory_pressure": 0.18}
+
+        trace_evidence = {
+            "turns": [
+                {
+                    "turn_index": 0,
+                    "actions": [
+                        {"tool_name": "metrics.report", "arguments": {}, "response": {"result": {"report": {"customers": {"trust_score": 0.67}}}}},
+                        {"tool_name": "board.update", "arguments": {"summary": "Stay the course and keep the board confident."}},
+                        {"tool_name": "sim.advance", "arguments": {"advance_by": 1, "unit": "week"}},
+                    ],
+                    "events": [],
+                },
+                {
+                    "turn_index": 1,
+                    "actions": [
+                        {"tool_name": "metrics.report", "arguments": {}, "response": {"result": {"report": {"customers": {"trust_score": 0.65}}}}},
+                        {"tool_name": "board.update", "arguments": {"summary": "Stay the course and keep the board confident."}},
+                        {"tool_name": "sim.advance", "arguments": {"advance_by": 1, "unit": "week"}},
+                    ],
+                    "events": [{"event_type": "board_growth_push"}],
+                },
+                {
+                    "turn_index": 2,
+                    "actions": [
+                        {"tool_name": "metrics.report", "arguments": {}, "response": {"result": {"report": {"customers": {"trust_score": 0.61}}}}},
+                        {"tool_name": "sales.pipeline.update", "arguments": {"pipeline_count_delta": 1}},
+                        {"tool_name": "sim.advance", "arguments": {"advance_by": 1, "unit": "week"}},
+                    ],
+                    "events": [{"event_type": "customer_pushback"}],
+                },
+            ]
+        }
+
+        result = evaluate_dry_run(scenario=scenario, world_state=world_state, trace_evidence=trace_evidence)
+        strategic_details = result["evaluator_results"][0]["outputs"]["component_details"]["strategic_coherence"]
+
+        self.assertGreater(strategic_details["behavioral_penalty"], 0.0)
+        self.assertTrue(strategic_details["repeated_board_update"])
+        self.assertEqual(strategic_details["board_update_after_governance_count"], 0)
+        self.assertEqual(strategic_details["support_follow_up_count"], 0)
+        self.assertLess(result["subscores"]["strategic_coherence"], 0.55)
 
 
 if __name__ == "__main__":

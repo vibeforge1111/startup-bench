@@ -15,6 +15,7 @@ SCENARIO_PATH = REPO_ROOT / "examples" / "minimal_b2b_saas_scenario.json"
 CRISIS_SCENARIO_PATH = REPO_ROOT / "examples" / "minimal_crisis_scenario.json"
 GTM_SCENARIO_PATH = REPO_ROOT / "examples" / "minimal_gtm_scenario.json"
 PRODUCT_SCENARIO_PATH = REPO_ROOT / "examples" / "minimal_product_scenario.json"
+BOARD_STRATEGY_SCENARIO_PATH = REPO_ROOT / "examples" / "hidden_board_stakeholder_conflict_test_scenario.json"
 
 
 class BaselineRunnerTests(unittest.TestCase):
@@ -108,6 +109,31 @@ class BaselineRunnerTests(unittest.TestCase):
         )
         final_state = long_horizon["trace"]["state_snapshots"][-1]["state"]
         self.assertGreaterEqual(final_state.get("governance", {}).get("board_update_count", 0), 2)
+
+    def test_long_horizon_baseline_board_updates_are_state_aware_on_board_track(self) -> None:
+        result = run_baseline(
+            scenario_path=BOARD_STRATEGY_SCENARIO_PATH,
+            baseline_id="heuristic_long_horizon_operator",
+            seed=1,
+            max_turns=6,
+        )
+
+        board_updates = [
+            action["arguments"]["summary"]
+            for turn in result["trace"]["turns"]
+            for action in turn["actions"]
+            if action["tool_name"] == "board.update"
+        ]
+        board_reads = [
+            action
+            for turn in result["trace"]["turns"]
+            for action in turn["actions"]
+            if action["tool_name"] == "board.read"
+        ]
+
+        self.assertGreaterEqual(len(board_updates), 2)
+        self.assertGreater(len(set(board_updates)), 1)
+        self.assertGreaterEqual(len(board_reads), 1)
 
 
 if __name__ == "__main__":

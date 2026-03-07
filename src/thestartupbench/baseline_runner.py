@@ -32,6 +32,53 @@ def _next_request_id(turn_index: int, action_index: int) -> str:
     return f"baseline_req_{turn_index:03d}_{action_index:02d}"
 
 
+def _long_horizon_board_update_payload(session: RuntimeSession) -> dict:
+    finance = session.world_state.get("finance", {})
+    customers = session.world_state.get("customers", {})
+    governance = session.world_state.get("governance", {})
+    operations = session.world_state.get("operations", {})
+    product = session.world_state.get("product", {})
+    team = session.world_state.get("team", {})
+    risk = session.world_state.get("risk", {})
+    market = session.world_state.get("market", {})
+    board_update_count = int(governance.get("board_update_count", 0))
+
+    summary = "Protected long-horizon trust, delivery capacity, and financing optionality ahead of short-term narrative wins."
+    asks = ["support sequencing quality and capacity investments before aggressive expansion"]
+
+    if board_update_count == 0 and (
+        int(product.get("major_incidents_open", 0)) > 0 or float(operations.get("support_backlog", 0.0)) >= 34
+    ):
+        summary = "Prioritized immediate reliability recovery and support stabilization before making new growth promises to the board."
+        asks = ["support incident recovery and service-quality sequencing before acceleration"]
+    elif float(risk.get("financing_pressure", 0.0)) >= 0.72 or float(finance.get("runway_weeks", 999.0)) < 24:
+        summary = "Grounded the board in liquidity reality, kept financing optionality open, and prioritized operating resilience over narrative expansion."
+        asks = ["support a conservative financing posture and transparent runway planning"]
+    elif board_update_count >= 1 and (
+        float(customers.get("trust_score", 0.0)) < 0.7
+        or float(operations.get("support_backlog", 0.0)) >= 24
+        or float(market.get("pricing_pressure_index", market.get("pricing_pressure", 0.0))) > 0.58
+    ):
+        summary = "Sequenced customer trust recovery ahead of headline growth commitments and kept the roadmap aligned with buyer reality."
+        asks = ["support a trust-first operating plan until customer signals strengthen"]
+    elif float(team.get("morale", 1.0)) < 0.6 or float(team.get("attrition_risk", 0.0)) > 0.52:
+        summary = "Protected team durability and delivery capacity so growth targets stay believable rather than aspirational."
+        asks = ["support selective hiring and org relief before expanding commitments"]
+
+    return {
+        "summary": summary,
+        "forecast": {
+            "runway_weeks": finance.get("runway_weeks"),
+            "support_backlog": operations.get("support_backlog"),
+            "delivery_capacity_index": team.get("delivery_capacity_index"),
+            "trust_score": customers.get("trust_score"),
+            "major_incidents_open": product.get("major_incidents_open"),
+            "financing_pressure": risk.get("financing_pressure"),
+        },
+        "asks": asks,
+    }
+
+
 def _heuristic_b2b_actions(session: RuntimeSession, *, turn_index: int) -> list[dict]:
     finance = session.world_state.get("finance", {})
     product = session.world_state.get("product", {})
@@ -525,6 +572,7 @@ def _heuristic_market_aware_actions(session: RuntimeSession, *, turn_index: int)
 
 
 def _heuristic_long_horizon_actions(session: RuntimeSession, *, turn_index: int) -> list[dict]:
+    track = session.scenario["metadata"]["track"]
     finance = session.world_state.get("finance", {})
     product = session.world_state.get("product", {})
     customers = session.world_state.get("customers", {})
@@ -555,6 +603,16 @@ def _heuristic_long_horizon_actions(session: RuntimeSession, *, turn_index: int)
         }
     )
     action_index += 1
+
+    if track == "board" and (turn_index == 0 or turn_index % 2 == 0):
+        actions.append(
+            {
+                "tool_name": "board.read",
+                "request_id": _next_request_id(turn_index, action_index),
+                "arguments": {},
+            }
+        )
+        action_index += 1
 
     if float(finance.get("runway_weeks", 999.0)) < 28 and not finance.get("last_plan_update"):
         actions.append(
@@ -715,16 +773,7 @@ def _heuristic_long_horizon_actions(session: RuntimeSession, *, turn_index: int)
             {
                 "tool_name": "board.update",
                 "request_id": _next_request_id(turn_index, action_index),
-                "arguments": {
-                    "summary": "Protected long-horizon trust, delivery capacity, and financing optionality ahead of short-term narrative wins.",
-                    "forecast": {
-                        "runway_weeks": finance.get("runway_weeks"),
-                        "support_backlog": operations.get("support_backlog"),
-                        "delivery_capacity_index": team.get("delivery_capacity_index"),
-                        "trust_score": customers.get("trust_score"),
-                    },
-                    "asks": ["support sequencing quality and capacity investments before aggressive expansion"],
-                },
+                "arguments": _long_horizon_board_update_payload(session),
             }
         )
         action_index += 1

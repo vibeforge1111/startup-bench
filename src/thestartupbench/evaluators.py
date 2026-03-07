@@ -217,6 +217,19 @@ def _extract_metrics_report(turn: dict) -> dict:
     return {}
 
 
+def _extract_board_update_summaries(turns: list[dict]) -> list[str]:
+    summaries: list[str] = []
+    for turn in turns:
+        for action in turn.get("actions", []):
+            if action.get("tool_name") != "board.update":
+                continue
+            arguments = action.get("arguments", {})
+            summary = arguments.get("summary")
+            if isinstance(summary, str) and summary.strip():
+                summaries.append(summary.strip())
+    return summaries
+
+
 def _behavioral_penalty(
     *,
     world_state: dict,
@@ -393,6 +406,98 @@ def _behavioral_penalty(
             "rigid_loop_penalty_applied": rigid_loop_penalty_applied,
         }
 
+    if track == "board":
+        governance_event_types = {"board_growth_push", "narrative_pressure", "board_pressure", "growth_ultimatum"}
+        customer_event_types = {"customer_pushback", "customer_reference_loss", "renewal_escalation"}
+
+        governance_turn_indices = [
+            index
+            for index, turn in enumerate(turns)
+            if any(event.get("event_type") in governance_event_types for event in turn.get("events", []))
+        ]
+        customer_turn_indices = [
+            index
+            for index, turn in enumerate(turns)
+            if any(event.get("event_type") in customer_event_types for event in turn.get("events", []))
+        ]
+
+        board_update_after_governance_count = 0
+        support_follow_up_count = 0
+        finance_follow_up_count = 0
+        market_read_count = 0
+        if governance_turn_indices or customer_turn_indices:
+            first_follow_up_turn = min(governance_turn_indices + customer_turn_indices)
+            for turn in turns[first_follow_up_turn + 1 :]:
+                for action in turn.get("actions", []):
+                    tool_name = str(action.get("tool_name", ""))
+                    if tool_name == "board.update":
+                        board_update_after_governance_count += 1
+                    elif tool_name == "ops.support.resolve":
+                        support_follow_up_count += 1
+                    elif tool_name in {"finance.plan.write", "finance.raise.propose"}:
+                        finance_follow_up_count += 1
+                    elif tool_name == "research.market.read":
+                        market_read_count += 1
+
+        board_summaries = _extract_board_update_summaries(turns)
+        unique_board_summaries = len(set(board_summaries))
+        repeated_board_update = len(board_summaries) >= 2 and unique_board_summaries <= 1
+
+        first_report = _extract_metrics_report(turns[0])
+        initial_trust = float(first_report.get("customers", {}).get("trust_score", 0.0) or 0.0)
+        final_trust = float(world_state.get("customers", {}).get("trust_score", 0.0))
+        trust_decline = max(0.0, initial_trust - final_trust)
+        final_major_incidents_open = int(world_state.get("product", {}).get("major_incidents_open", 0))
+        final_support_backlog = float(world_state.get("operations", {}).get("support_backlog", 0.0))
+        final_financing_pressure = float(world_state.get("risk", {}).get("financing_pressure", 0.0))
+
+        penalty = 0.0
+        if governance_turn_indices and board_update_after_governance_count == 0:
+            penalty += 0.06
+        if customer_turn_indices and support_follow_up_count == 0:
+            penalty += 0.05
+        if repeated_board_update:
+            penalty += 0.04
+        if final_major_incidents_open > 0:
+            penalty += 0.04
+        if trust_decline >= 0.04 and customer_turn_indices and support_follow_up_count == 0:
+            penalty += 0.03
+        if final_financing_pressure >= 0.75 and finance_follow_up_count == 0:
+            penalty += 0.03
+        if market_read_count == 0:
+            penalty += 0.02
+        if rigid_loop_penalty_applied and repeated_board_update:
+            penalty += 0.02
+        if final_support_backlog >= 26 and customer_turn_indices and support_follow_up_count == 0:
+            penalty += 0.02
+
+        penalty = _round_score(penalty)
+        return penalty, {
+            "behavioral_penalty": penalty,
+            "adverse_event_count": len(governance_turn_indices) + len(customer_turn_indices),
+            "unanswered_adverse_events": 0,
+            "support_alert_turn_count": 0,
+            "support_actions_after_adverse_event": support_follow_up_count,
+            "trust_decline": round(trust_decline, 4),
+            "soft_demand_alert_turn_count": 0,
+            "demand_decline": 0.0,
+            "pipeline_decline_ratio": 0.0,
+            "hiring_response_count": 0,
+            "finance_response_count": finance_follow_up_count,
+            "unresolved_hiring_pressure": False,
+            "board_event_count": len(governance_turn_indices),
+            "customer_event_count": len(customer_turn_indices),
+            "board_update_after_governance_count": board_update_after_governance_count,
+            "support_follow_up_count": support_follow_up_count,
+            "market_read_count": market_read_count,
+            "repeated_board_update": repeated_board_update,
+            "unique_board_summaries": unique_board_summaries,
+            "final_major_incidents_open": final_major_incidents_open,
+            "final_support_backlog": round(final_support_backlog, 2),
+            "final_financing_pressure": round(final_financing_pressure, 4),
+            "rigid_loop_penalty_applied": rigid_loop_penalty_applied,
+        }
+
     if track == "crisis":
         security_event_types = {"trust_shock", "security_backlash", "privacy_backlash"}
         liquidity_event_types = {"bank_freeze", "treasury_freeze", "counterparty_freeze"}
@@ -556,6 +661,7 @@ def _score_strategic_coherence(
     finance = world_state.get("finance", {})
     operations = world_state.get("operations", {})
     product = world_state.get("product", {})
+    customers = world_state.get("customers", {})
     team = world_state.get("team", {})
     risk = world_state.get("risk", {})
     market = world_state.get("market", {})
@@ -638,6 +744,24 @@ def _score_strategic_coherence(
                 + market_signal * 0.12
                 + hiring_signal * 0.06
                 + _clamp(1.0 - financing_pressure) * 0.12
+            )
+        elif track == "board":
+            org_signal = _clamp(org_changes_count / 1.0)
+            market_signal = _clamp(market_reads_count / 1.0)
+            incident_signal = _clamp(incident_response_count / 2.0)
+            resolution_signal = 1.0 if major_incidents_open == 0 else _clamp(1.0 - (major_incidents_open / 3.0))
+            support_signal = _clamp(support_actions_taken / 2.0)
+            trust_signal = _clamp(float(customers.get("trust_score", 0.0)))
+            score = _round_score(
+                base_score * 0.28
+                + org_signal * 0.08
+                + compliance_signal * 0.08
+                + fundraising_signal * 0.12
+                + market_signal * 0.08
+                + incident_signal * 0.12
+                + resolution_signal * 0.12
+                + support_signal * 0.1
+                + trust_signal * 0.1
             )
         else:
             score = _round_score(
