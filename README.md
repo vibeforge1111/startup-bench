@@ -43,3 +43,20 @@ Artifacts:
 - `examples/minimal_primitives.json`
 - `examples/minimal_tool_manifest.json`
 - `examples/minimal_score_report.json`
+
+Implementation package:
+
+- `pyproject.toml`
+- `src/thestartupbench/`
+- `tests/`
+
+Current CLI examples:
+
+```bash
+python -m thestartupbench version
+python -m thestartupbench validate scenario examples/minimal_b2b_saas_scenario.json
+python -m thestartupbench manifest examples/minimal_b2b_saas_scenario.json
+python -m thestartupbench run-dry examples/minimal_b2b_saas_scenario.json --seed 1 --output-dir tmp_out
+python -m thestartupbench run-script examples/minimal_b2b_saas_scenario.json examples/minimal_tool_script.json --seed 1 --output-dir tmp_out
+python -m unittest discover -s tests -p "test_*.py"
+```

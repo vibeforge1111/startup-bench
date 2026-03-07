@@ -54,6 +54,13 @@ This package should be sufficient to:
 - evaluate official submissions
 - define leaderboard-grade runs
 
+Reference implementation status:
+
+- a Python reference package now exists under `src/thestartupbench/`
+- schema-backed validation is implemented
+- dry-run and scripted-run artifact generation is implemented
+- smoke tests exist under `tests/`
+
 ## Canonical terms
 
 - `benchmark version`: version of the benchmark contract and official scenario bundle
