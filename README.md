@@ -31,6 +31,7 @@ Current status:
 - added calibration reports and study manifests for hidden-pack operator alignment work
 - added executable study runs, review packets, and study-level compilation for operator calibration waves
 - added reviewer assignment, exportable review forms, and review-form import workflows
+- added model-review prompt bundle export and raw model-review import workflows
 
 Key documents:
 
@@ -152,6 +153,8 @@ python -m thestartupbench run-calibration-study examples/operator_calibration_st
 python -m thestartupbench assign-reviewers examples/operator_calibration_study_manifest.json --study-run-dir tmp_out --roster-path examples/reviewer_roster_template.csv --output-dir tmp_out
 python -m thestartupbench export-review-forms tmp_out/review_assignments.json --output-dir tmp_out
 python -m thestartupbench import-review-forms tmp_out --output-dir tmp_out
+python -m thestartupbench export-model-review-bundles tmp_out --output-dir tmp_model_bundles
+python -m thestartupbench import-model-reviews tmp_model_outputs --output-dir tmp_model_import
 python -m thestartupbench compile-calibration-study examples/operator_calibration_study_manifest.json --study-run-dir tmp_out --review-paths examples/minimal_operator_review.json --output-dir tmp_out
 python -m thestartupbench build-submission --suite-report-paths tmp_out/suite_report.json --model-id heuristic_resilient_operator --provider baseline --contamination-flag clean --output-dir tmp_out
 python -m unittest discover -s tests -p "test_*.py"

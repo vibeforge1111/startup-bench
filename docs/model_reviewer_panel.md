@@ -61,11 +61,23 @@ Do not let one model see another model's review before submitting.
 Send:
 
 - the reviewer manual
-- the packet summary
-- the trace or replay summary
+- the scenario-scoped prompt bundle
 - the required JSON output template
 
 Ask the model to act as a startup operator reviewer, not as a benchmark optimizer.
+
+The benchmark can export those bundles directly from a study run:
+
+```bash
+python -m thestartupbench run-calibration-study examples/operator_calibration_study_manifest.json --output-dir tmp_study
+python -m thestartupbench export-model-review-bundles tmp_study --output-dir tmp_model_bundles
+```
+
+Each bundle contains:
+
+- `prompt.md`
+- `context.json`
+- `review_template.json`
 
 ## Output format
 
@@ -137,12 +149,20 @@ Bad uses:
 ## Recommended workflow
 
 1. Run the target hidden study wave.
-2. Export the packet and reviewer instructions.
-3. Send the same material separately to Gemini, Opus, and GPT.
-4. Save each returned JSON review as its own file.
-5. Aggregate those reviews as a synthetic panel.
-6. Compare synthetic panel judgments to benchmark scores.
-7. Use the result to decide where to spend human review capacity.
+2. Export model-review bundles per scenario.
+3. Send the same scenario bundle separately to Gemini, Opus, and GPT.
+4. Save each returned JSON review as its own file, or raw Markdown if the model wraps the JSON in fences.
+5. Import the raw responses:
+
+```bash
+python -m thestartupbench import-model-reviews tmp_model_outputs --output-dir tmp_model_import
+```
+
+6. Aggregate the imported reviews as a synthetic panel.
+7. Compare synthetic panel judgments to benchmark scores.
+8. Use the result to decide where to spend human review capacity.
+
+If `import-model-reviews` reports rejected files, fix those raw responses before treating the synthetic panel as complete.
 
 ## Strong warning
 

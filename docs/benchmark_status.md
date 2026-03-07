@@ -25,6 +25,7 @@ TheStartupBench is no longer just an RFC. It now has:
 - taskforce strategy and reviewer manual for organizing human calibration
 - reviewer assignment, exportable review forms, and import back into benchmark artifacts
 - synthetic reviewer panel guidance and fillable JSON template for LLM-based shadow review
+- model-review prompt bundle export and raw model-review import for synthetic panels
 - CI for tests, validation, and smoke suites
 - unit tests and executable smoke paths
 
@@ -69,6 +70,8 @@ Completed:
   - `assign-reviewers`
   - `export-review-forms`
   - `import-review-forms`
+  - `export-model-review-bundles`
+  - `import-model-reviews`
 - official evaluation helpers:
   - `show-official-profile`
   - `emit-run-manifest`

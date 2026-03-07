@@ -6,8 +6,8 @@ Last updated: 2026-03-07
 
 Current automated test surface:
 
-- `106` unit tests
-- `22` test files
+- `108` unit tests
+- `23` test files
 - all tests passing in the current tree
 
 The test suite is strongest on schema validation, core runtime mutations, baseline execution, and suite/submission packaging. It is weakest on evaluator nuance, adversarial scenario behavior, and broader scenario-corpus regression coverage.
@@ -107,6 +107,10 @@ The test suite is strongest on schema validation, core runtime mutations, baseli
   - assigns reviewers from a roster into a valid assignment manifest
   - exports reviewer-facing forms and imports a completed CSV back into valid operator-review JSON
 
+- [test_model_reviewer_ops.py](/C:/Users/USER/Desktop/startup-bench/tests/test_model_reviewer_ops.py): `2` tests
+  - exports scenario-scoped model-review prompt bundles from a calibration study run
+  - imports fenced raw model outputs into valid operator-review JSON while reporting rejected files
+
 ### Hidden-eval packaging
 
 - [test_suite_manifest.py](/C:/Users/USER/Desktop/startup-bench/tests/test_suite_manifest.py): `2` tests
@@ -189,6 +193,8 @@ PYTHONPATH=src python -m thestartupbench build-calibration-report --suite-report
 PYTHONPATH=src python -m thestartupbench run-calibration-study examples/operator_calibration_study_manifest.json --output-dir tmp_smoke
 PYTHONPATH=src python -m thestartupbench assign-reviewers examples/operator_calibration_study_manifest.json --study-run-dir tmp_smoke --roster-path examples/reviewer_roster_template.csv --output-dir tmp_smoke
 PYTHONPATH=src python -m thestartupbench export-review-forms tmp_smoke/review_assignments.json --output-dir tmp_smoke
+PYTHONPATH=src python -m thestartupbench export-model-review-bundles tmp_smoke --output-dir tmp_model_review_bundles
+PYTHONPATH=src python -m thestartupbench import-model-reviews tmp_model_raw --output-dir tmp_model_import
 PYTHONPATH=src python -m thestartupbench compile-calibration-study examples/operator_calibration_study_manifest.json --study-run-dir tmp_smoke --review-paths examples/minimal_operator_review.json --output-dir tmp_smoke
 PYTHONPATH=src python -m thestartupbench build-submission --suite-report-paths tmp_smoke/suite_report.json --model-id heuristic_resilient_operator --provider baseline --contamination-flag clean --output-dir tmp_smoke
 python -m unittest discover -s tests -p "test_*.py"
@@ -292,6 +298,13 @@ Observed on 2026-03-07:
 - `export-review-forms ...review_assignments.json`: passed
   - reviewer count: `3`
   - reviewer-facing Markdown and CSV forms emitted
+- `export-model-review-bundles tmp_smoke --output-dir tmp_model_review_bundles`: passed
+  - bundle count: `10`
+  - scenario-scoped prompt bundles emitted
+- `import-model-reviews tmp_model_raw --output-dir tmp_model_import`: passed with one intentional rejection
+  - imported review count: `1`
+  - rejected file count: `1`
+  - fenced JSON response normalized into a valid operator-review artifact
 - `compile-calibration-study ...operator_calibration_study_manifest.json ...minimal_operator_review.json`: passed
   - completed target count: `1`
   - pending target count: `2`
@@ -306,8 +319,8 @@ Observed on 2026-03-07:
 - `python -m thestartupbench version`: passed
   - reported version: `0.1.0`
 - `python -m unittest discover -s tests -p "test_*.py"`: passed
-  - `106` tests
-  - `22` files
+  - `108` tests
+  - `23` files
 
 ## What Is Covered Well
 
