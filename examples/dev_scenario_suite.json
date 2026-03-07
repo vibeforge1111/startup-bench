@@ -5,15 +5,33 @@
   "split": "dev",
   "scenarios": [
     {
+      "scenario_id": "zero_to_one_design_partner_001",
+      "path": "minimal_0to1_scenario.json",
+      "track": "0to1",
+      "mode": "dev"
+    },
+    {
       "scenario_id": "b2b_saas_runway_pricing_001",
       "path": "minimal_b2b_saas_scenario.json",
       "track": "b2b_saas",
       "mode": "dev"
     },
     {
+      "scenario_id": "board_reforecast_pressure_001",
+      "path": "minimal_board_scenario.json",
+      "track": "board",
+      "mode": "dev"
+    },
+    {
       "scenario_id": "crisis_trust_recovery_001",
       "path": "minimal_crisis_scenario.json",
       "track": "crisis",
+      "mode": "dev"
+    },
+    {
+      "scenario_id": "scale_capacity_balance_001",
+      "path": "minimal_scale_scenario.json",
+      "track": "scale",
       "mode": "dev"
     }
   ]

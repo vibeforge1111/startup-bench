@@ -41,7 +41,7 @@ class SubmissionBuilderTests(unittest.TestCase):
         submission = result["submission"]
         self.assertEqual(submission["evaluation"]["repeat_count"], 2)
         tracks = {item["track"] for item in submission["evaluation"]["track_summaries"]}
-        self.assertEqual(tracks, {"b2b_saas", "crisis"})
+        self.assertEqual(tracks, {"0to1", "b2b_saas", "board", "crisis", "scale"})
 
 
 if __name__ == "__main__":

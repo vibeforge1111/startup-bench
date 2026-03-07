@@ -25,10 +25,10 @@ class SuiteRunnerTests(unittest.TestCase):
 
         self.assertTrue(result["validation"]["ok"])
         report = result["suite_report"]
-        self.assertEqual(report["overall"]["scenario_count"], 2)
-        self.assertEqual(len(report["scenario_reports"]), 2)
+        self.assertEqual(report["overall"]["scenario_count"], 5)
+        self.assertEqual(len(report["scenario_reports"]), 5)
         tracks = {item["track"] for item in report["track_summaries"]}
-        self.assertEqual(tracks, {"b2b_saas", "crisis"})
+        self.assertEqual(tracks, {"0to1", "b2b_saas", "board", "crisis", "scale"})
 
     def test_resilient_baseline_improves_suite_pass_rate(self) -> None:
         b2b_style = run_suite(
