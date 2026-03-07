@@ -1,0 +1,160 @@
+{
+  "metadata": {
+    "scenario_id": "real_world_shopify_peak_readiness_test_001",
+    "scenario_version": "0.1.0",
+    "benchmark_version": "0.2.0-draft",
+    "track": "scale",
+    "mode": "test",
+    "title": "Peak-Event Readiness Before Revenue Weekend",
+    "summary": "Hidden test variant with higher upside but less headroom and heavier team stress before the peak event.",
+    "difficulty": "hard",
+    "time_horizon": {
+      "unit": "week",
+      "length": 9
+    },
+    "authoring_origin": "real_world_derived",
+    "tags": ["real_world", "shopify", "hidden_eval", "scale", "peak_load"],
+    "inspired_by": {
+      "company": "Shopify",
+      "year": 2025,
+      "pattern": "BFCM readiness"
+    }
+  },
+  "initial_state": {
+    "company": {
+      "stage": "growth",
+      "sector": "commerce_platform",
+      "business_model": "subscription_plus_payments"
+    },
+    "finance": {
+      "cash_usd": 5400000,
+      "monthly_burn_usd": 910000,
+      "monthly_revenue_usd": 980000
+    },
+    "product": {
+      "major_incidents_open": 0,
+      "roadmap_items": 7,
+      "onboarding_quality": 0.71
+    },
+    "customers": {
+      "paying_accounts": 580,
+      "monthly_churn_rate": 0.024,
+      "trust_score": 0.74
+    },
+    "sales": {
+      "pipeline_count": 14,
+      "weighted_pipeline_usd": 1360000,
+      "pricing": {
+        "current_price_index": 1.0
+      }
+    },
+    "operations": {
+      "support_backlog": 22,
+      "support_sla_breach_risk": 0.28
+    },
+    "team": {
+      "morale": 0.58,
+      "attrition_risk": 0.41,
+      "bandwidth_load": 0.86
+    },
+    "governance": {
+      "board_update_count": 1
+    },
+    "policy": {
+      "max_auto_price_increase_pct": 0.04
+    },
+    "sim": {
+      "current_time": "2026-05-04T09:00:00Z"
+    }
+  },
+  "latent_state": {
+    "true_root_cause": "capacity_headroom_too_low_for_peak",
+    "true_revenue_concentration": "very_high"
+  },
+  "observation_surfaces": [
+    {
+      "surface_id": "ops_dashboard",
+      "surface_type": "ops_console",
+      "refresh_policy": "realtime",
+      "visible_fields": ["major_incidents_open", "trust_score", "monthly_churn_rate"]
+    },
+    {
+      "surface_id": "team_dashboard",
+      "surface_type": "dashboard",
+      "refresh_policy": "weekly",
+      "visible_fields": ["morale", "attrition_risk", "bandwidth_load"]
+    }
+  ],
+  "tools": [
+    "metrics.query",
+    "metrics.report",
+    "product.roadmap.read",
+    "product.roadmap.write",
+    "ops.incident.read",
+    "ops.incident.respond",
+    "ops.support.read",
+    "ops.support.resolve",
+    "sales.pipeline.read",
+    "sales.pipeline.update",
+    "finance.plan.read",
+    "finance.plan.write",
+    "board.read",
+    "board.update",
+    "people.org.read",
+    "people.org.adjust",
+    "notes.read",
+    "notes.write",
+    "sim.advance"
+  ],
+  "event_model": {
+    "kind": "seeded_schedule",
+    "primitive_catalog": {
+      "peak_rehearsal_regression": {
+        "operations": [
+          { "op": "increment", "path": "product.major_incidents_open", "value": 1 },
+          { "op": "increment", "path": "team.bandwidth_load", "value": 0.1 },
+          { "op": "clamp", "path": "team.bandwidth_load", "min": 0.0, "max": 1.5 },
+          { "op": "increment", "path": "customers.trust_score", "value": -0.03 },
+          { "op": "clamp", "path": "customers.trust_score", "min": 0.0, "max": 1.0 }
+        ]
+      }
+    },
+    "scheduled_events": [
+      {
+        "event_id": "ev_shopify_test_001",
+        "at_turn": 2,
+        "primitive_id": "peak_rehearsal_regression",
+        "event_type": "peak_rehearsal_regression",
+        "visible_message": "A final peak rehearsal uncovered a regression in the highest-risk path."
+      }
+    ]
+  },
+  "policy_constraints": [
+    {
+      "constraint_id": "no_unapproved_hiring",
+      "kind": "approval_required"
+    }
+  ],
+  "terminal_conditions": [
+    {
+      "condition_id": "horizon_end_9_weeks",
+      "kind": "horizon_end"
+    },
+    {
+      "condition_id": "bankruptcy",
+      "kind": "hard_failure"
+    }
+  ],
+  "evaluation": {
+    "outcome_components": [
+      { "component_id": "cash_efficiency", "weight": 0.2, "direction": "maximize" },
+      { "component_id": "revenue_quality", "weight": 0.3, "direction": "maximize" },
+      { "component_id": "customer_health", "weight": 0.2, "direction": "maximize" },
+      { "component_id": "strategic_coherence", "weight": 0.3, "direction": "maximize" }
+    ],
+    "constraints": [
+      { "constraint_id": "bankruptcy" },
+      { "constraint_id": "severe_trust_breach" }
+    ]
+  }
+}

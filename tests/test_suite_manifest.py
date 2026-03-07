@@ -11,6 +11,7 @@ from thestartupbench.suite_manifest import redact_suite_manifest
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 PRIVATE_SUITE_PATH = REPO_ROOT / "examples" / "private_test_scenario_suite.json"
+PRIVATE_REAL_WORLD_SUITE_PATH = REPO_ROOT / "examples" / "private_real_world_test_scenario_suite.json"
 
 
 class SuiteManifestTests(unittest.TestCase):
@@ -21,6 +22,17 @@ class SuiteManifestTests(unittest.TestCase):
         manifest = result["manifest"]
         self.assertEqual(manifest["split"], "test")
         self.assertEqual(manifest["scenario_count"], 5)
+        self.assertNotIn("path", manifest["scenarios"][0])
+        self.assertEqual(manifest["scenarios"][0]["hidden_ref"], "test_000")
+
+    def test_redact_real_world_hidden_suite_manifest_hides_paths_and_validates(self) -> None:
+        result = redact_suite_manifest(PRIVATE_REAL_WORLD_SUITE_PATH)
+
+        self.assertTrue(result["validation"]["ok"])
+        manifest = result["manifest"]
+        self.assertEqual(manifest["split"], "test")
+        self.assertEqual(manifest["scenario_count"], 5)
+        self.assertEqual(manifest["scenario_pack_version"], "real-world-test-pack-0.1.0")
         self.assertNotIn("path", manifest["scenarios"][0])
         self.assertEqual(manifest["scenarios"][0]["hidden_ref"], "test_000")
 

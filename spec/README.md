@@ -22,6 +22,7 @@ It is organized into:
 - `evaluator_contract.md`: evaluator types, interfaces, and aggregation rules
 - `validation_contract.md`: validation pipeline and leaderboard eligibility checks
 - `leaderboard_protocol.md`: submission, verification, contamination, and leaderboard policy
+- `hidden_eval_policy.md`: hidden test/fresh split operation, refresh cadence, and redaction policy
 
 Machine-readable schemas:
 

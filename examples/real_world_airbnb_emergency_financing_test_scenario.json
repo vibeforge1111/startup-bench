@@ -1,0 +1,165 @@
+{
+  "metadata": {
+    "scenario_id": "real_world_airbnb_emergency_financing_test_001",
+    "scenario_version": "0.1.0",
+    "benchmark_version": "0.2.0-draft",
+    "track": "board",
+    "mode": "test",
+    "title": "Emergency Financing Under Market Shock",
+    "summary": "Hidden test variant of the emergency financing scenario with a shorter runway and higher financing pressure.",
+    "difficulty": "frontier",
+    "time_horizon": {
+      "unit": "week",
+      "length": 9
+    },
+    "authoring_origin": "real_world_derived",
+    "tags": ["real_world", "airbnb", "financing", "hidden_eval", "board"],
+    "inspired_by": {
+      "company": "Airbnb",
+      "year": 2020,
+      "pattern": "emergency financing under demand shock"
+    }
+  },
+  "initial_state": {
+    "company": {
+      "stage": "series_d",
+      "sector": "marketplace",
+      "business_model": "transaction_fee"
+    },
+    "finance": {
+      "cash_usd": 1850000,
+      "restricted_cash_usd": 0,
+      "monthly_burn_usd": 760000,
+      "monthly_revenue_usd": 280000,
+      "treasury_concentration": 0.38
+    },
+    "product": {
+      "major_incidents_open": 0,
+      "roadmap_items": 9,
+      "onboarding_quality": 0.6
+    },
+    "customers": {
+      "paying_accounts": 230,
+      "monthly_churn_rate": 0.045,
+      "trust_score": 0.65
+    },
+    "sales": {
+      "pipeline_count": 9,
+      "weighted_pipeline_usd": 390000,
+      "pricing": {
+        "current_price_index": 1.0
+      }
+    },
+    "team": {
+      "morale": 0.49,
+      "attrition_risk": 0.63,
+      "bandwidth_load": 0.9
+    },
+    "governance": {
+      "board_update_count": 1
+    },
+    "policy": {
+      "max_auto_price_increase_pct": 0.03
+    },
+    "risk": {
+      "financing_pressure": 0.82
+    },
+    "sim": {
+      "current_time": "2026-04-06T09:00:00Z"
+    }
+  },
+  "latent_state": {
+    "true_root_cause": "financing_market_closing",
+    "true_board_patience": "very_low"
+  },
+  "observation_surfaces": [
+    {
+      "surface_id": "finance_dashboard",
+      "surface_type": "dashboard",
+      "refresh_policy": "daily",
+      "visible_fields": ["cash_usd", "liquid_cash_usd", "runway_weeks", "monthly_burn_usd"]
+    },
+    {
+      "surface_id": "board_packet",
+      "surface_type": "board_portal",
+      "refresh_policy": "weekly",
+      "visible_fields": ["board_update_count", "weighted_pipeline_usd", "financing_pressure"]
+    },
+    {
+      "surface_id": "team_dashboard",
+      "surface_type": "dashboard",
+      "refresh_policy": "weekly",
+      "visible_fields": ["morale", "attrition_risk", "bandwidth_load"]
+    }
+  ],
+  "tools": [
+    "metrics.query",
+    "metrics.report",
+    "product.roadmap.read",
+    "product.roadmap.write",
+    "sales.pipeline.read",
+    "sales.pipeline.update",
+    "finance.plan.read",
+    "finance.plan.write",
+    "finance.raise.propose",
+    "board.read",
+    "board.update",
+    "people.org.read",
+    "people.org.adjust",
+    "notes.read",
+    "notes.write",
+    "sim.advance"
+  ],
+  "event_model": {
+    "kind": "seeded_schedule",
+    "primitive_catalog": {
+      "financing_window_worsens": {
+        "operations": [
+          { "op": "increment", "path": "risk.financing_pressure", "value": 0.14 },
+          { "op": "clamp", "path": "risk.financing_pressure", "min": 0.0, "max": 1.0 },
+          { "op": "increment", "path": "sales.weighted_pipeline_usd", "value": -90000 },
+          { "op": "increment", "path": "customers.trust_score", "value": -0.025 },
+          { "op": "clamp", "path": "customers.trust_score", "min": 0.0, "max": 1.0 }
+        ]
+      }
+    },
+    "scheduled_events": [
+      {
+        "event_id": "ev_airbnb_fin_test_001",
+        "at_turn": 2,
+        "primitive_id": "financing_window_worsens",
+        "event_type": "financing_window_worsens",
+        "visible_message": "The financing market got worse again and survival terms became more expensive."
+      }
+    ]
+  },
+  "policy_constraints": [
+    {
+      "constraint_id": "no_unapproved_hiring",
+      "kind": "approval_required"
+    }
+  ],
+  "terminal_conditions": [
+    {
+      "condition_id": "horizon_end_9_weeks",
+      "kind": "horizon_end"
+    },
+    {
+      "condition_id": "bankruptcy",
+      "kind": "hard_failure"
+    }
+  ],
+  "evaluation": {
+    "outcome_components": [
+      { "component_id": "cash_efficiency", "weight": 0.35, "direction": "maximize" },
+      { "component_id": "revenue_quality", "weight": 0.15, "direction": "maximize" },
+      { "component_id": "customer_health", "weight": 0.15, "direction": "maximize" },
+      { "component_id": "strategic_coherence", "weight": 0.35, "direction": "maximize" }
+    ],
+    "constraints": [
+      { "constraint_id": "bankruptcy" },
+      { "constraint_id": "severe_trust_breach" },
+      { "constraint_id": "severe_financing_failure" }
+    ]
+  }
+}
