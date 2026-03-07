@@ -53,6 +53,9 @@ Artifacts:
 - `schemas/tsb_submission.schema.json`
 - `examples/minimal_b2b_saas_scenario.json`
 - `examples/minimal_crisis_scenario.json`
+- `examples/minimal_0to1_scenario.json`
+- `examples/minimal_board_scenario.json`
+- `examples/minimal_scale_scenario.json`
 - `examples/dev_scenario_suite.json`
 - `examples/private_test_scenario_suite.json`
 - `examples/minimal_public_suite_manifest.json`
@@ -79,11 +82,11 @@ python -m thestartupbench list-baselines
 python -m thestartupbench lint-scenario examples/minimal_b2b_saas_scenario.json
 python -m thestartupbench run-dry examples/minimal_b2b_saas_scenario.json --seed 1 --output-dir tmp_out
 python -m thestartupbench run-script examples/minimal_b2b_saas_scenario.json examples/minimal_tool_script.json --seed 1 --output-dir tmp_out
-python -m thestartupbench run-baseline examples/minimal_b2b_saas_scenario.json heuristic_b2b_operator --seed 1 --max-turns 6 --output-dir tmp_out
-python -m thestartupbench run-campaign examples/minimal_b2b_saas_scenario.json baseline --baseline-id heuristic_b2b_operator --seeds 1,2,3 --max-turns 6 --output-dir tmp_out
-python -m thestartupbench run-suite examples/dev_scenario_suite.json baseline --baseline-id heuristic_b2b_operator --seeds 1,2 --max-turns 4 --output-dir tmp_out
+python -m thestartupbench run-baseline examples/minimal_crisis_scenario.json heuristic_resilient_operator --seed 1 --max-turns 6 --output-dir tmp_out
+python -m thestartupbench run-campaign examples/minimal_crisis_scenario.json baseline --baseline-id heuristic_resilient_operator --seeds 1,2,3 --max-turns 6 --output-dir tmp_out
+python -m thestartupbench run-suite examples/dev_scenario_suite.json baseline --baseline-id heuristic_resilient_operator --seeds 1,2 --max-turns 4 --output-dir tmp_out
 python -m thestartupbench redact-suite examples/private_test_scenario_suite.json --output-dir tmp_out
-python -m thestartupbench build-submission --suite-report-paths tmp_out/suite_report.json --model-id heuristic_b2b_operator --provider baseline --contamination-flag clean --output-dir tmp_out
+python -m thestartupbench build-submission --suite-report-paths tmp_out/suite_report.json --model-id heuristic_resilient_operator --provider baseline --contamination-flag clean --output-dir tmp_out
 python -m unittest discover -s tests -p "test_*.py"
 ```
 
@@ -116,3 +119,11 @@ Current built-in baselines:
 
 - `heuristic_b2b_operator`
 - `heuristic_resilient_operator`
+
+Current dev suite coverage:
+
+- `0to1`
+- `b2b_saas`
+- `board`
+- `crisis`
+- `scale`

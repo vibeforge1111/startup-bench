@@ -44,6 +44,9 @@ Example:
 
 - `../examples/minimal_b2b_saas_scenario.json`
 - `../examples/minimal_crisis_scenario.json`
+- `../examples/minimal_0to1_scenario.json`
+- `../examples/minimal_board_scenario.json`
+- `../examples/minimal_scale_scenario.json`
 - `../examples/dev_scenario_suite.json`
 - `../examples/private_test_scenario_suite.json`
 - `../examples/minimal_public_suite_manifest.json`

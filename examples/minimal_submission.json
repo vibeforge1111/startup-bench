@@ -4,16 +4,34 @@
   "scenario_pack_version": "dev-pack-0.1.0",
   "scaffold_version": "0.1.0",
   "model": {
-    "model_id": "heuristic_b2b_operator",
+    "model_id": "heuristic_resilient_operator",
     "provider": "baseline"
   },
   "evaluation": {
     "repeat_count": 2,
     "track_summaries": [
       {
+        "track": "0to1",
+        "mean_score": 0.5891,
+        "median_score": 0.5891,
+        "pass_at_1": 1.0,
+        "pass_at_k": 1.0,
+        "sem": 0.0,
+        "api_cost_usd": 0.0
+      },
+      {
         "track": "b2b_saas",
-        "mean_score": 0.6233,
-        "median_score": 0.6233,
+        "mean_score": 0.675,
+        "median_score": 0.675,
+        "pass_at_1": 1.0,
+        "pass_at_k": 1.0,
+        "sem": 0.0,
+        "api_cost_usd": 0.0
+      },
+      {
+        "track": "board",
+        "mean_score": 0.7754,
+        "median_score": 0.7754,
         "pass_at_1": 1.0,
         "pass_at_k": 1.0,
         "sem": 0.0,
@@ -21,10 +39,19 @@
       },
       {
         "track": "crisis",
-        "mean_score": 0.5138,
-        "median_score": 0.5138,
-        "pass_at_1": 0.0,
-        "pass_at_k": 0.0,
+        "mean_score": 0.6951,
+        "median_score": 0.6951,
+        "pass_at_1": 1.0,
+        "pass_at_k": 1.0,
+        "sem": 0.0,
+        "api_cost_usd": 0.0
+      },
+      {
+        "track": "scale",
+        "mean_score": 0.8544,
+        "median_score": 0.8544,
+        "pass_at_1": 1.0,
+        "pass_at_k": 1.0,
         "sem": 0.0,
         "api_cost_usd": 0.0
       }
