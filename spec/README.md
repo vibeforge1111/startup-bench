@@ -12,6 +12,8 @@ It is organized into:
 
 - `benchmark_contract.md`: benchmark-wide rules, tracks, modes, and invariants
 - `scenario_spec.md`: scenario structure, lifecycle, and authoring contract
+- `state_model.md`: canonical business world state partitions and visibility model
+- `scenario_primitives.md`: reusable primitive library and composition rules
 - `tool_contract.md`: tool surface, request/response semantics, and permissions
 - `scoring_contract.md`: scoring, constraints, reporting, and evaluator behavior
 - `trace_spec.md`: run trace format and logging requirements
@@ -20,12 +22,16 @@ It is organized into:
 Machine-readable schemas:
 
 - `../schemas/tsb_scenario.schema.json`
+- `../schemas/tsb_world_state.schema.json`
+- `../schemas/tsb_primitives.schema.json`
 - `../schemas/tsb_trace.schema.json`
 - `../schemas/tsb_submission.schema.json`
 
 Example:
 
 - `../examples/minimal_b2b_saas_scenario.json`
+- `../examples/minimal_world_state.json`
+- `../examples/minimal_primitives.json`
 
 ## Package goals
 
@@ -65,4 +71,3 @@ It does lock:
 - trace contract
 - scenario structure
 - leaderboard submission rules
-
