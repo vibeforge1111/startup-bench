@@ -6,8 +6,8 @@ Last updated: 2026-03-07
 
 Current automated test surface:
 
-- `80` unit tests
-- `16` test files
+- `88` unit tests
+- `17` test files
 - all tests passing in the current tree
 
 The test suite is strongest on schema validation, core runtime mutations, baseline execution, and suite/submission packaging. It is weakest on evaluator nuance, adversarial scenario behavior, and broader scenario-corpus regression coverage.
@@ -16,7 +16,7 @@ The test suite is strongest on schema validation, core runtime mutations, baseli
 
 ### Validation and artifacts
 
-- [test_validation.py](/C:/Users/USER/Desktop/startup-bench/tests/test_validation.py): `15` tests
+- [test_validation.py](/C:/Users/USER/Desktop/startup-bench/tests/test_validation.py): `18` tests
   - validates example scenarios
   - validates world state and suite artifacts
   - validates public manifests, pack changelog, and submission examples
@@ -69,11 +69,12 @@ The test suite is strongest on schema validation, core runtime mutations, baseli
   - GTM revenue and customer scores fall under stronger market and segment pressure
   - people-track strategic coherence improves after hiring and market-response actions
 
-- [test_baseline_runner.py](/C:/Users/USER/Desktop/startup-bench/tests/test_baseline_runner.py): `4` tests
+- [test_baseline_runner.py](/C:/Users/USER/Desktop/startup-bench/tests/test_baseline_runner.py): `5` tests
   - baseline registry
   - baseline artifact emission and improvement over dry-run
   - resilient baseline outperforming generic baseline on crisis
   - market-aware baseline outperforming generic baseline on GTM
+  - long-horizon baseline outperforming generic baseline on delayed-consequence product work
 
 - [test_campaign_runner.py](/C:/Users/USER/Desktop/startup-bench/tests/test_campaign_runner.py): `2` tests
   - seed parsing
@@ -119,6 +120,12 @@ The test suite is strongest on schema validation, core runtime mutations, baseli
   - validates and runs hidden operator `fresh` suite
   - checks hidden operator `test` and `fresh` suite-family integrity
 
+- [test_strategy_hidden_suite.py](/C:/Users/USER/Desktop/startup-bench/tests/test_strategy_hidden_suite.py): `4` tests
+  - validates hidden strategy `test` suite
+  - runs hidden strategy `test` suite with the long-horizon baseline
+  - validates and runs hidden strategy `fresh` suite
+  - checks hidden strategy `test` and `fresh` suite-family integrity
+
 ## Smoke Test Commands
 
 Current note:
@@ -133,6 +140,7 @@ PYTHONPATH=src python -m thestartupbench validate scenario examples/minimal_b2b_
 PYTHONPATH=src python -m thestartupbench validate scenario examples/minimal_gtm_scenario.json
 PYTHONPATH=src python -m thestartupbench validate scenario examples/minimal_finance_scenario.json
 PYTHONPATH=src python -m thestartupbench validate scenario examples/minimal_people_scenario.json
+PYTHONPATH=src python -m thestartupbench validate scenario examples/minimal_product_scenario.json
 PYTHONPATH=src python -m thestartupbench lint-scenario examples/minimal_b2b_saas_scenario.json
 PYTHONPATH=src python -m thestartupbench run-baseline examples/minimal_crisis_scenario.json heuristic_resilient_operator --seed 1 --max-turns 6 --output-dir tmp_smoke
 PYTHONPATH=src python -m thestartupbench check-trace tmp_smoke/trace.json
@@ -144,6 +152,9 @@ PYTHONPATH=src python -m thestartupbench check-suite-family examples/private_rea
 PYTHONPATH=src python -m thestartupbench check-suite-family examples/private_operator_test_scenario_suite.json examples/private_operator_fresh_scenario_suite.json
 PYTHONPATH=src python -m thestartupbench run-suite examples/private_operator_test_scenario_suite.json baseline --baseline-id heuristic_resilient_operator --seeds 1 --max-turns 3 --output-dir tmp_smoke
 PYTHONPATH=src python -m thestartupbench run-suite examples/private_operator_fresh_scenario_suite.json baseline --baseline-id heuristic_resilient_operator --seeds 1 --max-turns 3 --output-dir tmp_smoke
+PYTHONPATH=src python -m thestartupbench check-suite-family examples/private_strategy_test_scenario_suite.json examples/private_strategy_fresh_scenario_suite.json
+PYTHONPATH=src python -m thestartupbench run-suite examples/private_strategy_test_scenario_suite.json baseline --baseline-id heuristic_long_horizon_operator --seeds 1 --max-turns 6 --output-dir tmp_smoke
+PYTHONPATH=src python -m thestartupbench run-suite examples/private_strategy_fresh_scenario_suite.json baseline --baseline-id heuristic_long_horizon_operator --seeds 1 --max-turns 6 --output-dir tmp_smoke
 PYTHONPATH=src python -m thestartupbench redact-suite examples/private_real_world_fresh_scenario_suite.json --output-dir tmp_smoke
 PYTHONPATH=src python -m thestartupbench redact-suite examples/private_operator_fresh_scenario_suite.json --output-dir tmp_smoke
 PYTHONPATH=src python -m thestartupbench check-pack-changelog examples/public_pack_changelog.json
@@ -171,7 +182,7 @@ Observed on 2026-03-07:
   - repeated run count: `5`
   - profile id: `official-hosted-v0.1.0`
 - `run-suite ...dev_scenario_suite.json ... --seeds 1,2 --max-turns 4 --profile-path ...`: passed
-  - scenario count: `8`
+  - scenario count: `9`
   - overall score mean: `0.7257`
   - overall pass-rate mean: `1.0`
   - emitted run manifest alongside suite report
@@ -204,11 +215,22 @@ Observed on 2026-03-07:
   - scenario count: `3`
   - overall score mean: `0.7099`
   - overall pass-rate mean: `1.0`
+- `check-suite-family ...private_strategy_test_scenario_suite.json ...private_strategy_fresh_scenario_suite.json`: passed
+  - suite count: `2`
+  - issues: `0`
+- `run-suite ...private_strategy_test_scenario_suite.json ...heuristic_long_horizon_operator --seeds 1 --max-turns 6`: passed
+  - scenario count: `3`
+  - overall score mean: `0.7771`
+  - overall pass-rate mean: `1.0`
+- `run-suite ...private_strategy_fresh_scenario_suite.json ...heuristic_long_horizon_operator --seeds 1 --max-turns 6`: passed
+  - scenario count: `3`
+  - overall score mean: `0.7721`
+  - overall pass-rate mean: `1.0`
 - `promote-suite ...private_real_world_test_scenario_suite.json --split fresh --scenario-pack-version real-world-fresh-pack-0.1.0`: correctly rejected by default
   - result: `ok: false`
   - reason: hidden split cloning now requires explicit draft-only override
 - `check-pack-changelog ...public_pack_changelog.json`: passed
-  - changelog entry count: `3`
+  - changelog entry count: `7`
   - validation: `ok`
 - `redact-suite ...private_test_scenario_suite.json`: passed
 - `build-submission ...tmp_smoke/suite_report.json ...`: passed
@@ -219,8 +241,8 @@ Observed on 2026-03-07:
 - `python -m thestartupbench version`: passed
   - reported version: `0.1.0`
 - `python -m unittest discover -s tests -p "test_*.py"`: passed
-  - `80` tests
-  - `16` files
+  - `88` tests
+  - `17` files
 
 ## What Is Covered Well
 

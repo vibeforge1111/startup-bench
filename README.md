@@ -24,6 +24,8 @@ Current status:
 - expanded benchmark coverage across GTM, finance, and people tracks
 - added a second hidden pack family for operator-style GTM, finance, and people evaluation
 - added first-pass hiring funnel, customer segmentation, and market/competitor mechanics to the reference runtime
+- added a product track plus a hidden strategy pack family for long-horizon board, product, and scale evaluation
+- added a long-horizon baseline family for multi-quarter startup planning behavior
 
 Key documents:
 
@@ -73,11 +75,14 @@ Artifacts:
 - `examples/minimal_gtm_scenario.json`
 - `examples/minimal_finance_scenario.json`
 - `examples/minimal_people_scenario.json`
+- `examples/minimal_product_scenario.json`
 - `examples/minimal_scale_scenario.json`
 - `examples/dev_scenario_suite.json`
 - `examples/private_test_scenario_suite.json`
 - `examples/private_operator_test_scenario_suite.json`
 - `examples/private_operator_fresh_scenario_suite.json`
+- `examples/private_strategy_test_scenario_suite.json`
+- `examples/private_strategy_fresh_scenario_suite.json`
 - `examples/official_eval_profile.json`
 - `examples/minimal_run_manifest.json`
 - `examples/minimal_public_suite_manifest.json`
@@ -155,6 +160,7 @@ Current state-transition coverage:
 Current built-in baselines:
 
 - `heuristic_b2b_operator`
+- `heuristic_long_horizon_operator`
 - `heuristic_market_aware_operator`
 - `heuristic_resilient_operator`
 
@@ -167,4 +173,5 @@ Current dev suite coverage:
 - `finance`
 - `gtm`
 - `people`
+- `product`
 - `scale`

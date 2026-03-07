@@ -17,6 +17,7 @@ TheStartupBench is no longer just an RFC. It now has:
 - operational `fresh` pack generation and public pack lifecycle tracking
 - hidden suite family integrity enforcement and uncertainty-aware reporting
 - official evaluation profile and run-manifest support
+- a third hidden pack family for long-horizon startup judgment
 - CI for tests, validation, and smoke suites
 - unit tests and executable smoke paths
 
@@ -91,6 +92,8 @@ Completed:
 - programmatic evaluator layer in [evaluators.py](/C:/Users/USER/Desktop/startup-bench/src/thestartupbench/evaluators.py)
 - built-in baselines in [baseline_runner.py](/C:/Users/USER/Desktop/startup-bench/src/thestartupbench/baseline_runner.py):
   - `heuristic_b2b_operator`
+  - `heuristic_long_horizon_operator`
+  - `heuristic_market_aware_operator`
   - `heuristic_resilient_operator`
 - repeated-run aggregation in [campaign_runner.py](/C:/Users/USER/Desktop/startup-bench/src/thestartupbench/campaign_runner.py)
 - SEM and 95 percent confidence interval reporting in batch, suite, and submission artifacts
@@ -124,6 +127,7 @@ Completed example tracks:
 - `finance`
 - `gtm`
 - `people`
+- `product`
 - `scale`
 
 These are example-scale scenarios, not yet a production benchmark corpus.
@@ -175,6 +179,15 @@ Completed hidden operator breadth packs:
   - finance liquidity and treasury tradeoffs
   - people attrition and support-load stabilization
 
+Completed hidden strategy packs:
+
+- `3` hidden `test` scenarios in [private_strategy_test_scenario_suite.json](/C:/Users/USER/Desktop/startup-bench/examples/private_strategy_test_scenario_suite.json)
+- `3` hidden `fresh` scenarios in [private_strategy_fresh_scenario_suite.json](/C:/Users/USER/Desktop/startup-bench/examples/private_strategy_fresh_scenario_suite.json)
+- current strategy hidden coverage:
+  - board stakeholder conflict
+  - delayed-consequence product quality debt
+  - multi-quarter scale planning under capacity lag
+
 ## What Is Partially Done
 
 ### 1. World realism
@@ -218,6 +231,7 @@ Partially done:
 - fresh hidden suite format exists
 - hidden `test` and `fresh` suites are now distinct in ids and files
 - a second hidden pack family now exists outside the crisis-heavy real-world family
+- a third hidden pack family now exists for long-horizon startup judgment
 - public redacted suite manifest exists
 - public lifecycle changelog exists
 - suite and submission artifacts exist
@@ -238,7 +252,8 @@ What remains inside this category:
 Partially done:
 
 - two heuristic baselines exist and are measurably different
-- one baseline now passes the current 5-scenario dev suite
+- four heuristic baselines exist and are measurably different
+- a long-horizon baseline now passes the expanded dev suite and the new strategy hidden packs
 
 What remains inside this category:
 
