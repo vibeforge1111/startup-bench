@@ -34,7 +34,29 @@
     "customers": {
       "paying_accounts": 235,
       "monthly_churn_rate": 0.033,
-      "trust_score": 0.62
+      "trust_score": 0.62,
+      "segments": [
+        {
+          "segment_id": "enterprise",
+          "accounts": 49,
+          "revenue_share": 0.55,
+          "monthly_churn_rate": 0.022,
+          "trust_score": 0.64,
+          "support_load_index": 0.52,
+          "expansion_potential": 0.68,
+          "competitor_pressure_index": 0.38
+        },
+        {
+          "segment_id": "mid_market",
+          "accounts": 186,
+          "revenue_share": 0.45,
+          "monthly_churn_rate": 0.039,
+          "trust_score": 0.61,
+          "support_load_index": 0.64,
+          "expansion_potential": 0.45,
+          "competitor_pressure_index": 0.43
+        }
+      ]
     },
     "sales": {
       "pipeline_count": 14,
@@ -50,7 +72,23 @@
     "team": {
       "morale": 0.44,
       "attrition_risk": 0.7,
-      "bandwidth_load": 0.97
+      "bandwidth_load": 0.97,
+      "headcount": 25,
+      "hiring": {
+        "open_roles": 4,
+        "critical_roles_open": 2,
+        "sourced_candidates": 4,
+        "onsite_candidates": 1,
+        "offers_out": 0,
+        "time_to_fill_weeks": 9
+      }
+    },
+    "market": {
+      "competitor_pressure": "moderate",
+      "competitor_pressure_index": 0.44,
+      "pricing_pressure_index": 0.25,
+      "demand_index": 0.84,
+      "latest_market_note": "Customers are increasingly sensitive to service continuity and implementation throughput."
     },
     "governance": {
       "board_update_count": 1
@@ -89,8 +127,11 @@
     "ops.support.resolve",
     "finance.plan.read",
     "finance.plan.write",
+    "people.hiring.read",
+    "people.hiring.update",
     "people.org.read",
     "people.org.adjust",
+    "research.market.read",
     "board.read",
     "board.update",
     "notes.read",
@@ -106,13 +147,16 @@
           { "op": "clamp", "path": "team.morale", "min": 0.0, "max": 1.0 },
           { "op": "increment", "path": "team.attrition_risk", "value": 0.09 },
           { "op": "clamp", "path": "team.attrition_risk", "min": 0.0, "max": 1.0 },
-          { "op": "increment", "path": "operations.support_backlog", "value": 22 }
+          { "op": "increment", "path": "operations.support_backlog", "value": 22 },
+          { "op": "increment", "path": "team.hiring.open_roles", "value": 1 },
+          { "op": "increment", "path": "team.hiring.critical_roles_open", "value": 1 }
         ]
       },
       "quality_rebound": {
         "operations": [
           { "op": "increment", "path": "team.morale", "value": 0.025 },
           { "op": "clamp", "path": "team.morale", "min": 0.0, "max": 1.0 },
+          { "op": "increment", "path": "team.hiring.sourced_candidates", "value": 4 },
           { "op": "increment", "path": "customers.trust_score", "value": 0.012 },
           { "op": "clamp", "path": "customers.trust_score", "min": 0.0, "max": 1.0 }
         ]

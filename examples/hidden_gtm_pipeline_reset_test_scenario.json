@@ -34,7 +34,29 @@
     "customers": {
       "paying_accounts": 126,
       "monthly_churn_rate": 0.039,
-      "trust_score": 0.63
+      "trust_score": 0.63,
+      "segments": [
+        {
+          "segment_id": "mid_market",
+          "accounts": 79,
+          "revenue_share": 0.64,
+          "monthly_churn_rate": 0.036,
+          "trust_score": 0.64,
+          "support_load_index": 0.39,
+          "expansion_potential": 0.73,
+          "competitor_pressure_index": 0.69
+        },
+        {
+          "segment_id": "smb",
+          "accounts": 47,
+          "revenue_share": 0.36,
+          "monthly_churn_rate": 0.044,
+          "trust_score": 0.61,
+          "support_load_index": 0.48,
+          "expansion_potential": 0.41,
+          "competitor_pressure_index": 0.58
+        }
+      ]
     },
     "sales": {
       "pipeline_count": 9,
@@ -42,6 +64,23 @@
       "pricing": {
         "current_price_index": 0.96
       }
+    },
+    "market": {
+      "competitor_pressure": "high",
+      "competitor_pressure_index": 0.74,
+      "pricing_pressure_index": 0.63,
+      "demand_index": 0.74,
+      "segment_signals": [
+        { "segment_id": "mid_market", "signal": "message_mismatch" },
+        { "segment_id": "smb", "signal": "cheap_bundle_competitor" }
+      ],
+      "latest_market_note": "Competitive messaging is landing better with mid-market buyers than the current outbound motion."
+    },
+    "team": {
+      "headcount": 14,
+      "morale": 0.58,
+      "attrition_risk": 0.44,
+      "bandwidth_load": 0.82
     },
     "governance": {
       "board_update_count": 0
@@ -79,6 +118,7 @@
     "sales.pipeline.read",
     "sales.pipeline.update",
     "sales.pricing.propose",
+    "research.market.read",
     "finance.plan.read",
     "finance.plan.write",
     "board.read",
@@ -95,6 +135,8 @@
           { "op": "increment", "path": "sales.pipeline_count", "value": -2 },
           { "op": "clamp", "path": "sales.pipeline_count", "min": 0 },
           { "op": "increment", "path": "sales.weighted_pipeline_usd", "value": -110000 },
+          { "op": "increment", "path": "market.competitor_pressure_index", "value": 0.05 },
+          { "op": "clamp", "path": "market.competitor_pressure_index", "min": 0.0, "max": 1.0 },
           { "op": "increment", "path": "customers.trust_score", "value": -0.025 },
           { "op": "clamp", "path": "customers.trust_score", "min": 0.0, "max": 1.0 }
         ]

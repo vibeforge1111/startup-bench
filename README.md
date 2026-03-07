@@ -23,6 +23,7 @@ Current status:
 - official evaluation profile and run-manifest support implemented
 - expanded benchmark coverage across GTM, finance, and people tracks
 - added a second hidden pack family for operator-style GTM, finance, and people evaluation
+- added first-pass hiring funnel, customer segmentation, and market/competitor mechanics to the reference runtime
 
 Key documents:
 
@@ -123,10 +124,22 @@ Current reference runtime coverage:
 - `sales.pipeline.read`
 - `sales.pipeline.update`
 - `sales.pricing.propose`
+- `research.market.read`
 - `finance.plan.read`
 - `finance.plan.write`
+- `finance.treasury.read`
+- `finance.treasury.rebalance`
+- `finance.raise.propose`
 - `ops.incident.read`
 - `ops.incident.respond`
+- `ops.support.read`
+- `ops.support.resolve`
+- `people.hiring.read`
+- `people.hiring.update`
+- `people.org.read`
+- `people.org.adjust`
+- `legal.compliance.read`
+- `legal.compliance.respond`
 - `board.read`
 - `board.update`
 - `notes.read`
@@ -150,4 +163,7 @@ Current dev suite coverage:
 - `b2b_saas`
 - `board`
 - `crisis`
+- `finance`
+- `gtm`
+- `people`
 - `scale`

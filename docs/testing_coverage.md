@@ -6,7 +6,7 @@ Last updated: 2026-03-07
 
 Current automated test surface:
 
-- `74` unit tests
+- `77` unit tests
 - `15` test files
 - all tests passing in the current tree
 
@@ -36,7 +36,7 @@ The test suite is strongest on schema validation, core runtime mutations, baseli
 
 ### Runtime mechanics
 
-- [test_runtime.py](/C:/Users/USER/Desktop/startup-bench/tests/test_runtime.py): `16` tests
+- [test_runtime.py](/C:/Users/USER/Desktop/startup-bench/tests/test_runtime.py): `19` tests
   - finance plan write behavior
   - metrics querying and reporting
   - immutable read snapshots
@@ -48,8 +48,11 @@ The test suite is strongest on schema validation, core runtime mutations, baseli
   - support backlog resolution
   - treasury rebalancing
   - financing proposals
+  - hiring funnel updates
   - org health adjustments
   - legal/compliance response
+  - market research reads
+  - market and staffing weekly drift
 
 - [test_primitive_engine.py](/C:/Users/USER/Desktop/startup-bench/tests/test_primitive_engine.py): `3` tests
   - primitive application
@@ -164,7 +167,7 @@ Observed on 2026-03-07:
   - profile id: `official-hosted-v0.1.0`
 - `run-suite ...dev_scenario_suite.json ... --seeds 1,2 --max-turns 4 --profile-path ...`: passed
   - scenario count: `8`
-  - overall score mean: `0.7056`
+  - overall score mean: `0.7257`
   - overall pass-rate mean: `1.0`
   - emitted run manifest alongside suite report
 - `run-suite ...real_world_crisis_scenario_suite.json ... --seeds 1 --max-turns 3`: passed
@@ -190,11 +193,11 @@ Observed on 2026-03-07:
   - issues: `0`
 - `run-suite ...private_operator_test_scenario_suite.json ... --seeds 1 --max-turns 3`: passed
   - scenario count: `3`
-  - overall score mean: `0.7187`
+  - overall score mean: `0.7334`
   - overall pass-rate mean: `1.0`
 - `run-suite ...private_operator_fresh_scenario_suite.json ... --seeds 1 --max-turns 3`: passed
   - scenario count: `3`
-  - overall score mean: `0.7027`
+  - overall score mean: `0.7099`
   - overall pass-rate mean: `1.0`
 - `promote-suite ...private_real_world_test_scenario_suite.json --split fresh --scenario-pack-version real-world-fresh-pack-0.1.0`: correctly rejected by default
   - result: `ok: false`
@@ -211,7 +214,7 @@ Observed on 2026-03-07:
 - `python -m thestartupbench version`: passed
   - reported version: `0.1.0`
 - `python -m unittest discover -s tests -p "test_*.py"`: passed
-  - `74` tests
+  - `77` tests
   - `15` files
 
 ## What Is Covered Well
@@ -221,6 +224,7 @@ Covered reasonably well:
 - schema compliance for checked-in artifacts
 - dry, scripted, baseline, campaign, and suite runner plumbing
 - core runtime mutations for finance, sales, product, board, and crisis actions
+- first-pass runtime mutations for hiring funnels, customer segments, and market/competitor drift
 - event primitive application
 - redacted hidden-eval packaging
 - submission assembly

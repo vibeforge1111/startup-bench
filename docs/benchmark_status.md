@@ -60,12 +60,14 @@ Completed:
   - treasury concentration and liquidity rebalancing
   - sales pipeline updates
   - pricing changes
+  - market and competitor research
   - product roadmap changes
   - board updates
   - note taking
   - incident reading/response
   - support backlog handling
   - legal/compliance response
+  - hiring funnel and capacity updates
   - people/org adjustment
   - time advancement
 
@@ -181,16 +183,16 @@ Partially done:
 
 - there is a usable world-state model and executable runtime
 - there are early business mechanics for finance, sales, product, governance, and incident handling
-- there are now explicit mechanics for treasury concentration, support backlog, legal pressure, and org stress
-- the current mechanics are still narrow relative to real startup operation
+- there are now explicit mechanics for treasury concentration, support backlog, legal pressure, org stress, hiring funnel state, segment-aware customer health, and market/competitor drift
+- the current mechanics are materially broader, but still narrow relative to real startup operation
 
 What remains inside this category:
 
-- richer hiring funnel dynamics
-- morale and attrition propagation
-- deeper customer segmentation and churn mechanisms
+- deeper hiring funnel stage logic and backfill delays
+- broader morale and attrition propagation
+- richer customer segmentation and churn/expansion mechanisms
 - fundraising, debt, and cap-table mechanics
-- competitor and market-shift systems
+- broader competitor and market-shift systems
 - regulatory and legal state transitions
 
 ### 2. Evaluator sophistication
@@ -297,6 +299,7 @@ If the goal is to make TheStartupBench materially stronger, the next steps shoul
 
 1. Build a larger scenario corpus with track-balanced dev and hidden test suites.
 2. Add richer state transitions for people, fundraising, legal/compliance, and market dynamics.
+   Current status: first-pass hiring, segmentation, and market pressure mechanics are now live; the next gap is depth, not existence.
 3. Strengthen evaluator design so survival, trust, compliance, and capital efficiency are explicit constraints rather than soft side effects.
 4. Add more baseline families, especially human-inspired scripted policies and crisis-specialist heuristics.
 5. Add official hosted-eval manifests and settings to model adapters beyond baselines.

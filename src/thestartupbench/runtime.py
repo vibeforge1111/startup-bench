@@ -182,7 +182,10 @@ def _apply_weekly_business_drift(session: RuntimeSession, *, weeks: int) -> None
                 continue
             segment_competitor_pressure = float(segment.get("competitor_pressure_index", competitor_pressure))
             segment_support_load = float(segment.get("support_load_index", 0.3))
-            segment["competitor_pressure_index"] = round(_clamp(segment_competitor_pressure), 4)
+            segment["competitor_pressure_index"] = round(
+                _clamp(segment_competitor_pressure, minimum=0.0, maximum=1.0),
+                4,
+            )
             if segment_competitor_pressure > 0.65:
                 segment["monthly_churn_rate"] = round(
                     _clamp(float(segment.get("monthly_churn_rate", churn)) + (0.0025 * weeks), minimum=0.0, maximum=1.0),

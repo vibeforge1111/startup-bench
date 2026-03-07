@@ -34,7 +34,29 @@
     "customers": {
       "paying_accounts": 134,
       "monthly_churn_rate": 0.034,
-      "trust_score": 0.68
+      "trust_score": 0.68,
+      "segments": [
+        {
+          "segment_id": "mid_market",
+          "accounts": 86,
+          "revenue_share": 0.62,
+          "monthly_churn_rate": 0.031,
+          "trust_score": 0.69,
+          "support_load_index": 0.34,
+          "expansion_potential": 0.72,
+          "competitor_pressure_index": 0.61
+        },
+        {
+          "segment_id": "smb",
+          "accounts": 48,
+          "revenue_share": 0.38,
+          "monthly_churn_rate": 0.04,
+          "trust_score": 0.66,
+          "support_load_index": 0.42,
+          "expansion_potential": 0.46,
+          "competitor_pressure_index": 0.54
+        }
+      ]
     },
     "sales": {
       "pipeline_count": 11,
@@ -42,6 +64,23 @@
       "pricing": {
         "current_price_index": 0.97
       }
+    },
+    "market": {
+      "competitor_pressure": "high",
+      "competitor_pressure_index": 0.68,
+      "pricing_pressure_index": 0.59,
+      "demand_index": 0.79,
+      "segment_signals": [
+        { "segment_id": "mid_market", "signal": "bundle_competition" },
+        { "segment_id": "smb", "signal": "value_scrutiny" }
+      ],
+      "latest_market_note": "A larger competitor is bundling onboarding support into annual contracts."
+    },
+    "team": {
+      "headcount": 16,
+      "morale": 0.63,
+      "attrition_risk": 0.39,
+      "bandwidth_load": 0.79
     },
     "governance": {
       "board_update_count": 0
@@ -79,6 +118,7 @@
     "sales.pipeline.read",
     "sales.pipeline.update",
     "sales.pricing.propose",
+    "research.market.read",
     "finance.plan.read",
     "finance.plan.write",
     "board.read",
@@ -95,6 +135,8 @@
           { "op": "increment", "path": "sales.pipeline_count", "value": -2 },
           { "op": "clamp", "path": "sales.pipeline_count", "min": 0 },
           { "op": "increment", "path": "sales.weighted_pipeline_usd", "value": -90000 },
+          { "op": "increment", "path": "market.competitor_pressure_index", "value": 0.06 },
+          { "op": "clamp", "path": "market.competitor_pressure_index", "min": 0.0, "max": 1.0 },
           { "op": "increment", "path": "customers.trust_score", "value": -0.02 },
           { "op": "clamp", "path": "customers.trust_score", "min": 0.0, "max": 1.0 }
         ]
@@ -103,6 +145,8 @@
         "operations": [
           { "op": "increment", "path": "sales.weighted_pipeline_usd", "value": 140000 },
           { "op": "increment", "path": "finance.monthly_revenue_usd", "value": 18000 },
+          { "op": "increment", "path": "market.demand_index", "value": 0.04 },
+          { "op": "clamp", "path": "market.demand_index", "min": 0.0, "max": 1.5 },
           { "op": "increment", "path": "customers.trust_score", "value": 0.02 },
           { "op": "clamp", "path": "customers.trust_score", "min": 0.0, "max": 1.0 }
         ]

@@ -36,7 +36,29 @@
     "customers": {
       "paying_accounts": 169,
       "monthly_churn_rate": 0.027,
-      "trust_score": 0.69
+      "trust_score": 0.69,
+      "segments": [
+        {
+          "segment_id": "enterprise",
+          "accounts": 35,
+          "revenue_share": 0.53,
+          "monthly_churn_rate": 0.018,
+          "trust_score": 0.7,
+          "support_load_index": 0.33,
+          "expansion_potential": 0.67,
+          "competitor_pressure_index": 0.34
+        },
+        {
+          "segment_id": "mid_market",
+          "accounts": 134,
+          "revenue_share": 0.47,
+          "monthly_churn_rate": 0.031,
+          "trust_score": 0.68,
+          "support_load_index": 0.4,
+          "expansion_potential": 0.48,
+          "competitor_pressure_index": 0.49
+        }
+      ]
     },
     "sales": {
       "pipeline_count": 11,
@@ -47,6 +69,13 @@
     },
     "governance": {
       "board_update_count": 1
+    },
+    "market": {
+      "competitor_pressure": "moderate",
+      "competitor_pressure_index": 0.58,
+      "pricing_pressure_index": 0.52,
+      "demand_index": 0.73,
+      "latest_market_note": "Banking stress has made follow-on financing slower and buyers more cautious."
     },
     "policy": {
       "max_auto_price_increase_pct": 0.05
@@ -85,6 +114,7 @@
     "finance.treasury.read",
     "finance.treasury.rebalance",
     "finance.raise.propose",
+    "research.market.read",
     "sales.pipeline.read",
     "sales.pipeline.update",
     "board.read",
@@ -99,6 +129,8 @@
       "liquidity_freeze": {
         "operations": [
           { "op": "increment", "path": "finance.restricted_cash_usd", "value": 280000 },
+          { "op": "increment", "path": "market.demand_index", "value": -0.06 },
+          { "op": "clamp", "path": "market.demand_index", "min": 0.0, "max": 1.5 },
           { "op": "increment", "path": "risk.financing_pressure", "value": 0.11 },
           { "op": "clamp", "path": "risk.financing_pressure", "min": 0.0, "max": 1.0 }
         ]

@@ -36,7 +36,29 @@
     "customers": {
       "paying_accounts": 162,
       "monthly_churn_rate": 0.029,
-      "trust_score": 0.67
+      "trust_score": 0.67,
+      "segments": [
+        {
+          "segment_id": "enterprise",
+          "accounts": 34,
+          "revenue_share": 0.56,
+          "monthly_churn_rate": 0.02,
+          "trust_score": 0.69,
+          "support_load_index": 0.34,
+          "expansion_potential": 0.64,
+          "competitor_pressure_index": 0.37
+        },
+        {
+          "segment_id": "mid_market",
+          "accounts": 128,
+          "revenue_share": 0.44,
+          "monthly_churn_rate": 0.033,
+          "trust_score": 0.65,
+          "support_load_index": 0.39,
+          "expansion_potential": 0.44,
+          "competitor_pressure_index": 0.53
+        }
+      ]
     },
     "sales": {
       "pipeline_count": 10,
@@ -47,6 +69,13 @@
     },
     "governance": {
       "board_update_count": 1
+    },
+    "market": {
+      "competitor_pressure": "high",
+      "competitor_pressure_index": 0.63,
+      "pricing_pressure_index": 0.58,
+      "demand_index": 0.69,
+      "latest_market_note": "Counterparty stress tightened financing terms and slowed new bookings."
     },
     "policy": {
       "max_auto_price_increase_pct": 0.05
@@ -85,6 +114,7 @@
     "finance.treasury.read",
     "finance.treasury.rebalance",
     "finance.raise.propose",
+    "research.market.read",
     "sales.pipeline.read",
     "sales.pipeline.update",
     "board.read",
@@ -99,6 +129,8 @@
       "liquidity_freeze": {
         "operations": [
           { "op": "increment", "path": "finance.restricted_cash_usd", "value": 320000 },
+          { "op": "increment", "path": "market.demand_index", "value": -0.07 },
+          { "op": "clamp", "path": "market.demand_index", "min": 0.0, "max": 1.5 },
           { "op": "increment", "path": "risk.financing_pressure", "value": 0.12 },
           { "op": "clamp", "path": "risk.financing_pressure", "min": 0.0, "max": 1.0 }
         ]
