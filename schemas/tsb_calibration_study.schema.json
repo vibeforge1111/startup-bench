@@ -35,6 +35,7 @@
           "focus": { "type": "string" },
           "baseline_runner_id": { "type": "string" },
           "seed": { "type": "integer", "minimum": 0 },
+          "max_turns": { "type": "integer", "minimum": 1 },
           "required_scenarios": {
             "type": "array",
             "items": { "type": "string" }

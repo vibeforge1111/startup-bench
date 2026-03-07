@@ -10,6 +10,7 @@
       "focus": "exploit resistance and overfit detection",
       "baseline_runner_id": "heuristic_market_aware_operator",
       "seed": 1,
+      "max_turns": 4,
       "required_scenarios": [
         "hidden_canary_pricing_trap_test_001",
         "hidden_canary_hiring_trap_test_001"
@@ -20,14 +21,16 @@
       "suite_path": "examples/private_strategy_test_scenario_suite.json",
       "focus": "long-horizon strategic judgment",
       "baseline_runner_id": "heuristic_long_horizon_operator",
-      "seed": 1
+      "seed": 1,
+      "max_turns": 6
     },
     {
       "target_id": "real-world-test-wave",
       "suite_path": "examples/private_real_world_test_scenario_suite.json",
       "focus": "crisis response quality and capital discipline",
       "baseline_runner_id": "heuristic_resilient_operator",
-      "seed": 1
+      "seed": 1,
+      "max_turns": 3
     }
   ],
   "reviewer_targets": [

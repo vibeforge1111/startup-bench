@@ -126,6 +126,16 @@ def _build_parser() -> argparse.ArgumentParser:
     calibration_parser.add_argument("--review-paths", required=True, help="Comma-separated operator review JSON paths")
     calibration_parser.add_argument("--output-dir", help="Optional directory to write the calibration report artifact")
 
+    study_run_parser = subparsers.add_parser("run-calibration-study", help="Run all calibration-study targets and emit review packets")
+    study_run_parser.add_argument("study_manifest_path", help="Path to a calibration-study JSON manifest")
+    study_run_parser.add_argument("--output-dir", required=True, help="Directory to write study run artifacts")
+
+    study_compile_parser = subparsers.add_parser("compile-calibration-study", help="Compile operator reviews into a study-level calibration report")
+    study_compile_parser.add_argument("study_manifest_path", help="Path to a calibration-study JSON manifest")
+    study_compile_parser.add_argument("--study-run-dir", required=True, help="Directory containing calibration study run artifacts")
+    study_compile_parser.add_argument("--review-paths", required=True, help="Comma-separated operator review JSON paths")
+    study_compile_parser.add_argument("--output-dir", required=True, help="Directory to write calibration study report artifacts")
+
     return parser
 
 
@@ -525,6 +535,35 @@ def _cmd_build_calibration_report(
     return 0 if result["validation"]["ok"] else 1
 
 
+def _cmd_run_calibration_study(study_manifest_path: str, output_dir: str) -> int:
+    from .study_runner import run_calibration_study
+
+    result = run_calibration_study(
+        study_manifest_path=Path(study_manifest_path),
+        output_dir=Path(output_dir),
+    )
+    print(json.dumps(result, indent=2))
+    return 0 if result["validation"]["ok"] else 1
+
+
+def _cmd_compile_calibration_study(
+    study_manifest_path: str,
+    study_run_dir: str,
+    review_paths: str,
+    output_dir: str,
+) -> int:
+    from .study_runner import compile_calibration_study
+
+    result = compile_calibration_study(
+        study_manifest_path=Path(study_manifest_path),
+        study_run_dir=Path(study_run_dir),
+        review_paths=[Path(path.strip()) for path in review_paths.split(",") if path.strip()],
+        output_dir=Path(output_dir),
+    )
+    print(json.dumps(result, indent=2))
+    return 0 if result["validation"]["ok"] else 1
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = _build_parser()
     args = parser.parse_args(argv)
@@ -622,6 +661,15 @@ def main(argv: list[str] | None = None) -> int:
     if args.command == "build-calibration-report":
         return _cmd_build_calibration_report(
             args.suite_report_path,
+            args.review_paths,
+            args.output_dir,
+        )
+    if args.command == "run-calibration-study":
+        return _cmd_run_calibration_study(args.study_manifest_path, args.output_dir)
+    if args.command == "compile-calibration-study":
+        return _cmd_compile_calibration_study(
+            args.study_manifest_path,
+            args.study_run_dir,
             args.review_paths,
             args.output_dir,
         )

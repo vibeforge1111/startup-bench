@@ -1,0 +1,78 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://thestartupbench.org/schemas/tsb_calibration_study_report.schema.json",
+  "title": "TheStartupBench Calibration Study Report",
+  "type": "object",
+  "required": [
+    "report_version",
+    "benchmark_version",
+    "study_id",
+    "target_count",
+    "completed_target_count",
+    "pending_target_count",
+    "overall",
+    "promotion_gate_status",
+    "target_reports"
+  ],
+  "properties": {
+    "report_version": { "type": "string" },
+    "benchmark_version": { "type": "string" },
+    "study_id": { "type": "string" },
+    "target_count": { "type": "integer", "minimum": 1 },
+    "completed_target_count": { "type": "integer", "minimum": 0 },
+    "pending_target_count": { "type": "integer", "minimum": 0 },
+    "overall": {
+      "type": "object",
+      "required": ["mean_absolute_rubric_gap", "recommendation_agreement_rate"],
+      "properties": {
+        "mean_absolute_rubric_gap": { "type": "number", "minimum": 0 },
+        "recommendation_agreement_rate": { "type": "number", "minimum": 0, "maximum": 1 }
+      },
+      "additionalProperties": false
+    },
+    "promotion_gate_status": {
+      "type": "object",
+      "required": [
+        "minimum_reviewers_per_target_met",
+        "mean_absolute_rubric_gap_met",
+        "recommendation_agreement_rate_met",
+        "ready_for_promotion"
+      ],
+      "properties": {
+        "minimum_reviewers_per_target_met": { "type": "boolean" },
+        "mean_absolute_rubric_gap_met": { "type": "boolean" },
+        "recommendation_agreement_rate_met": { "type": "boolean" },
+        "ready_for_promotion": { "type": "boolean" }
+      },
+      "additionalProperties": false
+    },
+    "target_reports": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "target_id",
+          "focus",
+          "status",
+          "review_count",
+          "matched_scenario_count",
+          "mean_absolute_rubric_gap",
+          "recommendation_agreement_rate"
+        ],
+        "properties": {
+          "target_id": { "type": "string" },
+          "focus": { "type": "string" },
+          "status": { "type": "string", "enum": ["pending", "completed"] },
+          "review_count": { "type": "integer", "minimum": 0 },
+          "matched_scenario_count": { "type": "integer", "minimum": 0 },
+          "mean_absolute_rubric_gap": { "type": "number", "minimum": 0 },
+          "recommendation_agreement_rate": { "type": "number", "minimum": 0, "maximum": 1 },
+          "calibration_report_path": { "type": "string" }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}
