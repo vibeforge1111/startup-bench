@@ -80,7 +80,15 @@ def _build_parser() -> argparse.ArgumentParser:
     promote_parser.add_argument("suite_path", help="Path to the source scenario suite JSON file")
     promote_parser.add_argument("--split", required=True, choices=["dev", "test", "fresh"], help="Target split")
     promote_parser.add_argument("--scenario-pack-version", required=True, help="Target scenario pack version")
+    promote_parser.add_argument(
+        "--allow-split-clone",
+        action="store_true",
+        help="Allow draft-only cloning into hidden splits. Official hidden packs should use distinct scenarios instead.",
+    )
     promote_parser.add_argument("--output-dir", help="Optional directory to write the promoted suite artifact")
+
+    family_parser = subparsers.add_parser("check-suite-family", help="Check hidden suite families for duplicated ids or files")
+    family_parser.add_argument("suite_paths", nargs="+", help="Two or more scenario suite JSON paths")
 
     changelog_parser = subparsers.add_parser("check-pack-changelog", help="Validate a public pack lifecycle changelog")
     changelog_parser.add_argument("path", help="Path to the pack changelog JSON file")
@@ -314,15 +322,21 @@ def _cmd_promote_suite(
     suite_path: str,
     split: str,
     scenario_pack_version: str,
+    allow_split_clone: bool,
     output_dir: str | None,
 ) -> int:
     from .pack_ops import promote_suite_pack
 
-    result = promote_suite_pack(
-        Path(suite_path),
-        split=split,
-        scenario_pack_version=scenario_pack_version,
-    )
+    try:
+        result = promote_suite_pack(
+            Path(suite_path),
+            split=split,
+            scenario_pack_version=scenario_pack_version,
+            allow_split_clone=allow_split_clone,
+        )
+    except ValueError as exc:
+        print(json.dumps({"ok": False, "error": str(exc)}, indent=2))
+        return 1
     if output_dir:
         out_dir = Path(output_dir)
         out_dir.mkdir(parents=True, exist_ok=True)
@@ -336,6 +350,14 @@ def _cmd_promote_suite(
     suite_ok = result["validation"]["ok"]
     manifest_ok = result.get("public_manifest_validation", {}).get("ok", True)
     return 0 if suite_ok and manifest_ok else 1
+
+
+def _cmd_check_suite_family(suite_paths: list[str]) -> int:
+    from .pack_ops import validate_suite_family
+
+    result = validate_suite_family([Path(path) for path in suite_paths])
+    print(json.dumps(result, indent=2))
+    return 0 if result["ok"] else 1
 
 
 def _cmd_check_pack_changelog(path: str) -> int:
@@ -435,8 +457,11 @@ def main(argv: list[str] | None = None) -> int:
             args.suite_path,
             args.split,
             args.scenario_pack_version,
+            args.allow_split_clone,
             args.output_dir,
         )
+    if args.command == "check-suite-family":
+        return _cmd_check_suite_family(args.suite_paths)
     if args.command == "check-pack-changelog":
         return _cmd_check_pack_changelog(args.path)
     if args.command == "build-submission":

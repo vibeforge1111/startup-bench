@@ -31,12 +31,17 @@ jobs:
           python -m thestartupbench validate scenario examples/real_world_brex_svb_treasury_shock_scenario.json
           python -m thestartupbench validate scenario-suite examples/dev_scenario_suite.json
           python -m thestartupbench validate scenario-suite examples/real_world_crisis_scenario_suite.json
+          python -m thestartupbench validate scenario-suite examples/private_real_world_fresh_scenario_suite.json
 
       - name: Lint scenarios
         run: |
           python -m thestartupbench lint-scenario examples/minimal_b2b_saas_scenario.json
           python -m thestartupbench lint-scenario examples/real_world_airbnb_emergency_financing_scenario.json
           python -m thestartupbench lint-scenario examples/real_world_brex_svb_treasury_shock_scenario.json
+
+      - name: Check hidden suite family integrity
+        run: |
+          python -m thestartupbench check-suite-family examples/private_real_world_test_scenario_suite.json examples/private_real_world_fresh_scenario_suite.json
 
       - name: Run benchmark smoke suites
         run: |
@@ -46,4 +51,5 @@ jobs:
       - name: Build hidden-eval artifacts
         run: |
           python -m thestartupbench redact-suite examples/private_test_scenario_suite.json --output-dir tmp_ci_private
+          python -m thestartupbench redact-suite examples/private_real_world_fresh_scenario_suite.json --output-dir tmp_ci_fresh
           python -m thestartupbench build-submission --suite-report-paths tmp_ci_real/suite_report.json --model-id heuristic_resilient_operator --provider baseline --contamination-flag clean --output-dir tmp_ci_submission
