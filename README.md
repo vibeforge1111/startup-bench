@@ -18,6 +18,7 @@ What this means:
 
 - Quick start: [docs/getting_started.md](/C:/Users/USER/Desktop/startup-bench/docs/getting_started.md)
 - Evaluation flow: [docs/evaluation_modes.md](/C:/Users/USER/Desktop/startup-bench/docs/evaluation_modes.md)
+- First Codex/Claude/Gemini trial: [docs/model_trial_wave_001.md](/C:/Users/USER/Desktop/startup-bench/docs/model_trial_wave_001.md)
 - Contribution guide: [CONTRIBUTING.md](/C:/Users/USER/Desktop/startup-bench/CONTRIBUTING.md)
 - Volunteer call: [docs/volunteer_call.md](/C:/Users/USER/Desktop/startup-bench/docs/volunteer_call.md)
 - Founder/operator outreach: [docs/founder_operator_outreach.md](/C:/Users/USER/Desktop/startup-bench/docs/founder_operator_outreach.md)
