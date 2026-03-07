@@ -1,0 +1,83 @@
+from __future__ import annotations
+
+import sys
+import unittest
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
+
+from thestartupbench.evaluators import evaluate_dry_run
+from thestartupbench.runner import initialize_world_state
+from thestartupbench.runtime import RuntimeSession, execute_tool_call
+from thestartupbench.scenario_loader import load_scenario
+
+
+REPO_ROOT = Path(__file__).resolve().parents[1]
+GTM_SCENARIO_PATH = REPO_ROOT / "examples" / "minimal_gtm_scenario.json"
+PEOPLE_SCENARIO_PATH = REPO_ROOT / "examples" / "minimal_people_scenario.json"
+
+
+class EvaluatorTests(unittest.TestCase):
+    def test_market_and_segment_pressure_reduce_gtm_scores(self) -> None:
+        scenario = load_scenario(GTM_SCENARIO_PATH)
+        healthy_world = initialize_world_state(scenario, seed=7)
+        stressed_world = initialize_world_state(scenario, seed=7)
+        stressed_world["market"]["competitor_pressure_index"] = 0.9
+        stressed_world["market"]["pricing_pressure_index"] = 0.82
+        stressed_world["market"]["demand_index"] = 0.61
+        stressed_world["sales"]["weighted_pipeline_usd"] = 510000
+        stressed_world["customers"]["trust_score"] = 0.59
+        stressed_world["customers"]["monthly_churn_rate"] = 0.044
+        for segment in stressed_world["customers"]["segments"]:
+            segment["competitor_pressure_index"] = min(1.0, float(segment["competitor_pressure_index"]) + 0.18)
+            segment["monthly_churn_rate"] = round(float(segment["monthly_churn_rate"]) + 0.008, 4)
+            segment["trust_score"] = round(float(segment["trust_score"]) - 0.05, 4)
+
+        healthy = evaluate_dry_run(scenario=scenario, world_state=healthy_world)
+        stressed = evaluate_dry_run(scenario=scenario, world_state=stressed_world)
+
+        self.assertLess(stressed["subscores"]["revenue_quality"], healthy["subscores"]["revenue_quality"])
+        self.assertLess(stressed["subscores"]["customer_health"], healthy["subscores"]["customer_health"])
+        self.assertLess(stressed["scenario_score"], healthy["scenario_score"])
+
+    def test_people_track_rewards_hiring_and_market_response(self) -> None:
+        scenario = load_scenario(PEOPLE_SCENARIO_PATH)
+        world_state = initialize_world_state(scenario, seed=11)
+        before = evaluate_dry_run(scenario=scenario, world_state=world_state)
+
+        session = RuntimeSession(scenario=scenario, world_state=world_state)
+        execute_tool_call(
+            session,
+            {
+                "tool_name": "research.market.read",
+                "request_id": "req_market_eval_001",
+                "arguments": {},
+            },
+        )
+        execute_tool_call(
+            session,
+            {
+                "tool_name": "people.hiring.update",
+                "request_id": "req_hiring_eval_001",
+                "arguments": {
+                    "sourced_candidates_delta": 4,
+                    "onsite_candidates_delta": 2,
+                    "offers_out_delta": 1,
+                    "accepted_hires": 1,
+                    "monthly_burn_change_usd": 15000,
+                    "morale_delta": 0.04,
+                    "bandwidth_load_delta": -0.08,
+                    "support_backlog_delta": -5,
+                    "onboarding_quality_delta": 0.02,
+                },
+            },
+        )
+        after = evaluate_dry_run(scenario=scenario, world_state=session.world_state)
+
+        self.assertGreater(after["subscores"]["strategic_coherence"], before["subscores"]["strategic_coherence"])
+        self.assertGreater(after["subscores"]["customer_health"], before["subscores"]["customer_health"])
+        self.assertGreater(after["scenario_score"], before["scenario_score"])
+
+
+if __name__ == "__main__":
+    unittest.main()

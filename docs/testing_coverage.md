@@ -6,8 +6,8 @@ Last updated: 2026-03-07
 
 Current automated test surface:
 
-- `77` unit tests
-- `15` test files
+- `79` unit tests
+- `16` test files
 - all tests passing in the current tree
 
 The test suite is strongest on schema validation, core runtime mutations, baseline execution, and suite/submission packaging. It is weakest on evaluator nuance, adversarial scenario behavior, and broader scenario-corpus regression coverage.
@@ -64,6 +64,10 @@ The test suite is strongest on schema validation, core runtime mutations, baseli
   - unknown primitive reference detection
 
 ### Baselines and aggregation
+
+- [test_evaluators.py](/C:/Users/USER/Desktop/startup-bench/tests/test_evaluators.py): `2` tests
+  - GTM revenue and customer scores fall under stronger market and segment pressure
+  - people-track strategic coherence improves after hiring and market-response actions
 
 - [test_baseline_runner.py](/C:/Users/USER/Desktop/startup-bench/tests/test_baseline_runner.py): `3` tests
   - baseline registry
@@ -214,8 +218,8 @@ Observed on 2026-03-07:
 - `python -m thestartupbench version`: passed
   - reported version: `0.1.0`
 - `python -m unittest discover -s tests -p "test_*.py"`: passed
-  - `77` tests
-  - `15` files
+  - `79` tests
+  - `16` files
 
 ## What Is Covered Well
 
