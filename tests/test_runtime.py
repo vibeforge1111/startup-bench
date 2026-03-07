@@ -67,6 +67,26 @@ class RuntimeTests(unittest.TestCase):
         self.assertEqual(report["headline"]["cash_usd"], 920000)
         self.assertIn("pending_scheduled_events", report["alerts"])
 
+    def test_read_tool_responses_are_immutable_snapshots(self) -> None:
+        initial_report = execute_tool_call(
+            self.session,
+            {
+                "tool_name": "metrics.report",
+                "request_id": "req_metrics_003",
+                "arguments": {},
+            },
+        )
+        execute_tool_call(
+            self.session,
+            {
+                "tool_name": "sales.pricing.propose",
+                "request_id": "req_price_003",
+                "arguments": {"price_change_pct": 0.08},
+            },
+        )
+
+        self.assertEqual(initial_report["result"]["report"]["sales"]["pricing"]["current_price_index"], 1.0)
+
     def test_product_roadmap_write_updates_product_and_burn(self) -> None:
         response = execute_tool_call(
             self.session,

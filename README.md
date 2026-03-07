@@ -11,6 +11,7 @@ Current status:
 - reference CLI and validation runtime implemented
 - stateful business transition runtime implemented for core startup tools
 - programmatic scoring and runtime tests implemented
+- heuristic baseline runner implemented
 
 Key documents:
 
@@ -60,8 +61,10 @@ Current CLI examples:
 python -m thestartupbench version
 python -m thestartupbench validate scenario examples/minimal_b2b_saas_scenario.json
 python -m thestartupbench manifest examples/minimal_b2b_saas_scenario.json
+python -m thestartupbench list-baselines
 python -m thestartupbench run-dry examples/minimal_b2b_saas_scenario.json --seed 1 --output-dir tmp_out
 python -m thestartupbench run-script examples/minimal_b2b_saas_scenario.json examples/minimal_tool_script.json --seed 1 --output-dir tmp_out
+python -m thestartupbench run-baseline examples/minimal_b2b_saas_scenario.json heuristic_b2b_operator --seed 1 --max-turns 6 --output-dir tmp_out
 python -m unittest discover -s tests -p "test_*.py"
 ```
 

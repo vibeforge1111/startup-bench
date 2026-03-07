@@ -28,6 +28,8 @@ def _build_parser() -> argparse.ArgumentParser:
     manifest_parser = subparsers.add_parser("manifest", help="Generate the active tool manifest for a scenario")
     manifest_parser.add_argument("path", help="Path to the scenario JSON file")
 
+    subparsers.add_parser("list-baselines", help="List built-in heuristic baselines")
+
     inspect_parser = subparsers.add_parser("inspect-scenario", help="Print selected scenario metadata")
     inspect_parser.add_argument("path", help="Path to the scenario JSON file")
 
@@ -41,6 +43,13 @@ def _build_parser() -> argparse.ArgumentParser:
     script_parser.add_argument("tool_calls_path", help="Path to the tool-call JSON array")
     script_parser.add_argument("--seed", type=int, default=0, help="Seed used for the scripted run")
     script_parser.add_argument("--output-dir", help="Optional directory to write trace and score report artifacts")
+
+    baseline_parser = subparsers.add_parser("run-baseline", help="Execute a built-in heuristic baseline")
+    baseline_parser.add_argument("scenario_path", help="Path to the scenario JSON file")
+    baseline_parser.add_argument("baseline_id", help="Baseline id, e.g. heuristic_b2b_operator")
+    baseline_parser.add_argument("--seed", type=int, default=0, help="Seed used for the baseline run")
+    baseline_parser.add_argument("--max-turns", type=int, help="Optional cap on the number of simulated turns")
+    baseline_parser.add_argument("--output-dir", help="Optional directory to write trace and score report artifacts")
 
     return parser
 
@@ -121,6 +130,13 @@ def _cmd_manifest(path: str) -> int:
     return 0 if validation.ok else 1
 
 
+def _cmd_list_baselines() -> int:
+    from .baseline_runner import list_baselines
+
+    print(json.dumps({"baselines": list_baselines()}, indent=2))
+    return 0
+
+
 def _cmd_run_dry(scenario_path: str, seed: int, output_dir: str | None) -> int:
     from .runner import run_dry_scenario
 
@@ -151,6 +167,30 @@ def _cmd_run_script(scenario_path: str, tool_calls_path: str, seed: int, output_
     return 0
 
 
+def _cmd_run_baseline(
+    scenario_path: str,
+    baseline_id: str,
+    seed: int,
+    max_turns: int | None,
+    output_dir: str | None,
+) -> int:
+    from .baseline_runner import run_baseline
+
+    result = run_baseline(
+        scenario_path=Path(scenario_path),
+        baseline_id=baseline_id,
+        seed=seed,
+        max_turns=max_turns,
+    )
+    if output_dir:
+        out_dir = Path(output_dir)
+        out_dir.mkdir(parents=True, exist_ok=True)
+        (out_dir / "trace.json").write_text(json.dumps(result["trace"], indent=2), encoding="utf-8")
+        (out_dir / "score_report.json").write_text(json.dumps(result["score_report"], indent=2), encoding="utf-8")
+    print(json.dumps(result, indent=2))
+    return 0
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = _build_parser()
     args = parser.parse_args(argv)
@@ -166,12 +206,22 @@ def main(argv: list[str] | None = None) -> int:
         return _cmd_check_trace(args.path)
     if args.command == "manifest":
         return _cmd_manifest(args.path)
+    if args.command == "list-baselines":
+        return _cmd_list_baselines()
     if args.command == "inspect-scenario":
         return _cmd_inspect_scenario(args.path)
     if args.command == "run-dry":
         return _cmd_run_dry(args.scenario_path, args.seed, args.output_dir)
     if args.command == "run-script":
         return _cmd_run_script(args.scenario_path, args.tool_calls_path, args.seed, args.output_dir)
+    if args.command == "run-baseline":
+        return _cmd_run_baseline(
+            args.scenario_path,
+            args.baseline_id,
+            args.seed,
+            args.max_turns,
+            args.output_dir,
+        )
 
     parser.print_help()
     return 1

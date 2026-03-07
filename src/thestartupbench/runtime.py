@@ -65,8 +65,8 @@ def _tool_result(tool_name: str, request_id: str, *, result: dict, state_delta_s
         "request_id": request_id,
         "tool_name": tool_name,
         "timestamp": _format_iso8601(datetime.now(timezone.utc)),
-        "result": result,
-        "state_delta_summary": state_delta_summary or {},
+        "result": deepcopy(result),
+        "state_delta_summary": deepcopy(state_delta_summary or {}),
     }
 
 
