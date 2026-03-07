@@ -22,6 +22,7 @@ class RunnerTests(unittest.TestCase):
         self.assertEqual(result["turn_count"], 0)
         self.assertTrue(result["artifact_validation"]["trace"]["ok"])
         self.assertTrue(result["artifact_validation"]["score_report"]["ok"])
+        self.assertTrue(result["artifact_validation"]["tool_manifest"]["ok"])
 
     def test_trace_integrity_passes_for_dry_run_trace(self) -> None:
         result = run_dry_scenario(SCENARIO_PATH, seed=13)
@@ -29,7 +30,18 @@ class RunnerTests(unittest.TestCase):
         self.assertTrue(integrity.ok)
         self.assertEqual(integrity.issues, [])
 
+    def test_observation_projection_includes_values(self) -> None:
+        result = run_dry_scenario(SCENARIO_PATH, seed=17)
+        finance_surface = result["observation_surfaces"][0]
+        self.assertEqual(finance_surface["surface_id"], "finance_dashboard")
+        self.assertEqual(finance_surface["values"]["cash_usd"], 920000)
+
+    def test_tool_manifest_contains_declared_tools(self) -> None:
+        result = run_dry_scenario(SCENARIO_PATH, seed=19)
+        tool_names = [tool["tool_name"] for tool in result["tool_manifest"]["tools"]]
+        self.assertIn("metrics.query", tool_names)
+        self.assertIn("sim.advance", tool_names)
+
 
 if __name__ == "__main__":
     unittest.main()
-

@@ -9,7 +9,9 @@ from uuid import uuid4
 
 from .artifacts import build_score_report, build_trace
 from .evaluators import evaluate_dry_run
+from .observations import project_surfaces
 from .scenario_loader import load_scenario
+from .tool_registry import tool_manifest_for_names
 from .validation import validate_instance
 
 
@@ -86,23 +88,14 @@ def initialize_world_state(scenario: dict, *, seed: int) -> dict:
 
 
 def build_observation_surfaces(scenario: dict, world_state: dict) -> list[dict]:
-    surfaces = []
-    for surface in scenario["observation_surfaces"]:
-        surfaces.append(
-            {
-                "surface_id": surface["surface_id"],
-                "surface_type": surface["surface_type"],
-                "refresh_policy": surface["refresh_policy"],
-                "visible_fields": surface["visible_fields"],
-            }
-        )
-    return surfaces
+    return project_surfaces(scenario["observation_surfaces"], world_state)
 
 
 def run_dry_scenario(path: Path, *, seed: int) -> dict:
     scenario = load_scenario(path)
     world_state = initialize_world_state(scenario, seed=seed)
     observations = build_observation_surfaces(scenario, world_state)
+    tool_manifest = tool_manifest_for_names(scenario["tools"])
     run_id = f"dry-{uuid4()}"
     evaluation = evaluate_dry_run(scenario=scenario, world_state=world_state)
     trace = build_trace(
@@ -127,11 +120,17 @@ def run_dry_scenario(path: Path, *, seed: int) -> dict:
         "scenario_version": scenario["metadata"]["scenario_version"],
         "seed": seed,
         "observation_surfaces": observations,
+        "tool_manifest": tool_manifest,
         "trace": trace,
         "score_report": score_report,
         "artifact_validation": {
             "trace": trace_validation.to_dict(),
             "score_report": score_validation.to_dict(),
+            "tool_manifest": validate_instance(
+                artifact_type="tool-manifest",
+                instance=tool_manifest,
+                path=Path("tool_manifest.json"),
+            ).to_dict(),
         },
         "turn_count": 0,
     }

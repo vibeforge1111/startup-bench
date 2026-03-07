@@ -25,6 +25,9 @@ def _build_parser() -> argparse.ArgumentParser:
     check_trace_parser = subparsers.add_parser("check-trace", help="Run structural integrity checks on a trace")
     check_trace_parser.add_argument("path", help="Path to the trace JSON file")
 
+    manifest_parser = subparsers.add_parser("manifest", help="Generate the active tool manifest for a scenario")
+    manifest_parser.add_argument("path", help="Path to the scenario JSON file")
+
     inspect_parser = subparsers.add_parser("inspect-scenario", help="Print selected scenario metadata")
     inspect_parser.add_argument("path", help="Path to the scenario JSON file")
 
@@ -92,6 +95,26 @@ def _cmd_check_trace(path: str) -> int:
     return 0 if schema_result.ok and integrity_result.ok else 1
 
 
+def _cmd_manifest(path: str) -> int:
+    from .scenario_loader import load_scenario
+    from .tool_registry import tool_manifest_for_names
+    from .validation import validate_instance
+
+    scenario = load_scenario(Path(path))
+    manifest = tool_manifest_for_names(scenario["tools"])
+    validation = validate_instance(
+        artifact_type="tool-manifest",
+        instance=manifest,
+        path=Path("tool_manifest.json"),
+    )
+    payload = {
+        "manifest": manifest,
+        "validation": validation.to_dict(),
+    }
+    print(json.dumps(payload, indent=2))
+    return 0 if validation.ok else 1
+
+
 def _cmd_run_dry(scenario_path: str, seed: int, output_dir: str | None) -> int:
     from .runner import run_dry_scenario
 
@@ -118,6 +141,8 @@ def main(argv: list[str] | None = None) -> int:
         return _cmd_validate(args.artifact_type, args.path)
     if args.command == "check-trace":
         return _cmd_check_trace(args.path)
+    if args.command == "manifest":
+        return _cmd_manifest(args.path)
     if args.command == "inspect-scenario":
         return _cmd_inspect_scenario(args.path)
     if args.command == "run-dry":
