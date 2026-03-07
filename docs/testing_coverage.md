@@ -224,7 +224,7 @@ Observed on 2026-03-07:
   - allowed runner types: `baseline`, `script`
 - `emit-run-manifest ...dev_scenario_suite.json baseline --seeds 1,2,3,4,5 ...`: passed
   - repeated run count: `5`
-  - profile id: `official-hosted-v0.1.0`
+  - profile id: `official-hosted-v0.9.0`
 - `run-suite ...dev_scenario_suite.json ... --seeds 1,2 --max-turns 4 --profile-path ...`: passed
   - scenario count: `9`
   - overall score mean: `0.7257`
@@ -323,9 +323,9 @@ Observed on 2026-03-07:
   - contamination flag: `clean`
 - `python -m pip install -e .`: passed
 - `python -m thestartupbench version`: passed
-  - reported version: `0.1.0`
+  - reported version: `0.9.0`
 - `python -m unittest discover -s tests -p "test_*.py"`: passed
-  - `108` tests
+  - `116` tests
   - `23` files
 
 ## What Is Covered Well

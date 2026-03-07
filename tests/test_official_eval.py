@@ -21,7 +21,7 @@ class OfficialEvalTests(unittest.TestCase):
     def test_load_official_eval_profile(self) -> None:
         profile = load_official_eval_profile(PROFILE_PATH)
 
-        self.assertEqual(profile["profile_id"], "official-hosted-v0.1.0")
+        self.assertEqual(profile["profile_id"], "official-hosted-v0.9.0")
         self.assertTrue(profile["hosted_evaluation"])
 
     def test_build_run_manifest_for_baseline(self) -> None:
@@ -36,7 +36,7 @@ class OfficialEvalTests(unittest.TestCase):
 
         self.assertTrue(result["validation"]["ok"])
         manifest = result["run_manifest"]
-        self.assertEqual(manifest["official_profile"]["profile_id"], "official-hosted-v0.1.0")
+        self.assertEqual(manifest["official_profile"]["profile_id"], "official-hosted-v0.9.0")
         self.assertEqual(manifest["run_configuration"]["repeated_run_count"], 5)
         self.assertEqual(manifest["run_configuration"]["runner_id"], "heuristic_resilient_operator")
 

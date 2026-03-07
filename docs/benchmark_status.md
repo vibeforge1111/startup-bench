@@ -33,6 +33,13 @@ TheStartupBench is no longer just an RFC. It now has:
 
 The project is in the `reference implementation + benchmark hardening` phase, not the `fully benchmark-complete` phase.
 
+Freeze status:
+
+- package/scaffold version: `0.9.0`
+- benchmark freeze label: `v0.9-precalibration`
+- official profile id: `official-hosted-v0.9.0`
+- frozen active packs are listed in [frozen_active_packs.md](/C:/Users/USER/Desktop/startup-bench/docs/frozen_active_packs.md)
+
 Synthetic calibration status:
 
 - corrected and recommendation-aligned:

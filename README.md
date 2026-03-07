@@ -2,6 +2,8 @@
 
 TheStartupBench is a benchmark design project for evaluating AI agents on startup and business decision-making under uncertainty.
 
+Current freeze state: `v0.9-precalibration`
+
 Current status:
 
 - benchmark RFC drafted
@@ -47,6 +49,8 @@ Key documents:
 - `docs/human_review_wave_001.md`
 - `docs/reviewer_outreach_wave_001.md`
 - `docs/pre_human_calibration_execution_plan.md`
+- `docs/frozen_active_packs.md`
+- `docs/releases/v0.9-precalibration.md`
 - `docs/benchmark_known_issues.md`
 - `docs/evaluator_adjudication_log.md`
 - `docs/pre_freeze_checklist.md`
