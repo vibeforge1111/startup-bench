@@ -206,6 +206,8 @@ class EvaluatorTests(unittest.TestCase):
         self.assertTrue(strategic_details["repeated_board_update"])
         self.assertEqual(strategic_details["board_update_after_governance_count"], 0)
         self.assertEqual(strategic_details["support_follow_up_count"], 0)
+        self.assertEqual(strategic_details["incident_follow_up_count"], 0)
+        self.assertEqual(strategic_details["board_read_count"], 0)
         self.assertLess(result["subscores"]["strategic_coherence"], 0.55)
 
 

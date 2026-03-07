@@ -423,17 +423,23 @@ def _behavioral_penalty(
 
         board_update_after_governance_count = 0
         support_follow_up_count = 0
+        incident_follow_up_count = 0
         finance_follow_up_count = 0
         market_read_count = 0
+        board_read_count = 0
         if governance_turn_indices or customer_turn_indices:
             first_follow_up_turn = min(governance_turn_indices + customer_turn_indices)
             for turn in turns[first_follow_up_turn + 1 :]:
                 for action in turn.get("actions", []):
                     tool_name = str(action.get("tool_name", ""))
+                    if tool_name == "board.read":
+                        board_read_count += 1
                     if tool_name == "board.update":
                         board_update_after_governance_count += 1
                     elif tool_name == "ops.support.resolve":
                         support_follow_up_count += 1
+                    elif tool_name in {"ops.incident.respond", "product.roadmap.write"}:
+                        incident_follow_up_count += 1
                     elif tool_name in {"finance.plan.write", "finance.raise.propose"}:
                         finance_follow_up_count += 1
                     elif tool_name == "research.market.read":
@@ -454,11 +460,15 @@ def _behavioral_penalty(
         penalty = 0.0
         if governance_turn_indices and board_update_after_governance_count == 0:
             penalty += 0.06
+        if governance_turn_indices and board_read_count == 0:
+            penalty += 0.03
         if customer_turn_indices and support_follow_up_count == 0:
             penalty += 0.05
         if repeated_board_update:
             penalty += 0.04
         if final_major_incidents_open > 0:
+            penalty += 0.04
+        if final_major_incidents_open > 0 and incident_follow_up_count == 0:
             penalty += 0.04
         if trust_decline >= 0.04 and customer_turn_indices and support_follow_up_count == 0:
             penalty += 0.03
@@ -489,6 +499,8 @@ def _behavioral_penalty(
             "customer_event_count": len(customer_turn_indices),
             "board_update_after_governance_count": board_update_after_governance_count,
             "support_follow_up_count": support_follow_up_count,
+            "incident_follow_up_count": incident_follow_up_count,
+            "board_read_count": board_read_count,
             "market_read_count": market_read_count,
             "repeated_board_update": repeated_board_update,
             "unique_board_summaries": unique_board_summaries,

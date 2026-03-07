@@ -22,6 +22,7 @@ BREX_TREASURY_SCENARIO_PATH = REPO_ROOT / "examples" / "real_world_brex_svb_trea
 class BaselineRunnerTests(unittest.TestCase):
     def test_list_baselines_contains_heuristic_operator(self) -> None:
         self.assertIn("heuristic_b2b_operator", list_baselines())
+        self.assertIn("heuristic_governance_operator", list_baselines())
         self.assertIn("heuristic_liquidity_operator", list_baselines())
         self.assertIn("heuristic_long_horizon_operator", list_baselines())
         self.assertIn("heuristic_market_aware_operator", list_baselines())
@@ -136,6 +137,32 @@ class BaselineRunnerTests(unittest.TestCase):
         self.assertGreaterEqual(len(board_updates), 2)
         self.assertGreater(len(set(board_updates)), 1)
         self.assertGreaterEqual(len(board_reads), 1)
+
+    def test_governance_baseline_outperforms_long_horizon_on_board_conflict(self) -> None:
+        long_horizon = run_baseline(
+            scenario_path=BOARD_STRATEGY_SCENARIO_PATH,
+            baseline_id="heuristic_long_horizon_operator",
+            seed=1,
+            max_turns=6,
+        )
+        governance = run_baseline(
+            scenario_path=BOARD_STRATEGY_SCENARIO_PATH,
+            baseline_id="heuristic_governance_operator",
+            seed=1,
+            max_turns=6,
+        )
+
+        self.assertGreater(
+            governance["score_report"]["scenario_score"],
+            long_horizon["score_report"]["scenario_score"],
+        )
+        governance_reads = [
+            action
+            for turn in governance["trace"]["turns"]
+            for action in turn["actions"]
+            if action["tool_name"] == "board.read"
+        ]
+        self.assertGreaterEqual(len(governance_reads), 2)
 
     def test_liquidity_baseline_outperforms_resilient_on_treasury_shock(self) -> None:
         resilient = run_baseline(

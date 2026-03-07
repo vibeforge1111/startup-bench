@@ -18,6 +18,7 @@ from .validation import validate_instance
 
 _BASELINE_IDS = {
     "heuristic_b2b_operator",
+    "heuristic_governance_operator",
     "heuristic_liquidity_operator",
     "heuristic_long_horizon_operator",
     "heuristic_market_aware_operator",
@@ -829,6 +830,198 @@ def _heuristic_liquidity_actions(session: RuntimeSession, *, turn_index: int) ->
     return actions
 
 
+def _heuristic_governance_actions(session: RuntimeSession, *, turn_index: int) -> list[dict]:
+    finance = session.world_state.get("finance", {})
+    product = session.world_state.get("product", {})
+    customers = session.world_state.get("customers", {})
+    governance = session.world_state.get("governance", {})
+    operations = session.world_state.get("operations", {})
+    team = session.world_state.get("team", {})
+    hiring = team.get("hiring", {})
+    risk = session.world_state.get("risk", {})
+    market = session.world_state.get("market", {})
+    actions: list[dict] = []
+    action_index = 0
+
+    actions.append(
+        {
+            "tool_name": "metrics.report",
+            "request_id": _next_request_id(turn_index, action_index),
+            "arguments": {},
+        }
+    )
+    action_index += 1
+
+    actions.append(
+        {
+            "tool_name": "board.read",
+            "request_id": _next_request_id(turn_index, action_index),
+            "arguments": {},
+        }
+    )
+    action_index += 1
+
+    actions.append(
+        {
+            "tool_name": "research.market.read",
+            "request_id": _next_request_id(turn_index, action_index),
+            "arguments": {},
+        }
+    )
+    action_index += 1
+
+    if int(product.get("major_incidents_open", 0)) > 0:
+        actions.append(
+            {
+                "tool_name": "ops.incident.respond",
+                "request_id": _next_request_id(turn_index, action_index),
+                "arguments": {
+                    "incident_reduction": 1,
+                    "trust_recovery": 0.05,
+                    "churn_reduction": 0.006,
+                    "monthly_burn_increase_usd": 7000,
+                },
+            }
+        )
+        action_index += 1
+
+    if float(operations.get("support_backlog", 0.0)) > 26 or float(operations.get("support_sla_breach_risk", 0.0)) > 0.32:
+        actions.append(
+            {
+                "tool_name": "ops.support.resolve",
+                "request_id": _next_request_id(turn_index, action_index),
+                "arguments": {
+                    "backlog_reduction": 16,
+                    "sla_risk_reduction": 0.16,
+                    "trust_recovery": 0.028,
+                    "churn_reduction": 0.004,
+                    "monthly_burn_increase_usd": 6000,
+                },
+            }
+        )
+        action_index += 1
+
+    if (
+        float(team.get("morale", 1.0)) < 0.58
+        or float(team.get("attrition_risk", 0.0)) > 0.52
+        or float(team.get("bandwidth_load", 0.0)) > 0.84
+    ):
+        actions.append(
+            {
+                "tool_name": "people.org.adjust",
+                "request_id": _next_request_id(turn_index, action_index),
+                "arguments": {
+                    "morale_delta": 0.07,
+                    "attrition_risk_delta": -0.09,
+                    "bandwidth_load_delta": -0.08,
+                    "monthly_burn_change_usd": 7000,
+                    "onboarding_quality_delta": 0.02,
+                },
+            }
+        )
+        action_index += 1
+
+    if int(hiring.get("open_roles", team.get("open_roles", 0))) > 0 and (
+        int(hiring.get("critical_roles_open", 0)) > 0 or float(team.get("bandwidth_load", 0.0)) > 0.8
+    ):
+        actions.append(
+            {
+                "tool_name": "people.hiring.update",
+                "request_id": _next_request_id(turn_index, action_index),
+                "arguments": {
+                    "sourced_candidates_delta": 5 if int(hiring.get("sourced_candidates", 0)) < 7 else 0,
+                    "onsite_candidates_delta": 2 if int(hiring.get("sourced_candidates", 0)) >= 5 else 0,
+                    "offers_out_delta": 1 if int(hiring.get("onsite_candidates", 0)) >= 2 else 0,
+                    "accepted_hires": 1 if int(hiring.get("offers_out", 0)) >= 1 else 0,
+                    "monthly_burn_change_usd": 13000 if int(hiring.get("offers_out", 0)) >= 1 else 3000,
+                    "morale_delta": 0.03 if int(hiring.get("offers_out", 0)) >= 1 else 0.01,
+                    "bandwidth_load_delta": -0.05 if int(hiring.get("offers_out", 0)) >= 1 else -0.01,
+                    "support_backlog_delta": -4 if int(hiring.get("offers_out", 0)) >= 1 else 0,
+                    "onboarding_quality_delta": 0.015 if int(hiring.get("offers_out", 0)) >= 1 else 0.0,
+                },
+            }
+        )
+        action_index += 1
+
+    if float(finance.get("runway_weeks", 999.0)) < 28 and not finance.get("last_plan_update"):
+        actions.append(
+            {
+                "tool_name": "finance.plan.write",
+                "request_id": _next_request_id(turn_index, action_index),
+                "arguments": {"budget_changes": {"monthly_burn_usd": -22000}},
+            }
+        )
+        action_index += 1
+
+    if float(risk.get("financing_pressure", 0.0)) > 0.8 and not finance.get("last_raise_plan"):
+        actions.append(
+            {
+                "tool_name": "finance.raise.propose",
+                "request_id": _next_request_id(turn_index, action_index),
+                "arguments": {
+                    "raise_amount_usd": max(850000.0, float(finance.get("monthly_burn_usd", 0.0)) * 5.5),
+                    "dilution_pct": 0.11,
+                    "monthly_burn_change_usd": 0,
+                    "financing_risk_reduction": 0.28,
+                    "transaction_cost_usd": 26000,
+                },
+            }
+        )
+        action_index += 1
+
+    if float(product.get("onboarding_quality", 0.0)) < 0.7 or int(product.get("roadmap_items", 0)) > 7:
+        actions.append(
+            {
+                "tool_name": "product.roadmap.write",
+                "request_id": _next_request_id(turn_index, action_index),
+                "arguments": {
+                    "roadmap_items_delta": -1,
+                    "onboarding_quality_delta": 0.08,
+                    "major_incidents_delta": 0,
+                    "budget_change_monthly_burn_usd": 3500,
+                },
+            }
+        )
+        action_index += 1
+
+    if (
+        float(customers.get("trust_score", 0.0)) > 0.74
+        and float(operations.get("support_backlog", 0.0)) < 24
+        and float(risk.get("financing_pressure", 0.0)) < 0.7
+        and float(finance.get("monthly_revenue_usd", 0.0)) > 0
+        and float(finance.get("runway_weeks", 999.0)) > 22
+    ):
+        actions.append(
+            {
+                "tool_name": "sales.pipeline.update",
+                "request_id": _next_request_id(turn_index, action_index),
+                "arguments": {
+                    "pipeline_count_delta": 1,
+                    "weighted_pipeline_usd_delta": 50000,
+                },
+            }
+        )
+        action_index += 1
+
+    actions.append(
+        {
+            "tool_name": "board.update",
+            "request_id": _next_request_id(turn_index, action_index),
+            "arguments": _long_horizon_board_update_payload(session),
+        }
+    )
+    action_index += 1
+
+    actions.append(
+        {
+            "tool_name": "sim.advance",
+            "request_id": _next_request_id(turn_index, action_index),
+            "arguments": {"advance_by": 1, "unit": "week"},
+        }
+    )
+    return actions
+
+
 def _heuristic_long_horizon_actions(session: RuntimeSession, *, turn_index: int) -> list[dict]:
     track = session.scenario["metadata"]["track"]
     finance = session.world_state.get("finance", {})
@@ -1049,6 +1242,8 @@ def _heuristic_long_horizon_actions(session: RuntimeSession, *, turn_index: int)
 def _proposed_actions_for_baseline(session: RuntimeSession, *, baseline_id: str, turn_index: int) -> list[dict]:
     if baseline_id == "heuristic_b2b_operator":
         return _heuristic_b2b_actions(session, turn_index=turn_index)
+    if baseline_id == "heuristic_governance_operator":
+        return _heuristic_governance_actions(session, turn_index=turn_index)
     if baseline_id == "heuristic_liquidity_operator":
         return _heuristic_liquidity_actions(session, turn_index=turn_index)
     if baseline_id == "heuristic_long_horizon_operator":
