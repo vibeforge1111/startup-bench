@@ -6,31 +6,31 @@
   "scenario_count": 5,
   "scenarios": [
     {
-      "scenario_id": "real_world_airbnb_emergency_financing_test_001",
+      "scenario_id": "real_world_airbnb_emergency_financing_fresh_001",
       "track": "board",
       "mode": "fresh",
       "hidden_ref": "fresh_000"
     },
     {
-      "scenario_id": "real_world_brex_svb_treasury_shock_test_001",
+      "scenario_id": "real_world_brex_svb_treasury_shock_fresh_001",
       "track": "crisis",
       "mode": "fresh",
       "hidden_ref": "fresh_001"
     },
     {
-      "scenario_id": "real_world_zoom_security_freeze_test_001",
+      "scenario_id": "real_world_zoom_security_freeze_fresh_001",
       "track": "crisis",
       "mode": "fresh",
       "hidden_ref": "fresh_002"
     },
     {
-      "scenario_id": "real_world_atlassian_restoration_test_001",
+      "scenario_id": "real_world_atlassian_restoration_fresh_001",
       "track": "crisis",
       "mode": "fresh",
       "hidden_ref": "fresh_003"
     },
     {
-      "scenario_id": "real_world_shopify_peak_readiness_test_001",
+      "scenario_id": "real_world_shopify_peak_readiness_fresh_001",
       "track": "scale",
       "mode": "fresh",
       "hidden_ref": "fresh_004"

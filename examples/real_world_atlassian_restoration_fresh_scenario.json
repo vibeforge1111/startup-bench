@@ -1,0 +1,181 @@
+{
+  "metadata": {
+    "scenario_id": "real_world_atlassian_restoration_fresh_001",
+    "scenario_version": "0.1.0",
+    "benchmark_version": "0.2.0-draft",
+    "track": "crisis",
+    "mode": "fresh",
+    "title": "Fresh Restoration Collapse and Escalation Backlog",
+    "summary": "Fresh hidden variant with lower morale, heavier support backlog, and repeated restoration slippage.",
+    "difficulty": "frontier",
+    "time_horizon": {
+      "unit": "week",
+      "length": 12
+    },
+    "authoring_origin": "real_world_derived",
+    "tags": ["real_world", "atlassian", "hidden_eval", "fresh", "restoration", "support"],
+    "inspired_by": {
+      "company": "Atlassian",
+      "year": 2022,
+      "pattern": "accidental customer-site deletion"
+    }
+  },
+  "initial_state": {
+    "company": {
+      "stage": "growth",
+      "sector": "b2b_saas",
+      "business_model": "subscription"
+    },
+    "finance": {
+      "cash_usd": 15400000,
+      "monthly_burn_usd": 2740000,
+      "monthly_revenue_usd": 2010000
+    },
+    "product": {
+      "major_incidents_open": 6,
+      "roadmap_items": 8,
+      "onboarding_quality": 0.69
+    },
+    "customers": {
+      "paying_accounts": 710,
+      "monthly_churn_rate": 0.051,
+      "trust_score": 0.5
+    },
+    "sales": {
+      "pipeline_count": 19,
+      "weighted_pipeline_usd": 1980000,
+      "pricing": {
+        "current_price_index": 1.0
+      }
+    },
+    "operations": {
+      "support_backlog": 148,
+      "support_sla_breach_risk": 0.9
+    },
+    "team": {
+      "morale": 0.45,
+      "attrition_risk": 0.61,
+      "bandwidth_load": 0.98
+    },
+    "governance": {
+      "board_update_count": 1
+    },
+    "policy": {
+      "max_auto_price_increase_pct": 0.04
+    },
+    "risk": {
+      "regulatory_pressure": 0.61,
+      "active_legal_matters": 2,
+      "compliance_backlog": 10
+    },
+    "sim": {
+      "current_time": "2026-06-22T09:00:00Z"
+    }
+  },
+  "latent_state": {
+    "true_root_cause": "restoration_tooling_is_unreliable_under_load",
+    "true_recovery_complexity": "critical"
+  },
+  "observation_surfaces": [
+    {
+      "surface_id": "incident_console",
+      "surface_type": "ops_console",
+      "refresh_policy": "realtime",
+      "visible_fields": ["major_incidents_open", "trust_score", "monthly_churn_rate"]
+    },
+    {
+      "surface_id": "support_console",
+      "surface_type": "ops_console",
+      "refresh_policy": "realtime",
+      "visible_fields": ["support_backlog", "support_sla_breach_risk", "morale"]
+    }
+  ],
+  "tools": [
+    "metrics.query",
+    "metrics.report",
+    "product.roadmap.read",
+    "product.roadmap.write",
+    "ops.incident.read",
+    "ops.incident.respond",
+    "ops.support.read",
+    "ops.support.resolve",
+    "finance.plan.read",
+    "finance.plan.write",
+    "board.read",
+    "board.update",
+    "people.org.read",
+    "people.org.adjust",
+    "legal.compliance.read",
+    "legal.compliance.respond",
+    "notes.read",
+    "notes.write",
+    "sim.advance"
+  ],
+  "event_model": {
+    "kind": "seeded_schedule",
+    "primitive_catalog": {
+      "restoration_stalls": {
+        "operations": [
+          { "op": "increment", "path": "product.major_incidents_open", "value": 1 },
+          { "op": "increment", "path": "operations.support_backlog", "value": 34 },
+          { "op": "increment", "path": "customers.trust_score", "value": -0.045 },
+          { "op": "clamp", "path": "customers.trust_score", "min": 0.0, "max": 1.0 }
+        ]
+      },
+      "recovery_tool_breaks": {
+        "operations": [
+          { "op": "increment", "path": "operations.support_backlog", "value": 20 },
+          { "op": "increment", "path": "team.morale", "value": -0.04 },
+          { "op": "clamp", "path": "team.morale", "min": 0.0, "max": 1.0 },
+          { "op": "increment", "path": "team.attrition_risk", "value": 0.05 },
+          { "op": "clamp", "path": "team.attrition_risk", "min": 0.0, "max": 1.0 }
+        ]
+      }
+    },
+    "scheduled_events": [
+      {
+        "event_id": "ev_atlassian_fresh_001",
+        "at_turn": 2,
+        "primitive_id": "restoration_stalls",
+        "event_type": "restoration_stalls",
+        "visible_message": "Restoration progress stalled again and the affected-account queue rose sharply."
+      },
+      {
+        "event_id": "ev_atlassian_fresh_002",
+        "at_turn": 5,
+        "primitive_id": "recovery_tool_breaks",
+        "event_type": "recovery_tool_breaks",
+        "visible_message": "A recovery automation tool failed under load, increasing manual work and team strain."
+      }
+    ]
+  },
+  "policy_constraints": [
+    {
+      "constraint_id": "no_unapproved_hiring",
+      "kind": "approval_required"
+    }
+  ],
+  "terminal_conditions": [
+    {
+      "condition_id": "horizon_end_12_weeks",
+      "kind": "horizon_end"
+    },
+    {
+      "condition_id": "bankruptcy",
+      "kind": "hard_failure"
+    }
+  ],
+  "evaluation": {
+    "outcome_components": [
+      { "component_id": "cash_efficiency", "weight": 0.15, "direction": "maximize" },
+      { "component_id": "revenue_quality", "weight": 0.1, "direction": "maximize" },
+      { "component_id": "customer_health", "weight": 0.4, "direction": "maximize" },
+      { "component_id": "strategic_coherence", "weight": 0.35, "direction": "maximize" }
+    ],
+    "constraints": [
+      { "constraint_id": "bankruptcy" },
+      { "constraint_id": "severe_trust_breach" },
+      { "constraint_id": "severe_compliance_breach" }
+    ]
+  }
+}

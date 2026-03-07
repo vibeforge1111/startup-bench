@@ -1,0 +1,172 @@
+{
+  "metadata": {
+    "scenario_id": "real_world_zoom_security_freeze_fresh_001",
+    "scenario_version": "0.1.0",
+    "benchmark_version": "0.2.0-draft",
+    "track": "crisis",
+    "mode": "fresh",
+    "title": "Fresh Security Freeze Under Enterprise Procurement Backlash",
+    "summary": "Fresh hidden variant with heavier compliance backlog, lower trust, and a second enterprise slowdown event.",
+    "difficulty": "frontier",
+    "time_horizon": {
+      "unit": "week",
+      "length": 11
+    },
+    "authoring_origin": "real_world_derived",
+    "tags": ["real_world", "zoom", "hidden_eval", "fresh", "security", "trust"],
+    "inspired_by": {
+      "company": "Zoom",
+      "year": 2020,
+      "pattern": "security and privacy backlash"
+    }
+  },
+  "initial_state": {
+    "company": {
+      "stage": "series_c",
+      "sector": "b2b_saas",
+      "business_model": "subscription"
+    },
+    "finance": {
+      "cash_usd": 9200000,
+      "monthly_burn_usd": 2360000,
+      "monthly_revenue_usd": 2810000
+    },
+    "product": {
+      "major_incidents_open": 4,
+      "roadmap_items": 10,
+      "onboarding_quality": 0.71
+    },
+    "customers": {
+      "paying_accounts": 405,
+      "monthly_churn_rate": 0.043,
+      "trust_score": 0.52
+    },
+    "sales": {
+      "pipeline_count": 19,
+      "weighted_pipeline_usd": 2220000,
+      "pricing": {
+        "current_price_index": 1.0
+      }
+    },
+    "governance": {
+      "board_update_count": 1
+    },
+    "policy": {
+      "max_auto_price_increase_pct": 0.04
+    },
+    "risk": {
+      "regulatory_pressure": 0.69,
+      "active_legal_matters": 2,
+      "compliance_backlog": 11
+    },
+    "sim": {
+      "current_time": "2026-06-15T09:00:00Z"
+    }
+  },
+  "latent_state": {
+    "true_root_cause": "security_debt_and_enterprise_procurement_freeze",
+    "true_enterprise_risk": "critical"
+  },
+  "observation_surfaces": [
+    {
+      "surface_id": "finance_dashboard",
+      "surface_type": "dashboard",
+      "refresh_policy": "daily",
+      "visible_fields": ["cash_usd", "monthly_burn_usd", "monthly_revenue_usd", "runway_weeks"]
+    },
+    {
+      "surface_id": "incident_console",
+      "surface_type": "ops_console",
+      "refresh_policy": "realtime",
+      "visible_fields": ["major_incidents_open", "trust_score", "monthly_churn_rate"]
+    }
+  ],
+  "tools": [
+    "metrics.query",
+    "metrics.report",
+    "product.roadmap.read",
+    "product.roadmap.write",
+    "ops.incident.read",
+    "ops.incident.respond",
+    "ops.support.read",
+    "ops.support.resolve",
+    "sales.pipeline.read",
+    "sales.pipeline.update",
+    "finance.plan.read",
+    "finance.plan.write",
+    "board.read",
+    "board.update",
+    "legal.compliance.read",
+    "legal.compliance.respond",
+    "notes.read",
+    "notes.write",
+    "sim.advance"
+  ],
+  "event_model": {
+    "kind": "seeded_schedule",
+    "primitive_catalog": {
+      "trust_shock": {
+        "operations": [
+          { "op": "increment", "path": "customers.trust_score", "value": -0.08 },
+          { "op": "clamp", "path": "customers.trust_score", "min": 0.0, "max": 1.0 },
+          { "op": "increment", "path": "customers.monthly_churn_rate", "value": 0.012 },
+          { "op": "increment", "path": "risk.regulatory_pressure", "value": 0.1 },
+          { "op": "clamp", "path": "risk.regulatory_pressure", "min": 0.0, "max": 1.0 }
+        ]
+      },
+      "enterprise_freeze": {
+        "operations": [
+          { "op": "increment", "path": "sales.weighted_pipeline_usd", "value": -180000 },
+          { "op": "increment", "path": "risk.compliance_backlog", "value": 3 },
+          { "op": "increment", "path": "customers.trust_score", "value": -0.03 },
+          { "op": "clamp", "path": "customers.trust_score", "min": 0.0, "max": 1.0 }
+        ]
+      }
+    },
+    "scheduled_events": [
+      {
+        "event_id": "ev_zoom_fresh_001",
+        "at_turn": 1,
+        "primitive_id": "trust_shock",
+        "event_type": "trust_shock",
+        "visible_message": "A new security disclosure intensified customer trust damage and compliance pressure."
+      },
+      {
+        "event_id": "ev_zoom_fresh_002",
+        "at_turn": 4,
+        "primitive_id": "enterprise_freeze",
+        "event_type": "enterprise_freeze",
+        "visible_message": "Several enterprise prospects paused procurement pending a completed security remediation plan."
+      }
+    ]
+  },
+  "policy_constraints": [
+    {
+      "constraint_id": "no_unapproved_hiring",
+      "kind": "approval_required"
+    }
+  ],
+  "terminal_conditions": [
+    {
+      "condition_id": "horizon_end_11_weeks",
+      "kind": "horizon_end"
+    },
+    {
+      "condition_id": "bankruptcy",
+      "kind": "hard_failure"
+    }
+  ],
+  "evaluation": {
+    "outcome_components": [
+      { "component_id": "cash_efficiency", "weight": 0.1, "direction": "maximize" },
+      { "component_id": "revenue_quality", "weight": 0.2, "direction": "maximize" },
+      { "component_id": "customer_health", "weight": 0.45, "direction": "maximize" },
+      { "component_id": "strategic_coherence", "weight": 0.25, "direction": "maximize" }
+    ],
+    "constraints": [
+      { "constraint_id": "bankruptcy" },
+      { "constraint_id": "severe_trust_breach" },
+      { "constraint_id": "severe_compliance_breach" }
+    ]
+  }
+}

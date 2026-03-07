@@ -1,0 +1,169 @@
+{
+  "metadata": {
+    "scenario_id": "real_world_brex_svb_treasury_shock_fresh_001",
+    "scenario_version": "0.1.0",
+    "benchmark_version": "0.2.0-draft",
+    "track": "crisis",
+    "mode": "fresh",
+    "title": "Fresh Treasury Freeze and Payroll Cascade",
+    "summary": "Fresh hidden variant with deeper concentration, lower cash mobility, and a second payroll stress event.",
+    "difficulty": "frontier",
+    "time_horizon": {
+      "unit": "week",
+      "length": 9
+    },
+    "authoring_origin": "real_world_derived",
+    "tags": ["real_world", "brex", "svb", "hidden_eval", "fresh", "treasury", "crisis"],
+    "inspired_by": {
+      "company": "Brex",
+      "year": 2023,
+      "pattern": "SVB treasury shock"
+    }
+  },
+  "initial_state": {
+    "company": {
+      "stage": "series_b",
+      "sector": "b2b_saas",
+      "business_model": "subscription"
+    },
+    "finance": {
+      "cash_usd": 3920000,
+      "restricted_cash_usd": 320000,
+      "monthly_burn_usd": 445000,
+      "monthly_revenue_usd": 318000,
+      "treasury_concentration": 0.98
+    },
+    "product": {
+      "major_incidents_open": 0,
+      "roadmap_items": 5,
+      "onboarding_quality": 0.66
+    },
+    "customers": {
+      "paying_accounts": 172,
+      "monthly_churn_rate": 0.028,
+      "trust_score": 0.68
+    },
+    "sales": {
+      "pipeline_count": 6,
+      "weighted_pipeline_usd": 395000,
+      "pricing": {
+        "current_price_index": 1.0
+      }
+    },
+    "governance": {
+      "board_update_count": 0
+    },
+    "policy": {
+      "max_auto_price_increase_pct": 0.04
+    },
+    "risk": {
+      "counterparty_risk": 0.97,
+      "financing_pressure": 0.81
+    },
+    "sim": {
+      "current_time": "2026-06-08T09:00:00Z"
+    }
+  },
+  "latent_state": {
+    "true_root_cause": "single_bank_and_payroll_vendor_concentration",
+    "true_payroll_exposure": "critical"
+  },
+  "observation_surfaces": [
+    {
+      "surface_id": "finance_dashboard",
+      "surface_type": "dashboard",
+      "refresh_policy": "realtime",
+      "visible_fields": ["cash_usd", "liquid_cash_usd", "runway_weeks", "treasury_concentration"]
+    },
+    {
+      "surface_id": "risk_console",
+      "surface_type": "ops_console",
+      "refresh_policy": "realtime",
+      "visible_fields": ["counterparty_risk", "financing_pressure", "trust_score"]
+    }
+  ],
+  "tools": [
+    "metrics.query",
+    "metrics.report",
+    "sales.pipeline.read",
+    "sales.pipeline.update",
+    "finance.plan.read",
+    "finance.plan.write",
+    "finance.treasury.read",
+    "finance.treasury.rebalance",
+    "finance.raise.propose",
+    "board.read",
+    "board.update",
+    "notes.read",
+    "notes.write",
+    "sim.advance"
+  ],
+  "event_model": {
+    "kind": "seeded_schedule",
+    "primitive_catalog": {
+      "bank_freeze": {
+        "operations": [
+          { "op": "increment", "path": "finance.restricted_cash_usd", "value": 2300000 },
+          { "op": "increment", "path": "risk.financing_pressure", "value": 0.1 },
+          { "op": "clamp", "path": "risk.financing_pressure", "min": 0.0, "max": 1.0 },
+          { "op": "increment", "path": "customers.trust_score", "value": -0.02 },
+          { "op": "clamp", "path": "customers.trust_score", "min": 0.0, "max": 1.0 }
+        ]
+      },
+      "payroll_vendor_alert": {
+        "operations": [
+          { "op": "increment", "path": "risk.financing_pressure", "value": 0.08 },
+          { "op": "clamp", "path": "risk.financing_pressure", "min": 0.0, "max": 1.0 },
+          { "op": "increment", "path": "customers.trust_score", "value": -0.015 },
+          { "op": "clamp", "path": "customers.trust_score", "min": 0.0, "max": 1.0 },
+          { "op": "increment", "path": "sales.weighted_pipeline_usd", "value": -50000 }
+        ]
+      }
+    },
+    "scheduled_events": [
+      {
+        "event_id": "ev_brex_fresh_001",
+        "at_turn": 1,
+        "primitive_id": "bank_freeze",
+        "event_type": "bank_freeze",
+        "visible_message": "A concentrated banking partner froze a major share of available cash."
+      },
+      {
+        "event_id": "ev_brex_fresh_002",
+        "at_turn": 3,
+        "primitive_id": "payroll_vendor_alert",
+        "event_type": "payroll_vendor_alert",
+        "visible_message": "Payroll continuity risk rose after a secondary vendor warned of transfer delays."
+      }
+    ]
+  },
+  "policy_constraints": [
+    {
+      "constraint_id": "no_unapproved_hiring",
+      "kind": "approval_required"
+    }
+  ],
+  "terminal_conditions": [
+    {
+      "condition_id": "horizon_end_9_weeks",
+      "kind": "horizon_end"
+    },
+    {
+      "condition_id": "bankruptcy",
+      "kind": "hard_failure"
+    }
+  ],
+  "evaluation": {
+    "outcome_components": [
+      { "component_id": "cash_efficiency", "weight": 0.45, "direction": "maximize" },
+      { "component_id": "revenue_quality", "weight": 0.1, "direction": "maximize" },
+      { "component_id": "customer_health", "weight": 0.1, "direction": "maximize" },
+      { "component_id": "strategic_coherence", "weight": 0.35, "direction": "maximize" }
+    ],
+    "constraints": [
+      { "constraint_id": "bankruptcy" },
+      { "constraint_id": "severe_trust_breach" },
+      { "constraint_id": "severe_financing_failure" }
+    ]
+  }
+}

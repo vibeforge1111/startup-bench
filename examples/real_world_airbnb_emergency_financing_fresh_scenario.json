@@ -1,0 +1,182 @@
+{
+  "metadata": {
+    "scenario_id": "real_world_airbnb_emergency_financing_fresh_001",
+    "scenario_version": "0.1.0",
+    "benchmark_version": "0.2.0-draft",
+    "track": "board",
+    "mode": "fresh",
+    "title": "Fresh Market Freeze and Bridge Financing Tradeoff",
+    "summary": "Fresh hidden variant with lower starting trust, tighter liquidity, and a second financing shock later in the horizon.",
+    "difficulty": "frontier",
+    "time_horizon": {
+      "unit": "week",
+      "length": 10
+    },
+    "authoring_origin": "real_world_derived",
+    "tags": ["real_world", "airbnb", "financing", "hidden_eval", "fresh", "board"],
+    "inspired_by": {
+      "company": "Airbnb",
+      "year": 2020,
+      "pattern": "emergency financing under demand shock"
+    }
+  },
+  "initial_state": {
+    "company": {
+      "stage": "series_d",
+      "sector": "marketplace",
+      "business_model": "transaction_fee"
+    },
+    "finance": {
+      "cash_usd": 1680000,
+      "restricted_cash_usd": 0,
+      "monthly_burn_usd": 790000,
+      "monthly_revenue_usd": 255000,
+      "treasury_concentration": 0.44
+    },
+    "product": {
+      "major_incidents_open": 0,
+      "roadmap_items": 8,
+      "onboarding_quality": 0.57
+    },
+    "customers": {
+      "paying_accounts": 210,
+      "monthly_churn_rate": 0.052,
+      "trust_score": 0.61
+    },
+    "sales": {
+      "pipeline_count": 8,
+      "weighted_pipeline_usd": 355000,
+      "pricing": {
+        "current_price_index": 1.0
+      }
+    },
+    "team": {
+      "morale": 0.45,
+      "attrition_risk": 0.68,
+      "bandwidth_load": 0.95
+    },
+    "governance": {
+      "board_update_count": 0
+    },
+    "policy": {
+      "max_auto_price_increase_pct": 0.03
+    },
+    "risk": {
+      "financing_pressure": 0.88
+    },
+    "sim": {
+      "current_time": "2026-06-01T09:00:00Z"
+    }
+  },
+  "latent_state": {
+    "true_root_cause": "bridge_markets_closing_and_demand_fragility",
+    "true_board_patience": "extremely_low"
+  },
+  "observation_surfaces": [
+    {
+      "surface_id": "finance_dashboard",
+      "surface_type": "dashboard",
+      "refresh_policy": "daily",
+      "visible_fields": ["cash_usd", "liquid_cash_usd", "runway_weeks", "monthly_burn_usd"]
+    },
+    {
+      "surface_id": "board_packet",
+      "surface_type": "board_portal",
+      "refresh_policy": "weekly",
+      "visible_fields": ["board_update_count", "weighted_pipeline_usd", "financing_pressure"]
+    },
+    {
+      "surface_id": "team_dashboard",
+      "surface_type": "dashboard",
+      "refresh_policy": "weekly",
+      "visible_fields": ["morale", "attrition_risk", "bandwidth_load"]
+    }
+  ],
+  "tools": [
+    "metrics.query",
+    "metrics.report",
+    "product.roadmap.read",
+    "product.roadmap.write",
+    "sales.pipeline.read",
+    "sales.pipeline.update",
+    "finance.plan.read",
+    "finance.plan.write",
+    "finance.raise.propose",
+    "board.read",
+    "board.update",
+    "people.org.read",
+    "people.org.adjust",
+    "notes.read",
+    "notes.write",
+    "sim.advance"
+  ],
+  "event_model": {
+    "kind": "seeded_schedule",
+    "primitive_catalog": {
+      "financing_window_slams_shut": {
+        "operations": [
+          { "op": "increment", "path": "risk.financing_pressure", "value": 0.09 },
+          { "op": "clamp", "path": "risk.financing_pressure", "min": 0.0, "max": 1.0 },
+          { "op": "increment", "path": "sales.weighted_pipeline_usd", "value": -70000 },
+          { "op": "increment", "path": "customers.trust_score", "value": -0.02 },
+          { "op": "clamp", "path": "customers.trust_score", "min": 0.0, "max": 1.0 }
+        ]
+      },
+      "board_terms_harden": {
+        "operations": [
+          { "op": "increment", "path": "risk.financing_pressure", "value": 0.11 },
+          { "op": "clamp", "path": "risk.financing_pressure", "min": 0.0, "max": 1.0 },
+          { "op": "increment", "path": "team.morale", "value": -0.04 },
+          { "op": "clamp", "path": "team.morale", "min": 0.0, "max": 1.0 },
+          { "op": "increment", "path": "team.attrition_risk", "value": 0.05 },
+          { "op": "clamp", "path": "team.attrition_risk", "min": 0.0, "max": 1.0 }
+        ]
+      }
+    },
+    "scheduled_events": [
+      {
+        "event_id": "ev_airbnb_fresh_001",
+        "at_turn": 2,
+        "primitive_id": "financing_window_slams_shut",
+        "event_type": "financing_window_slams_shut",
+        "visible_message": "A new financing freeze reduced bridge options and weakened the pipeline again."
+      },
+      {
+        "event_id": "ev_airbnb_fresh_002",
+        "at_turn": 5,
+        "primitive_id": "board_terms_harden",
+        "event_type": "board_terms_harden",
+        "visible_message": "Existing investors signaled that any bridge will now come with materially harsher terms."
+      }
+    ]
+  },
+  "policy_constraints": [
+    {
+      "constraint_id": "no_unapproved_hiring",
+      "kind": "approval_required"
+    }
+  ],
+  "terminal_conditions": [
+    {
+      "condition_id": "horizon_end_10_weeks",
+      "kind": "horizon_end"
+    },
+    {
+      "condition_id": "bankruptcy",
+      "kind": "hard_failure"
+    }
+  ],
+  "evaluation": {
+    "outcome_components": [
+      { "component_id": "cash_efficiency", "weight": 0.35, "direction": "maximize" },
+      { "component_id": "revenue_quality", "weight": 0.15, "direction": "maximize" },
+      { "component_id": "customer_health", "weight": 0.1, "direction": "maximize" },
+      { "component_id": "strategic_coherence", "weight": 0.4, "direction": "maximize" }
+    ],
+    "constraints": [
+      { "constraint_id": "bankruptcy" },
+      { "constraint_id": "severe_trust_breach" },
+      { "constraint_id": "severe_financing_failure" }
+    ]
+  }
+}
