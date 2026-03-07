@@ -19,6 +19,9 @@ What this means:
 - Quick start: [docs/getting_started.md](/C:/Users/USER/Desktop/startup-bench/docs/getting_started.md)
 - Evaluation flow: [docs/evaluation_modes.md](/C:/Users/USER/Desktop/startup-bench/docs/evaluation_modes.md)
 - Contribution guide: [CONTRIBUTING.md](/C:/Users/USER/Desktop/startup-bench/CONTRIBUTING.md)
+- Volunteer call: [docs/volunteer_call.md](/C:/Users/USER/Desktop/startup-bench/docs/volunteer_call.md)
+- Founder/operator outreach: [docs/founder_operator_outreach.md](/C:/Users/USER/Desktop/startup-bench/docs/founder_operator_outreach.md)
+- X post kit: [docs/x_post_kit.md](/C:/Users/USER/Desktop/startup-bench/docs/x_post_kit.md)
 
 ## Current Snapshot
 
