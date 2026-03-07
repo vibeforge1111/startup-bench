@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://thestartupbench.org/schemas/tsb_model_review_import.schema.json",
+  "title": "TheStartupBench Model Review Import",
+  "type": "object",
+  "required": [
+    "import_version",
+    "imported_review_count",
+    "imported_review_paths",
+    "rejected_count",
+    "rejected_files"
+  ],
+  "properties": {
+    "import_version": { "type": "string" },
+    "imported_review_count": { "type": "integer", "minimum": 0 },
+    "imported_review_paths": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "rejected_count": { "type": "integer", "minimum": 0 },
+    "rejected_files": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["path", "message"],
+        "properties": {
+          "path": { "type": "string" },
+          "message": { "type": "string" }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

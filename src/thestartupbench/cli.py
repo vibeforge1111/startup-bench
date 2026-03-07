@@ -150,6 +150,14 @@ def _build_parser() -> argparse.ArgumentParser:
     import_forms_parser.add_argument("forms_dir", help="Directory containing completed review_form.csv files")
     import_forms_parser.add_argument("--output-dir", required=True, help="Directory to write imported operator-review JSON artifacts")
 
+    export_model_parser = subparsers.add_parser("export-model-review-bundles", help="Export model-ready review prompt bundles from a calibration study run")
+    export_model_parser.add_argument("study_run_dir", help="Directory containing calibration study run artifacts")
+    export_model_parser.add_argument("--output-dir", required=True, help="Directory to write prompt bundles")
+
+    import_model_parser = subparsers.add_parser("import-model-reviews", help="Import raw model review outputs into operator-review JSON artifacts")
+    import_model_parser.add_argument("raw_dir", help="Directory containing raw model review responses")
+    import_model_parser.add_argument("--output-dir", required=True, help="Directory to write imported operator-review JSON artifacts")
+
     return parser
 
 
@@ -618,6 +626,28 @@ def _cmd_import_review_forms(forms_dir: str, output_dir: str) -> int:
     return 0 if result["validation"]["ok"] else 1
 
 
+def _cmd_export_model_review_bundles(study_run_dir: str, output_dir: str) -> int:
+    from .model_reviewer_ops import export_model_review_bundles
+
+    result = export_model_review_bundles(
+        study_run_dir=Path(study_run_dir),
+        output_dir=Path(output_dir),
+    )
+    print(json.dumps(result, indent=2))
+    return 0 if result["validation"]["ok"] else 1
+
+
+def _cmd_import_model_reviews(raw_dir: str, output_dir: str) -> int:
+    from .model_reviewer_ops import import_model_reviews
+
+    result = import_model_reviews(
+        raw_dir=Path(raw_dir),
+        output_dir=Path(output_dir),
+    )
+    print(json.dumps(result, indent=2))
+    return 0 if result["validation"]["ok"] and result["import_result"]["rejected_count"] == 0 else 1
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = _build_parser()
     args = parser.parse_args(argv)
@@ -738,6 +768,10 @@ def main(argv: list[str] | None = None) -> int:
         return _cmd_export_review_forms(args.assignment_manifest_path, args.output_dir)
     if args.command == "import-review-forms":
         return _cmd_import_review_forms(args.forms_dir, args.output_dir)
+    if args.command == "export-model-review-bundles":
+        return _cmd_export_model_review_bundles(args.study_run_dir, args.output_dir)
+    if args.command == "import-model-reviews":
+        return _cmd_import_model_reviews(args.raw_dir, args.output_dir)
 
     parser.print_help()
     return 1

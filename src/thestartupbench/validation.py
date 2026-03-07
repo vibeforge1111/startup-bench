@@ -29,6 +29,8 @@ SCHEMA_BY_ARTIFACT_TYPE = {
     "review-assignments": "tsb_review_assignments.schema.json",
     "review-form-export": "tsb_review_form_export.schema.json",
     "review-form-import": "tsb_review_form_import.schema.json",
+    "model-review-prompt-export": "tsb_model_review_prompt_export.schema.json",
+    "model-review-import": "tsb_model_review_import.schema.json",
     "world-state": "tsb_world_state.schema.json",
     "primitives": "tsb_primitives.schema.json",
     "tool-manifest": "tsb_tool_manifest.schema.json",
