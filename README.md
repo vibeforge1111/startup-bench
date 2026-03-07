@@ -17,10 +17,16 @@ Current status:
 - generic primitive/event operation engine implemented
 - multi-scenario suite packaging and reporting implemented
 - private/public suite packaging and submission assembly implemented
+- SOTA benchmark audit and task roadmap documented
 
 Key documents:
 
 - `THE_STARTUP_BENCH_RFC.md`
+- `docs/benchmark_status.md`
+- `docs/sota_benchmark_audit.md`
+- `docs/sota_task_roadmap.md`
+- `docs/testing_coverage.md`
+- `docs/pack_lifecycle_changelog.md`
 - `spec/README.md`
 - `spec/benchmark_contract.md`
 - `spec/scenario_spec.md`
@@ -34,6 +40,7 @@ Key documents:
 - `spec/evaluator_contract.md`
 - `spec/validation_contract.md`
 - `spec/leaderboard_protocol.md`
+- `spec/hidden_eval_policy.md`
 
 Artifacts:
 
