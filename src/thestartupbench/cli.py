@@ -36,6 +36,12 @@ def _build_parser() -> argparse.ArgumentParser:
     run_parser.add_argument("--seed", type=int, default=0, help="Seed used for the dry run")
     run_parser.add_argument("--output-dir", help="Optional directory to write trace and score report artifacts")
 
+    script_parser = subparsers.add_parser("run-script", help="Execute a scripted sequence of tool calls")
+    script_parser.add_argument("scenario_path", help="Path to the scenario JSON file")
+    script_parser.add_argument("tool_calls_path", help="Path to the tool-call JSON array")
+    script_parser.add_argument("--seed", type=int, default=0, help="Seed used for the scripted run")
+    script_parser.add_argument("--output-dir", help="Optional directory to write trace and score report artifacts")
+
     return parser
 
 
@@ -128,6 +134,23 @@ def _cmd_run_dry(scenario_path: str, seed: int, output_dir: str | None) -> int:
     return 0
 
 
+def _cmd_run_script(scenario_path: str, tool_calls_path: str, seed: int, output_dir: str | None) -> int:
+    from .script_runner import run_tool_script
+
+    result = run_tool_script(
+        scenario_path=Path(scenario_path),
+        tool_calls_path=Path(tool_calls_path),
+        seed=seed,
+    )
+    if output_dir:
+        out_dir = Path(output_dir)
+        out_dir.mkdir(parents=True, exist_ok=True)
+        (out_dir / "trace.json").write_text(json.dumps(result["trace"], indent=2), encoding="utf-8")
+        (out_dir / "score_report.json").write_text(json.dumps(result["score_report"], indent=2), encoding="utf-8")
+    print(json.dumps(result, indent=2))
+    return 0
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = _build_parser()
     args = parser.parse_args(argv)
@@ -147,6 +170,8 @@ def main(argv: list[str] | None = None) -> int:
         return _cmd_inspect_scenario(args.path)
     if args.command == "run-dry":
         return _cmd_run_dry(args.scenario_path, args.seed, args.output_dir)
+    if args.command == "run-script":
+        return _cmd_run_script(args.scenario_path, args.tool_calls_path, args.seed, args.output_dir)
 
     parser.print_help()
     return 1

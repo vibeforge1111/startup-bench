@@ -1,0 +1,25 @@
+[
+  {
+    "tool_name": "metrics.query",
+    "request_id": "req_001",
+    "arguments": {
+      "metric_ids": ["cash_usd", "monthly_burn_usd"]
+    }
+  },
+  {
+    "tool_name": "notes.write",
+    "request_id": "req_002",
+    "arguments": {
+      "content": "Watch runway and pricing elasticity."
+    }
+  },
+  {
+    "tool_name": "sim.advance",
+    "request_id": "req_003",
+    "arguments": {
+      "advance_by": 1,
+      "unit": "week"
+    }
+  }
+]
+
