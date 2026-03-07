@@ -92,8 +92,10 @@ Completed:
 
 - dev suite manifest in [dev_scenario_suite.json](/C:/Users/USER/Desktop/startup-bench/examples/dev_scenario_suite.json)
 - private test suite manifest in [private_test_scenario_suite.json](/C:/Users/USER/Desktop/startup-bench/examples/private_test_scenario_suite.json)
+- private real-world test suite manifest in [private_real_world_test_scenario_suite.json](/C:/Users/USER/Desktop/startup-bench/examples/private_real_world_test_scenario_suite.json)
 - redacted public manifest generation in [suite_manifest.py](/C:/Users/USER/Desktop/startup-bench/src/thestartupbench/suite_manifest.py)
 - submission assembly in [submission_builder.py](/C:/Users/USER/Desktop/startup-bench/src/thestartupbench/submission_builder.py)
+- hidden-eval policy in [hidden_eval_policy.md](/C:/Users/USER/Desktop/startup-bench/spec/hidden_eval_policy.md)
 
 ### 7. Current scenario coverage
 
@@ -122,6 +124,17 @@ Completed real-world-derived scenario pack:
   - operator-caused deletion/restoration
   - treasury concentration shock
   - peak-event readiness
+
+Completed hidden real-world test pack:
+
+- `5` hidden test scenarios with non-dev ids and altered operating conditions
+- public redacted manifest in [real_world_public_test_manifest.json](/C:/Users/USER/Desktop/startup-bench/examples/real_world_public_test_manifest.json)
+- current hidden pack coverage:
+  - emergency financing
+  - treasury concentration shock
+  - security backlash
+  - restoration backlog
+  - peak readiness under lower headroom
 
 ## What Is Partially Done
 
@@ -173,6 +186,7 @@ What remains inside this category:
 - contamination policy and disclosure workflow
 - canary scenarios and exploit review pipeline
 - leaderboard operations and review procedures
+- operational `fresh` pack generation
 
 ### 4. Baseline depth
 
