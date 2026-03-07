@@ -1,0 +1,67 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://thestartupbench.org/schemas/tsb_primitives.schema.json",
+  "title": "TheStartupBench Primitive Catalog",
+  "type": "object",
+  "required": ["catalog_version", "primitive_categories", "templates"],
+  "properties": {
+    "catalog_version": { "type": "string" },
+    "primitive_categories": {
+      "type": "object",
+      "properties": {
+        "company": { "$ref": "#/$defs/primitiveArray" },
+        "market": { "$ref": "#/$defs/primitiveArray" },
+        "demand": { "$ref": "#/$defs/primitiveArray" },
+        "product": { "$ref": "#/$defs/primitiveArray" },
+        "team": { "$ref": "#/$defs/primitiveArray" },
+        "finance": { "$ref": "#/$defs/primitiveArray" },
+        "stakeholder": { "$ref": "#/$defs/primitiveArray" },
+        "event": { "$ref": "#/$defs/primitiveArray" },
+        "policy": { "$ref": "#/$defs/primitiveArray" },
+        "risk": { "$ref": "#/$defs/primitiveArray" }
+      },
+      "additionalProperties": false
+    },
+    "templates": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["template_id", "required_slots"],
+        "properties": {
+          "template_id": { "type": "string" },
+          "required_slots": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "optional_slots": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "notes": { "type": "string" }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "$defs": {
+    "primitiveArray": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["primitive_id", "label"],
+        "properties": {
+          "primitive_id": { "type": "string" },
+          "label": { "type": "string" },
+          "parameters": { "type": "object" },
+          "compatibility_tags": {
+            "type": "array",
+            "items": { "type": "string" }
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}
+

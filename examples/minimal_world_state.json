@@ -1,0 +1,72 @@
+{
+  "company": {
+    "company_id": "co_001",
+    "name": "Northstar AI",
+    "stage": "seed",
+    "sector": "b2b_saas",
+    "business_model": "subscription"
+  },
+  "finance": {
+    "cash_usd": 920000,
+    "monthly_burn_usd": 205000,
+    "monthly_revenue_usd": 71000,
+    "runway_weeks": 18
+  },
+  "product": {
+    "roadmap_items": [
+      {
+        "item_id": "rm_001",
+        "name": "Enterprise SSO",
+        "status": "planned"
+      }
+    ],
+    "reliability": {
+      "uptime_pct": 99.2
+    }
+  },
+  "customers": {
+    "active_accounts": 41,
+    "monthly_churn_rate": 0.032
+  },
+  "market": {
+    "growth_regime": "stable",
+    "competitor_pressure": "moderate"
+  },
+  "team": {
+    "headcount": 9,
+    "open_roles": 2,
+    "morale": 0.68
+  },
+  "growth": {
+    "active_channels": ["content", "founder_led_sales"]
+  },
+  "sales": {
+    "pipeline_count": 14,
+    "weighted_pipeline_usd": 380000
+  },
+  "operations": {
+    "open_incidents": 1,
+    "support_backlog": 23
+  },
+  "governance": {
+    "board_meeting_weeks": [4, 8, 12]
+  },
+  "policy": {
+    "spend_approval_threshold_usd": 25000
+  },
+  "risk": {
+    "top_risks": [
+      {
+        "risk_id": "risk_001",
+        "kind": "retention",
+        "severity": "medium"
+      }
+    ]
+  },
+  "sim": {
+    "current_time": "2026-01-05T09:00:00Z",
+    "current_turn": 0,
+    "horizon_end": "2026-06-22T09:00:00Z"
+  }
+}
+

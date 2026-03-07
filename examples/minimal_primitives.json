@@ -1,0 +1,115 @@
+{
+  "catalog_version": "0.1.0",
+  "primitive_categories": {
+    "company": [
+      {
+        "primitive_id": "company_seed_b2b_saas",
+        "label": "Seed B2B SaaS Company",
+        "parameters": {
+          "stage": "seed",
+          "business_model": "b2b_saas"
+        },
+        "compatibility_tags": ["enterprise_sales", "subscription"]
+      }
+    ],
+    "market": [
+      {
+        "primitive_id": "market_moderate_competition",
+        "label": "Moderate Competition",
+        "parameters": {
+          "competitor_pressure": "moderate"
+        },
+        "compatibility_tags": ["general"]
+      }
+    ],
+    "demand": [
+      {
+        "primitive_id": "demand_long_sales_cycle",
+        "label": "Long Enterprise Sales Cycle",
+        "parameters": {
+          "sales_cycle_weeks": 8
+        },
+        "compatibility_tags": ["enterprise_sales"]
+      }
+    ],
+    "product": [
+      {
+        "primitive_id": "product_onboarding_weak",
+        "label": "Weak Onboarding",
+        "parameters": {
+          "onboarding_quality": "weak"
+        },
+        "compatibility_tags": ["retention_risk"]
+      }
+    ],
+    "team": [
+      {
+        "primitive_id": "team_founder_bottleneck",
+        "label": "Founder Bottleneck",
+        "parameters": {
+          "founder_dependency": "high"
+        },
+        "compatibility_tags": ["early_stage"]
+      }
+    ],
+    "finance": [
+      {
+        "primitive_id": "finance_18_week_runway",
+        "label": "18 Week Runway",
+        "parameters": {
+          "runway_weeks": 18
+        },
+        "compatibility_tags": ["capital_pressure"]
+      }
+    ],
+    "stakeholder": [
+      {
+        "primitive_id": "stakeholder_board_impatient",
+        "label": "Impatient Board",
+        "parameters": {
+          "board_pressure": "high"
+        },
+        "compatibility_tags": ["governance_pressure"]
+      }
+    ],
+    "event": [
+      {
+        "primitive_id": "event_pricing_shock",
+        "label": "Infra Pricing Shock",
+        "parameters": {
+          "impact_pct": 18
+        },
+        "compatibility_tags": ["margin_pressure"]
+      }
+    ],
+    "policy": [
+      {
+        "primitive_id": "policy_spend_approval",
+        "label": "Spend Approval Threshold",
+        "parameters": {
+          "threshold_usd": 25000
+        },
+        "compatibility_tags": ["general"]
+      }
+    ],
+    "risk": [
+      {
+        "primitive_id": "risk_customer_concentration",
+        "label": "Customer Concentration Risk",
+        "parameters": {
+          "top_customer_revenue_share": 0.21
+        },
+        "compatibility_tags": ["revenue_risk"]
+      }
+    ]
+  },
+  "templates": [
+    {
+      "template_id": "runway_reset",
+      "required_slots": ["company", "finance", "demand", "stakeholder"],
+      "optional_slots": ["product", "event", "risk"],
+      "notes": "Template for scenarios where leadership must extend runway while preserving strategic optionality."
+    }
+  ]
+}
+

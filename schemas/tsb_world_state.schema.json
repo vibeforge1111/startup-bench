@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://thestartupbench.org/schemas/tsb_world_state.schema.json",
+  "title": "TheStartupBench World State",
+  "type": "object",
+  "required": [
+    "company",
+    "finance",
+    "product",
+    "customers",
+    "market",
+    "team",
+    "growth",
+    "sales",
+    "operations",
+    "governance",
+    "policy",
+    "risk",
+    "sim"
+  ],
+  "properties": {
+    "company": { "type": "object" },
+    "finance": { "type": "object" },
+    "product": { "type": "object" },
+    "customers": { "type": "object" },
+    "market": { "type": "object" },
+    "team": { "type": "object" },
+    "growth": { "type": "object" },
+    "sales": { "type": "object" },
+    "operations": { "type": "object" },
+    "governance": { "type": "object" },
+    "policy": { "type": "object" },
+    "risk": { "type": "object" },
+    "sim": {
+      "type": "object",
+      "required": ["current_time", "current_turn", "horizon_end"],
+      "properties": {
+        "current_time": { "type": "string" },
+        "current_turn": { "type": "integer", "minimum": 0 },
+        "horizon_end": { "type": "string" }
+      },
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": false
+}
+
