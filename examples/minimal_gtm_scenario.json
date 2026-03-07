@@ -1,0 +1,156 @@
+{
+  "metadata": {
+    "scenario_id": "gtm_channel_mix_reset_001",
+    "scenario_version": "0.1.0",
+    "benchmark_version": "0.2.0-draft",
+    "track": "gtm",
+    "mode": "dev",
+    "title": "GTM Channel Mix Reset Under Pipeline Pressure",
+    "summary": "A Series A startup has weak outbound efficiency, rising churn pressure, and needs to rebuild pipeline quality without damaging trust or burning too much cash.",
+    "difficulty": "medium",
+    "time_horizon": {
+      "unit": "week",
+      "length": 16
+    },
+    "authoring_origin": "expert_authored",
+    "tags": ["gtm", "pipeline", "pricing", "demand_gen"]
+  },
+  "initial_state": {
+    "company": {
+      "stage": "series_a",
+      "sector": "b2b_saas",
+      "business_model": "subscription"
+    },
+    "finance": {
+      "cash_usd": 2750000,
+      "monthly_burn_usd": 355000,
+      "monthly_revenue_usd": 228000
+    },
+    "product": {
+      "major_incidents_open": 0,
+      "roadmap_items": 7,
+      "onboarding_quality": 0.62
+    },
+    "customers": {
+      "paying_accounts": 134,
+      "monthly_churn_rate": 0.034,
+      "trust_score": 0.68
+    },
+    "sales": {
+      "pipeline_count": 11,
+      "weighted_pipeline_usd": 760000,
+      "pricing": {
+        "current_price_index": 0.97
+      }
+    },
+    "governance": {
+      "board_update_count": 0
+    },
+    "policy": {
+      "max_auto_price_increase_pct": 0.08
+    },
+    "sim": {
+      "current_time": "2026-03-09T09:00:00Z"
+    }
+  },
+  "latent_state": {
+    "true_channel_problem": "low_quality_outbound",
+    "true_expansion_potential": "moderate"
+  },
+  "observation_surfaces": [
+    {
+      "surface_id": "finance_dashboard",
+      "surface_type": "dashboard",
+      "refresh_policy": "daily",
+      "visible_fields": ["cash_usd", "monthly_burn_usd", "runway_weeks"]
+    },
+    {
+      "surface_id": "crm_pipeline",
+      "surface_type": "crm",
+      "refresh_policy": "realtime",
+      "visible_fields": ["pipeline_count", "weighted_pipeline_usd", "current_price_index"]
+    }
+  ],
+  "tools": [
+    "metrics.query",
+    "metrics.report",
+    "product.roadmap.read",
+    "product.roadmap.write",
+    "sales.pipeline.read",
+    "sales.pipeline.update",
+    "sales.pricing.propose",
+    "finance.plan.read",
+    "finance.plan.write",
+    "board.read",
+    "board.update",
+    "notes.read",
+    "notes.write",
+    "sim.advance"
+  ],
+  "event_model": {
+    "kind": "seeded_schedule",
+    "primitive_catalog": {
+      "channel_fatigue": {
+        "operations": [
+          { "op": "increment", "path": "sales.pipeline_count", "value": -2 },
+          { "op": "clamp", "path": "sales.pipeline_count", "min": 0 },
+          { "op": "increment", "path": "sales.weighted_pipeline_usd", "value": -90000 },
+          { "op": "increment", "path": "customers.trust_score", "value": -0.02 },
+          { "op": "clamp", "path": "customers.trust_score", "min": 0.0, "max": 1.0 }
+        ]
+      },
+      "design_partner_expansion": {
+        "operations": [
+          { "op": "increment", "path": "sales.weighted_pipeline_usd", "value": 140000 },
+          { "op": "increment", "path": "finance.monthly_revenue_usd", "value": 18000 },
+          { "op": "increment", "path": "customers.trust_score", "value": 0.02 },
+          { "op": "clamp", "path": "customers.trust_score", "min": 0.0, "max": 1.0 }
+        ]
+      }
+    },
+    "scheduled_events": [
+      {
+        "event_id": "ev_gtm_001",
+        "at_turn": 2,
+        "primitive_id": "channel_fatigue",
+        "event_type": "channel_fatigue",
+        "visible_message": "Outbound response rates dropped again and pipeline quality softened."
+      },
+      {
+        "event_id": "ev_gtm_002",
+        "at_turn": 5,
+        "primitive_id": "design_partner_expansion",
+        "event_type": "design_partner_expansion",
+        "visible_message": "A design partner signaled willingness to expand if onboarding keeps improving."
+      }
+    ]
+  },
+  "policy_constraints": [
+    {
+      "constraint_id": "no_unapproved_hiring",
+      "kind": "approval_required"
+    }
+  ],
+  "terminal_conditions": [
+    {
+      "condition_id": "horizon_end_16_weeks",
+      "kind": "horizon_end"
+    },
+    {
+      "condition_id": "bankruptcy",
+      "kind": "hard_failure"
+    }
+  ],
+  "evaluation": {
+    "outcome_components": [
+      { "component_id": "cash_efficiency", "weight": 0.15, "direction": "maximize" },
+      { "component_id": "revenue_quality", "weight": 0.35, "direction": "maximize" },
+      { "component_id": "customer_health", "weight": 0.2, "direction": "maximize" },
+      { "component_id": "strategic_coherence", "weight": 0.3, "direction": "maximize" }
+    ],
+    "constraints": [
+      { "constraint_id": "bankruptcy" },
+      { "constraint_id": "severe_trust_breach" }
+    ]
+  }
+}

@@ -1,0 +1,159 @@
+{
+  "metadata": {
+    "scenario_id": "finance_runway_treasury_tradeoff_001",
+    "scenario_version": "0.1.0",
+    "benchmark_version": "0.2.0-draft",
+    "track": "finance",
+    "mode": "dev",
+    "title": "Runway, Treasury, and Dilution Tradeoff",
+    "summary": "A startup has decent headline cash but poor liquidity, rising financing pressure, and needs to balance treasury moves, burn control, and a possible raise.",
+    "difficulty": "medium",
+    "time_horizon": {
+      "unit": "week",
+      "length": 14
+    },
+    "authoring_origin": "expert_authored",
+    "tags": ["finance", "treasury", "runway", "dilution"]
+  },
+  "initial_state": {
+    "company": {
+      "stage": "series_a",
+      "sector": "b2b_saas",
+      "business_model": "subscription"
+    },
+    "finance": {
+      "cash_usd": 3600000,
+      "restricted_cash_usd": 620000,
+      "monthly_burn_usd": 430000,
+      "monthly_revenue_usd": 296000,
+      "treasury_concentration": 0.83
+    },
+    "product": {
+      "major_incidents_open": 0,
+      "roadmap_items": 6,
+      "onboarding_quality": 0.67
+    },
+    "customers": {
+      "paying_accounts": 176,
+      "monthly_churn_rate": 0.025,
+      "trust_score": 0.72
+    },
+    "sales": {
+      "pipeline_count": 12,
+      "weighted_pipeline_usd": 880000,
+      "pricing": {
+        "current_price_index": 1.0
+      }
+    },
+    "governance": {
+      "board_update_count": 1
+    },
+    "policy": {
+      "max_auto_price_increase_pct": 0.05
+    },
+    "risk": {
+      "counterparty_risk": 0.62,
+      "financing_pressure": 0.58
+    },
+    "sim": {
+      "current_time": "2026-03-16T09:00:00Z"
+    }
+  },
+  "latent_state": {
+    "true_liquidity_problem": "concentrated_operating_cash",
+    "true_fundraising_market": "moderately_soft"
+  },
+  "observation_surfaces": [
+    {
+      "surface_id": "finance_dashboard",
+      "surface_type": "dashboard",
+      "refresh_policy": "realtime",
+      "visible_fields": ["cash_usd", "liquid_cash_usd", "runway_weeks", "treasury_concentration"]
+    },
+    {
+      "surface_id": "board_packet",
+      "surface_type": "board_portal",
+      "refresh_policy": "weekly",
+      "visible_fields": ["financing_pressure", "monthly_burn_usd", "monthly_revenue_usd"]
+    }
+  ],
+  "tools": [
+    "metrics.query",
+    "metrics.report",
+    "finance.plan.read",
+    "finance.plan.write",
+    "finance.treasury.read",
+    "finance.treasury.rebalance",
+    "finance.raise.propose",
+    "sales.pipeline.read",
+    "sales.pipeline.update",
+    "board.read",
+    "board.update",
+    "notes.read",
+    "notes.write",
+    "sim.advance"
+  ],
+  "event_model": {
+    "kind": "seeded_schedule",
+    "primitive_catalog": {
+      "payment_delay": {
+        "operations": [
+          { "op": "increment", "path": "finance.restricted_cash_usd", "value": 240000 },
+          { "op": "increment", "path": "risk.financing_pressure", "value": 0.08 },
+          { "op": "clamp", "path": "risk.financing_pressure", "min": 0.0, "max": 1.0 }
+        ]
+      },
+      "procurement_closure": {
+        "operations": [
+          { "op": "increment", "path": "finance.monthly_revenue_usd", "value": 26000 },
+          { "op": "increment", "path": "sales.pipeline_count", "value": -1 },
+          { "op": "clamp", "path": "sales.pipeline_count", "min": 0 }
+        ]
+      }
+    },
+    "scheduled_events": [
+      {
+        "event_id": "ev_fin_001",
+        "at_turn": 2,
+        "primitive_id": "payment_delay",
+        "event_type": "payment_delay",
+        "visible_message": "A large customer delayed payment, reducing near-term liquidity."
+      },
+      {
+        "event_id": "ev_fin_002",
+        "at_turn": 4,
+        "primitive_id": "procurement_closure",
+        "event_type": "procurement_closure",
+        "visible_message": "A late-stage procurement process finally converted into recurring revenue."
+      }
+    ]
+  },
+  "policy_constraints": [
+    {
+      "constraint_id": "no_unapproved_hiring",
+      "kind": "approval_required"
+    }
+  ],
+  "terminal_conditions": [
+    {
+      "condition_id": "horizon_end_14_weeks",
+      "kind": "horizon_end"
+    },
+    {
+      "condition_id": "bankruptcy",
+      "kind": "hard_failure"
+    }
+  ],
+  "evaluation": {
+    "outcome_components": [
+      { "component_id": "cash_efficiency", "weight": 0.4, "direction": "maximize" },
+      { "component_id": "revenue_quality", "weight": 0.15, "direction": "maximize" },
+      { "component_id": "customer_health", "weight": 0.1, "direction": "maximize" },
+      { "component_id": "strategic_coherence", "weight": 0.35, "direction": "maximize" }
+    ],
+    "constraints": [
+      { "constraint_id": "bankruptcy" },
+      { "constraint_id": "severe_financing_failure" }
+    ]
+  }
+}

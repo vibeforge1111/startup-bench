@@ -33,6 +33,24 @@
       "path": "minimal_scale_scenario.json",
       "track": "scale",
       "mode": "dev"
+    },
+    {
+      "scenario_id": "gtm_channel_mix_reset_001",
+      "path": "minimal_gtm_scenario.json",
+      "track": "gtm",
+      "mode": "dev"
+    },
+    {
+      "scenario_id": "finance_runway_treasury_tradeoff_001",
+      "path": "minimal_finance_scenario.json",
+      "track": "finance",
+      "mode": "dev"
+    },
+    {
+      "scenario_id": "people_org_stability_001",
+      "path": "minimal_people_scenario.json",
+      "track": "people",
+      "mode": "dev"
     }
   ]
 }

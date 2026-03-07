@@ -61,6 +61,30 @@ class ValidationTests(unittest.TestCase):
         self.assertTrue(result.ok)
         self.assertEqual(result.issues, [])
 
+    def test_gtm_scenario_example_validates(self) -> None:
+        result = validate_artifact_file(
+            artifact_type="scenario",
+            path=REPO_ROOT / "examples" / "minimal_gtm_scenario.json",
+        )
+        self.assertTrue(result.ok)
+        self.assertEqual(result.issues, [])
+
+    def test_finance_scenario_example_validates(self) -> None:
+        result = validate_artifact_file(
+            artifact_type="scenario",
+            path=REPO_ROOT / "examples" / "minimal_finance_scenario.json",
+        )
+        self.assertTrue(result.ok)
+        self.assertEqual(result.issues, [])
+
+    def test_people_scenario_example_validates(self) -> None:
+        result = validate_artifact_file(
+            artifact_type="scenario",
+            path=REPO_ROOT / "examples" / "minimal_people_scenario.json",
+        )
+        self.assertTrue(result.ok)
+        self.assertEqual(result.issues, [])
+
     def test_scenario_suite_example_validates(self) -> None:
         result = validate_artifact_file(
             artifact_type="scenario-suite",
