@@ -49,6 +49,9 @@ def _score_cash_efficiency(world_state: dict) -> tuple[float, dict]:
     runway_weeks = float(finance.get("runway_weeks", 0))
     net_burn_usd = float(finance.get("net_burn_usd", 0))
     monthly_burn_usd = float(finance.get("monthly_burn_usd", 0))
+    treasury_concentration = float(finance.get("treasury_concentration", 0))
+    liquid_cash_usd = float(finance.get("liquid_cash_usd", finance.get("cash_usd", 0)))
+    cash_usd = float(finance.get("cash_usd", 0))
 
     runway_score = _clamp(runway_weeks / 52.0)
     if monthly_burn_usd <= 0:
@@ -57,13 +60,22 @@ def _score_cash_efficiency(world_state: dict) -> tuple[float, dict]:
         burn_quality = 1.0
     else:
         burn_quality = _clamp(1.0 - (net_burn_usd / monthly_burn_usd))
+    concentration_score = _clamp(1.0 - (treasury_concentration / 1.2))
+    if cash_usd <= 0:
+        liquidity_score = 0.0
+    else:
+        liquidity_score = _clamp(liquid_cash_usd / cash_usd)
 
-    score = _round_score(runway_score * 0.7 + burn_quality * 0.3)
+    score = _round_score(runway_score * 0.5 + burn_quality * 0.25 + concentration_score * 0.15 + liquidity_score * 0.1)
     details = {
         "runway_weeks": round(runway_weeks, 2),
         "net_burn_usd": round(net_burn_usd, 2),
         "runway_score": _round_score(runway_score),
         "burn_quality_score": _round_score(burn_quality),
+        "treasury_concentration": round(treasury_concentration, 4),
+        "concentration_score": _round_score(concentration_score),
+        "liquid_cash_usd": round(liquid_cash_usd, 2),
+        "liquidity_score": _round_score(liquidity_score),
     }
     return score, details
 
@@ -99,15 +111,27 @@ def _score_revenue_quality(world_state: dict) -> tuple[float, dict]:
 
 def _score_customer_health(world_state: dict) -> tuple[float, dict]:
     customers = world_state.get("customers", {})
+    operations = world_state.get("operations", {})
+    team = world_state.get("team", {})
     trust_score = float(customers.get("trust_score", 0))
     churn_rate = float(customers.get("monthly_churn_rate", 0))
     health_index = float(customers.get("health_index", 0))
+    support_backlog = float(operations.get("support_backlog", 0))
+    morale = float(team.get("morale", 0.7))
 
     trust_component = _clamp(trust_score)
     churn_component = _clamp(1.0 - (churn_rate / 0.12))
     health_component = _clamp(health_index)
+    support_component = _clamp(1.0 - (support_backlog / 120.0))
+    morale_component = _clamp(morale)
 
-    score = _round_score(trust_component * 0.4 + churn_component * 0.3 + health_component * 0.3)
+    score = _round_score(
+        trust_component * 0.3
+        + churn_component * 0.25
+        + health_component * 0.25
+        + support_component * 0.1
+        + morale_component * 0.1
+    )
     details = {
         "trust_score": round(trust_score, 4),
         "monthly_churn_rate": round(churn_rate, 4),
@@ -115,6 +139,10 @@ def _score_customer_health(world_state: dict) -> tuple[float, dict]:
         "trust_component_score": _round_score(trust_component),
         "churn_component_score": _round_score(churn_component),
         "health_component_score": _round_score(health_component),
+        "support_backlog": round(support_backlog, 2),
+        "support_component_score": _round_score(support_component),
+        "morale": round(morale, 4),
+        "morale_component_score": _round_score(morale_component),
     }
     return score, details
 
@@ -124,26 +152,44 @@ def _score_strategic_coherence(world_state: dict, *, scenario: dict) -> tuple[fl
     finance = world_state.get("finance", {})
     operations = world_state.get("operations", {})
     product = world_state.get("product", {})
+    team = world_state.get("team", {})
+    risk = world_state.get("risk", {})
 
     board_update_count = int(governance.get("board_update_count", 0))
     has_latest_update = bool(governance.get("latest_board_update"))
     has_finance_plan = bool(finance.get("last_plan_update"))
     incident_response_count = int(operations.get("incident_response_count", 0))
     major_incidents_open = int(product.get("major_incidents_open", 0))
+    support_actions_taken = int(operations.get("support_actions_taken", 0))
+    org_changes_count = int(team.get("org_changes_count", 0))
+    legal_responses_count = int(risk.get("legal_responses_count", 0))
+    regulatory_pressure = float(risk.get("regulatory_pressure", 0.0))
     track = scenario["metadata"]["track"]
 
     board_signal = _clamp(board_update_count / 2.0)
     base_score = (
-        board_signal * 0.5
-        + (0.3 if has_latest_update else 0.0)
-        + (0.2 if has_finance_plan else 0.0)
+        board_signal * 0.4
+        + (0.25 if has_latest_update else 0.0)
+        + (0.15 if has_finance_plan else 0.0)
     )
     if track == "crisis":
         incident_signal = _clamp(incident_response_count / 2.0)
         resolution_signal = 1.0 if major_incidents_open == 0 else _clamp(1.0 - (major_incidents_open / 3.0))
-        score = _round_score(base_score * 0.55 + incident_signal * 0.2 + resolution_signal * 0.25)
+        support_signal = _clamp(support_actions_taken / 2.0)
+        legal_signal = _clamp(legal_responses_count / 2.0)
+        compliance_signal = _clamp(1.0 - regulatory_pressure)
+        score = _round_score(
+            base_score * 0.35
+            + incident_signal * 0.15
+            + resolution_signal * 0.15
+            + support_signal * 0.1
+            + legal_signal * 0.1
+            + compliance_signal * 0.15
+        )
     else:
-        score = _round_score(base_score)
+        org_signal = _clamp(org_changes_count / 1.0)
+        compliance_signal = _clamp(1.0 - regulatory_pressure)
+        score = _round_score(base_score * 0.7 + org_signal * 0.15 + compliance_signal * 0.15)
     details = {
         "board_update_count": board_update_count,
         "has_latest_board_update": has_latest_update,
@@ -151,6 +197,10 @@ def _score_strategic_coherence(world_state: dict, *, scenario: dict) -> tuple[fl
         "board_signal_score": _round_score(board_signal),
         "incident_response_count": incident_response_count,
         "major_incidents_open": major_incidents_open,
+        "support_actions_taken": support_actions_taken,
+        "org_changes_count": org_changes_count,
+        "legal_responses_count": legal_responses_count,
+        "regulatory_pressure": round(regulatory_pressure, 4),
     }
     return score, details
 
@@ -177,17 +227,29 @@ def evaluate_dry_run(*, scenario: dict, world_state: dict) -> dict:
 
     cash_usd = float(finance.get("cash_usd", 0))
     runway_weeks = float(finance.get("runway_weeks", 0))
+    liquid_cash_usd = float(finance.get("liquid_cash_usd", cash_usd))
     trust_score = float(customers.get("trust_score", 0))
+    regulatory_pressure = float(world_state.get("risk", {}).get("regulatory_pressure", 0.0))
 
     violations = []
-    bankrupt = cash_usd < 0 or runway_weeks <= 0
+    bankrupt = cash_usd < 0 or liquid_cash_usd <= 0 or runway_weeks <= 0
     severe_trust_breach = trust_score < 0.45
+    severe_compliance_breach = regulatory_pressure > 0.9
     if bankrupt:
         violations.append({"violation_id": "bankruptcy", "severity": "critical"})
     if severe_trust_breach:
         violations.append({"violation_id": "severe_trust_breach", "severity": "high"})
+    if severe_compliance_breach:
+        violations.append({"violation_id": "severe_compliance_breach", "severity": "high"})
 
-    constraint_score = 0.0 if bankrupt else (0.5 if severe_trust_breach else 1.0)
+    if bankrupt:
+        constraint_score = 0.0
+    elif severe_trust_breach and severe_compliance_breach:
+        constraint_score = 0.35
+    elif severe_trust_breach or severe_compliance_breach:
+        constraint_score = 0.5
+    else:
+        constraint_score = 1.0
     scenario_score = _round_score(outcome_score * constraint_score)
 
     evaluator_results = [
@@ -215,6 +277,7 @@ def evaluate_dry_run(*, scenario: dict, world_state: dict) -> dict:
             outputs={
                 "bankrupt": bankrupt,
                 "cash_usd": round(cash_usd, 2),
+                "liquid_cash_usd": round(liquid_cash_usd, 2),
                 "runway_weeks": round(runway_weeks, 2),
             },
             violations=[violation for violation in violations if violation["violation_id"] == "bankruptcy"],
@@ -230,6 +293,18 @@ def evaluate_dry_run(*, scenario: dict, world_state: dict) -> dict:
                 "trust_score": round(trust_score, 4),
             },
             violations=[violation for violation in violations if violation["violation_id"] == "severe_trust_breach"],
+            rationale_metadata={"kind": "programmatic_constraint"},
+            referenced_artifact_ids=[],
+        ).to_dict(),
+        EvaluatorResult(
+            evaluator_id="tsb_constraint_compliance_v1",
+            evaluator_version="0.1.0",
+            status="ok",
+            outputs={
+                "severe_compliance_breach": severe_compliance_breach,
+                "regulatory_pressure": round(regulatory_pressure, 4),
+            },
+            violations=[violation for violation in violations if violation["violation_id"] == "severe_compliance_breach"],
             rationale_metadata={"kind": "programmatic_constraint"},
             referenced_artifact_ids=[],
         ).to_dict(),

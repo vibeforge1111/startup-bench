@@ -46,20 +46,44 @@ def _derive_horizon_end(*, current_time: str, time_horizon: dict) -> str:
 def recalculate_derived_metrics(world_state: dict) -> None:
     finance = world_state.setdefault("finance", {})
     customers = world_state.setdefault("customers", {})
+    operations = world_state.setdefault("operations", {})
+    team = world_state.setdefault("team", {})
+    risk = world_state.setdefault("risk", {})
 
     cash_usd = float(finance.get("cash_usd", 0))
+    restricted_cash = max(0.0, float(finance.get("restricted_cash_usd", 0)))
     monthly_burn = float(finance.get("monthly_burn_usd", 0))
     monthly_revenue = float(finance.get("monthly_revenue_usd", 0))
     net_burn = monthly_burn - monthly_revenue
     finance["net_burn_usd"] = round(net_burn, 2)
+    finance["liquid_cash_usd"] = round(max(0.0, cash_usd - restricted_cash), 2)
     if net_burn <= 0:
         finance["runway_weeks"] = 999.0
     else:
-        finance["runway_weeks"] = round((cash_usd / net_burn) * 4, 2)
+        finance["runway_weeks"] = round((finance["liquid_cash_usd"] / net_burn) * 4, 2)
+
+    concentration = float(finance.get("treasury_concentration", 0))
+    finance["treasury_concentration"] = round(max(0.0, min(1.0, concentration)), 4)
 
     churn = float(customers.get("monthly_churn_rate", 0))
     trust = float(customers.get("trust_score", 0.7))
-    health_index = max(0.0, min(1.0, (1 - churn * 4.0) * 0.6 + trust * 0.4))
+    support_backlog = float(operations.get("support_backlog", 0))
+    support_pressure = max(0.0, min(1.0, 1.0 - (support_backlog / 150.0)))
+    morale = float(team.get("morale", 0.7))
+    attrition_risk = float(team.get("attrition_risk", 0.2))
+    regulatory_pressure = float(risk.get("regulatory_pressure", 0.0))
+    health_index = max(
+        0.0,
+        min(
+            1.0,
+            (1 - churn * 4.0) * 0.42
+            + trust * 0.28
+            + support_pressure * 0.15
+            + morale * 0.1
+            + (1.0 - attrition_risk) * 0.03
+            + (1.0 - regulatory_pressure) * 0.02,
+        ),
+    )
     customers["health_index"] = round(health_index, 4)
 
 

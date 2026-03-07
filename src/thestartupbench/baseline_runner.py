@@ -129,6 +129,9 @@ def _heuristic_resilient_actions(session: RuntimeSession, *, turn_index: int) ->
     customers = session.world_state.get("customers", {})
     sales = session.world_state.get("sales", {})
     governance = session.world_state.get("governance", {})
+    operations = session.world_state.get("operations", {})
+    team = session.world_state.get("team", {})
+    risk = session.world_state.get("risk", {})
     actions: list[dict] = []
     action_index = 0
 
@@ -151,6 +154,67 @@ def _heuristic_resilient_actions(session: RuntimeSession, *, turn_index: int) ->
                     "trust_recovery": 0.06,
                     "churn_reduction": 0.01,
                     "monthly_burn_increase_usd": 9000,
+                },
+            }
+        )
+        action_index += 1
+
+    if float(operations.get("support_backlog", 0.0)) > 35 or float(operations.get("support_sla_breach_risk", 0.0)) > 0.45:
+        actions.append(
+            {
+                "tool_name": "ops.support.resolve",
+                "request_id": _next_request_id(turn_index, action_index),
+                "arguments": {
+                    "backlog_reduction": 16,
+                    "sla_risk_reduction": 0.16,
+                    "trust_recovery": 0.025,
+                    "churn_reduction": 0.004,
+                    "monthly_burn_increase_usd": 7000,
+                },
+            }
+        )
+        action_index += 1
+
+    if float(risk.get("regulatory_pressure", 0.0)) > 0.55 or int(risk.get("active_legal_matters", 0)) > 0:
+        actions.append(
+            {
+                "tool_name": "legal.compliance.respond",
+                "request_id": _next_request_id(turn_index, action_index),
+                "arguments": {
+                    "pressure_reduction": 0.2,
+                    "matters_reduction": 1,
+                    "compliance_backlog_reduction": 6,
+                    "trust_recovery": 0.02,
+                    "monthly_burn_increase_usd": 11000,
+                },
+            }
+        )
+        action_index += 1
+
+    if float(finance.get("treasury_concentration", 0.0)) > 0.78:
+        actions.append(
+            {
+                "tool_name": "finance.treasury.rebalance",
+                "request_id": _next_request_id(turn_index, action_index),
+                "arguments": {
+                    "target_concentration": 0.45,
+                    "rebalance_cost_usd": 8000,
+                },
+            }
+        )
+        action_index += 1
+
+    if float(team.get("morale", 0.7)) < 0.58 or float(team.get("attrition_risk", 0.0)) > 0.5:
+        actions.append(
+            {
+                "tool_name": "people.org.adjust",
+                "request_id": _next_request_id(turn_index, action_index),
+                "arguments": {
+                    "morale_delta": 0.08,
+                    "attrition_risk_delta": -0.1,
+                    "bandwidth_load_delta": -0.08,
+                    "monthly_burn_change_usd": 9000,
+                    "onboarding_quality_delta": 0.02,
                 },
             }
         )

@@ -100,6 +100,22 @@ _TOOL_CATALOG = {
         "approval_sensitivity": "high",
         "budget_sensitive": True,
     },
+    "finance.treasury.read": {
+        "description": "Read treasury concentration, liquidity, and counterparty exposure.",
+        "request_schema_ref": "tsb_tool_call.schema.json",
+        "response_schema_ref": "tsb_tool_response.schema.json",
+        "mutability": "read",
+        "approval_sensitivity": "medium",
+        "budget_sensitive": False,
+    },
+    "finance.treasury.rebalance": {
+        "description": "Rebalance treasury concentration across counterparties.",
+        "request_schema_ref": "tsb_tool_call.schema.json",
+        "response_schema_ref": "tsb_tool_response.schema.json",
+        "mutability": "write",
+        "approval_sensitivity": "high",
+        "budget_sensitive": True,
+    },
     "finance.raise.propose": {
         "description": "Propose a fundraising plan or financing action.",
         "request_schema_ref": "tsb_tool_call.schema.json",
@@ -132,6 +148,22 @@ _TOOL_CATALOG = {
         "approval_sensitivity": "high",
         "budget_sensitive": True,
     },
+    "people.org.read": {
+        "description": "Read morale, attrition risk, and bandwidth state.",
+        "request_schema_ref": "tsb_tool_call.schema.json",
+        "response_schema_ref": "tsb_tool_response.schema.json",
+        "mutability": "read",
+        "approval_sensitivity": "medium",
+        "budget_sensitive": False,
+    },
+    "people.org.adjust": {
+        "description": "Adjust workload, morale, and org operating cadence.",
+        "request_schema_ref": "tsb_tool_call.schema.json",
+        "response_schema_ref": "tsb_tool_response.schema.json",
+        "mutability": "write",
+        "approval_sensitivity": "high",
+        "budget_sensitive": True,
+    },
     "ops.incident.read": {
         "description": "Read operational incidents and queue state.",
         "request_schema_ref": "tsb_tool_call.schema.json",
@@ -139,6 +171,22 @@ _TOOL_CATALOG = {
         "mutability": "read",
         "approval_sensitivity": "low",
         "budget_sensitive": False,
+    },
+    "ops.support.read": {
+        "description": "Read support backlog, SLA risk, and customer support stress.",
+        "request_schema_ref": "tsb_tool_call.schema.json",
+        "response_schema_ref": "tsb_tool_response.schema.json",
+        "mutability": "read",
+        "approval_sensitivity": "low",
+        "budget_sensitive": False,
+    },
+    "ops.support.resolve": {
+        "description": "Reduce support backlog and SLA risk through staffing or escalation actions.",
+        "request_schema_ref": "tsb_tool_call.schema.json",
+        "response_schema_ref": "tsb_tool_response.schema.json",
+        "mutability": "write",
+        "approval_sensitivity": "medium",
+        "budget_sensitive": True,
     },
     "ops.incident.respond": {
         "description": "Take an incident response action.",
@@ -171,6 +219,22 @@ _TOOL_CATALOG = {
         "mutability": "read",
         "approval_sensitivity": "low",
         "budget_sensitive": False,
+    },
+    "legal.compliance.read": {
+        "description": "Read regulatory pressure, legal matters, and compliance backlog.",
+        "request_schema_ref": "tsb_tool_call.schema.json",
+        "response_schema_ref": "tsb_tool_response.schema.json",
+        "mutability": "read",
+        "approval_sensitivity": "medium",
+        "budget_sensitive": False,
+    },
+    "legal.compliance.respond": {
+        "description": "Respond to regulatory, compliance, or legal pressure.",
+        "request_schema_ref": "tsb_tool_call.schema.json",
+        "response_schema_ref": "tsb_tool_response.schema.json",
+        "mutability": "write",
+        "approval_sensitivity": "high",
+        "budget_sensitive": True,
     },
     "notes.read": {
         "description": "Read persistent operator notes.",
@@ -213,4 +277,3 @@ def tool_manifest_for_names(tool_names: list[str]) -> dict:
 
 
 __all__ = ["tool_manifest_for_names"]
-

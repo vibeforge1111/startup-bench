@@ -19,6 +19,10 @@ def _format_iso8601(value: datetime) -> str:
     return value.astimezone(timezone.utc).isoformat().replace("+00:00", "Z")
 
 
+def _clamp(value: float, *, minimum: float, maximum: float) -> float:
+    return max(minimum, min(maximum, value))
+
+
 def _advance_time(value: str, *, amount: int, unit: str) -> str:
     current = _parse_iso8601(value)
     if unit == "day":
@@ -103,6 +107,11 @@ def _process_due_events(session: RuntimeSession) -> list[dict]:
 def _apply_weekly_business_drift(session: RuntimeSession, *, weeks: int) -> None:
     finance = session.world_state.setdefault("finance", {})
     customers = session.world_state.setdefault("customers", {})
+    operations = session.world_state.setdefault("operations", {})
+    team = session.world_state.setdefault("team", {})
+    risk = session.world_state.setdefault("risk", {})
+    product = session.world_state.setdefault("product", {})
+    sales = session.world_state.setdefault("sales", {})
     monthly_revenue = float(finance.get("monthly_revenue_usd", 0))
     monthly_burn = float(finance.get("monthly_burn_usd", 0))
     cash = float(finance.get("cash_usd", 0))
@@ -114,12 +123,57 @@ def _apply_weekly_business_drift(session: RuntimeSession, *, weeks: int) -> None
     accounts_lost = int(round(paying_accounts * (churn / 4.0) * weeks))
     customers["paying_accounts"] = max(0, paying_accounts - accounts_lost)
 
+    support_backlog = float(operations.get("support_backlog", 0))
+    if support_backlog > 40:
+        customers["trust_score"] = round(
+            _clamp(float(customers.get("trust_score", 0.7)) - min(0.02 * weeks, support_backlog / 3000.0), minimum=0.0, maximum=1.0),
+            4,
+        )
+        customers["monthly_churn_rate"] = round(
+            _clamp(float(customers.get("monthly_churn_rate", 0.0)) + min(0.003 * weeks, support_backlog / 20000.0), minimum=0.0, maximum=1.0),
+            4,
+        )
+
+    morale = float(team.get("morale", 0.7))
+    if morale < 0.55:
+        product["onboarding_quality"] = round(
+            _clamp(float(product.get("onboarding_quality", 0.7)) - (0.01 * weeks), minimum=0.0, maximum=1.0),
+            4,
+        )
+        sales["weighted_pipeline_usd"] = round(max(0.0, float(sales.get("weighted_pipeline_usd", 0)) - (15000 * weeks)), 2)
+
+    attrition_risk = float(team.get("attrition_risk", 0.0))
+    if attrition_risk > 0.6:
+        customers["trust_score"] = round(
+            _clamp(float(customers.get("trust_score", 0.7)) - (0.01 * weeks), minimum=0.0, maximum=1.0),
+            4,
+        )
+
+    regulatory_pressure = float(risk.get("regulatory_pressure", 0.0))
+    if regulatory_pressure > 0.65:
+        sales["weighted_pipeline_usd"] = round(max(0.0, float(sales.get("weighted_pipeline_usd", 0)) - (20000 * weeks)), 2)
+        customers["trust_score"] = round(
+            _clamp(float(customers.get("trust_score", 0.7)) - (0.012 * weeks), minimum=0.0, maximum=1.0),
+            4,
+        )
+
+    treasury_concentration = float(finance.get("treasury_concentration", 0.0))
+    counterparty_risk = float(risk.get("counterparty_risk", 0.0))
+    if treasury_concentration > 0.85 and counterparty_risk > 0.75:
+        finance["restricted_cash_usd"] = round(
+            max(float(finance.get("restricted_cash_usd", 0.0)), float(finance.get("cash_usd", 0.0)) * 0.12),
+            2,
+        )
+
 
 def _build_metric_report(session: RuntimeSession) -> dict:
     finance = session.world_state.get("finance", {})
     customers = session.world_state.get("customers", {})
     sales = session.world_state.get("sales", {})
     governance = session.world_state.get("governance", {})
+    operations = session.world_state.get("operations", {})
+    team = session.world_state.get("team", {})
+    risk = session.world_state.get("risk", {})
     sim = session.world_state.get("sim", {})
 
     alerts = []
@@ -129,15 +183,28 @@ def _build_metric_report(session: RuntimeSession) -> dict:
         alerts.append("churn_above_5pct")
     if float(customers.get("trust_score", 1.0)) < 0.6:
         alerts.append("trust_score_below_0_6")
+    if float(operations.get("support_backlog", 0)) > 50:
+        alerts.append("support_backlog_above_50")
+    if float(team.get("morale", 1.0)) < 0.55:
+        alerts.append("morale_below_0_55")
+    if float(risk.get("regulatory_pressure", 0.0)) > 0.65:
+        alerts.append("regulatory_pressure_high")
+    if float(finance.get("treasury_concentration", 0.0)) > 0.8:
+        alerts.append("treasury_concentration_high")
     if int(sim.get("pending_event_count", 0)) > 0:
         alerts.append("pending_scheduled_events")
 
     return {
         "headline": {
             "cash_usd": finance.get("cash_usd"),
+            "liquid_cash_usd": finance.get("liquid_cash_usd"),
             "runway_weeks": finance.get("runway_weeks"),
             "monthly_revenue_usd": finance.get("monthly_revenue_usd"),
             "net_burn_usd": finance.get("net_burn_usd"),
+        },
+        "finance": {
+            "treasury_concentration": finance.get("treasury_concentration"),
+            "restricted_cash_usd": finance.get("restricted_cash_usd", 0.0),
         },
         "customers": {
             "paying_accounts": customers.get("paying_accounts"),
@@ -152,6 +219,20 @@ def _build_metric_report(session: RuntimeSession) -> dict:
         },
         "governance": {
             "board_update_count": governance.get("board_update_count", 0),
+        },
+        "operations": {
+            "support_backlog": operations.get("support_backlog", 0),
+            "support_sla_breach_risk": operations.get("support_sla_breach_risk", 0.0),
+        },
+        "team": {
+            "morale": team.get("morale"),
+            "attrition_risk": team.get("attrition_risk"),
+            "bandwidth_load": team.get("bandwidth_load"),
+        },
+        "risk": {
+            "regulatory_pressure": risk.get("regulatory_pressure", 0.0),
+            "active_legal_matters": risk.get("active_legal_matters", 0),
+            "counterparty_risk": risk.get("counterparty_risk", 0.0),
         },
         "alerts": alerts,
     }
@@ -227,6 +308,53 @@ def execute_tool_call(session: RuntimeSession, tool_call: dict) -> dict:
             request_id,
             result={"finance": deepcopy(session.world_state["finance"])},
             state_delta_summary=state_delta,
+        )
+
+    if tool_name == "finance.treasury.read":
+        finance = session.world_state.setdefault("finance", {})
+        risk = session.world_state.setdefault("risk", {})
+        return _tool_result(
+            tool_name,
+            request_id,
+            result={
+                "treasury": {
+                    "cash_usd": finance.get("cash_usd"),
+                    "liquid_cash_usd": finance.get("liquid_cash_usd"),
+                    "restricted_cash_usd": finance.get("restricted_cash_usd", 0.0),
+                    "treasury_concentration": finance.get("treasury_concentration", 0.0),
+                    "counterparty_risk": risk.get("counterparty_risk", 0.0),
+                }
+            },
+        )
+
+    if tool_name == "finance.treasury.rebalance":
+        finance = session.world_state.setdefault("finance", {})
+        target_concentration = _clamp(float(arguments.get("target_concentration", 0.5)), minimum=0.0, maximum=1.0)
+        rebalance_cost_usd = max(0.0, float(arguments.get("rebalance_cost_usd", 8000)))
+        previous_concentration = float(finance.get("treasury_concentration", 0.0))
+        finance["treasury_concentration"] = round(target_concentration, 4)
+        finance["cash_usd"] = round(max(0.0, float(finance.get("cash_usd", 0.0)) - rebalance_cost_usd), 2)
+        finance["restricted_cash_usd"] = round(
+            max(0.0, float(finance.get("restricted_cash_usd", 0.0)) * target_concentration),
+            2,
+        )
+        recalculate_derived_metrics(session.world_state)
+        return _tool_result(
+            tool_name,
+            request_id,
+            result={
+                "treasury": {
+                    "treasury_concentration": finance.get("treasury_concentration"),
+                    "cash_usd": finance.get("cash_usd"),
+                    "liquid_cash_usd": finance.get("liquid_cash_usd"),
+                    "previous_concentration": round(previous_concentration, 4),
+                }
+            },
+            state_delta_summary={
+                "finance.treasury_concentration": finance.get("treasury_concentration"),
+                "finance.cash_usd": finance.get("cash_usd"),
+                "finance.liquid_cash_usd": finance.get("liquid_cash_usd"),
+            },
         )
 
     if tool_name == "sales.pipeline.read":
@@ -314,6 +442,71 @@ def execute_tool_call(session: RuntimeSession, tool_call: dict) -> dict:
             },
         )
 
+    if tool_name == "ops.support.read":
+        operations = session.world_state.setdefault("operations", {})
+        customers = session.world_state.setdefault("customers", {})
+        return _tool_result(
+            tool_name,
+            request_id,
+            result={
+                "support_state": {
+                    "support_backlog": operations.get("support_backlog", 0),
+                    "support_sla_breach_risk": operations.get("support_sla_breach_risk", 0.0),
+                    "trust_score": customers.get("trust_score"),
+                    "monthly_churn_rate": customers.get("monthly_churn_rate"),
+                }
+            },
+        )
+
+    if tool_name == "ops.support.resolve":
+        operations = session.world_state.setdefault("operations", {})
+        customers = session.world_state.setdefault("customers", {})
+        finance = session.world_state.setdefault("finance", {})
+        backlog_reduction = max(0, int(arguments.get("backlog_reduction", 12)))
+        sla_risk_reduction = max(0.0, float(arguments.get("sla_risk_reduction", 0.12)))
+        trust_recovery = max(0.0, float(arguments.get("trust_recovery", 0.03)))
+        churn_reduction = max(0.0, float(arguments.get("churn_reduction", 0.004)))
+        burn_increase = max(0.0, float(arguments.get("monthly_burn_increase_usd", 7000)))
+        apply_operations(
+            session.world_state,
+            [
+                {"op": "increment", "path": "operations.support_backlog", "value": -backlog_reduction},
+                {"op": "clamp", "path": "operations.support_backlog", "min": 0},
+                {"op": "increment", "path": "operations.support_sla_breach_risk", "value": -sla_risk_reduction},
+                {"op": "clamp", "path": "operations.support_sla_breach_risk", "min": 0.0, "max": 1.0},
+                {"op": "increment", "path": "customers.trust_score", "value": trust_recovery},
+                {"op": "clamp", "path": "customers.trust_score", "min": 0.0, "max": 1.0},
+                {"op": "increment", "path": "customers.monthly_churn_rate", "value": -churn_reduction},
+                {"op": "clamp", "path": "customers.monthly_churn_rate", "min": 0.0, "max": 1.0},
+                {"op": "increment", "path": "finance.monthly_burn_usd", "value": burn_increase},
+                {"op": "increment", "path": "operations.support_actions_taken", "value": 1},
+            ],
+        )
+        operations["support_sla_breach_risk"] = round(float(operations.get("support_sla_breach_risk", 0.0)), 4)
+        customers["trust_score"] = round(float(customers.get("trust_score", 0.0)), 4)
+        customers["monthly_churn_rate"] = round(float(customers.get("monthly_churn_rate", 0.0)), 4)
+        finance["monthly_burn_usd"] = round(float(finance.get("monthly_burn_usd", 0.0)), 2)
+        recalculate_derived_metrics(session.world_state)
+        return _tool_result(
+            tool_name,
+            request_id,
+            result={
+                "support_state": {
+                    "support_backlog": operations.get("support_backlog", 0),
+                    "support_sla_breach_risk": operations.get("support_sla_breach_risk", 0.0),
+                    "trust_score": customers.get("trust_score"),
+                    "monthly_churn_rate": customers.get("monthly_churn_rate"),
+                }
+            },
+            state_delta_summary={
+                "operations.support_backlog": operations.get("support_backlog", 0),
+                "operations.support_sla_breach_risk": operations.get("support_sla_breach_risk", 0.0),
+                "customers.trust_score": customers.get("trust_score"),
+                "customers.monthly_churn_rate": customers.get("monthly_churn_rate"),
+                "finance.monthly_burn_usd": finance.get("monthly_burn_usd"),
+            },
+        )
+
     if tool_name == "ops.incident.respond":
         product = session.world_state.setdefault("product", {})
         customers = session.world_state.setdefault("customers", {})
@@ -364,6 +557,71 @@ def execute_tool_call(session: RuntimeSession, tool_call: dict) -> dict:
             },
         )
 
+    if tool_name == "people.org.read":
+        team = session.world_state.setdefault("team", {})
+        return _tool_result(
+            tool_name,
+            request_id,
+            result={
+                "team_state": {
+                    "morale": team.get("morale", 0.7),
+                    "attrition_risk": team.get("attrition_risk", 0.2),
+                    "bandwidth_load": team.get("bandwidth_load", 0.6),
+                    "headcount": team.get("headcount"),
+                }
+            },
+        )
+
+    if tool_name == "people.org.adjust":
+        team = session.world_state.setdefault("team", {})
+        finance = session.world_state.setdefault("finance", {})
+        product = session.world_state.setdefault("product", {})
+        morale_delta = float(arguments.get("morale_delta", 0.06))
+        attrition_risk_delta = float(arguments.get("attrition_risk_delta", -0.08))
+        bandwidth_load_delta = float(arguments.get("bandwidth_load_delta", -0.07))
+        burn_delta = float(arguments.get("monthly_burn_change_usd", 9000))
+        onboarding_delta = float(arguments.get("onboarding_quality_delta", 0.03))
+        apply_operations(
+            session.world_state,
+            [
+                {"op": "increment", "path": "team.morale", "value": morale_delta},
+                {"op": "clamp", "path": "team.morale", "min": 0.0, "max": 1.0},
+                {"op": "increment", "path": "team.attrition_risk", "value": attrition_risk_delta},
+                {"op": "clamp", "path": "team.attrition_risk", "min": 0.0, "max": 1.0},
+                {"op": "increment", "path": "team.bandwidth_load", "value": bandwidth_load_delta},
+                {"op": "clamp", "path": "team.bandwidth_load", "min": 0.0, "max": 1.5},
+                {"op": "increment", "path": "finance.monthly_burn_usd", "value": burn_delta},
+                {"op": "increment", "path": "product.onboarding_quality", "value": onboarding_delta},
+                {"op": "clamp", "path": "product.onboarding_quality", "min": 0.0, "max": 1.0},
+                {"op": "increment", "path": "team.org_changes_count", "value": 1},
+            ],
+        )
+        team["morale"] = round(float(team.get("morale", 0.0)), 4)
+        team["attrition_risk"] = round(float(team.get("attrition_risk", 0.0)), 4)
+        team["bandwidth_load"] = round(float(team.get("bandwidth_load", 0.0)), 4)
+        product["onboarding_quality"] = round(float(product.get("onboarding_quality", 0.0)), 4)
+        finance["monthly_burn_usd"] = round(float(finance.get("monthly_burn_usd", 0.0)), 2)
+        recalculate_derived_metrics(session.world_state)
+        return _tool_result(
+            tool_name,
+            request_id,
+            result={
+                "team_state": {
+                    "morale": team.get("morale"),
+                    "attrition_risk": team.get("attrition_risk"),
+                    "bandwidth_load": team.get("bandwidth_load"),
+                    "onboarding_quality": product.get("onboarding_quality"),
+                }
+            },
+            state_delta_summary={
+                "team.morale": team.get("morale"),
+                "team.attrition_risk": team.get("attrition_risk"),
+                "team.bandwidth_load": team.get("bandwidth_load"),
+                "finance.monthly_burn_usd": finance.get("monthly_burn_usd"),
+                "product.onboarding_quality": product.get("onboarding_quality"),
+            },
+        )
+
     if tool_name == "notes.read":
         return _tool_result(tool_name, request_id, result={"notes": list(session.notes)})
 
@@ -397,6 +655,69 @@ def execute_tool_call(session: RuntimeSession, tool_call: dict) -> dict:
             state_delta_summary={
                 "governance.latest_board_update": "updated",
                 "governance.board_update_count": session.world_state["governance"]["board_update_count"],
+            },
+        )
+
+    if tool_name == "legal.compliance.read":
+        risk = session.world_state.setdefault("risk", {})
+        return _tool_result(
+            tool_name,
+            request_id,
+            result={
+                "compliance_state": {
+                    "regulatory_pressure": risk.get("regulatory_pressure", 0.0),
+                    "active_legal_matters": risk.get("active_legal_matters", 0),
+                    "compliance_backlog": risk.get("compliance_backlog", 0),
+                    "counterparty_risk": risk.get("counterparty_risk", 0.0),
+                }
+            },
+        )
+
+    if tool_name == "legal.compliance.respond":
+        risk = session.world_state.setdefault("risk", {})
+        customers = session.world_state.setdefault("customers", {})
+        finance = session.world_state.setdefault("finance", {})
+        pressure_reduction = max(0.0, float(arguments.get("pressure_reduction", 0.18)))
+        matters_reduction = max(0, int(arguments.get("matters_reduction", 1)))
+        backlog_reduction = max(0, int(arguments.get("compliance_backlog_reduction", 4)))
+        trust_recovery = max(0.0, float(arguments.get("trust_recovery", 0.02)))
+        burn_increase = max(0.0, float(arguments.get("monthly_burn_increase_usd", 11000)))
+        apply_operations(
+            session.world_state,
+            [
+                {"op": "increment", "path": "risk.regulatory_pressure", "value": -pressure_reduction},
+                {"op": "clamp", "path": "risk.regulatory_pressure", "min": 0.0, "max": 1.0},
+                {"op": "increment", "path": "risk.active_legal_matters", "value": -matters_reduction},
+                {"op": "clamp", "path": "risk.active_legal_matters", "min": 0},
+                {"op": "increment", "path": "risk.compliance_backlog", "value": -backlog_reduction},
+                {"op": "clamp", "path": "risk.compliance_backlog", "min": 0},
+                {"op": "increment", "path": "customers.trust_score", "value": trust_recovery},
+                {"op": "clamp", "path": "customers.trust_score", "min": 0.0, "max": 1.0},
+                {"op": "increment", "path": "finance.monthly_burn_usd", "value": burn_increase},
+                {"op": "increment", "path": "risk.legal_responses_count", "value": 1},
+            ],
+        )
+        risk["regulatory_pressure"] = round(float(risk.get("regulatory_pressure", 0.0)), 4)
+        customers["trust_score"] = round(float(customers.get("trust_score", 0.0)), 4)
+        finance["monthly_burn_usd"] = round(float(finance.get("monthly_burn_usd", 0.0)), 2)
+        recalculate_derived_metrics(session.world_state)
+        return _tool_result(
+            tool_name,
+            request_id,
+            result={
+                "compliance_state": {
+                    "regulatory_pressure": risk.get("regulatory_pressure", 0.0),
+                    "active_legal_matters": risk.get("active_legal_matters", 0),
+                    "compliance_backlog": risk.get("compliance_backlog", 0),
+                    "trust_score": customers.get("trust_score"),
+                }
+            },
+            state_delta_summary={
+                "risk.regulatory_pressure": risk.get("regulatory_pressure", 0.0),
+                "risk.active_legal_matters": risk.get("active_legal_matters", 0),
+                "risk.compliance_backlog": risk.get("compliance_backlog", 0),
+                "customers.trust_score": customers.get("trust_score"),
+                "finance.monthly_burn_usd": finance.get("monthly_burn_usd"),
             },
         )
 

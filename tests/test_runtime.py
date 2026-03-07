@@ -50,9 +50,13 @@ class RuntimeTests(unittest.TestCase):
 
         self.assertTrue(response["ok"])
         self.assertEqual(response["result"]["items"]["sales.pricing.current_price_index"], 1.0)
-        self.assertEqual(response["result"]["items"]["health_index"], 0.8192)
+        self.assertEqual(response["result"]["items"]["health_index"], 0.8374)
 
     def test_metrics_report_surfaces_alerts_and_headline_metrics(self) -> None:
+        self.session.world_state["operations"]["support_backlog"] = 58
+        self.session.world_state["risk"]["regulatory_pressure"] = 0.71
+        self.session.world_state["finance"]["treasury_concentration"] = 0.84
+        self.session.world_state["team"]["morale"] = 0.5
         response = execute_tool_call(
             self.session,
             {
@@ -66,6 +70,10 @@ class RuntimeTests(unittest.TestCase):
         report = response["result"]["report"]
         self.assertEqual(report["headline"]["cash_usd"], 920000)
         self.assertIn("pending_scheduled_events", report["alerts"])
+        self.assertIn("support_backlog_above_50", report["alerts"])
+        self.assertIn("regulatory_pressure_high", report["alerts"])
+        self.assertIn("treasury_concentration_high", report["alerts"])
+        self.assertIn("morale_below_0_55", report["alerts"])
 
     def test_read_tool_responses_are_immutable_snapshots(self) -> None:
         initial_report = execute_tool_call(
@@ -245,6 +253,113 @@ class RuntimeTests(unittest.TestCase):
         self.assertEqual(self.session.world_state["customers"]["trust_score"], 0.78)
         self.assertEqual(self.session.world_state["customers"]["monthly_churn_rate"], 0.026)
         self.assertEqual(self.session.world_state["finance"]["monthly_burn_usd"], 215000.0)
+
+    def test_support_tools_reduce_backlog_and_improve_customer_state(self) -> None:
+        self.session.world_state["operations"]["support_backlog"] = 72
+        self.session.world_state["operations"]["support_sla_breach_risk"] = 0.68
+
+        read_before = execute_tool_call(
+            self.session,
+            {
+                "tool_name": "ops.support.read",
+                "request_id": "req_support_001",
+                "arguments": {},
+            },
+        )
+        self.assertTrue(read_before["ok"])
+        self.assertEqual(read_before["result"]["support_state"]["support_backlog"], 72)
+
+        response = execute_tool_call(
+            self.session,
+            {
+                "tool_name": "ops.support.resolve",
+                "request_id": "req_support_002",
+                "arguments": {
+                    "backlog_reduction": 20,
+                    "sla_risk_reduction": 0.2,
+                    "trust_recovery": 0.03,
+                    "churn_reduction": 0.005,
+                    "monthly_burn_increase_usd": 6000,
+                },
+            },
+        )
+        self.assertTrue(response["ok"])
+        self.assertEqual(self.session.world_state["operations"]["support_backlog"], 52)
+        self.assertEqual(self.session.world_state["operations"]["support_sla_breach_risk"], 0.48)
+        self.assertEqual(self.session.world_state["customers"]["trust_score"], 0.77)
+        self.assertEqual(self.session.world_state["finance"]["monthly_burn_usd"], 211000.0)
+
+    def test_treasury_rebalance_improves_liquidity_profile(self) -> None:
+        self.session.world_state["finance"]["treasury_concentration"] = 0.91
+        self.session.world_state["finance"]["restricted_cash_usd"] = 210000
+        response = execute_tool_call(
+            self.session,
+            {
+                "tool_name": "finance.treasury.rebalance",
+                "request_id": "req_treasury_001",
+                "arguments": {
+                    "target_concentration": 0.45,
+                    "rebalance_cost_usd": 5000,
+                },
+            },
+        )
+
+        self.assertTrue(response["ok"])
+        self.assertEqual(self.session.world_state["finance"]["treasury_concentration"], 0.45)
+        self.assertEqual(self.session.world_state["finance"]["cash_usd"], 915000.0)
+        self.assertEqual(self.session.world_state["finance"]["restricted_cash_usd"], 94500.0)
+        self.assertGreater(self.session.world_state["finance"]["liquid_cash_usd"], 800000)
+
+    def test_people_org_adjust_reduces_attrition_and_improves_product_health(self) -> None:
+        self.session.world_state["team"]["morale"] = 0.49
+        self.session.world_state["team"]["attrition_risk"] = 0.62
+        self.session.world_state["team"]["bandwidth_load"] = 0.91
+        response = execute_tool_call(
+            self.session,
+            {
+                "tool_name": "people.org.adjust",
+                "request_id": "req_people_001",
+                "arguments": {
+                    "morale_delta": 0.09,
+                    "attrition_risk_delta": -0.12,
+                    "bandwidth_load_delta": -0.1,
+                    "monthly_burn_change_usd": 7000,
+                    "onboarding_quality_delta": 0.04,
+                },
+            },
+        )
+
+        self.assertTrue(response["ok"])
+        self.assertEqual(self.session.world_state["team"]["morale"], 0.58)
+        self.assertEqual(self.session.world_state["team"]["attrition_risk"], 0.5)
+        self.assertEqual(self.session.world_state["product"]["onboarding_quality"], 0.59)
+        self.assertEqual(self.session.world_state["finance"]["monthly_burn_usd"], 212000.0)
+
+    def test_legal_compliance_respond_reduces_regulatory_pressure(self) -> None:
+        self.session.world_state["risk"]["regulatory_pressure"] = 0.82
+        self.session.world_state["risk"]["active_legal_matters"] = 2
+        self.session.world_state["risk"]["compliance_backlog"] = 9
+        response = execute_tool_call(
+            self.session,
+            {
+                "tool_name": "legal.compliance.respond",
+                "request_id": "req_legal_001",
+                "arguments": {
+                    "pressure_reduction": 0.22,
+                    "matters_reduction": 1,
+                    "compliance_backlog_reduction": 5,
+                    "trust_recovery": 0.015,
+                    "monthly_burn_increase_usd": 12000,
+                },
+            },
+        )
+
+        self.assertTrue(response["ok"])
+        self.assertEqual(self.session.world_state["risk"]["regulatory_pressure"], 0.6)
+        self.assertEqual(self.session.world_state["risk"]["active_legal_matters"], 1)
+        self.assertEqual(self.session.world_state["risk"]["compliance_backlog"], 4)
+        self.assertEqual(self.session.world_state["customers"]["trust_score"], 0.755)
+        self.assertEqual(self.session.world_state["finance"]["monthly_burn_usd"], 217000.0)
 
 
 if __name__ == "__main__":
