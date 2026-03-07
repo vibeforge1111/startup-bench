@@ -1,7 +1,7 @@
 {
   "suite_version": "0.1.0",
   "benchmark_version": "0.2.0-draft",
-  "scenario_pack_version": "operator-test-pack-0.2.0",
+  "scenario_pack_version": "operator-test-pack-0.3.0",
   "split": "test",
   "scenarios": [
     {
@@ -13,6 +13,12 @@
     {
       "scenario_id": "hidden_gtm_enterprise_freeze_test_001",
       "path": "hidden_gtm_enterprise_freeze_test_scenario.json",
+      "track": "gtm",
+      "mode": "test"
+    },
+    {
+      "scenario_id": "hidden_gtm_reference_decay_test_001",
+      "path": "hidden_gtm_reference_decay_test_scenario.json",
       "track": "gtm",
       "mode": "test"
     },
@@ -31,6 +37,12 @@
     {
       "scenario_id": "hidden_people_attrition_test_001",
       "path": "hidden_people_attrition_test_scenario.json",
+      "track": "people",
+      "mode": "test"
+    },
+    {
+      "scenario_id": "hidden_people_reorg_drag_test_001",
+      "path": "hidden_people_reorg_drag_test_scenario.json",
       "track": "people",
       "mode": "test"
     }

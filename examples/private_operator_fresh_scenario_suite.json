@@ -1,7 +1,7 @@
 {
   "suite_version": "0.1.0",
   "benchmark_version": "0.2.0-draft",
-  "scenario_pack_version": "operator-fresh-pack-0.2.0",
+  "scenario_pack_version": "operator-fresh-pack-0.3.0",
   "split": "fresh",
   "scenarios": [
     {
@@ -13,6 +13,12 @@
     {
       "scenario_id": "hidden_gtm_enterprise_freeze_fresh_001",
       "path": "hidden_gtm_enterprise_freeze_fresh_scenario.json",
+      "track": "gtm",
+      "mode": "fresh"
+    },
+    {
+      "scenario_id": "hidden_gtm_reference_decay_fresh_001",
+      "path": "hidden_gtm_reference_decay_fresh_scenario.json",
       "track": "gtm",
       "mode": "fresh"
     },
@@ -31,6 +37,12 @@
     {
       "scenario_id": "hidden_people_attrition_fresh_001",
       "path": "hidden_people_attrition_fresh_scenario.json",
+      "track": "people",
+      "mode": "fresh"
+    },
+    {
+      "scenario_id": "hidden_people_reorg_drag_fresh_001",
+      "path": "hidden_people_reorg_drag_fresh_scenario.json",
       "track": "people",
       "mode": "fresh"
     }

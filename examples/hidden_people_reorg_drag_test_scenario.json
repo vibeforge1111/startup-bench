@@ -1,0 +1,190 @@
+{
+  "metadata": {
+    "scenario_id": "hidden_people_reorg_drag_test_001",
+    "scenario_version": "0.1.0",
+    "benchmark_version": "0.2.0-draft",
+    "track": "people",
+    "mode": "test",
+    "title": "Hidden Reorg Drag and Manager Gap",
+    "summary": "A hidden people scenario where a reorg and manager loss create execution drag, support pain, and rising trust risk unless the operator stabilizes org design quickly.",
+    "difficulty": "hard",
+    "time_horizon": {
+      "unit": "week",
+      "length": 14
+    },
+    "authoring_origin": "expert_authored",
+    "tags": ["people", "hidden_eval", "reorg", "manager_gap", "support"]
+  },
+  "initial_state": {
+    "company": {
+      "stage": "series_b",
+      "sector": "b2b_saas",
+      "business_model": "subscription"
+    },
+    "finance": {
+      "cash_usd": 3860000,
+      "monthly_burn_usd": 534000,
+      "monthly_revenue_usd": 401000
+    },
+    "product": {
+      "major_incidents_open": 1,
+      "roadmap_items": 8,
+      "onboarding_quality": 0.59
+    },
+    "customers": {
+      "paying_accounts": 228,
+      "monthly_churn_rate": 0.032,
+      "trust_score": 0.63
+    },
+    "sales": {
+      "pipeline_count": 13,
+      "weighted_pipeline_usd": 1120000,
+      "pricing": {
+        "current_price_index": 1.0
+      }
+    },
+    "operations": {
+      "support_backlog": 61,
+      "support_sla_breach_risk": 0.58
+    },
+    "team": {
+      "morale": 0.46,
+      "attrition_risk": 0.68,
+      "bandwidth_load": 0.95,
+      "headcount": 24,
+      "hiring": {
+        "open_roles": 4,
+        "critical_roles_open": 2,
+        "sourced_candidates": 5,
+        "onsite_candidates": 1,
+        "offers_out": 0,
+        "time_to_fill_weeks": 9
+      }
+    },
+    "market": {
+      "competitor_pressure": "moderate",
+      "competitor_pressure_index": 0.43,
+      "pricing_pressure_index": 0.24,
+      "demand_index": 0.83,
+      "latest_market_note": "Customers are watching implementation throughput and escalation handling more closely than feature velocity."
+    },
+    "governance": {
+      "board_update_count": 1
+    },
+    "policy": {
+      "max_auto_price_increase_pct": 0.05
+    },
+    "sim": {
+      "current_time": "2026-09-21T09:00:00Z"
+    }
+  },
+  "latent_state": {
+    "true_attrition_driver": "reorg_confusion_and_manager_gap",
+    "true_recovery_speed": "slow"
+  },
+  "observation_surfaces": [
+    {
+      "surface_id": "team_dashboard",
+      "surface_type": "dashboard",
+      "refresh_policy": "weekly",
+      "visible_fields": ["morale", "attrition_risk", "bandwidth_load"]
+    },
+    {
+      "surface_id": "support_console",
+      "surface_type": "ops_console",
+      "refresh_policy": "realtime",
+      "visible_fields": ["support_backlog", "support_sla_breach_risk", "trust_score"]
+    }
+  ],
+  "tools": [
+    "metrics.query",
+    "metrics.report",
+    "product.roadmap.read",
+    "product.roadmap.write",
+    "ops.support.read",
+    "ops.support.resolve",
+    "finance.plan.read",
+    "finance.plan.write",
+    "people.hiring.read",
+    "people.hiring.update",
+    "people.org.read",
+    "people.org.adjust",
+    "research.market.read",
+    "board.read",
+    "board.update",
+    "notes.read",
+    "notes.write",
+    "sim.advance"
+  ],
+  "event_model": {
+    "kind": "seeded_schedule",
+    "primitive_catalog": {
+      "manager_exit": {
+        "operations": [
+          { "op": "increment", "path": "team.morale", "value": -0.08 },
+          { "op": "clamp", "path": "team.morale", "min": 0.0, "max": 1.0 },
+          { "op": "increment", "path": "team.attrition_risk", "value": 0.1 },
+          { "op": "clamp", "path": "team.attrition_risk", "min": 0.0, "max": 1.0 },
+          { "op": "increment", "path": "operations.support_backlog", "value": 18 },
+          { "op": "increment", "path": "team.hiring.open_roles", "value": 1 },
+          { "op": "increment", "path": "team.hiring.critical_roles_open", "value": 1 }
+        ]
+      },
+      "handoff_drag": {
+        "operations": [
+          { "op": "increment", "path": "product.onboarding_quality", "value": -0.05 },
+          { "op": "clamp", "path": "product.onboarding_quality", "min": 0.0, "max": 1.0 },
+          { "op": "increment", "path": "customers.trust_score", "value": -0.035 },
+          { "op": "clamp", "path": "customers.trust_score", "min": 0.0, "max": 1.0 },
+          { "op": "increment", "path": "customers.monthly_churn_rate", "value": 0.006 },
+          { "op": "increment", "path": "team.bandwidth_load", "value": 0.05 },
+          { "op": "clamp", "path": "team.bandwidth_load", "min": 0.0, "max": 1.5 }
+        ]
+      }
+    },
+    "scheduled_events": [
+      {
+        "event_id": "ev_hidden_people_reorg_001",
+        "at_turn": 1,
+        "primitive_id": "manager_exit",
+        "event_type": "manager_exit",
+        "visible_message": "A key manager left during the reorg, increasing execution fragility."
+      },
+      {
+        "event_id": "ev_hidden_people_reorg_002",
+        "at_turn": 3,
+        "primitive_id": "handoff_drag",
+        "event_type": "handoff_drag",
+        "visible_message": "The reorg handoff created customer-facing delays and quality drift."
+      }
+    ]
+  },
+  "policy_constraints": [
+    {
+      "constraint_id": "no_unapproved_hiring",
+      "kind": "approval_required"
+    }
+  ],
+  "terminal_conditions": [
+    {
+      "condition_id": "horizon_end_14_weeks",
+      "kind": "horizon_end"
+    },
+    {
+      "condition_id": "bankruptcy",
+      "kind": "hard_failure"
+    }
+  ],
+  "evaluation": {
+    "outcome_components": [
+      { "component_id": "cash_efficiency", "weight": 0.15, "direction": "maximize" },
+      { "component_id": "revenue_quality", "weight": 0.1, "direction": "maximize" },
+      { "component_id": "customer_health", "weight": 0.3, "direction": "maximize" },
+      { "component_id": "strategic_coherence", "weight": 0.45, "direction": "maximize" }
+    ],
+    "constraints": [
+      { "constraint_id": "bankruptcy" },
+      { "constraint_id": "severe_trust_breach" }
+    ]
+  }
+}
