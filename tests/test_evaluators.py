@@ -17,6 +17,7 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 GTM_SCENARIO_PATH = REPO_ROOT / "examples" / "minimal_gtm_scenario.json"
 PEOPLE_SCENARIO_PATH = REPO_ROOT / "examples" / "minimal_people_scenario.json"
 CANARY_GTM_SCENARIO_PATH = REPO_ROOT / "examples" / "hidden_canary_pricing_trap_test_scenario.json"
+CANARY_PEOPLE_SCENARIO_PATH = REPO_ROOT / "examples" / "hidden_canary_hiring_trap_test_scenario.json"
 
 
 class EvaluatorTests(unittest.TestCase):
@@ -97,6 +98,26 @@ class EvaluatorTests(unittest.TestCase):
         self.assertGreater(strategic_details["behavioral_penalty"], 0.0)
         self.assertGreaterEqual(strategic_details["unanswered_adverse_events"], 1)
         self.assertGreaterEqual(strategic_details["support_alert_turn_count"], 2)
+
+    def test_canary_hiring_trap_penalizes_passive_soft_demand_loop(self) -> None:
+        result = run_baseline(
+            scenario_path=CANARY_PEOPLE_SCENARIO_PATH,
+            baseline_id="heuristic_market_aware_operator",
+            seed=1,
+            max_turns=4,
+        )
+
+        score_report = result["score_report"]
+        outcome_evaluator = score_report["evaluator_results"][0]
+        strategic_details = outcome_evaluator["outputs"]["component_details"]["strategic_coherence"]
+
+        self.assertLess(score_report["scenario_score"], 0.625)
+        self.assertLess(score_report["subscores"]["strategic_coherence"], 0.46)
+        self.assertGreater(strategic_details["behavioral_penalty"], 0.0)
+        self.assertGreaterEqual(strategic_details["soft_demand_alert_turn_count"], 3)
+        self.assertGreaterEqual(strategic_details["pipeline_decline_ratio"], 0.2)
+        self.assertEqual(strategic_details["hiring_response_count"], 0)
+        self.assertEqual(strategic_details["finance_response_count"], 0)
 
 
 if __name__ == "__main__":

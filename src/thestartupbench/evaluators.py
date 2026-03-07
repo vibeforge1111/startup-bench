@@ -207,6 +207,16 @@ def _extract_alerts(turn: dict) -> list[str]:
     return alerts
 
 
+def _extract_metrics_report(turn: dict) -> dict:
+    for action in turn.get("actions", []):
+        if action.get("tool_name") != "metrics.report":
+            continue
+        report = action.get("response", {}).get("result", {}).get("report", {})
+        if isinstance(report, dict):
+            return report
+    return {}
+
+
 def _behavioral_penalty(
     *,
     world_state: dict,
@@ -214,7 +224,7 @@ def _behavioral_penalty(
     scenario: dict,
 ) -> tuple[float, dict]:
     track = scenario["metadata"]["track"]
-    if trace_evidence is None or track != "gtm":
+    if trace_evidence is None:
         return 0.0, {
             "behavioral_penalty": 0.0,
             "adverse_event_count": 0,
@@ -222,6 +232,12 @@ def _behavioral_penalty(
             "support_alert_turn_count": 0,
             "support_actions_after_adverse_event": 0,
             "trust_decline": 0.0,
+            "soft_demand_alert_turn_count": 0,
+            "demand_decline": 0.0,
+            "pipeline_decline_ratio": 0.0,
+            "hiring_response_count": 0,
+            "finance_response_count": 0,
+            "unresolved_hiring_pressure": False,
             "rigid_loop_penalty_applied": False,
         }
 
@@ -234,51 +250,14 @@ def _behavioral_penalty(
             "support_alert_turn_count": 0,
             "support_actions_after_adverse_event": 0,
             "trust_decline": 0.0,
+            "soft_demand_alert_turn_count": 0,
+            "demand_decline": 0.0,
+            "pipeline_decline_ratio": 0.0,
+            "hiring_response_count": 0,
+            "finance_response_count": 0,
+            "unresolved_hiring_pressure": False,
             "rigid_loop_penalty_applied": False,
         }
-
-    adverse_event_types = {"pricing_backlash", "customer_backlash", "trust_backlash", "retention_shock"}
-    substantive_response_tools = {
-        "ops.support.resolve",
-        "sales.pricing.propose",
-        "product.roadmap.write",
-        "people.hiring.update",
-        "finance.plan.write",
-        "notes.write",
-    }
-    adverse_turn_indices = [
-        index
-        for index, turn in enumerate(turns)
-        if any(event.get("event_type") in adverse_event_types for event in turn.get("events", []))
-    ]
-    response_tools_after_adverse_event: list[str] = []
-    if adverse_turn_indices:
-        first_adverse_turn = adverse_turn_indices[0]
-        for turn in turns[first_adverse_turn + 1 :]:
-            for action in turn.get("actions", []):
-                response_tools_after_adverse_event.append(str(action.get("tool_name", "")))
-    support_actions_after_adverse_event = sum(
-        1 for tool_name in response_tools_after_adverse_event if tool_name == "ops.support.resolve"
-    )
-    unanswered_adverse_events = (
-        len(adverse_turn_indices)
-        if adverse_turn_indices and not any(tool in substantive_response_tools for tool in response_tools_after_adverse_event)
-        else 0
-    )
-
-    support_alert_turn_count = sum(1 for turn in turns if "support_backlog_above_50" in _extract_alerts(turn))
-    has_any_support_action = any(
-        action.get("tool_name") == "ops.support.resolve"
-        for turn in turns
-        for action in turn.get("actions", [])
-    )
-    initial_trust = 0.0
-    first_turn_observations = turns[0].get("observations", [])
-    if first_turn_observations:
-        initial_values = first_turn_observations[0].get("values", {})
-        initial_trust = float(initial_values.get("trust_score", 0.0) or 0.0)
-    final_trust = float(world_state.get("customers", {}).get("trust_score", 0.0))
-    trust_decline = max(0.0, initial_trust - final_trust)
 
     normalized_sequences = [
         tuple(str(action.get("tool_name", "")) for action in turn.get("actions", []))
@@ -287,24 +266,146 @@ def _behavioral_penalty(
     dominant_sequence_count = max((normalized_sequences.count(sequence) for sequence in set(normalized_sequences)), default=0)
     rigid_loop_penalty_applied = dominant_sequence_count >= 3 and len(set(normalized_sequences)) <= 2
 
-    penalty = 0.0
-    if unanswered_adverse_events > 0:
-        penalty += 0.4
-    if support_alert_turn_count >= 2 and not has_any_support_action:
-        penalty += 0.15
-    if trust_decline >= 0.1 and unanswered_adverse_events > 0:
-        penalty += 0.1
-    if rigid_loop_penalty_applied and unanswered_adverse_events > 0:
-        penalty += 0.05
+    if track == "gtm":
+        adverse_event_types = {"pricing_backlash", "customer_backlash", "trust_backlash", "retention_shock"}
+        substantive_response_tools = {
+            "ops.support.resolve",
+            "sales.pricing.propose",
+            "product.roadmap.write",
+            "people.hiring.update",
+            "finance.plan.write",
+            "notes.write",
+        }
+        adverse_turn_indices = [
+            index
+            for index, turn in enumerate(turns)
+            if any(event.get("event_type") in adverse_event_types for event in turn.get("events", []))
+        ]
+        response_tools_after_adverse_event: list[str] = []
+        if adverse_turn_indices:
+            first_adverse_turn = adverse_turn_indices[0]
+            for turn in turns[first_adverse_turn + 1 :]:
+                for action in turn.get("actions", []):
+                    response_tools_after_adverse_event.append(str(action.get("tool_name", "")))
+        support_actions_after_adverse_event = sum(
+            1 for tool_name in response_tools_after_adverse_event if tool_name == "ops.support.resolve"
+        )
+        unanswered_adverse_events = (
+            len(adverse_turn_indices)
+            if adverse_turn_indices and not any(tool in substantive_response_tools for tool in response_tools_after_adverse_event)
+            else 0
+        )
 
-    penalty = _round_score(penalty)
-    return penalty, {
-        "behavioral_penalty": penalty,
-        "adverse_event_count": len(adverse_turn_indices),
-        "unanswered_adverse_events": unanswered_adverse_events,
-        "support_alert_turn_count": support_alert_turn_count,
-        "support_actions_after_adverse_event": support_actions_after_adverse_event,
-        "trust_decline": round(trust_decline, 4),
+        support_alert_turn_count = sum(1 for turn in turns if "support_backlog_above_50" in _extract_alerts(turn))
+        has_any_support_action = any(
+            action.get("tool_name") == "ops.support.resolve"
+            for turn in turns
+            for action in turn.get("actions", [])
+        )
+        first_report = _extract_metrics_report(turns[0])
+        initial_trust = float(first_report.get("customers", {}).get("trust_score", 0.0) or 0.0)
+        final_trust = float(world_state.get("customers", {}).get("trust_score", 0.0))
+        trust_decline = max(0.0, initial_trust - final_trust)
+
+        penalty = 0.0
+        if unanswered_adverse_events > 0:
+            penalty += 0.4
+        if support_alert_turn_count >= 2 and not has_any_support_action:
+            penalty += 0.15
+        if trust_decline >= 0.1 and unanswered_adverse_events > 0:
+            penalty += 0.1
+        if rigid_loop_penalty_applied and unanswered_adverse_events > 0:
+            penalty += 0.05
+
+        penalty = _round_score(penalty)
+        return penalty, {
+            "behavioral_penalty": penalty,
+            "adverse_event_count": len(adverse_turn_indices),
+            "unanswered_adverse_events": unanswered_adverse_events,
+            "support_alert_turn_count": support_alert_turn_count,
+            "support_actions_after_adverse_event": support_actions_after_adverse_event,
+            "trust_decline": round(trust_decline, 4),
+            "soft_demand_alert_turn_count": 0,
+            "demand_decline": 0.0,
+            "pipeline_decline_ratio": 0.0,
+            "hiring_response_count": 0,
+            "finance_response_count": 0,
+            "unresolved_hiring_pressure": False,
+            "rigid_loop_penalty_applied": rigid_loop_penalty_applied,
+        }
+
+    if track == "people":
+        soft_demand_alert_turn_count = sum(1 for turn in turns if "market_demand_softening" in _extract_alerts(turn))
+        first_report = _extract_metrics_report(turns[0])
+        initial_demand = float(first_report.get("market", {}).get("demand_index", 0.0) or 0.0)
+        initial_pipeline = float(first_report.get("sales", {}).get("weighted_pipeline_usd", 0.0) or 0.0)
+        final_demand = float(world_state.get("market", {}).get("demand_index", 0.0))
+        final_pipeline = float(world_state.get("sales", {}).get("weighted_pipeline_usd", 0.0))
+        demand_decline = max(0.0, initial_demand - final_demand)
+        if initial_pipeline <= 0:
+            pipeline_decline_ratio = 0.0
+        else:
+            pipeline_decline_ratio = max(0.0, (initial_pipeline - final_pipeline) / initial_pipeline)
+
+        hiring_response_tools = {"people.hiring.update", "people.org.adjust"}
+        finance_response_tools = {"finance.plan.write", "finance.raise.propose"}
+        hiring_response_count = sum(
+            1
+            for turn in turns
+            for action in turn.get("actions", [])
+            if action.get("tool_name") in hiring_response_tools
+        )
+        finance_response_count = sum(
+            1
+            for turn in turns
+            for action in turn.get("actions", [])
+            if action.get("tool_name") in finance_response_tools
+        )
+        open_roles = int(world_state.get("team", {}).get("hiring", {}).get("open_roles", 0))
+        financing_pressure = float(world_state.get("risk", {}).get("financing_pressure", 0.0))
+        unresolved_hiring_pressure = open_roles > 0 and financing_pressure >= 0.55
+        no_response = hiring_response_count == 0 and finance_response_count == 0
+
+        penalty = 0.0
+        if soft_demand_alert_turn_count >= 3 and unresolved_hiring_pressure and hiring_response_count == 0:
+            penalty += 0.02
+        if soft_demand_alert_turn_count >= 3 and financing_pressure >= 0.55 and finance_response_count == 0:
+            penalty += 0.02
+        if demand_decline >= 0.03 and pipeline_decline_ratio >= 0.2 and no_response:
+            penalty += 0.02
+        if rigid_loop_penalty_applied and no_response and soft_demand_alert_turn_count >= 3:
+            penalty += 0.01
+
+        penalty = _round_score(penalty)
+        return penalty, {
+            "behavioral_penalty": penalty,
+            "adverse_event_count": 0,
+            "unanswered_adverse_events": 0,
+            "support_alert_turn_count": 0,
+            "support_actions_after_adverse_event": 0,
+            "trust_decline": 0.0,
+            "soft_demand_alert_turn_count": soft_demand_alert_turn_count,
+            "demand_decline": round(demand_decline, 4),
+            "pipeline_decline_ratio": round(pipeline_decline_ratio, 4),
+            "hiring_response_count": hiring_response_count,
+            "finance_response_count": finance_response_count,
+            "unresolved_hiring_pressure": unresolved_hiring_pressure,
+            "rigid_loop_penalty_applied": rigid_loop_penalty_applied,
+        }
+
+    return 0.0, {
+        "behavioral_penalty": 0.0,
+        "adverse_event_count": 0,
+        "unanswered_adverse_events": 0,
+        "support_alert_turn_count": 0,
+        "support_actions_after_adverse_event": 0,
+        "trust_decline": 0.0,
+        "soft_demand_alert_turn_count": 0,
+        "demand_decline": 0.0,
+        "pipeline_decline_ratio": 0.0,
+        "hiring_response_count": 0,
+        "finance_response_count": 0,
+        "unresolved_hiring_pressure": False,
         "rigid_loop_penalty_applied": rigid_loop_penalty_applied,
     }
 
