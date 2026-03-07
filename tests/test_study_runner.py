@@ -36,6 +36,10 @@ class StudyRunnerTests(unittest.TestCase):
                 path=packet_path,
             )
             self.assertTrue(packet_validation.ok)
+            packet = json.loads(packet_path.read_text(encoding="utf-8"))
+            first_scenario = packet["scenarios"][0]
+            self.assertTrue(Path(first_scenario["trace_path"]).exists())
+            self.assertTrue(Path(first_scenario["score_report_path"]).exists())
 
     def test_compile_calibration_study_emits_partial_study_report(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:

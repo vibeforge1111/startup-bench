@@ -46,12 +46,18 @@ class ModelReviewerOpsTests(unittest.TestCase):
             prompt_path = Path(bundle["prompt_path"])
             context_path = Path(bundle["context_path"])
             template_path = Path(bundle["template_path"])
+            trace_path = Path(bundle["trace_path"])
+            score_report_path = Path(bundle["score_report_path"])
             self.assertTrue(prompt_path.exists())
             self.assertTrue(context_path.exists())
             self.assertTrue(template_path.exists())
+            self.assertTrue(trace_path.exists())
+            self.assertTrue(score_report_path.exists())
             self.assertIn("TheStartupBench Synthetic Reviewer Prompt", prompt_path.read_text(encoding="utf-8"))
+            self.assertIn("\"trace\"", context_path.read_text(encoding="utf-8"))
             template = json.loads(template_path.read_text(encoding="utf-8"))
             self.assertEqual(template["reviewer"]["role"], "model_reviewer")
+            self.assertTrue(template["run"]["trace_path"])
 
     def test_import_model_reviews_accepts_fenced_json_and_reports_rejections(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:

@@ -48,12 +48,14 @@
       "minItems": 1,
       "items": {
         "type": "object",
-        "required": ["scenario_id", "track", "title", "summary"],
+        "required": ["scenario_id", "track", "title", "summary", "trace_path", "score_report_path"],
         "properties": {
           "scenario_id": { "type": "string" },
           "track": { "type": "string" },
           "title": { "type": "string" },
-          "summary": { "type": "string" }
+          "summary": { "type": "string" },
+          "trace_path": { "type": "string" },
+          "score_report_path": { "type": "string" }
         },
         "additionalProperties": false
       }

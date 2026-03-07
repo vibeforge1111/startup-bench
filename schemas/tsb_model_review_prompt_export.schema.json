@@ -22,7 +22,9 @@
           "scenario_pack_version",
           "prompt_path",
           "context_path",
-          "template_path"
+          "template_path",
+          "trace_path",
+          "score_report_path"
         ],
         "properties": {
           "bundle_id": { "type": "string" },
@@ -33,7 +35,9 @@
           "scenario_pack_version": { "type": "string" },
           "prompt_path": { "type": "string" },
           "context_path": { "type": "string" },
-          "template_path": { "type": "string" }
+          "template_path": { "type": "string" },
+          "trace_path": { "type": "string" },
+          "score_report_path": { "type": "string" }
         },
         "additionalProperties": false
       }

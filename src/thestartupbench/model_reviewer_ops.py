@@ -50,7 +50,7 @@ Recommended synthetic reviewer ids:
 - Penalize brittle growth hacking, unrealistic assumptions, or obvious benchmark gaming.
 - If evidence is missing, score conservatively and note the missing evidence in `weaknesses`.
 
-## Scenario context
+## Scenario context and evidence
 
 ```json
 {context_json}
@@ -115,8 +115,8 @@ def _build_template(*, packet: dict, scenario: dict) -> dict:
             "runner_type": packet["runner_type"],
             "runner_id": packet["runner_id"],
             "seed": packet["seed"],
-            "trace_path": "",
-            "score_report_path": packet["suite_report_path"],
+            "trace_path": scenario["trace_path"],
+            "score_report_path": scenario["score_report_path"],
         },
         "rubric": {
             "survival_and_risk": 1,
@@ -159,6 +159,12 @@ def export_model_review_bundles(*, study_run_dir: Path, output_dir: Path) -> dic
 
             scenario = scenario_lookup[scenario_id]
             scenario_report = report_lookup[scenario_id]
+            trace_path = _resolve_path(scenario["trace_path"])
+            score_report_path = _resolve_path(scenario["score_report_path"])
+            trace = load_json(trace_path)
+            raise_if_invalid(artifact_type="trace", instance=trace, path=trace_path)
+            score_report = load_json(score_report_path)
+            raise_if_invalid(artifact_type="score-report", instance=score_report, path=score_report_path)
             template = _build_template(packet=packet, scenario=scenario)
             context = {
                 "benchmark_version": packet["benchmark_version"],
@@ -170,9 +176,13 @@ def export_model_review_bundles(*, study_run_dir: Path, output_dir: Path) -> dic
                     "runner_type": packet["runner_type"],
                     "runner_id": packet["runner_id"],
                     "seed": packet["seed"],
+                    "trace_path": scenario["trace_path"],
+                    "score_report_path": scenario["score_report_path"],
                 },
                 "suite_report_path": packet["suite_report_path"],
                 "scenario_report": scenario_report,
+                "score_report": score_report,
+                "trace": trace,
                 "rubric_keys": packet["rubric_keys"],
             }
 
@@ -181,6 +191,8 @@ def export_model_review_bundles(*, study_run_dir: Path, output_dir: Path) -> dic
             prompt_path = bundle_dir / "prompt.md"
             context_path = bundle_dir / "context.json"
             template_path = bundle_dir / "review_template.json"
+            trace_bundle_path = bundle_dir / "trace.json"
+            score_bundle_path = bundle_dir / "score_report.json"
 
             context_json = json.dumps(context, indent=2)
             template_json = json.dumps(template, indent=2)
@@ -190,6 +202,8 @@ def export_model_review_bundles(*, study_run_dir: Path, output_dir: Path) -> dic
             )
             context_path.write_text(context_json + "\n", encoding="utf-8")
             template_path.write_text(template_json + "\n", encoding="utf-8")
+            trace_bundle_path.write_text(json.dumps(trace, indent=2) + "\n", encoding="utf-8")
+            score_bundle_path.write_text(json.dumps(score_report, indent=2) + "\n", encoding="utf-8")
 
             bundles.append(
                 {
@@ -202,6 +216,8 @@ def export_model_review_bundles(*, study_run_dir: Path, output_dir: Path) -> dic
                     "prompt_path": str(prompt_path),
                     "context_path": str(context_path),
                     "template_path": str(template_path),
+                    "trace_path": str(trace_bundle_path),
+                    "score_report_path": str(score_bundle_path),
                 }
             )
 

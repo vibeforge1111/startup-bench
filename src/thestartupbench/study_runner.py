@@ -7,6 +7,7 @@ from pathlib import Path
 from statistics import mean
 
 from .calibration import build_calibration_report
+from .baseline_runner import run_baseline
 from .paths import repo_root
 from .scenario_loader import load_json, load_scenario
 from .suite_runner import load_scenario_suite, run_suite
@@ -28,6 +29,31 @@ def _load_study_manifest(path: Path) -> dict:
     manifest = load_json(path)
     raise_if_invalid(artifact_type="calibration-study", instance=manifest, path=path)
     return manifest
+
+
+def _write_scenario_run_artifacts(
+    *,
+    scenario_path: Path,
+    baseline_runner_id: str,
+    seed: int,
+    max_turns: int | None,
+    output_dir: Path,
+) -> dict:
+    output_dir.mkdir(parents=True, exist_ok=True)
+    result = run_baseline(
+        scenario_path=scenario_path,
+        baseline_id=baseline_runner_id,
+        seed=seed,
+        max_turns=max_turns,
+    )
+    trace_path = output_dir / "trace.json"
+    score_report_path = output_dir / "score_report.json"
+    trace_path.write_text(json.dumps(result["trace"], indent=2), encoding="utf-8")
+    score_report_path.write_text(json.dumps(result["score_report"], indent=2), encoding="utf-8")
+    return {
+        "trace_path": str(trace_path),
+        "score_report_path": str(score_report_path),
+    }
 
 
 def run_calibration_study(*, study_manifest_path: Path, output_dir: Path) -> dict:
@@ -58,12 +84,21 @@ def run_calibration_study(*, study_manifest_path: Path, output_dir: Path) -> dic
         for entry in suite["scenarios"]:
             scenario_path = (suite_path.parent / entry["path"]).resolve()
             scenario = load_scenario(scenario_path)
+            scenario_run_artifacts = _write_scenario_run_artifacts(
+                scenario_path=scenario_path,
+                baseline_runner_id=target["baseline_runner_id"],
+                seed=int(target["seed"]),
+                max_turns=target.get("max_turns"),
+                output_dir=target_dir / "scenarios" / scenario["metadata"]["scenario_id"],
+            )
             scenario_entries.append(
                 {
                     "scenario_id": scenario["metadata"]["scenario_id"],
                     "track": scenario["metadata"]["track"],
                     "title": scenario["metadata"]["title"],
                     "summary": scenario["metadata"]["summary"],
+                    "trace_path": scenario_run_artifacts["trace_path"],
+                    "score_report_path": scenario_run_artifacts["score_report_path"],
                 }
             )
 
