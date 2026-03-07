@@ -8,6 +8,9 @@ Current status:
 - implementation-oriented spec package drafted
 - machine-readable schemas added
 - example scenario added
+- reference CLI and validation runtime implemented
+- stateful business transition runtime implemented for core startup tools
+- programmatic scoring and runtime tests implemented
 
 Key documents:
 
@@ -43,6 +46,7 @@ Artifacts:
 - `examples/minimal_primitives.json`
 - `examples/minimal_tool_manifest.json`
 - `examples/minimal_score_report.json`
+- `examples/minimal_tool_script.json`
 
 Implementation package:
 
@@ -60,3 +64,20 @@ python -m thestartupbench run-dry examples/minimal_b2b_saas_scenario.json --seed
 python -m thestartupbench run-script examples/minimal_b2b_saas_scenario.json examples/minimal_tool_script.json --seed 1 --output-dir tmp_out
 python -m unittest discover -s tests -p "test_*.py"
 ```
+
+Current reference runtime coverage:
+
+- `metrics.query`
+- `metrics.report`
+- `product.roadmap.read`
+- `product.roadmap.write`
+- `sales.pipeline.read`
+- `sales.pipeline.update`
+- `sales.pricing.propose`
+- `finance.plan.read`
+- `finance.plan.write`
+- `board.read`
+- `board.update`
+- `notes.read`
+- `notes.write`
+- `sim.advance`

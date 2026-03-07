@@ -73,11 +73,18 @@
   ],
   "tools": [
     "metrics.query",
+    "metrics.report",
+    "product.roadmap.read",
+    "product.roadmap.write",
     "sales.pipeline.read",
+    "sales.pipeline.update",
     "sales.pricing.propose",
     "finance.plan.read",
     "finance.plan.write",
+    "board.read",
     "board.update",
+    "notes.read",
+    "notes.write",
     "sim.advance"
   ],
   "event_model": {

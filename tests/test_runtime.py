@@ -38,6 +38,75 @@ class RuntimeTests(unittest.TestCase):
         self.assertGreater(self.session.world_state["finance"]["runway_weeks"], initial_runway)
         self.assertIn("last_plan_update", self.session.world_state["finance"])
 
+    def test_metrics_query_supports_nested_dotted_paths(self) -> None:
+        response = execute_tool_call(
+            self.session,
+            {
+                "tool_name": "metrics.query",
+                "request_id": "req_metrics_001",
+                "arguments": {"metric_ids": ["sales.pricing.current_price_index", "health_index"]},
+            },
+        )
+
+        self.assertTrue(response["ok"])
+        self.assertEqual(response["result"]["items"]["sales.pricing.current_price_index"], 1.0)
+        self.assertEqual(response["result"]["items"]["health_index"], 0.8192)
+
+    def test_metrics_report_surfaces_alerts_and_headline_metrics(self) -> None:
+        response = execute_tool_call(
+            self.session,
+            {
+                "tool_name": "metrics.report",
+                "request_id": "req_metrics_002",
+                "arguments": {},
+            },
+        )
+
+        self.assertTrue(response["ok"])
+        report = response["result"]["report"]
+        self.assertEqual(report["headline"]["cash_usd"], 920000)
+        self.assertIn("pending_scheduled_events", report["alerts"])
+
+    def test_product_roadmap_write_updates_product_and_burn(self) -> None:
+        response = execute_tool_call(
+            self.session,
+            {
+                "tool_name": "product.roadmap.write",
+                "request_id": "req_prod_001",
+                "arguments": {
+                    "roadmap_items_delta": -1,
+                    "onboarding_quality_delta": 0.08,
+                    "major_incidents_delta": -1,
+                    "budget_change_monthly_burn_usd": 12000,
+                },
+            },
+        )
+
+        self.assertTrue(response["ok"])
+        self.assertEqual(self.session.world_state["product"]["roadmap_items"], 4)
+        self.assertEqual(self.session.world_state["product"]["onboarding_quality"], 0.63)
+        self.assertEqual(self.session.world_state["product"]["major_incidents_open"], 0)
+        self.assertEqual(self.session.world_state["finance"]["monthly_burn_usd"], 217000.0)
+
+    def test_sales_pipeline_update_changes_pipeline_and_revenue(self) -> None:
+        response = execute_tool_call(
+            self.session,
+            {
+                "tool_name": "sales.pipeline.update",
+                "request_id": "req_sales_001",
+                "arguments": {
+                    "pipeline_count_delta": 2,
+                    "weighted_pipeline_usd_delta": 90000,
+                    "closed_won_revenue_delta_usd": 15000,
+                },
+            },
+        )
+
+        self.assertTrue(response["ok"])
+        self.assertEqual(self.session.world_state["sales"]["pipeline_count"], 16)
+        self.assertEqual(self.session.world_state["sales"]["weighted_pipeline_usd"], 470000.0)
+        self.assertEqual(self.session.world_state["finance"]["monthly_revenue_usd"], 86000.0)
+
     def test_sales_pricing_propose_rejects_unapproved_change(self) -> None:
         response = execute_tool_call(
             self.session,
@@ -93,6 +162,37 @@ class RuntimeTests(unittest.TestCase):
         self.assertEqual(self.session.world_state["sim"]["processed_event_ids"], ["ev_001"])
         self.assertEqual(self.session.world_state["sim"]["pending_event_count"], 1)
         self.assertEqual(response["result"]["events_processed"][1]["event_id"], "ev_001")
+
+    def test_board_read_and_update_track_governance_state(self) -> None:
+        read_before = execute_tool_call(
+            self.session,
+            {
+                "tool_name": "board.read",
+                "request_id": "req_board_001",
+                "arguments": {},
+            },
+        )
+        self.assertTrue(read_before["ok"])
+        self.assertEqual(read_before["result"]["governance"]["board_update_count"], 0)
+
+        update = execute_tool_call(
+            self.session,
+            {
+                "tool_name": "board.update",
+                "request_id": "req_board_002",
+                "arguments": {
+                    "summary": "Reset burn and tighten onboarding execution.",
+                    "forecast": {"runway_weeks": 32},
+                    "asks": ["approval to hold headcount flat"],
+                },
+            },
+        )
+        self.assertTrue(update["ok"])
+        self.assertEqual(self.session.world_state["governance"]["board_update_count"], 1)
+        self.assertEqual(
+            self.session.world_state["governance"]["latest_board_update"]["summary"],
+            "Reset burn and tighten onboarding execution.",
+        )
 
 
 if __name__ == "__main__":

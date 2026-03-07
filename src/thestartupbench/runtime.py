@@ -35,11 +35,16 @@ def _advance_time(value: str, *, amount: int, unit: str) -> str:
 
 def _flatten_world_state(world_state: dict) -> dict[str, object]:
     flat: dict[str, object] = {}
-    for partition, value in world_state.items():
+    stack: list[tuple[str, object]] = [("", world_state)]
+    while stack:
+        prefix, value = stack.pop()
         if isinstance(value, dict):
             for key, nested_value in value.items():
-                flat[f"{partition}.{key}"] = nested_value
-                flat[key] = nested_value
+                dotted = f"{prefix}.{key}" if prefix else key
+                stack.append((dotted, nested_value))
+        else:
+            flat[prefix] = value
+            flat[prefix.split(".")[-1]] = value
     return flat
 
 
@@ -123,6 +128,48 @@ def _apply_weekly_business_drift(session: RuntimeSession, *, weeks: int) -> None
     customers["paying_accounts"] = max(0, paying_accounts - accounts_lost)
 
 
+def _build_metric_report(session: RuntimeSession) -> dict:
+    finance = session.world_state.get("finance", {})
+    customers = session.world_state.get("customers", {})
+    sales = session.world_state.get("sales", {})
+    governance = session.world_state.get("governance", {})
+    sim = session.world_state.get("sim", {})
+
+    alerts = []
+    if float(finance.get("runway_weeks", 0)) < 20:
+        alerts.append("runway_below_20_weeks")
+    if float(customers.get("monthly_churn_rate", 0)) > 0.05:
+        alerts.append("churn_above_5pct")
+    if float(customers.get("trust_score", 1.0)) < 0.6:
+        alerts.append("trust_score_below_0_6")
+    if int(sim.get("pending_event_count", 0)) > 0:
+        alerts.append("pending_scheduled_events")
+
+    return {
+        "headline": {
+            "cash_usd": finance.get("cash_usd"),
+            "runway_weeks": finance.get("runway_weeks"),
+            "monthly_revenue_usd": finance.get("monthly_revenue_usd"),
+            "net_burn_usd": finance.get("net_burn_usd"),
+        },
+        "customers": {
+            "paying_accounts": customers.get("paying_accounts"),
+            "monthly_churn_rate": customers.get("monthly_churn_rate"),
+            "trust_score": customers.get("trust_score"),
+            "health_index": customers.get("health_index"),
+        },
+        "sales": {
+            "pipeline_count": sales.get("pipeline_count"),
+            "weighted_pipeline_usd": sales.get("weighted_pipeline_usd"),
+            "pricing": sales.get("pricing", {}),
+        },
+        "governance": {
+            "board_update_count": governance.get("board_update_count", 0),
+        },
+        "alerts": alerts,
+    }
+
+
 def execute_tool_call(session: RuntimeSession, tool_call: dict) -> dict:
     tool_name = tool_call["tool_name"]
     request_id = tool_call["request_id"]
@@ -133,6 +180,41 @@ def execute_tool_call(session: RuntimeSession, tool_call: dict) -> dict:
         flat = _flatten_world_state(session.world_state)
         result = {"items": {metric_id: flat.get(metric_id) for metric_id in metric_ids}}
         return _tool_result(tool_name, request_id, result=result)
+
+    if tool_name == "metrics.report":
+        return _tool_result(tool_name, request_id, result={"report": _build_metric_report(session)})
+
+    if tool_name == "product.roadmap.read":
+        return _tool_result(tool_name, request_id, result={"product": deepcopy(session.world_state["product"])})
+
+    if tool_name == "product.roadmap.write":
+        product = session.world_state.setdefault("product", {})
+        finance = session.world_state.setdefault("finance", {})
+        roadmap_items_delta = int(arguments.get("roadmap_items_delta", 0))
+        onboarding_quality_delta = float(arguments.get("onboarding_quality_delta", 0))
+        major_incidents_delta = int(arguments.get("major_incidents_delta", 0))
+        budget_change = float(arguments.get("budget_change_monthly_burn_usd", 0))
+
+        product["roadmap_items"] = max(0, int(product.get("roadmap_items", 0)) + roadmap_items_delta)
+        product["onboarding_quality"] = round(
+            max(0.0, min(1.0, float(product.get("onboarding_quality", 0.5)) + onboarding_quality_delta)),
+            4,
+        )
+        product["major_incidents_open"] = max(0, int(product.get("major_incidents_open", 0)) + major_incidents_delta)
+        if budget_change:
+            finance["monthly_burn_usd"] = round(float(finance.get("monthly_burn_usd", 0)) + budget_change, 2)
+        recalculate_derived_metrics(session.world_state)
+        return _tool_result(
+            tool_name,
+            request_id,
+            result={"product": deepcopy(product), "finance": deepcopy(finance)},
+            state_delta_summary={
+                "product.roadmap_items": product["roadmap_items"],
+                "product.onboarding_quality": product["onboarding_quality"],
+                "product.major_incidents_open": product["major_incidents_open"],
+                "finance.monthly_burn_usd": finance.get("monthly_burn_usd"),
+            },
+        )
 
     if tool_name == "finance.plan.read":
         return _tool_result(tool_name, request_id, result={"finance": deepcopy(session.world_state["finance"])})
@@ -157,6 +239,32 @@ def execute_tool_call(session: RuntimeSession, tool_call: dict) -> dict:
 
     if tool_name == "sales.pipeline.read":
         return _tool_result(tool_name, request_id, result={"sales": deepcopy(session.world_state["sales"])})
+
+    if tool_name == "sales.pipeline.update":
+        sales = session.world_state.setdefault("sales", {})
+        finance = session.world_state.setdefault("finance", {})
+        pipeline_count_delta = int(arguments.get("pipeline_count_delta", 0))
+        weighted_pipeline_usd_delta = float(arguments.get("weighted_pipeline_usd_delta", 0))
+        closed_won_revenue_delta = float(arguments.get("closed_won_revenue_delta_usd", 0))
+
+        sales["pipeline_count"] = max(0, int(sales.get("pipeline_count", 0)) + pipeline_count_delta)
+        sales["weighted_pipeline_usd"] = round(float(sales.get("weighted_pipeline_usd", 0)) + weighted_pipeline_usd_delta, 2)
+        if closed_won_revenue_delta:
+            finance["monthly_revenue_usd"] = round(
+                float(finance.get("monthly_revenue_usd", 0)) + closed_won_revenue_delta,
+                2,
+            )
+        recalculate_derived_metrics(session.world_state)
+        return _tool_result(
+            tool_name,
+            request_id,
+            result={"sales": deepcopy(sales), "finance": deepcopy(finance)},
+            state_delta_summary={
+                "sales.pipeline_count": sales["pipeline_count"],
+                "sales.weighted_pipeline_usd": sales["weighted_pipeline_usd"],
+                "finance.monthly_revenue_usd": finance.get("monthly_revenue_usd"),
+            },
+        )
 
     if tool_name == "sales.pricing.propose":
         change_pct = float(arguments.get("price_change_pct", 0))
@@ -205,6 +313,9 @@ def execute_tool_call(session: RuntimeSession, tool_call: dict) -> dict:
             result={"notes": list(session.notes)},
             state_delta_summary={"notes_count": len(session.notes)},
         )
+
+    if tool_name == "board.read":
+        return _tool_result(tool_name, request_id, result={"governance": deepcopy(session.world_state["governance"])})
 
     if tool_name == "board.update":
         update = {

@@ -1,6 +1,8 @@
 from __future__ import annotations
 
+import json
 import sys
+import tempfile
 import unittest
 from pathlib import Path
 
@@ -36,6 +38,29 @@ class ScriptRunnerTests(unittest.TestCase):
         self.assertEqual(final_state["sim"]["current_turn"], 1)
         self.assertEqual(final_state["finance"]["cash_usd"], 886500.0)
         self.assertGreater(result["score_report"]["scenario_score"], 0.0)
+
+    def test_script_runner_rejects_undeclared_tool_calls(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            script_path = Path(tmp_dir) / "bad_script.json"
+            script_path.write_text(
+                json.dumps(
+                    [
+                        {
+                            "tool_name": "finance.raise.propose",
+                            "request_id": "req_bad_001",
+                            "arguments": {},
+                        }
+                    ]
+                ),
+                encoding="utf-8",
+            )
+
+            with self.assertRaisesRegex(ValueError, "not declared by scenario"):
+                run_tool_script(
+                    scenario_path=SCENARIO_PATH,
+                    tool_calls_path=script_path,
+                    seed=31,
+                )
 
 
 if __name__ == "__main__":

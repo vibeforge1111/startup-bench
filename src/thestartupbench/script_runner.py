@@ -21,6 +21,7 @@ def run_tool_script(*, scenario_path: Path, tool_calls_path: Path, seed: int) ->
     tool_calls = load_json(tool_calls_path)
     if not isinstance(tool_calls, list):
         raise ValueError("Tool script must be a JSON array of tool calls.")
+    declared_tools = set(scenario["tools"])
 
     world_state = initialize_world_state(scenario, seed=seed)
     session = RuntimeSession(scenario=scenario, world_state=world_state)
@@ -30,6 +31,8 @@ def run_tool_script(*, scenario_path: Path, tool_calls_path: Path, seed: int) ->
     ]
 
     for turn_index, tool_call in enumerate(tool_calls):
+        if tool_call["tool_name"] not in declared_tools:
+            raise ValueError(f"Tool '{tool_call['tool_name']}' is not declared by scenario '{scenario['metadata']['scenario_id']}'.")
         before_time = session.world_state["sim"]["current_time"]
         observations = session.visible_observations()
         response = execute_tool_call(session, tool_call)
@@ -46,7 +49,7 @@ def run_tool_script(*, scenario_path: Path, tool_calls_path: Path, seed: int) ->
                         "request_id": tool_call["request_id"],
                         "arguments": tool_call.get("arguments", {}),
                         "response": response,
-                        "status": "ok",
+                        "status": "ok" if response.get("ok", False) else "error",
                     }
                 ],
                 "events": response["result"].get("events_processed", []),
@@ -94,4 +97,3 @@ def run_tool_script(*, scenario_path: Path, tool_calls_path: Path, seed: int) ->
 
 
 __all__ = ["run_tool_script"]
-
