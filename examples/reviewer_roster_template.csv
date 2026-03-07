@@ -1,0 +1,4 @@
+reviewer_id,name,role,functional_domain,startup_stage_focus,years_experience,email,status,notes
+founder_001,,founder_ceo,general_management,seed_to_series_b,,,@invited,
+product_001,,vp_product,product,seed_to_series_c,,,@invited,
+ops_001,,vp_operations,finance_operations,series_a_to_series_c,,,@invited,

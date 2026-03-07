@@ -22,6 +22,7 @@ TheStartupBench is no longer just an RFC. It now has:
 - operator/founder calibration protocol and machine-readable review artifacts
 - calibration reports and study manifests for hidden-pack operator alignment
 - executable study runs, review packets, and study-level calibration compilation
+- taskforce strategy and reviewer manual for organizing human calibration
 - CI for tests, validation, and smoke suites
 - unit tests and executable smoke paths
 
@@ -127,6 +128,8 @@ Completed:
 - hidden-eval policy in [hidden_eval_policy.md](/C:/Users/USER/Desktop/startup-bench/spec/hidden_eval_policy.md)
 - operator calibration protocol in [operator_eval_protocol.md](/C:/Users/USER/Desktop/startup-bench/spec/operator_eval_protocol.md)
 - operator study plan in [operator_study_plan.md](/C:/Users/USER/Desktop/startup-bench/docs/operator_study_plan.md)
+- taskforce strategy in [calibration_taskforce_strategy.md](/C:/Users/USER/Desktop/startup-bench/docs/calibration_taskforce_strategy.md)
+- reviewer manual in [reviewer_manual.md](/C:/Users/USER/Desktop/startup-bench/docs/reviewer_manual.md)
 - public lifecycle changelog in [pack_lifecycle_changelog.md](/C:/Users/USER/Desktop/startup-bench/docs/pack_lifecycle_changelog.md)
 
 ### 7. Current scenario coverage
@@ -331,6 +334,7 @@ Partially done:
 - calibration reports can now compare operator judgments against suite scores
 - a concrete study manifest now exists for canary, strategy, and real-world hidden packs
 - the reference tooling can now run a full study wave and compile partial study reports
+- the repo now includes practical docs for recruiting and guiding a human calibration taskforce
 
 What remains inside this category:
 

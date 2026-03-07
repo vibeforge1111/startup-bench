@@ -25,6 +25,8 @@ It is organized into:
 - `hidden_eval_policy.md`: hidden test/fresh split operation, refresh cadence, and redaction policy
 - `operator_eval_protocol.md`: founder/operator review capture, calibration rubric, and promotion bar
 - `../docs/operator_study_plan.md`: concrete study wave for canary, strategy, and real-world hidden packs
+- `../docs/calibration_taskforce_strategy.md`: org structure, recruiting, and operating plan for the human calibration taskforce
+- `../docs/reviewer_manual.md`: reviewer-facing guide for scoring packets consistently
 - `../docs/pack_lifecycle_changelog.md`: public pack promotion, retirement, and contamination ledger
 - `../examples/official_eval_profile.json`: reference official evaluation settings bundle
 - `../examples/minimal_run_manifest.json`: reference official run-manifest artifact
@@ -76,6 +78,7 @@ Example:
 - `../examples/minimal_operator_review_summary.json`
 - `../examples/minimal_calibration_report.json`
 - `../examples/operator_calibration_study_manifest.json`
+- `../examples/reviewer_roster_template.csv`
 - `../examples/minimal_world_state.json`
 - `../examples/minimal_primitives.json`
 - `../examples/minimal_tool_manifest.json`

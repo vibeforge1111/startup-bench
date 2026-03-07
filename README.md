@@ -40,6 +40,8 @@ Key documents:
 - `docs/testing_coverage.md`
 - `docs/pack_lifecycle_changelog.md`
 - `docs/operator_study_plan.md`
+- `docs/calibration_taskforce_strategy.md`
+- `docs/reviewer_manual.md`
 - `spec/README.md`
 - `spec/benchmark_contract.md`
 - `spec/scenario_spec.md`
@@ -106,6 +108,7 @@ Artifacts:
 - `examples/minimal_operator_review_summary.json`
 - `examples/minimal_calibration_report.json`
 - `examples/operator_calibration_study_manifest.json`
+- `examples/reviewer_roster_template.csv`
 - `examples/minimal_world_state.json`
 - `examples/minimal_primitives.json`
 - `examples/minimal_tool_manifest.json`
