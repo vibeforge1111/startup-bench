@@ -1,0 +1,46 @@
+{
+  "review_version": "0.1.0",
+  "benchmark_version": "0.2.0-draft",
+  "reviewer": {
+    "reviewer_id": "__REVIEWER_ID__",
+    "role": "__ROLE__",
+    "functional_domain": "__FUNCTIONAL_DOMAIN__",
+    "years_experience": 0,
+    "startup_stage_focus": "__STAGE_FOCUS__"
+  },
+  "scenario": {
+    "scenario_id": "__SCENARIO_ID__",
+    "track": "__TRACK__",
+    "split": "__SPLIT__",
+    "scenario_pack_version": "__SCENARIO_PACK_VERSION__"
+  },
+  "run": {
+    "runner_type": "__RUNNER_TYPE__",
+    "runner_id": "__RUNNER_ID__",
+    "seed": 0,
+    "trace_path": "__TRACE_PATH__",
+    "score_report_path": "__SCORE_REPORT_PATH__"
+  },
+  "rubric": {
+    "survival_and_risk": 1,
+    "capital_allocation": 1,
+    "customer_trust": 1,
+    "people_leadership": 1,
+    "strategic_quality": 1,
+    "overall_recommendation": "borderline"
+  },
+  "notes": {
+    "strengths": [
+      "__STRENGTH_1__"
+    ],
+    "weaknesses": [
+      "__WEAKNESS_1__"
+    ],
+    "recommended_actions": [
+      "__ACTION_1__"
+    ],
+    "benchmark_gaming_signals": [
+      "__GAMING_SIGNAL_1__"
+    ]
+  }
+}

@@ -27,6 +27,8 @@ It is organized into:
 - `../docs/operator_study_plan.md`: concrete study wave for canary, strategy, and real-world hidden packs
 - `../docs/calibration_taskforce_strategy.md`: org structure, recruiting, and operating plan for the human calibration taskforce
 - `../docs/reviewer_manual.md`: reviewer-facing guide for scoring packets consistently
+- `../docs/model_reviewer_panel.md`: synthetic reviewer panel guidance for Gemini, Opus, GPT, and other frontier models
+- `../docs/model_review_prompt_guide.md`: prompt skeleton for requesting valid operator-review JSON from a model
 - `../docs/pack_lifecycle_changelog.md`: public pack promotion, retirement, and contamination ledger
 - `../examples/official_eval_profile.json`: reference official evaluation settings bundle
 - `../examples/minimal_run_manifest.json`: reference official run-manifest artifact
@@ -82,6 +84,7 @@ Example:
 - `../examples/minimal_calibration_report.json`
 - `../examples/operator_calibration_study_manifest.json`
 - `../examples/reviewer_roster_template.csv`
+- `../examples/operator_review_fill_template.json`
 - `../examples/minimal_world_state.json`
 - `../examples/minimal_primitives.json`
 - `../examples/minimal_tool_manifest.json`

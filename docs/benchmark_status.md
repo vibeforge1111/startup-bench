@@ -24,6 +24,7 @@ TheStartupBench is no longer just an RFC. It now has:
 - executable study runs, review packets, and study-level calibration compilation
 - taskforce strategy and reviewer manual for organizing human calibration
 - reviewer assignment, exportable review forms, and import back into benchmark artifacts
+- synthetic reviewer panel guidance and fillable JSON template for LLM-based shadow review
 - CI for tests, validation, and smoke suites
 - unit tests and executable smoke paths
 
@@ -134,6 +135,8 @@ Completed:
 - operator study plan in [operator_study_plan.md](/C:/Users/USER/Desktop/startup-bench/docs/operator_study_plan.md)
 - taskforce strategy in [calibration_taskforce_strategy.md](/C:/Users/USER/Desktop/startup-bench/docs/calibration_taskforce_strategy.md)
 - reviewer manual in [reviewer_manual.md](/C:/Users/USER/Desktop/startup-bench/docs/reviewer_manual.md)
+- model reviewer panel guide in [model_reviewer_panel.md](/C:/Users/USER/Desktop/startup-bench/docs/model_reviewer_panel.md)
+- model review prompt guide in [model_review_prompt_guide.md](/C:/Users/USER/Desktop/startup-bench/docs/model_review_prompt_guide.md)
 - public lifecycle changelog in [pack_lifecycle_changelog.md](/C:/Users/USER/Desktop/startup-bench/docs/pack_lifecycle_changelog.md)
 
 ### 7. Current scenario coverage
@@ -340,6 +343,7 @@ Partially done:
 - the reference tooling can now run a full study wave and compile partial study reports
 - the repo now includes practical docs for recruiting and guiding a human calibration taskforce
 - the repo now includes reviewer-facing CSV and Markdown form workflows for external operators
+- the repo now includes a clear synthetic-reviewer lane for Gemini, Opus, GPT, and other model panels
 
 What remains inside this category:
 

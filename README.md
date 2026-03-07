@@ -43,6 +43,8 @@ Key documents:
 - `docs/operator_study_plan.md`
 - `docs/calibration_taskforce_strategy.md`
 - `docs/reviewer_manual.md`
+- `docs/model_reviewer_panel.md`
+- `docs/model_review_prompt_guide.md`
 - `spec/README.md`
 - `spec/benchmark_contract.md`
 - `spec/scenario_spec.md`
@@ -113,6 +115,7 @@ Artifacts:
 - `examples/minimal_calibration_report.json`
 - `examples/operator_calibration_study_manifest.json`
 - `examples/reviewer_roster_template.csv`
+- `examples/operator_review_fill_template.json`
 - `examples/minimal_world_state.json`
 - `examples/minimal_primitives.json`
 - `examples/minimal_tool_manifest.json`
