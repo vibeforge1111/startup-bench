@@ -1,0 +1,167 @@
+{
+  "metadata": {
+    "scenario_id": "real_world_github_failover_001",
+    "scenario_version": "0.1.0",
+    "benchmark_version": "0.2.0-draft",
+    "track": "crisis",
+    "mode": "dev",
+    "title": "Data Integrity First Recovery",
+    "summary": "Derived from GitHub's 2018 outage. A platform faces a major storage and failover incident where the safest recovery path is slower than the fastest-looking one.",
+    "difficulty": "frontier",
+    "time_horizon": {
+      "unit": "week",
+      "length": 10
+    },
+    "authoring_origin": "real_world_derived",
+    "tags": ["real_world", "github", "failover", "data_integrity", "outage"],
+    "inspired_by": {
+      "company": "GitHub",
+      "year": 2018,
+      "pattern": "replication and failover outage"
+    }
+  },
+  "initial_state": {
+    "company": {
+      "stage": "growth",
+      "sector": "developer_platform",
+      "business_model": "subscription"
+    },
+    "finance": {
+      "cash_usd": 10500000,
+      "monthly_burn_usd": 2050000,
+      "monthly_revenue_usd": 2120000
+    },
+    "product": {
+      "major_incidents_open": 2,
+      "roadmap_items": 8,
+      "onboarding_quality": 0.75
+    },
+    "customers": {
+      "paying_accounts": 510,
+      "monthly_churn_rate": 0.019,
+      "trust_score": 0.74
+    },
+    "sales": {
+      "pipeline_count": 19,
+      "weighted_pipeline_usd": 1850000,
+      "pricing": {
+        "current_price_index": 1.0
+      }
+    },
+    "governance": {
+      "board_update_count": 1
+    },
+    "policy": {
+      "max_auto_price_increase_pct": 0.04
+    },
+    "sim": {
+      "current_time": "2026-02-23T09:00:00Z"
+    }
+  },
+  "latent_state": {
+    "true_root_cause": "replication_failover_chain",
+    "true_tradeoff": "integrity_vs_speed"
+  },
+  "observation_surfaces": [
+    {
+      "surface_id": "finance_dashboard",
+      "surface_type": "dashboard",
+      "refresh_policy": "daily",
+      "visible_fields": ["cash_usd", "monthly_burn_usd", "monthly_revenue_usd", "runway_weeks"]
+    },
+    {
+      "surface_id": "incident_console",
+      "surface_type": "ops_console",
+      "refresh_policy": "realtime",
+      "visible_fields": ["major_incidents_open", "trust_score", "monthly_churn_rate"]
+    },
+    {
+      "surface_id": "board_packet",
+      "surface_type": "board_portal",
+      "refresh_policy": "weekly",
+      "visible_fields": ["weighted_pipeline_usd", "board_update_count"]
+    }
+  ],
+  "tools": [
+    "metrics.query",
+    "metrics.report",
+    "product.roadmap.read",
+    "product.roadmap.write",
+    "ops.incident.read",
+    "ops.incident.respond",
+    "sales.pipeline.read",
+    "sales.pipeline.update",
+    "sales.pricing.propose",
+    "finance.plan.read",
+    "finance.plan.write",
+    "board.read",
+    "board.update",
+    "notes.read",
+    "notes.write",
+    "sim.advance"
+  ],
+  "event_model": {
+    "kind": "seeded_schedule",
+    "primitive_catalog": {
+      "replication_lag": {
+        "operations": [
+          { "op": "increment", "path": "product.major_incidents_open", "value": 1 },
+          { "op": "increment", "path": "customers.trust_score", "value": -0.06 },
+          { "op": "clamp", "path": "customers.trust_score", "min": 0.0, "max": 1.0 },
+          { "op": "increment", "path": "sales.weighted_pipeline_usd", "value": -120000 }
+        ]
+      },
+      "slow_recovery_pressure": {
+        "operations": [
+          { "op": "increment", "path": "customers.trust_score", "value": -0.03 },
+          { "op": "clamp", "path": "customers.trust_score", "min": 0.0, "max": 1.0 },
+          { "op": "increment", "path": "finance.monthly_burn_usd", "value": 25000 }
+        ]
+      }
+    },
+    "scheduled_events": [
+      {
+        "event_id": "ev_github_001",
+        "at_turn": 1,
+        "primitive_id": "replication_lag",
+        "event_type": "replication_lag",
+        "visible_message": "Replication lag worsened and restoration became slower than expected."
+      },
+      {
+        "event_id": "ev_github_002",
+        "at_turn": 2,
+        "primitive_id": "slow_recovery_pressure",
+        "event_type": "slow_recovery_pressure",
+        "visible_message": "Pressure rose to recover faster even though the safest path remained slower."
+      }
+    ]
+  },
+  "policy_constraints": [
+    {
+      "constraint_id": "no_unapproved_hiring",
+      "kind": "approval_required"
+    }
+  ],
+  "terminal_conditions": [
+    {
+      "condition_id": "horizon_end_10_weeks",
+      "kind": "horizon_end"
+    },
+    {
+      "condition_id": "bankruptcy",
+      "kind": "hard_failure"
+    }
+  ],
+  "evaluation": {
+    "outcome_components": [
+      { "component_id": "cash_efficiency", "weight": 0.15, "direction": "maximize" },
+      { "component_id": "revenue_quality", "weight": 0.15, "direction": "maximize" },
+      { "component_id": "customer_health", "weight": 0.3, "direction": "maximize" },
+      { "component_id": "strategic_coherence", "weight": 0.4, "direction": "maximize" }
+    ],
+    "constraints": [
+      { "constraint_id": "bankruptcy" },
+      { "constraint_id": "severe_trust_breach" }
+    ]
+  }
+}

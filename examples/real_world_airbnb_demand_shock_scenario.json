@@ -1,0 +1,163 @@
+{
+  "metadata": {
+    "scenario_id": "real_world_airbnb_demand_shock_001",
+    "scenario_version": "0.1.0",
+    "benchmark_version": "0.2.0-draft",
+    "track": "board",
+    "mode": "dev",
+    "title": "Marketplace Demand Collapse and Burn Reset",
+    "summary": "Derived from Airbnb's 2020 demand shock. A travel marketplace loses demand abruptly and must cut burn, reset expectations, and preserve enough trust to rebuild.",
+    "difficulty": "hard",
+    "time_horizon": {
+      "unit": "week",
+      "length": 14
+    },
+    "authoring_origin": "real_world_derived",
+    "tags": ["real_world", "airbnb", "demand_shock", "burn_reset", "board"],
+    "inspired_by": {
+      "company": "Airbnb",
+      "year": 2020,
+      "pattern": "pandemic demand collapse"
+    }
+  },
+  "initial_state": {
+    "company": {
+      "stage": "series_c",
+      "sector": "marketplace",
+      "business_model": "transaction_fee"
+    },
+    "finance": {
+      "cash_usd": 9000000,
+      "monthly_burn_usd": 1450000,
+      "monthly_revenue_usd": 1180000
+    },
+    "product": {
+      "major_incidents_open": 0,
+      "roadmap_items": 9,
+      "onboarding_quality": 0.64
+    },
+    "customers": {
+      "paying_accounts": 420,
+      "monthly_churn_rate": 0.038,
+      "trust_score": 0.73
+    },
+    "sales": {
+      "pipeline_count": 18,
+      "weighted_pipeline_usd": 1900000,
+      "pricing": {
+        "current_price_index": 1.0
+      }
+    },
+    "governance": {
+      "board_update_count": 1
+    },
+    "policy": {
+      "max_auto_price_increase_pct": 0.05
+    },
+    "sim": {
+      "current_time": "2026-01-05T09:00:00Z"
+    }
+  },
+  "latent_state": {
+    "true_root_cause": "category_level_demand_freeze",
+    "true_recovery_curve": "nonlinear"
+  },
+  "observation_surfaces": [
+    {
+      "surface_id": "finance_dashboard",
+      "surface_type": "dashboard",
+      "refresh_policy": "daily",
+      "visible_fields": ["cash_usd", "monthly_burn_usd", "monthly_revenue_usd", "runway_weeks"]
+    },
+    {
+      "surface_id": "board_packet",
+      "surface_type": "board_portal",
+      "refresh_policy": "weekly",
+      "visible_fields": ["pipeline_count", "weighted_pipeline_usd", "trust_score", "board_update_count"]
+    }
+  ],
+  "tools": [
+    "metrics.query",
+    "metrics.report",
+    "product.roadmap.read",
+    "product.roadmap.write",
+    "sales.pipeline.read",
+    "sales.pipeline.update",
+    "sales.pricing.propose",
+    "finance.plan.read",
+    "finance.plan.write",
+    "board.read",
+    "board.update",
+    "notes.read",
+    "notes.write",
+    "sim.advance"
+  ],
+  "event_model": {
+    "kind": "seeded_schedule",
+    "primitive_catalog": {
+      "market_freeze": {
+        "operations": [
+          { "op": "increment", "path": "finance.monthly_revenue_usd", "value": -520000 },
+          { "op": "increment", "path": "sales.pipeline_count", "value": -4 },
+          { "op": "clamp", "path": "sales.pipeline_count", "min": 0 },
+          { "op": "increment", "path": "sales.weighted_pipeline_usd", "value": -480000 },
+          { "op": "increment", "path": "customers.monthly_churn_rate", "value": 0.012 },
+          { "op": "increment", "path": "customers.trust_score", "value": -0.06 },
+          { "op": "clamp", "path": "customers.trust_score", "min": 0.0, "max": 1.0 }
+        ]
+      },
+      "refund_wave": {
+        "operations": [
+          { "op": "increment", "path": "finance.monthly_revenue_usd", "value": -240000 },
+          { "op": "increment", "path": "customers.monthly_churn_rate", "value": 0.008 },
+          { "op": "increment", "path": "customers.trust_score", "value": -0.05 },
+          { "op": "clamp", "path": "customers.trust_score", "min": 0.0, "max": 1.0 }
+        ]
+      }
+    },
+    "scheduled_events": [
+      {
+        "event_id": "ev_airbnb_001",
+        "at_turn": 1,
+        "primitive_id": "market_freeze",
+        "event_type": "market_freeze",
+        "visible_message": "Bookings and new demand fell abruptly across the marketplace."
+      },
+      {
+        "event_id": "ev_airbnb_002",
+        "at_turn": 2,
+        "primitive_id": "refund_wave",
+        "event_type": "refund_wave",
+        "visible_message": "Refund pressure increased and existing bookings became less reliable revenue."
+      }
+    ]
+  },
+  "policy_constraints": [
+    {
+      "constraint_id": "no_unapproved_hiring",
+      "kind": "approval_required"
+    }
+  ],
+  "terminal_conditions": [
+    {
+      "condition_id": "horizon_end_14_weeks",
+      "kind": "horizon_end"
+    },
+    {
+      "condition_id": "bankruptcy",
+      "kind": "hard_failure"
+    }
+  ],
+  "evaluation": {
+    "outcome_components": [
+      { "component_id": "cash_efficiency", "weight": 0.4, "direction": "maximize" },
+      { "component_id": "revenue_quality", "weight": 0.15, "direction": "maximize" },
+      { "component_id": "customer_health", "weight": 0.1, "direction": "maximize" },
+      { "component_id": "strategic_coherence", "weight": 0.35, "direction": "maximize" }
+    ],
+    "constraints": [
+      { "constraint_id": "bankruptcy" },
+      { "constraint_id": "severe_trust_breach" }
+    ]
+  }
+}

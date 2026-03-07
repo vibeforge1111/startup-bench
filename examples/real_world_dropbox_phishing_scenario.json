@@ -1,0 +1,168 @@
+{
+  "metadata": {
+    "scenario_id": "real_world_dropbox_phishing_001",
+    "scenario_version": "0.1.0",
+    "benchmark_version": "0.2.0-draft",
+    "track": "crisis",
+    "mode": "dev",
+    "title": "Internal Credential Compromise",
+    "summary": "Derived from Dropbox's 2022 phishing incident. Internal credentials were compromised and leadership must contain the issue, communicate clearly, and protect customer trust.",
+    "difficulty": "hard",
+    "time_horizon": {
+      "unit": "week",
+      "length": 10
+    },
+    "authoring_origin": "real_world_derived",
+    "tags": ["real_world", "dropbox", "security", "phishing", "incident_response"],
+    "inspired_by": {
+      "company": "Dropbox",
+      "year": 2022,
+      "pattern": "phishing-led repository compromise"
+    }
+  },
+  "initial_state": {
+    "company": {
+      "stage": "series_c",
+      "sector": "b2b_saas",
+      "business_model": "subscription"
+    },
+    "finance": {
+      "cash_usd": 7600000,
+      "monthly_burn_usd": 1350000,
+      "monthly_revenue_usd": 1180000
+    },
+    "product": {
+      "major_incidents_open": 1,
+      "roadmap_items": 9,
+      "onboarding_quality": 0.72
+    },
+    "customers": {
+      "paying_accounts": 390,
+      "monthly_churn_rate": 0.026,
+      "trust_score": 0.69
+    },
+    "sales": {
+      "pipeline_count": 17,
+      "weighted_pipeline_usd": 1650000,
+      "pricing": {
+        "current_price_index": 1.0
+      }
+    },
+    "governance": {
+      "board_update_count": 1
+    },
+    "policy": {
+      "max_auto_price_increase_pct": 0.05
+    },
+    "sim": {
+      "current_time": "2026-02-16T09:00:00Z"
+    }
+  },
+  "latent_state": {
+    "true_root_cause": "third_party_tool_phishing",
+    "true_scope_uncertainty": "high"
+  },
+  "observation_surfaces": [
+    {
+      "surface_id": "finance_dashboard",
+      "surface_type": "dashboard",
+      "refresh_policy": "daily",
+      "visible_fields": ["cash_usd", "monthly_burn_usd", "runway_weeks"]
+    },
+    {
+      "surface_id": "incident_console",
+      "surface_type": "ops_console",
+      "refresh_policy": "realtime",
+      "visible_fields": ["major_incidents_open", "trust_score", "monthly_churn_rate"]
+    },
+    {
+      "surface_id": "board_packet",
+      "surface_type": "board_portal",
+      "refresh_policy": "weekly",
+      "visible_fields": ["pipeline_count", "weighted_pipeline_usd", "board_update_count"]
+    }
+  ],
+  "tools": [
+    "metrics.query",
+    "metrics.report",
+    "product.roadmap.read",
+    "product.roadmap.write",
+    "ops.incident.read",
+    "ops.incident.respond",
+    "sales.pipeline.read",
+    "sales.pipeline.update",
+    "sales.pricing.propose",
+    "finance.plan.read",
+    "finance.plan.write",
+    "board.read",
+    "board.update",
+    "notes.read",
+    "notes.write",
+    "sim.advance"
+  ],
+  "event_model": {
+    "kind": "seeded_schedule",
+    "primitive_catalog": {
+      "scope_expands": {
+        "operations": [
+          { "op": "increment", "path": "product.major_incidents_open", "value": 1 },
+          { "op": "increment", "path": "customers.trust_score", "value": -0.05 },
+          { "op": "clamp", "path": "customers.trust_score", "min": 0.0, "max": 1.0 },
+          { "op": "increment", "path": "finance.monthly_burn_usd", "value": 15000 }
+        ]
+      },
+      "customer_disclosure_wave": {
+        "operations": [
+          { "op": "increment", "path": "customers.monthly_churn_rate", "value": 0.01 },
+          { "op": "increment", "path": "customers.trust_score", "value": -0.04 },
+          { "op": "clamp", "path": "customers.trust_score", "min": 0.0, "max": 1.0 },
+          { "op": "increment", "path": "sales.weighted_pipeline_usd", "value": -120000 }
+        ]
+      }
+    },
+    "scheduled_events": [
+      {
+        "event_id": "ev_dropbox_001",
+        "at_turn": 1,
+        "primitive_id": "scope_expands",
+        "event_type": "scope_expands",
+        "visible_message": "Investigation expanded the likely scope of the compromised credentials."
+      },
+      {
+        "event_id": "ev_dropbox_002",
+        "at_turn": 2,
+        "primitive_id": "customer_disclosure_wave",
+        "event_type": "customer_disclosure",
+        "visible_message": "Customer concern increased after the first disclosure wave."
+      }
+    ]
+  },
+  "policy_constraints": [
+    {
+      "constraint_id": "no_unapproved_hiring",
+      "kind": "approval_required"
+    }
+  ],
+  "terminal_conditions": [
+    {
+      "condition_id": "horizon_end_10_weeks",
+      "kind": "horizon_end"
+    },
+    {
+      "condition_id": "bankruptcy",
+      "kind": "hard_failure"
+    }
+  ],
+  "evaluation": {
+    "outcome_components": [
+      { "component_id": "cash_efficiency", "weight": 0.15, "direction": "maximize" },
+      { "component_id": "revenue_quality", "weight": 0.15, "direction": "maximize" },
+      { "component_id": "customer_health", "weight": 0.35, "direction": "maximize" },
+      { "component_id": "strategic_coherence", "weight": 0.35, "direction": "maximize" }
+    ],
+    "constraints": [
+      { "constraint_id": "bankruptcy" },
+      { "constraint_id": "severe_trust_breach" }
+    ]
+  }
+}

@@ -1,0 +1,168 @@
+{
+  "metadata": {
+    "scenario_id": "real_world_zoom_security_freeze_001",
+    "scenario_version": "0.1.0",
+    "benchmark_version": "0.2.0-draft",
+    "track": "crisis",
+    "mode": "dev",
+    "title": "Hypergrowth Security Backlash",
+    "summary": "Derived from Zoom's 2020 trust crisis. Hypergrowth exposed security weaknesses and leadership must choose whether to freeze feature velocity to restore trust.",
+    "difficulty": "hard",
+    "time_horizon": {
+      "unit": "week",
+      "length": 12
+    },
+    "authoring_origin": "real_world_derived",
+    "tags": ["real_world", "zoom", "security", "trust", "feature_freeze"],
+    "inspired_by": {
+      "company": "Zoom",
+      "year": 2020,
+      "pattern": "security and privacy backlash"
+    }
+  },
+  "initial_state": {
+    "company": {
+      "stage": "series_c",
+      "sector": "b2b_saas",
+      "business_model": "subscription"
+    },
+    "finance": {
+      "cash_usd": 12000000,
+      "monthly_burn_usd": 2300000,
+      "monthly_revenue_usd": 3050000
+    },
+    "product": {
+      "major_incidents_open": 2,
+      "roadmap_items": 12,
+      "onboarding_quality": 0.78
+    },
+    "customers": {
+      "paying_accounts": 460,
+      "monthly_churn_rate": 0.034,
+      "trust_score": 0.61
+    },
+    "sales": {
+      "pipeline_count": 26,
+      "weighted_pipeline_usd": 2800000,
+      "pricing": {
+        "current_price_index": 1.0
+      }
+    },
+    "governance": {
+      "board_update_count": 1
+    },
+    "policy": {
+      "max_auto_price_increase_pct": 0.04
+    },
+    "sim": {
+      "current_time": "2026-02-02T09:00:00Z"
+    }
+  },
+  "latent_state": {
+    "true_root_cause": "security_debt_under_hypergrowth",
+    "true_enterprise_risk": "high"
+  },
+  "observation_surfaces": [
+    {
+      "surface_id": "finance_dashboard",
+      "surface_type": "dashboard",
+      "refresh_policy": "daily",
+      "visible_fields": ["cash_usd", "monthly_burn_usd", "monthly_revenue_usd", "runway_weeks"]
+    },
+    {
+      "surface_id": "incident_console",
+      "surface_type": "ops_console",
+      "refresh_policy": "realtime",
+      "visible_fields": ["major_incidents_open", "trust_score", "monthly_churn_rate"]
+    },
+    {
+      "surface_id": "board_packet",
+      "surface_type": "board_portal",
+      "refresh_policy": "weekly",
+      "visible_fields": ["pipeline_count", "weighted_pipeline_usd", "board_update_count"]
+    }
+  ],
+  "tools": [
+    "metrics.query",
+    "metrics.report",
+    "product.roadmap.read",
+    "product.roadmap.write",
+    "ops.incident.read",
+    "ops.incident.respond",
+    "sales.pipeline.read",
+    "sales.pipeline.update",
+    "sales.pricing.propose",
+    "finance.plan.read",
+    "finance.plan.write",
+    "board.read",
+    "board.update",
+    "notes.read",
+    "notes.write",
+    "sim.advance"
+  ],
+  "event_model": {
+    "kind": "seeded_schedule",
+    "primitive_catalog": {
+      "press_scrutiny_wave": {
+        "operations": [
+          { "op": "increment", "path": "customers.trust_score", "value": -0.09 },
+          { "op": "clamp", "path": "customers.trust_score", "min": 0.0, "max": 1.0 },
+          { "op": "increment", "path": "customers.monthly_churn_rate", "value": 0.012 },
+          { "op": "increment", "path": "sales.weighted_pipeline_usd", "value": -240000 }
+        ]
+      },
+      "enterprise_security_review": {
+        "operations": [
+          { "op": "increment", "path": "sales.pipeline_count", "value": -2 },
+          { "op": "clamp", "path": "sales.pipeline_count", "min": 0 },
+          { "op": "increment", "path": "customers.trust_score", "value": -0.04 },
+          { "op": "clamp", "path": "customers.trust_score", "min": 0.0, "max": 1.0 }
+        ]
+      }
+    },
+    "scheduled_events": [
+      {
+        "event_id": "ev_zoom_001",
+        "at_turn": 1,
+        "primitive_id": "press_scrutiny_wave",
+        "event_type": "press_scrutiny",
+        "visible_message": "Public scrutiny intensified and security criticism became the main growth narrative."
+      },
+      {
+        "event_id": "ev_zoom_002",
+        "at_turn": 3,
+        "primitive_id": "enterprise_security_review",
+        "event_type": "enterprise_security_review",
+        "visible_message": "Security reviews slowed enterprise expansion and raised churn risk."
+      }
+    ]
+  },
+  "policy_constraints": [
+    {
+      "constraint_id": "no_unapproved_hiring",
+      "kind": "approval_required"
+    }
+  ],
+  "terminal_conditions": [
+    {
+      "condition_id": "horizon_end_12_weeks",
+      "kind": "horizon_end"
+    },
+    {
+      "condition_id": "bankruptcy",
+      "kind": "hard_failure"
+    }
+  ],
+  "evaluation": {
+    "outcome_components": [
+      { "component_id": "cash_efficiency", "weight": 0.1, "direction": "maximize" },
+      { "component_id": "revenue_quality", "weight": 0.2, "direction": "maximize" },
+      { "component_id": "customer_health", "weight": 0.45, "direction": "maximize" },
+      { "component_id": "strategic_coherence", "weight": 0.25, "direction": "maximize" }
+    ],
+    "constraints": [
+      { "constraint_id": "bankruptcy" },
+      { "constraint_id": "severe_trust_breach" }
+    ]
+  }
+}

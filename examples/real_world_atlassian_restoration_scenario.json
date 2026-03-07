@@ -1,0 +1,168 @@
+{
+  "metadata": {
+    "scenario_id": "real_world_atlassian_restoration_001",
+    "scenario_version": "0.1.0",
+    "benchmark_version": "0.2.0-draft",
+    "track": "crisis",
+    "mode": "dev",
+    "title": "Operator-Caused Deletion and Multi-Day Restoration",
+    "summary": "Derived from Atlassian's 2022 outage. An operator-caused deletion event created a long restoration effort that stressed trust, support, and recovery planning.",
+    "difficulty": "frontier",
+    "time_horizon": {
+      "unit": "week",
+      "length": 12
+    },
+    "authoring_origin": "real_world_derived",
+    "tags": ["real_world", "atlassian", "restoration", "operator_error", "customer_support"],
+    "inspired_by": {
+      "company": "Atlassian",
+      "year": 2022,
+      "pattern": "accidental customer-site deletion"
+    }
+  },
+  "initial_state": {
+    "company": {
+      "stage": "growth",
+      "sector": "b2b_saas",
+      "business_model": "subscription"
+    },
+    "finance": {
+      "cash_usd": 18000000,
+      "monthly_burn_usd": 2550000,
+      "monthly_revenue_usd": 2140000
+    },
+    "product": {
+      "major_incidents_open": 4,
+      "roadmap_items": 10,
+      "onboarding_quality": 0.74
+    },
+    "customers": {
+      "paying_accounts": 760,
+      "monthly_churn_rate": 0.041,
+      "trust_score": 0.59
+    },
+    "sales": {
+      "pipeline_count": 24,
+      "weighted_pipeline_usd": 2350000,
+      "pricing": {
+        "current_price_index": 1.0
+      }
+    },
+    "governance": {
+      "board_update_count": 1
+    },
+    "policy": {
+      "max_auto_price_increase_pct": 0.04
+    },
+    "sim": {
+      "current_time": "2026-03-02T09:00:00Z"
+    }
+  },
+  "latent_state": {
+    "true_root_cause": "operator_script_deleted_customer_sites",
+    "true_recovery_complexity": "very_high"
+  },
+  "observation_surfaces": [
+    {
+      "surface_id": "finance_dashboard",
+      "surface_type": "dashboard",
+      "refresh_policy": "daily",
+      "visible_fields": ["cash_usd", "monthly_burn_usd", "runway_weeks"]
+    },
+    {
+      "surface_id": "incident_console",
+      "surface_type": "ops_console",
+      "refresh_policy": "realtime",
+      "visible_fields": ["major_incidents_open", "trust_score", "monthly_churn_rate"]
+    },
+    {
+      "surface_id": "board_packet",
+      "surface_type": "board_portal",
+      "refresh_policy": "weekly",
+      "visible_fields": ["pipeline_count", "weighted_pipeline_usd", "board_update_count"]
+    }
+  ],
+  "tools": [
+    "metrics.query",
+    "metrics.report",
+    "product.roadmap.read",
+    "product.roadmap.write",
+    "ops.incident.read",
+    "ops.incident.respond",
+    "sales.pipeline.read",
+    "sales.pipeline.update",
+    "sales.pricing.propose",
+    "finance.plan.read",
+    "finance.plan.write",
+    "board.read",
+    "board.update",
+    "notes.read",
+    "notes.write",
+    "sim.advance"
+  ],
+  "event_model": {
+    "kind": "seeded_schedule",
+    "primitive_catalog": {
+      "restoration_complexity": {
+        "operations": [
+          { "op": "increment", "path": "product.major_incidents_open", "value": 1 },
+          { "op": "increment", "path": "customers.trust_score", "value": -0.06 },
+          { "op": "clamp", "path": "customers.trust_score", "min": 0.0, "max": 1.0 },
+          { "op": "increment", "path": "customers.monthly_churn_rate", "value": 0.012 }
+        ]
+      },
+      "support_backlog": {
+        "operations": [
+          { "op": "increment", "path": "finance.monthly_burn_usd", "value": 30000 },
+          { "op": "increment", "path": "sales.weighted_pipeline_usd", "value": -180000 },
+          { "op": "increment", "path": "customers.trust_score", "value": -0.03 },
+          { "op": "clamp", "path": "customers.trust_score", "min": 0.0, "max": 1.0 }
+        ]
+      }
+    },
+    "scheduled_events": [
+      {
+        "event_id": "ev_atlassian_001",
+        "at_turn": 1,
+        "primitive_id": "restoration_complexity",
+        "event_type": "restoration_complexity",
+        "visible_message": "The restoration plan turned out to be more complex and slower than expected."
+      },
+      {
+        "event_id": "ev_atlassian_002",
+        "at_turn": 2,
+        "primitive_id": "support_backlog",
+        "event_type": "support_backlog",
+        "visible_message": "Support backlog and affected-account escalation continued to grow."
+      }
+    ]
+  },
+  "policy_constraints": [
+    {
+      "constraint_id": "no_unapproved_hiring",
+      "kind": "approval_required"
+    }
+  ],
+  "terminal_conditions": [
+    {
+      "condition_id": "horizon_end_12_weeks",
+      "kind": "horizon_end"
+    },
+    {
+      "condition_id": "bankruptcy",
+      "kind": "hard_failure"
+    }
+  ],
+  "evaluation": {
+    "outcome_components": [
+      { "component_id": "cash_efficiency", "weight": 0.15, "direction": "maximize" },
+      { "component_id": "revenue_quality", "weight": 0.15, "direction": "maximize" },
+      { "component_id": "customer_health", "weight": 0.35, "direction": "maximize" },
+      { "component_id": "strategic_coherence", "weight": 0.35, "direction": "maximize" }
+    ],
+    "constraints": [
+      { "constraint_id": "bankruptcy" },
+      { "constraint_id": "severe_trust_breach" }
+    ]
+  }
+}

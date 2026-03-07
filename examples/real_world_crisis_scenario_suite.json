@@ -1,0 +1,56 @@
+{
+  "suite_version": "0.1.0",
+  "benchmark_version": "0.2.0-draft",
+  "scenario_pack_version": "real-world-pack-0.1.0",
+  "split": "dev",
+  "scenarios": [
+    {
+      "scenario_id": "real_world_airbnb_demand_shock_001",
+      "path": "real_world_airbnb_demand_shock_scenario.json",
+      "track": "board",
+      "mode": "dev"
+    },
+    {
+      "scenario_id": "real_world_buffer_runway_crunch_001",
+      "path": "real_world_buffer_runway_crunch_scenario.json",
+      "track": "board",
+      "mode": "dev"
+    },
+    {
+      "scenario_id": "real_world_zoom_security_freeze_001",
+      "path": "real_world_zoom_security_freeze_scenario.json",
+      "track": "crisis",
+      "mode": "dev"
+    },
+    {
+      "scenario_id": "real_world_robinhood_volatility_outage_001",
+      "path": "real_world_robinhood_volatility_outage_scenario.json",
+      "track": "crisis",
+      "mode": "dev"
+    },
+    {
+      "scenario_id": "real_world_dropbox_phishing_001",
+      "path": "real_world_dropbox_phishing_scenario.json",
+      "track": "crisis",
+      "mode": "dev"
+    },
+    {
+      "scenario_id": "real_world_github_failover_001",
+      "path": "real_world_github_failover_scenario.json",
+      "track": "crisis",
+      "mode": "dev"
+    },
+    {
+      "scenario_id": "real_world_atlassian_restoration_001",
+      "path": "real_world_atlassian_restoration_scenario.json",
+      "track": "crisis",
+      "mode": "dev"
+    },
+    {
+      "scenario_id": "real_world_shopify_peak_readiness_001",
+      "path": "real_world_shopify_peak_readiness_scenario.json",
+      "track": "scale",
+      "mode": "dev"
+    }
+  ]
+}

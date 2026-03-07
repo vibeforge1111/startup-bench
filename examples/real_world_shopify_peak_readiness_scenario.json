@@ -1,0 +1,168 @@
+{
+  "metadata": {
+    "scenario_id": "real_world_shopify_peak_readiness_001",
+    "scenario_version": "0.1.0",
+    "benchmark_version": "0.2.0-draft",
+    "track": "scale",
+    "mode": "dev",
+    "title": "Peak-Event Readiness Before Revenue Weekend",
+    "summary": "Derived from Shopify's Black Friday/Cyber Monday readiness work. The company must invest ahead of a peak-load event without overreacting or starving other priorities.",
+    "difficulty": "hard",
+    "time_horizon": {
+      "unit": "week",
+      "length": 10
+    },
+    "authoring_origin": "real_world_derived",
+    "tags": ["real_world", "shopify", "scale", "peak_load", "readiness"],
+    "inspired_by": {
+      "company": "Shopify",
+      "year": 2025,
+      "pattern": "BFCM readiness"
+    }
+  },
+  "initial_state": {
+    "company": {
+      "stage": "growth",
+      "sector": "commerce_platform",
+      "business_model": "subscription_plus_payments"
+    },
+    "finance": {
+      "cash_usd": 6200000,
+      "monthly_burn_usd": 860000,
+      "monthly_revenue_usd": 1020000
+    },
+    "product": {
+      "major_incidents_open": 0,
+      "roadmap_items": 8,
+      "onboarding_quality": 0.73
+    },
+    "customers": {
+      "paying_accounts": 610,
+      "monthly_churn_rate": 0.022,
+      "trust_score": 0.77
+    },
+    "sales": {
+      "pipeline_count": 15,
+      "weighted_pipeline_usd": 1280000,
+      "pricing": {
+        "current_price_index": 1.0
+      }
+    },
+    "governance": {
+      "board_update_count": 1
+    },
+    "policy": {
+      "max_auto_price_increase_pct": 0.04
+    },
+    "sim": {
+      "current_time": "2026-03-09T09:00:00Z"
+    }
+  },
+  "latent_state": {
+    "true_root_cause": "capacity_headroom_too_low_for_peak",
+    "true_revenue_concentration": "high"
+  },
+  "observation_surfaces": [
+    {
+      "surface_id": "finance_dashboard",
+      "surface_type": "dashboard",
+      "refresh_policy": "daily",
+      "visible_fields": ["cash_usd", "monthly_burn_usd", "monthly_revenue_usd", "runway_weeks"]
+    },
+    {
+      "surface_id": "ops_dashboard",
+      "surface_type": "ops_console",
+      "refresh_policy": "realtime",
+      "visible_fields": ["major_incidents_open", "trust_score", "monthly_churn_rate"]
+    },
+    {
+      "surface_id": "board_packet",
+      "surface_type": "board_portal",
+      "refresh_policy": "weekly",
+      "visible_fields": ["weighted_pipeline_usd", "board_update_count"]
+    }
+  ],
+  "tools": [
+    "metrics.query",
+    "metrics.report",
+    "product.roadmap.read",
+    "product.roadmap.write",
+    "ops.incident.read",
+    "ops.incident.respond",
+    "sales.pipeline.read",
+    "sales.pipeline.update",
+    "sales.pricing.propose",
+    "finance.plan.read",
+    "finance.plan.write",
+    "board.read",
+    "board.update",
+    "notes.read",
+    "notes.write",
+    "sim.advance"
+  ],
+  "event_model": {
+    "kind": "seeded_schedule",
+    "primitive_catalog": {
+      "stress_test_exposes_bottleneck": {
+        "operations": [
+          { "op": "increment", "path": "product.major_incidents_open", "value": 1 },
+          { "op": "increment", "path": "customers.trust_score", "value": -0.03 },
+          { "op": "clamp", "path": "customers.trust_score", "min": 0.0, "max": 1.0 },
+          { "op": "increment", "path": "finance.monthly_burn_usd", "value": 20000 }
+        ]
+      },
+      "merchant_launch_wave": {
+        "operations": [
+          { "op": "increment", "path": "sales.pipeline_count", "value": 2 },
+          { "op": "increment", "path": "sales.weighted_pipeline_usd", "value": 180000 },
+          { "op": "increment", "path": "customers.trust_score", "value": 0.02 },
+          { "op": "clamp", "path": "customers.trust_score", "min": 0.0, "max": 1.0 }
+        ]
+      }
+    },
+    "scheduled_events": [
+      {
+        "event_id": "ev_shopify_001",
+        "at_turn": 1,
+        "primitive_id": "stress_test_exposes_bottleneck",
+        "event_type": "stress_test_exposes_bottleneck",
+        "visible_message": "A peak-load rehearsal exposed a capacity bottleneck that cannot be ignored."
+      },
+      {
+        "event_id": "ev_shopify_002",
+        "at_turn": 3,
+        "primitive_id": "merchant_launch_wave",
+        "event_type": "merchant_launch_wave",
+        "visible_message": "A merchant launch wave increased upside if reliability work is already underway."
+      }
+    ]
+  },
+  "policy_constraints": [
+    {
+      "constraint_id": "no_unapproved_hiring",
+      "kind": "approval_required"
+    }
+  ],
+  "terminal_conditions": [
+    {
+      "condition_id": "horizon_end_10_weeks",
+      "kind": "horizon_end"
+    },
+    {
+      "condition_id": "bankruptcy",
+      "kind": "hard_failure"
+    }
+  ],
+  "evaluation": {
+    "outcome_components": [
+      { "component_id": "cash_efficiency", "weight": 0.2, "direction": "maximize" },
+      { "component_id": "revenue_quality", "weight": 0.3, "direction": "maximize" },
+      { "component_id": "customer_health", "weight": 0.2, "direction": "maximize" },
+      { "component_id": "strategic_coherence", "weight": 0.3, "direction": "maximize" }
+    ],
+    "constraints": [
+      { "constraint_id": "bankruptcy" },
+      { "constraint_id": "severe_trust_breach" }
+    ]
+  }
+}

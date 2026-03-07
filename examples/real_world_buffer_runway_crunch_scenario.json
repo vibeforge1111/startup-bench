@@ -1,0 +1,159 @@
+{
+  "metadata": {
+    "scenario_id": "real_world_buffer_runway_crunch_001",
+    "scenario_version": "0.1.0",
+    "benchmark_version": "0.2.0-draft",
+    "track": "board",
+    "mode": "dev",
+    "title": "Runway Crunch and Forced Reset",
+    "summary": "Derived from Buffer's 2016 cash crisis. A SaaS startup has little runway left and must stabilize cash without destroying customer trust or board credibility.",
+    "difficulty": "hard",
+    "time_horizon": {
+      "unit": "week",
+      "length": 12
+    },
+    "authoring_origin": "real_world_derived",
+    "tags": ["real_world", "buffer", "runway", "layoffs", "cash_crunch"],
+    "inspired_by": {
+      "company": "Buffer",
+      "year": 2016,
+      "pattern": "cash-flow crisis"
+    }
+  },
+  "initial_state": {
+    "company": {
+      "stage": "series_a",
+      "sector": "b2b_saas",
+      "business_model": "subscription"
+    },
+    "finance": {
+      "cash_usd": 420000,
+      "monthly_burn_usd": 180000,
+      "monthly_revenue_usd": 94000
+    },
+    "product": {
+      "major_incidents_open": 0,
+      "roadmap_items": 7,
+      "onboarding_quality": 0.66
+    },
+    "customers": {
+      "paying_accounts": 145,
+      "monthly_churn_rate": 0.03,
+      "trust_score": 0.74
+    },
+    "sales": {
+      "pipeline_count": 8,
+      "weighted_pipeline_usd": 240000,
+      "pricing": {
+        "current_price_index": 1.0
+      }
+    },
+    "governance": {
+      "board_update_count": 0
+    },
+    "policy": {
+      "max_auto_price_increase_pct": 0.06
+    },
+    "sim": {
+      "current_time": "2026-01-12T09:00:00Z"
+    }
+  },
+  "latent_state": {
+    "true_root_cause": "expense_base_exceeds_growth",
+    "true_board_patience": "low"
+  },
+  "observation_surfaces": [
+    {
+      "surface_id": "finance_dashboard",
+      "surface_type": "dashboard",
+      "refresh_policy": "daily",
+      "visible_fields": ["cash_usd", "monthly_burn_usd", "monthly_revenue_usd", "runway_weeks"]
+    },
+    {
+      "surface_id": "board_packet",
+      "surface_type": "board_portal",
+      "refresh_policy": "weekly",
+      "visible_fields": ["pipeline_count", "weighted_pipeline_usd", "board_update_count", "trust_score"]
+    }
+  ],
+  "tools": [
+    "metrics.query",
+    "metrics.report",
+    "product.roadmap.read",
+    "product.roadmap.write",
+    "sales.pipeline.read",
+    "sales.pipeline.update",
+    "sales.pricing.propose",
+    "finance.plan.read",
+    "finance.plan.write",
+    "board.read",
+    "board.update",
+    "notes.read",
+    "notes.write",
+    "sim.advance"
+  ],
+  "event_model": {
+    "kind": "seeded_schedule",
+    "primitive_catalog": {
+      "payment_delay": {
+        "operations": [
+          { "op": "increment", "path": "finance.monthly_revenue_usd", "value": -18000 },
+          { "op": "increment", "path": "sales.weighted_pipeline_usd", "value": -60000 },
+          { "op": "increment", "path": "customers.trust_score", "value": -0.03 },
+          { "op": "clamp", "path": "customers.trust_score", "min": 0.0, "max": 1.0 }
+        ]
+      },
+      "team_anxiety_wave": {
+        "operations": [
+          { "op": "increment", "path": "customers.monthly_churn_rate", "value": 0.006 },
+          { "op": "increment", "path": "customers.trust_score", "value": -0.04 },
+          { "op": "clamp", "path": "customers.trust_score", "min": 0.0, "max": 1.0 }
+        ]
+      }
+    },
+    "scheduled_events": [
+      {
+        "event_id": "ev_buffer_001",
+        "at_turn": 1,
+        "primitive_id": "payment_delay",
+        "event_type": "payment_delay",
+        "visible_message": "A major expected payment slipped, tightening the cash timeline."
+      },
+      {
+        "event_id": "ev_buffer_002",
+        "at_turn": 2,
+        "primitive_id": "team_anxiety_wave",
+        "event_type": "team_anxiety",
+        "visible_message": "Internal anxiety began affecting execution and customer confidence."
+      }
+    ]
+  },
+  "policy_constraints": [
+    {
+      "constraint_id": "no_unapproved_hiring",
+      "kind": "approval_required"
+    }
+  ],
+  "terminal_conditions": [
+    {
+      "condition_id": "horizon_end_12_weeks",
+      "kind": "horizon_end"
+    },
+    {
+      "condition_id": "bankruptcy",
+      "kind": "hard_failure"
+    }
+  ],
+  "evaluation": {
+    "outcome_components": [
+      { "component_id": "cash_efficiency", "weight": 0.45, "direction": "maximize" },
+      { "component_id": "revenue_quality", "weight": 0.15, "direction": "maximize" },
+      { "component_id": "customer_health", "weight": 0.1, "direction": "maximize" },
+      { "component_id": "strategic_coherence", "weight": 0.3, "direction": "maximize" }
+    ],
+    "constraints": [
+      { "constraint_id": "bankruptcy" },
+      { "constraint_id": "severe_trust_breach" }
+    ]
+  }
+}
