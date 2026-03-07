@@ -7,8 +7,10 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from uuid import uuid4
 
+from .artifacts import build_score_report, build_trace
 from .evaluators import evaluate_dry_run
 from .scenario_loader import load_scenario
+from .validation import validate_instance
 
 
 def _parse_iso8601(value: str) -> datetime:
@@ -103,6 +105,21 @@ def run_dry_scenario(path: Path, *, seed: int) -> dict:
     observations = build_observation_surfaces(scenario, world_state)
     run_id = f"dry-{uuid4()}"
     evaluation = evaluate_dry_run(scenario=scenario, world_state=world_state)
+    trace = build_trace(
+        scenario=scenario,
+        seed=seed,
+        run_id=run_id,
+        model_id="dry-run",
+        evaluation=evaluation,
+        world_state=world_state,
+    )
+    score_report = build_score_report(scenario=scenario, run_id=run_id, evaluation=evaluation)
+    trace_validation = validate_instance(artifact_type="trace", instance=trace, path=Path("trace.json"))
+    score_validation = validate_instance(
+        artifact_type="score-report",
+        instance=score_report,
+        path=Path("score_report.json"),
+    )
 
     return {
         "run_id": run_id,
@@ -110,8 +127,12 @@ def run_dry_scenario(path: Path, *, seed: int) -> dict:
         "scenario_version": scenario["metadata"]["scenario_version"],
         "seed": seed,
         "observation_surfaces": observations,
-        "world_state": world_state,
-        "evaluation": evaluation,
+        "trace": trace,
+        "score_report": score_report,
+        "artifact_validation": {
+            "trace": trace_validation.to_dict(),
+            "score_report": score_validation.to_dict(),
+        },
         "turn_count": 0,
     }
 

@@ -22,12 +22,16 @@ def _build_parser() -> argparse.ArgumentParser:
     validate_parser.add_argument("artifact_type", help="Artifact type, e.g. scenario, trace, submission")
     validate_parser.add_argument("path", help="Path to the JSON artifact")
 
+    check_trace_parser = subparsers.add_parser("check-trace", help="Run structural integrity checks on a trace")
+    check_trace_parser.add_argument("path", help="Path to the trace JSON file")
+
     inspect_parser = subparsers.add_parser("inspect-scenario", help="Print selected scenario metadata")
     inspect_parser.add_argument("path", help="Path to the scenario JSON file")
 
     run_parser = subparsers.add_parser("run-dry", help="Run a zero-action dry execution for a scenario")
     run_parser.add_argument("scenario_path", help="Path to the scenario JSON file")
     run_parser.add_argument("--seed", type=int, default=0, help="Seed used for the dry run")
+    run_parser.add_argument("--output-dir", help="Optional directory to write trace and score report artifacts")
 
     return parser
 
@@ -72,10 +76,31 @@ def _cmd_inspect_scenario(path: str) -> int:
     return 0
 
 
-def _cmd_run_dry(scenario_path: str, seed: int) -> int:
+def _cmd_check_trace(path: str) -> int:
+    from .scenario_loader import load_json
+    from .trace_validation import validate_trace_integrity
+    from .validation import validate_instance
+
+    trace = load_json(Path(path))
+    schema_result = validate_instance(artifact_type="trace", instance=trace, path=Path(path))
+    integrity_result = validate_trace_integrity(trace)
+    payload = {
+        "schema_validation": schema_result.to_dict(),
+        "integrity_validation": integrity_result.to_dict(),
+    }
+    print(json.dumps(payload, indent=2))
+    return 0 if schema_result.ok and integrity_result.ok else 1
+
+
+def _cmd_run_dry(scenario_path: str, seed: int, output_dir: str | None) -> int:
     from .runner import run_dry_scenario
 
     result = run_dry_scenario(Path(scenario_path), seed=seed)
+    if output_dir:
+        out_dir = Path(output_dir)
+        out_dir.mkdir(parents=True, exist_ok=True)
+        (out_dir / "trace.json").write_text(json.dumps(result["trace"], indent=2), encoding="utf-8")
+        (out_dir / "score_report.json").write_text(json.dumps(result["score_report"], indent=2), encoding="utf-8")
     print(json.dumps(result, indent=2))
     return 0
 
@@ -91,10 +116,12 @@ def main(argv: list[str] | None = None) -> int:
         return _cmd_paths()
     if args.command == "validate":
         return _cmd_validate(args.artifact_type, args.path)
+    if args.command == "check-trace":
+        return _cmd_check_trace(args.path)
     if args.command == "inspect-scenario":
         return _cmd_inspect_scenario(args.path)
     if args.command == "run-dry":
-        return _cmd_run_dry(args.scenario_path, args.seed)
+        return _cmd_run_dry(args.scenario_path, args.seed, args.output_dir)
 
     parser.print_help()
     return 1
@@ -102,4 +129,3 @@ def main(argv: list[str] | None = None) -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main(sys.argv[1:]))
-
