@@ -1,0 +1,176 @@
+{
+  "metadata": {
+    "scenario_id": "real_world_dropbox_phishing_fresh_001",
+    "scenario_version": "0.1.0",
+    "benchmark_version": "0.2.0-draft",
+    "track": "crisis",
+    "mode": "fresh",
+    "title": "Internal Credential Compromise",
+    "summary": "Fresh hidden variant with slightly lower starting trust and a later but deeper disclosure aftershock.",
+    "difficulty": "frontier",
+    "time_horizon": {
+      "unit": "week",
+      "length": 8
+    },
+    "authoring_origin": "real_world_derived",
+    "tags": ["real_world", "dropbox", "security", "phishing", "incident_response", "hidden_eval"],
+    "inspired_by": {
+      "company": "Dropbox",
+      "year": 2022,
+      "pattern": "phishing-led repository compromise"
+    }
+  },
+  "initial_state": {
+    "company": {
+      "stage": "series_c",
+      "sector": "b2b_saas",
+      "business_model": "subscription"
+    },
+    "finance": {
+      "cash_usd": 7350000,
+      "monthly_burn_usd": 1360000,
+      "monthly_revenue_usd": 1120000
+    },
+    "product": {
+      "major_incidents_open": 1,
+      "roadmap_items": 10,
+      "onboarding_quality": 0.7
+    },
+    "customers": {
+      "paying_accounts": 372,
+      "monthly_churn_rate": 0.028,
+      "trust_score": 0.66
+    },
+    "sales": {
+      "pipeline_count": 15,
+      "weighted_pipeline_usd": 1490000,
+      "pricing": {
+        "current_price_index": 1.0
+      }
+    },
+    "operations": {
+      "support_backlog": 40,
+      "support_sla_breach_risk": 0.45
+    },
+    "governance": {
+      "board_update_count": 1
+    },
+    "risk": {
+      "regulatory_pressure": 0.62,
+      "active_legal_matters": 2,
+      "compliance_backlog": 11
+    },
+    "policy": {
+      "max_auto_price_increase_pct": 0.04
+    },
+    "sim": {
+      "current_time": "2026-05-11T09:00:00Z"
+    }
+  },
+  "latent_state": {
+    "true_root_cause": "phishing_plus_disclosure_timing_gap",
+    "true_scope_uncertainty": "very_high"
+  },
+  "observation_surfaces": [
+    {
+      "surface_id": "incident_console",
+      "surface_type": "ops_console",
+      "refresh_policy": "realtime",
+      "visible_fields": ["major_incidents_open", "trust_score", "monthly_churn_rate"]
+    },
+    {
+      "surface_id": "legal_console",
+      "surface_type": "ops_console",
+      "refresh_policy": "daily",
+      "visible_fields": ["regulatory_pressure", "active_legal_matters", "compliance_backlog"]
+    }
+  ],
+  "tools": [
+    "metrics.query",
+    "metrics.report",
+    "product.roadmap.read",
+    "product.roadmap.write",
+    "ops.incident.read",
+    "ops.incident.respond",
+    "ops.support.read",
+    "ops.support.resolve",
+    "sales.pipeline.read",
+    "sales.pipeline.update",
+    "finance.plan.read",
+    "finance.plan.write",
+    "board.read",
+    "board.update",
+    "legal.compliance.read",
+    "legal.compliance.respond",
+    "notes.read",
+    "notes.write",
+    "sim.advance"
+  ],
+  "event_model": {
+    "kind": "seeded_schedule",
+    "primitive_catalog": {
+      "audit_finds_more_scope": {
+        "operations": [
+          { "op": "increment", "path": "product.major_incidents_open", "value": 1 },
+          { "op": "increment", "path": "risk.regulatory_pressure", "value": 0.1 },
+          { "op": "clamp", "path": "risk.regulatory_pressure", "min": 0.0, "max": 1.0 },
+          { "op": "increment", "path": "risk.compliance_backlog", "value": 3 },
+          { "op": "increment", "path": "operations.support_backlog", "value": 10 }
+        ]
+      },
+      "customer_aftershock": {
+        "operations": [
+          { "op": "increment", "path": "customers.monthly_churn_rate", "value": 0.011 },
+          { "op": "increment", "path": "customers.trust_score", "value": -0.06 },
+          { "op": "clamp", "path": "customers.trust_score", "min": 0.0, "max": 1.0 },
+          { "op": "increment", "path": "sales.weighted_pipeline_usd", "value": -160000 },
+          { "op": "increment", "path": "finance.monthly_burn_usd", "value": 18000 }
+        ]
+      }
+    },
+    "scheduled_events": [
+      {
+        "event_id": "ev_dropbox_fresh_001",
+        "at_turn": 1,
+        "primitive_id": "audit_finds_more_scope",
+        "event_type": "audit_findings",
+        "visible_message": "The forensic audit found broader access exposure than the first incident report suggested."
+      },
+      {
+        "event_id": "ev_dropbox_fresh_002",
+        "at_turn": 3,
+        "primitive_id": "customer_aftershock",
+        "event_type": "customer_aftershock",
+        "visible_message": "A second wave of customer concern arrived after disclosure details spread further."
+      }
+    ]
+  },
+  "policy_constraints": [
+    {
+      "constraint_id": "no_unapproved_hiring",
+      "kind": "approval_required"
+    }
+  ],
+  "terminal_conditions": [
+    {
+      "condition_id": "horizon_end_8_weeks",
+      "kind": "horizon_end"
+    },
+    {
+      "condition_id": "bankruptcy",
+      "kind": "hard_failure"
+    }
+  ],
+  "evaluation": {
+    "outcome_components": [
+      { "component_id": "cash_efficiency", "weight": 0.15, "direction": "maximize" },
+      { "component_id": "revenue_quality", "weight": 0.15, "direction": "maximize" },
+      { "component_id": "customer_health", "weight": 0.35, "direction": "maximize" },
+      { "component_id": "strategic_coherence", "weight": 0.35, "direction": "maximize" }
+    ],
+    "constraints": [
+      { "constraint_id": "bankruptcy" },
+      { "constraint_id": "severe_trust_breach" }
+    ]
+  }
+}

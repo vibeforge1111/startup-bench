@@ -1,7 +1,7 @@
 {
   "suite_version": "0.1.0",
   "benchmark_version": "0.2.0-draft",
-  "scenario_pack_version": "real-world-test-pack-0.1.0",
+  "scenario_pack_version": "real-world-test-pack-0.2.0",
   "split": "test",
   "scenarios": [
     {
@@ -13,6 +13,18 @@
     {
       "scenario_id": "real_world_brex_svb_treasury_shock_test_001",
       "path": "real_world_brex_svb_treasury_shock_test_scenario.json",
+      "track": "crisis",
+      "mode": "test"
+    },
+    {
+      "scenario_id": "real_world_buffer_runway_crunch_test_001",
+      "path": "real_world_buffer_runway_crunch_test_scenario.json",
+      "track": "finance",
+      "mode": "test"
+    },
+    {
+      "scenario_id": "real_world_dropbox_phishing_test_001",
+      "path": "real_world_dropbox_phishing_test_scenario.json",
       "track": "crisis",
       "mode": "test"
     },

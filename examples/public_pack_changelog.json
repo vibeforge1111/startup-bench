@@ -19,24 +19,50 @@
       "pack_version": "real-world-test-pack-0.1.0",
       "split": "test",
       "visibility": "hidden",
-      "action": "promoted",
-      "lifecycle_state": "active",
+      "action": "retired",
+      "lifecycle_state": "retired",
       "contamination_status": "clean",
       "predecessor_pack_version": "private-test-pack-0.1.0",
       "manifest_path": "examples/real_world_public_test_manifest.json",
-      "notes": "Real-world hidden test pack promoted as the primary official hidden evaluation pack."
+      "successor_pack_version": "real-world-test-pack-0.2.0",
+      "notes": "Initial real-world hidden test pack retired after pre-human expansion added finance and security incident breadth."
+    },
+    {
+      "effective_date": "2026-03-07",
+      "pack_version": "real-world-test-pack-0.2.0",
+      "split": "test",
+      "visibility": "hidden",
+      "action": "promoted",
+      "lifecycle_state": "active",
+      "contamination_status": "clean",
+      "predecessor_pack_version": "real-world-test-pack-0.1.0",
+      "manifest_path": "examples/real_world_public_test_manifest.json",
+      "notes": "Expanded real-world hidden test pack with runway-crunch and internal-compromise coverage."
     },
     {
       "effective_date": "2026-03-07",
       "pack_version": "real-world-fresh-pack-0.1.0",
       "split": "fresh",
       "visibility": "hidden",
-      "action": "created",
-      "lifecycle_state": "active",
+      "action": "retired",
+      "lifecycle_state": "retired",
       "contamination_status": "clean",
       "predecessor_pack_version": "real-world-test-pack-0.1.0",
       "manifest_path": "examples/real_world_public_fresh_manifest.json",
-      "notes": "Fresh hidden pack generated for contamination-resistant reporting windows and future test-pack rotation."
+      "successor_pack_version": "real-world-fresh-pack-0.2.0",
+      "notes": "Initial real-world hidden fresh pack retired after pre-human expansion added finance and security incident breadth."
+    },
+    {
+      "effective_date": "2026-03-07",
+      "pack_version": "real-world-fresh-pack-0.2.0",
+      "split": "fresh",
+      "visibility": "hidden",
+      "action": "created",
+      "lifecycle_state": "active",
+      "contamination_status": "clean",
+      "predecessor_pack_version": "real-world-test-pack-0.2.0",
+      "manifest_path": "examples/real_world_public_fresh_manifest.json",
+      "notes": "Expanded real-world hidden fresh pack for contamination-resistant reporting across broader crisis and finance slices."
     },
     {
       "effective_date": "2026-03-07",

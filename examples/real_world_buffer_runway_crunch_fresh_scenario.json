@@ -1,0 +1,178 @@
+{
+  "metadata": {
+    "scenario_id": "real_world_buffer_runway_crunch_fresh_001",
+    "scenario_version": "0.1.0",
+    "benchmark_version": "0.2.0-draft",
+    "track": "finance",
+    "mode": "fresh",
+    "title": "Runway Crunch and Forced Reset",
+    "summary": "Fresh hidden variant with lower initial revenue quality and a more fragile operating team.",
+    "difficulty": "frontier",
+    "time_horizon": {
+      "unit": "week",
+      "length": 9
+    },
+    "authoring_origin": "real_world_derived",
+    "tags": ["real_world", "buffer", "runway", "cash_crunch", "hidden_eval", "finance"],
+    "inspired_by": {
+      "company": "Buffer",
+      "year": 2016,
+      "pattern": "cash-flow crisis"
+    }
+  },
+  "initial_state": {
+    "company": {
+      "stage": "series_a",
+      "sector": "b2b_saas",
+      "business_model": "subscription"
+    },
+    "finance": {
+      "cash_usd": 390000,
+      "restricted_cash_usd": 95000,
+      "monthly_burn_usd": 188000,
+      "monthly_revenue_usd": 82000,
+      "treasury_concentration": 0.87
+    },
+    "product": {
+      "major_incidents_open": 0,
+      "roadmap_items": 8,
+      "onboarding_quality": 0.62
+    },
+    "customers": {
+      "paying_accounts": 142,
+      "monthly_churn_rate": 0.034,
+      "trust_score": 0.71
+    },
+    "sales": {
+      "pipeline_count": 6,
+      "weighted_pipeline_usd": 190000,
+      "pricing": {
+        "current_price_index": 1.0
+      }
+    },
+    "team": {
+      "morale": 0.47,
+      "attrition_risk": 0.68,
+      "bandwidth_load": 0.89
+    },
+    "governance": {
+      "board_update_count": 0
+    },
+    "risk": {
+      "counterparty_risk": 0.8,
+      "financing_pressure": 0.8
+    },
+    "policy": {
+      "max_auto_price_increase_pct": 0.05
+    },
+    "sim": {
+      "current_time": "2026-05-04T09:00:00Z"
+    }
+  },
+  "latent_state": {
+    "true_root_cause": "expense_base_exceeds_growth_with_slower_collection",
+    "true_board_patience": "very_low"
+  },
+  "observation_surfaces": [
+    {
+      "surface_id": "finance_dashboard",
+      "surface_type": "dashboard",
+      "refresh_policy": "daily",
+      "visible_fields": ["cash_usd", "liquid_cash_usd", "monthly_burn_usd", "runway_weeks"]
+    },
+    {
+      "surface_id": "board_packet",
+      "surface_type": "board_portal",
+      "refresh_policy": "weekly",
+      "visible_fields": ["weighted_pipeline_usd", "board_update_count", "financing_pressure", "trust_score"]
+    }
+  ],
+  "tools": [
+    "metrics.query",
+    "metrics.report",
+    "product.roadmap.read",
+    "product.roadmap.write",
+    "sales.pipeline.read",
+    "sales.pipeline.update",
+    "sales.pricing.propose",
+    "finance.plan.read",
+    "finance.plan.write",
+    "finance.treasury.read",
+    "finance.treasury.rebalance",
+    "finance.raise.propose",
+    "board.read",
+    "board.update",
+    "people.org.read",
+    "people.org.adjust",
+    "notes.read",
+    "notes.write",
+    "sim.advance"
+  ],
+  "event_model": {
+    "kind": "seeded_schedule",
+    "primitive_catalog": {
+      "collection_slip": {
+        "operations": [
+          { "op": "increment", "path": "finance.monthly_revenue_usd", "value": -18000 },
+          { "op": "increment", "path": "sales.weighted_pipeline_usd", "value": -80000 },
+          { "op": "increment", "path": "risk.financing_pressure", "value": 0.1 },
+          { "op": "clamp", "path": "risk.financing_pressure", "min": 0.0, "max": 1.0 }
+        ]
+      },
+      "trust_slip": {
+        "operations": [
+          { "op": "increment", "path": "customers.trust_score", "value": -0.05 },
+          { "op": "clamp", "path": "customers.trust_score", "min": 0.0, "max": 1.0 },
+          { "op": "increment", "path": "customers.monthly_churn_rate", "value": 0.008 },
+          { "op": "increment", "path": "team.morale", "value": -0.06 },
+          { "op": "clamp", "path": "team.morale", "min": 0.0, "max": 1.0 }
+        ]
+      }
+    },
+    "scheduled_events": [
+      {
+        "event_id": "ev_buffer_fresh_001",
+        "at_turn": 1,
+        "primitive_id": "collection_slip",
+        "event_type": "collection_slip",
+        "visible_message": "Collections slowed again and the sales reset is taking longer than expected."
+      },
+      {
+        "event_id": "ev_buffer_fresh_002",
+        "at_turn": 3,
+        "primitive_id": "trust_slip",
+        "event_type": "trust_slip",
+        "visible_message": "The drawn-out reset started to affect team morale and customer confidence."
+      }
+    ]
+  },
+  "policy_constraints": [
+    {
+      "constraint_id": "no_unapproved_hiring",
+      "kind": "approval_required"
+    }
+  ],
+  "terminal_conditions": [
+    {
+      "condition_id": "horizon_end_9_weeks",
+      "kind": "horizon_end"
+    },
+    {
+      "condition_id": "bankruptcy",
+      "kind": "hard_failure"
+    }
+  ],
+  "evaluation": {
+    "outcome_components": [
+      { "component_id": "cash_efficiency", "weight": 0.45, "direction": "maximize" },
+      { "component_id": "revenue_quality", "weight": 0.1, "direction": "maximize" },
+      { "component_id": "customer_health", "weight": 0.1, "direction": "maximize" },
+      { "component_id": "strategic_coherence", "weight": 0.35, "direction": "maximize" }
+    ],
+    "constraints": [
+      { "constraint_id": "bankruptcy" },
+      { "constraint_id": "severe_trust_breach" },
+      { "constraint_id": "severe_financing_failure" }
+    ]
+  }
+}

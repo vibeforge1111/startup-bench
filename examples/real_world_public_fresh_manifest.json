@@ -1,9 +1,9 @@
 {
   "manifest_version": "0.1.0",
   "benchmark_version": "0.2.0-draft",
-  "scenario_pack_version": "real-world-fresh-pack-0.1.0",
+  "scenario_pack_version": "real-world-fresh-pack-0.2.0",
   "split": "fresh",
-  "scenario_count": 5,
+  "scenario_count": 7,
   "scenarios": [
     {
       "scenario_id": "real_world_airbnb_emergency_financing_fresh_001",
@@ -18,22 +18,34 @@
       "hidden_ref": "fresh_001"
     },
     {
-      "scenario_id": "real_world_zoom_security_freeze_fresh_001",
-      "track": "crisis",
+      "scenario_id": "real_world_buffer_runway_crunch_fresh_001",
+      "track": "finance",
       "mode": "fresh",
       "hidden_ref": "fresh_002"
     },
     {
-      "scenario_id": "real_world_atlassian_restoration_fresh_001",
+      "scenario_id": "real_world_dropbox_phishing_fresh_001",
       "track": "crisis",
       "mode": "fresh",
       "hidden_ref": "fresh_003"
     },
     {
+      "scenario_id": "real_world_zoom_security_freeze_fresh_001",
+      "track": "crisis",
+      "mode": "fresh",
+      "hidden_ref": "fresh_004"
+    },
+    {
+      "scenario_id": "real_world_atlassian_restoration_fresh_001",
+      "track": "crisis",
+      "mode": "fresh",
+      "hidden_ref": "fresh_005"
+    },
+    {
       "scenario_id": "real_world_shopify_peak_readiness_fresh_001",
       "track": "scale",
       "mode": "fresh",
-      "hidden_ref": "fresh_004"
+      "hidden_ref": "fresh_006"
     }
   ]
 }
