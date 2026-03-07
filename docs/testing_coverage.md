@@ -6,7 +6,7 @@ Last updated: 2026-03-07
 
 Current automated test surface:
 
-- `45` unit tests
+- `49` unit tests
 - `12` test files
 - all tests passing in the current tree
 
@@ -36,7 +36,7 @@ The test suite is strongest on schema validation, core runtime mutations, baseli
 
 ### Runtime mechanics
 
-- [test_runtime.py](/C:/Users/USER/Desktop/startup-bench/tests/test_runtime.py): `11` tests
+- [test_runtime.py](/C:/Users/USER/Desktop/startup-bench/tests/test_runtime.py): `15` tests
   - finance plan write behavior
   - metrics querying and reporting
   - immutable read snapshots
@@ -45,6 +45,10 @@ The test suite is strongest on schema validation, core runtime mutations, baseli
   - scheduled event processing
   - board state updates
   - incident read/respond behavior
+  - support backlog resolution
+  - treasury rebalancing
+  - org health adjustments
+  - legal/compliance response
 
 - [test_primitive_engine.py](/C:/Users/USER/Desktop/startup-bench/tests/test_primitive_engine.py): `3` tests
   - primitive application
@@ -126,13 +130,17 @@ Observed on 2026-03-07:
   - scenario count: `8`
   - overall score mean: `0.7494`
   - overall pass-rate mean: `1.0`
+- updated real-world suite after runtime hardening: passed
+  - scenario count: `8`
+  - overall score mean: `0.7135`
+  - overall pass-rate mean: `1.0`
 - `redact-suite ...private_test_scenario_suite.json`: passed
 - `build-submission ...tmp_smoke/suite_report.json ...`: passed
   - repeat count: `2`
   - model id: `heuristic_resilient_operator`
   - contamination flag: `clean`
 - `python -m unittest discover -s tests -p "test_*.py"`: passed
-  - `45` tests
+  - `49` tests
   - `12` files
 
 ## What Is Covered Well

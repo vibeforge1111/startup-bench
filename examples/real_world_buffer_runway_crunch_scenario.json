@@ -28,8 +28,10 @@
     },
     "finance": {
       "cash_usd": 420000,
+      "restricted_cash_usd": 90000,
       "monthly_burn_usd": 180000,
-      "monthly_revenue_usd": 94000
+      "monthly_revenue_usd": 94000,
+      "treasury_concentration": 0.88
     },
     "product": {
       "major_incidents_open": 0,
@@ -48,8 +50,16 @@
         "current_price_index": 1.0
       }
     },
+    "team": {
+      "morale": 0.54,
+      "attrition_risk": 0.61,
+      "bandwidth_load": 0.83
+    },
     "governance": {
       "board_update_count": 0
+    },
+    "risk": {
+      "counterparty_risk": 0.82
     },
     "policy": {
       "max_auto_price_increase_pct": 0.06
@@ -86,8 +96,12 @@
     "sales.pricing.propose",
     "finance.plan.read",
     "finance.plan.write",
+    "finance.treasury.read",
+    "finance.treasury.rebalance",
     "board.read",
     "board.update",
+    "people.org.read",
+    "people.org.adjust",
     "notes.read",
     "notes.write",
     "sim.advance"

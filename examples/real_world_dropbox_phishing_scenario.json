@@ -48,8 +48,17 @@
         "current_price_index": 1.0
       }
     },
+    "operations": {
+      "support_backlog": 36,
+      "support_sla_breach_risk": 0.42
+    },
     "governance": {
       "board_update_count": 1
+    },
+    "risk": {
+      "regulatory_pressure": 0.58,
+      "active_legal_matters": 2,
+      "compliance_backlog": 10
     },
     "policy": {
       "max_auto_price_increase_pct": 0.05
@@ -89,6 +98,8 @@
     "product.roadmap.write",
     "ops.incident.read",
     "ops.incident.respond",
+    "ops.support.read",
+    "ops.support.resolve",
     "sales.pipeline.read",
     "sales.pipeline.update",
     "sales.pricing.propose",
@@ -96,6 +107,8 @@
     "finance.plan.write",
     "board.read",
     "board.update",
+    "legal.compliance.read",
+    "legal.compliance.respond",
     "notes.read",
     "notes.write",
     "sim.advance"
@@ -108,7 +121,9 @@
           { "op": "increment", "path": "product.major_incidents_open", "value": 1 },
           { "op": "increment", "path": "customers.trust_score", "value": -0.05 },
           { "op": "clamp", "path": "customers.trust_score", "min": 0.0, "max": 1.0 },
-          { "op": "increment", "path": "finance.monthly_burn_usd", "value": 15000 }
+          { "op": "increment", "path": "finance.monthly_burn_usd", "value": 15000 },
+          { "op": "increment", "path": "risk.regulatory_pressure", "value": 0.1 },
+          { "op": "clamp", "path": "risk.regulatory_pressure", "min": 0.0, "max": 1.0 }
         ]
       },
       "customer_disclosure_wave": {
@@ -116,7 +131,8 @@
           { "op": "increment", "path": "customers.monthly_churn_rate", "value": 0.01 },
           { "op": "increment", "path": "customers.trust_score", "value": -0.04 },
           { "op": "clamp", "path": "customers.trust_score", "min": 0.0, "max": 1.0 },
-          { "op": "increment", "path": "sales.weighted_pipeline_usd", "value": -120000 }
+          { "op": "increment", "path": "sales.weighted_pipeline_usd", "value": -120000 },
+          { "op": "increment", "path": "operations.support_backlog", "value": 20 }
         ]
       }
     },

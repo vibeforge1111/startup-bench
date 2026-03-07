@@ -48,8 +48,22 @@
         "current_price_index": 1.0
       }
     },
+    "operations": {
+      "support_backlog": 110,
+      "support_sla_breach_risk": 0.81
+    },
+    "team": {
+      "morale": 0.56,
+      "attrition_risk": 0.48,
+      "bandwidth_load": 0.89
+    },
     "governance": {
       "board_update_count": 1
+    },
+    "risk": {
+      "regulatory_pressure": 0.49,
+      "active_legal_matters": 1,
+      "compliance_backlog": 5
     },
     "policy": {
       "max_auto_price_increase_pct": 0.04
@@ -89,6 +103,8 @@
     "product.roadmap.write",
     "ops.incident.read",
     "ops.incident.respond",
+    "ops.support.read",
+    "ops.support.resolve",
     "sales.pipeline.read",
     "sales.pipeline.update",
     "sales.pricing.propose",
@@ -96,6 +112,10 @@
     "finance.plan.write",
     "board.read",
     "board.update",
+    "people.org.read",
+    "people.org.adjust",
+    "legal.compliance.read",
+    "legal.compliance.respond",
     "notes.read",
     "notes.write",
     "sim.advance"
@@ -116,7 +136,10 @@
           { "op": "increment", "path": "finance.monthly_burn_usd", "value": 30000 },
           { "op": "increment", "path": "sales.weighted_pipeline_usd", "value": -180000 },
           { "op": "increment", "path": "customers.trust_score", "value": -0.03 },
-          { "op": "clamp", "path": "customers.trust_score", "min": 0.0, "max": 1.0 }
+          { "op": "clamp", "path": "customers.trust_score", "min": 0.0, "max": 1.0 },
+          { "op": "increment", "path": "operations.support_backlog", "value": 25 },
+          { "op": "increment", "path": "team.morale", "value": -0.05 },
+          { "op": "clamp", "path": "team.morale", "min": 0.0, "max": 1.0 }
         ]
       }
     },

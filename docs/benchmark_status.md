@@ -49,12 +49,16 @@ Completed:
   - `build-submission`
 - stateful runtime support for:
   - finance planning
+  - treasury concentration and liquidity rebalancing
   - sales pipeline updates
   - pricing changes
   - product roadmap changes
   - board updates
   - note taking
   - incident reading/response
+  - support backlog handling
+  - legal/compliance response
+  - people/org adjustment
   - time advancement
 
 ### 4. Primitive/event execution
@@ -123,6 +127,7 @@ Partially done:
 
 - there is a usable world-state model and executable runtime
 - there are early business mechanics for finance, sales, product, governance, and incident handling
+- there are now explicit mechanics for treasury concentration, support backlog, legal pressure, and org stress
 - the current mechanics are still narrow relative to real startup operation
 
 What remains inside this category:
