@@ -37,6 +37,29 @@
       "predecessor_pack_version": "real-world-test-pack-0.1.0",
       "manifest_path": "examples/real_world_public_fresh_manifest.json",
       "notes": "Fresh hidden pack generated for contamination-resistant reporting windows and future test-pack rotation."
+    },
+    {
+      "effective_date": "2026-03-07",
+      "pack_version": "operator-test-pack-0.1.0",
+      "split": "test",
+      "visibility": "hidden",
+      "action": "created",
+      "lifecycle_state": "active",
+      "contamination_status": "clean",
+      "manifest_path": "examples/operator_public_test_manifest.json",
+      "notes": "Supplemental hidden operator test pack covering GTM, finance, and people tracks."
+    },
+    {
+      "effective_date": "2026-03-07",
+      "pack_version": "operator-fresh-pack-0.1.0",
+      "split": "fresh",
+      "visibility": "hidden",
+      "action": "created",
+      "lifecycle_state": "active",
+      "contamination_status": "clean",
+      "predecessor_pack_version": "operator-test-pack-0.1.0",
+      "manifest_path": "examples/operator_public_fresh_manifest.json",
+      "notes": "Supplemental hidden operator fresh pack for contamination-resistant evaluation across GTM, finance, and people."
     }
   ]
 }

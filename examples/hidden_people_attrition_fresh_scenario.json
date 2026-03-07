@@ -1,0 +1,166 @@
+{
+  "metadata": {
+    "scenario_id": "hidden_people_attrition_fresh_001",
+    "scenario_version": "0.1.0",
+    "benchmark_version": "0.2.0-draft",
+    "track": "people",
+    "mode": "fresh",
+    "title": "Fresh Attrition Spiral and Team Recovery Tradeoff",
+    "summary": "Fresh hidden variant with heavier support pain, lower morale, and slower quality recovery, forcing harder people-versus-burn tradeoffs.",
+    "difficulty": "frontier",
+    "time_horizon": {
+      "unit": "week",
+      "length": 15
+    },
+    "authoring_origin": "expert_authored",
+    "tags": ["people", "hidden_eval", "fresh", "attrition", "morale"]
+  },
+  "initial_state": {
+    "company": {
+      "stage": "series_b",
+      "sector": "b2b_saas",
+      "business_model": "subscription"
+    },
+    "finance": {
+      "cash_usd": 3780000,
+      "monthly_burn_usd": 536000,
+      "monthly_revenue_usd": 386000
+    },
+    "product": {
+      "major_incidents_open": 1,
+      "roadmap_items": 8,
+      "onboarding_quality": 0.56
+    },
+    "customers": {
+      "paying_accounts": 228,
+      "monthly_churn_rate": 0.036,
+      "trust_score": 0.59
+    },
+    "sales": {
+      "pipeline_count": 13,
+      "weighted_pipeline_usd": 1110000,
+      "pricing": {
+        "current_price_index": 1.0
+      }
+    },
+    "operations": {
+      "support_backlog": 74,
+      "support_sla_breach_risk": 0.66
+    },
+    "team": {
+      "morale": 0.41,
+      "attrition_risk": 0.73,
+      "bandwidth_load": 1.0
+    },
+    "governance": {
+      "board_update_count": 1
+    },
+    "policy": {
+      "max_auto_price_increase_pct": 0.05
+    },
+    "sim": {
+      "current_time": "2026-08-17T09:00:00Z"
+    }
+  },
+  "latent_state": {
+    "true_attrition_driver": "support_exhaustion_and_manager_loss",
+    "true_recovery_speed": "slow"
+  },
+  "observation_surfaces": [
+    {
+      "surface_id": "team_dashboard",
+      "surface_type": "dashboard",
+      "refresh_policy": "weekly",
+      "visible_fields": ["morale", "attrition_risk", "bandwidth_load"]
+    },
+    {
+      "surface_id": "support_console",
+      "surface_type": "ops_console",
+      "refresh_policy": "realtime",
+      "visible_fields": ["support_backlog", "support_sla_breach_risk", "trust_score"]
+    }
+  ],
+  "tools": [
+    "metrics.query",
+    "metrics.report",
+    "product.roadmap.read",
+    "product.roadmap.write",
+    "ops.support.read",
+    "ops.support.resolve",
+    "finance.plan.read",
+    "finance.plan.write",
+    "people.org.read",
+    "people.org.adjust",
+    "board.read",
+    "board.update",
+    "notes.read",
+    "notes.write",
+    "sim.advance"
+  ],
+  "event_model": {
+    "kind": "seeded_schedule",
+    "primitive_catalog": {
+      "lead_departure": {
+        "operations": [
+          { "op": "increment", "path": "team.morale", "value": -0.08 },
+          { "op": "clamp", "path": "team.morale", "min": 0.0, "max": 1.0 },
+          { "op": "increment", "path": "team.attrition_risk", "value": 0.1 },
+          { "op": "clamp", "path": "team.attrition_risk", "min": 0.0, "max": 1.0 },
+          { "op": "increment", "path": "operations.support_backlog", "value": 24 }
+        ]
+      },
+      "slow_rebound": {
+        "operations": [
+          { "op": "increment", "path": "team.morale", "value": 0.02 },
+          { "op": "clamp", "path": "team.morale", "min": 0.0, "max": 1.0 },
+          { "op": "increment", "path": "customers.trust_score", "value": 0.01 },
+          { "op": "clamp", "path": "customers.trust_score", "min": 0.0, "max": 1.0 }
+        ]
+      }
+    },
+    "scheduled_events": [
+      {
+        "event_id": "ev_hidden_people_fresh_001",
+        "at_turn": 2,
+        "primitive_id": "lead_departure",
+        "event_type": "lead_departure",
+        "visible_message": "A senior manager left and support escalations pushed the team closer to burnout."
+      },
+      {
+        "event_id": "ev_hidden_people_fresh_002",
+        "at_turn": 6,
+        "primitive_id": "slow_rebound",
+        "event_type": "slow_rebound",
+        "visible_message": "A modest quality rebound started, but recovery remained slower than hoped."
+      }
+    ]
+  },
+  "policy_constraints": [
+    {
+      "constraint_id": "no_unapproved_hiring",
+      "kind": "approval_required"
+    }
+  ],
+  "terminal_conditions": [
+    {
+      "condition_id": "horizon_end_15_weeks",
+      "kind": "horizon_end"
+    },
+    {
+      "condition_id": "bankruptcy",
+      "kind": "hard_failure"
+    }
+  ],
+  "evaluation": {
+    "outcome_components": [
+      { "component_id": "cash_efficiency", "weight": 0.15, "direction": "maximize" },
+      { "component_id": "revenue_quality", "weight": 0.1, "direction": "maximize" },
+      { "component_id": "customer_health", "weight": 0.3, "direction": "maximize" },
+      { "component_id": "strategic_coherence", "weight": 0.45, "direction": "maximize" }
+    ],
+    "constraints": [
+      { "constraint_id": "bankruptcy" },
+      { "constraint_id": "severe_trust_breach" }
+    ]
+  }
+}
