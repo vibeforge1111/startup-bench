@@ -21,6 +21,7 @@ TheStartupBench is no longer just an RFC. It now has:
 - a fourth hidden pack family for canary exploit and overfit detection
 - operator/founder calibration protocol and machine-readable review artifacts
 - calibration reports and study manifests for hidden-pack operator alignment
+- executable study runs, review packets, and study-level calibration compilation
 - CI for tests, validation, and smoke suites
 - unit tests and executable smoke paths
 
@@ -60,6 +61,8 @@ Completed:
 - operator calibration helpers:
   - `aggregate-operator-reviews`
   - `build-calibration-report`
+  - `run-calibration-study`
+  - `compile-calibration-study`
 - official evaluation helpers:
   - `show-official-profile`
   - `emit-run-manifest`
@@ -327,6 +330,7 @@ Partially done:
 - the reference CLI can aggregate operator reviews into a calibration summary
 - calibration reports can now compare operator judgments against suite scores
 - a concrete study manifest now exists for canary, strategy, and real-world hidden packs
+- the reference tooling can now run a full study wave and compile partial study reports
 
 What remains inside this category:
 

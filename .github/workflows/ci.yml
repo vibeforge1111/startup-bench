@@ -73,5 +73,7 @@ jobs:
           python -m thestartupbench redact-suite examples/private_canary_fresh_scenario_suite.json --output-dir tmp_ci_canary_fresh
           python -m thestartupbench aggregate-operator-reviews examples/minimal_operator_review.json --output-dir tmp_ci_operator_review
           python -m thestartupbench build-calibration-report --suite-report-path tmp_ci_canary/suite_report.json --review-paths examples/minimal_operator_review.json --output-dir tmp_ci_calibration
+          python -m thestartupbench run-calibration-study examples/operator_calibration_study_manifest.json --output-dir tmp_ci_study_run
+          python -m thestartupbench compile-calibration-study examples/operator_calibration_study_manifest.json --study-run-dir tmp_ci_study_run --review-paths examples/minimal_operator_review.json --output-dir tmp_ci_study_report
           python -m thestartupbench emit-run-manifest examples/dev_scenario_suite.json baseline --seeds 1,2,3,4,5 --baseline-id heuristic_resilient_operator --max-turns 8 --profile-path examples/official_eval_profile.json --output-dir tmp_ci_manifest
           python -m thestartupbench build-submission --suite-report-paths tmp_ci_real/suite_report.json --model-id heuristic_resilient_operator --provider baseline --contamination-flag clean --output-dir tmp_ci_submission

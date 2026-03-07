@@ -29,6 +29,7 @@ Current status:
 - added hidden canary pack families for exploit and overfit detection across pricing and hiring traps
 - added operator/founder calibration artifacts, schemas, and review aggregation support
 - added calibration reports and study manifests for hidden-pack operator alignment work
+- added executable study runs, review packets, and study-level compilation for operator calibration waves
 
 Key documents:
 
@@ -77,6 +78,9 @@ Artifacts:
 - `schemas/tsb_operator_review_summary.schema.json`
 - `schemas/tsb_calibration_report.schema.json`
 - `schemas/tsb_calibration_study.schema.json`
+- `schemas/tsb_review_packet.schema.json`
+- `schemas/tsb_calibration_study_run.schema.json`
+- `schemas/tsb_calibration_study_report.schema.json`
 - `examples/minimal_b2b_saas_scenario.json`
 - `examples/minimal_crisis_scenario.json`
 - `examples/minimal_0to1_scenario.json`
@@ -134,6 +138,8 @@ python -m thestartupbench check-suite-family examples/private_real_world_test_sc
 python -m thestartupbench check-suite-family examples/private_canary_test_scenario_suite.json examples/private_canary_fresh_scenario_suite.json
 python -m thestartupbench aggregate-operator-reviews examples/minimal_operator_review.json --output-dir tmp_out
 python -m thestartupbench build-calibration-report --suite-report-path tmp_out/suite_report.json --review-paths examples/minimal_operator_review.json --output-dir tmp_out
+python -m thestartupbench run-calibration-study examples/operator_calibration_study_manifest.json --output-dir tmp_out
+python -m thestartupbench compile-calibration-study examples/operator_calibration_study_manifest.json --study-run-dir tmp_out --review-paths examples/minimal_operator_review.json --output-dir tmp_out
 python -m thestartupbench build-submission --suite-report-paths tmp_out/suite_report.json --model-id heuristic_resilient_operator --provider baseline --contamination-flag clean --output-dir tmp_out
 python -m unittest discover -s tests -p "test_*.py"
 ```
