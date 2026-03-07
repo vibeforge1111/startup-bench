@@ -204,6 +204,23 @@ def _heuristic_resilient_actions(session: RuntimeSession, *, turn_index: int) ->
         )
         action_index += 1
 
+    if float(finance.get("runway_weeks", 999.0)) < 18 or float(finance.get("liquid_cash_usd", finance.get("cash_usd", 0.0))) < float(finance.get("monthly_burn_usd", 0.0)) * 2.0:
+        if not finance.get("last_raise_plan"):
+            actions.append(
+                {
+                    "tool_name": "finance.raise.propose",
+                    "request_id": _next_request_id(turn_index, action_index),
+                    "arguments": {
+                        "raise_amount_usd": max(600000.0, float(finance.get("monthly_burn_usd", 0.0)) * 6.0),
+                        "dilution_pct": 0.12,
+                        "monthly_burn_change_usd": 0,
+                        "financing_risk_reduction": 0.28,
+                        "transaction_cost_usd": 30000,
+                    },
+                }
+            )
+            action_index += 1
+
     if float(team.get("morale", 0.7)) < 0.58 or float(team.get("attrition_risk", 0.0)) > 0.5:
         actions.append(
             {

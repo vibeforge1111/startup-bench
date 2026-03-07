@@ -310,6 +310,41 @@ class RuntimeTests(unittest.TestCase):
         self.assertEqual(self.session.world_state["finance"]["restricted_cash_usd"], 94500.0)
         self.assertGreater(self.session.world_state["finance"]["liquid_cash_usd"], 800000)
 
+    def test_finance_raise_propose_improves_cash_and_reduces_financing_pressure(self) -> None:
+        self.session.world_state["risk"]["financing_pressure"] = 0.86
+        self.session.world_state["finance"]["cash_usd"] = 250000.0
+        self.session.world_state["finance"]["monthly_burn_usd"] = 205000.0
+        self.session.world_state["finance"]["monthly_revenue_usd"] = 90000.0
+        execute_tool_call(
+            self.session,
+            {
+                "tool_name": "finance.plan.write",
+                "request_id": "req_fin_raise_prep",
+                "arguments": {"budget_changes": {}},
+            },
+        )
+        response = execute_tool_call(
+            self.session,
+            {
+                "tool_name": "finance.raise.propose",
+                "request_id": "req_raise_001",
+                "arguments": {
+                    "raise_amount_usd": 1200000,
+                    "dilution_pct": 0.14,
+                    "monthly_burn_change_usd": 0,
+                    "financing_risk_reduction": 0.3,
+                    "transaction_cost_usd": 24000,
+                },
+            },
+        )
+
+        self.assertTrue(response["ok"])
+        self.assertEqual(self.session.world_state["finance"]["cash_usd"], 1426000.0)
+        self.assertEqual(self.session.world_state["finance"]["dilution_index"], 0.14)
+        self.assertEqual(self.session.world_state["risk"]["financing_pressure"], 0.56)
+        self.assertEqual(self.session.world_state["finance"]["financing_events_count"], 1)
+        self.assertIn("last_raise_plan", self.session.world_state["finance"])
+
     def test_people_org_adjust_reduces_attrition_and_improves_product_health(self) -> None:
         self.session.world_state["team"]["morale"] = 0.49
         self.session.world_state["team"]["attrition_risk"] = 0.62

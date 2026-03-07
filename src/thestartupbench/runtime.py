@@ -179,6 +179,8 @@ def _build_metric_report(session: RuntimeSession) -> dict:
     alerts = []
     if float(finance.get("runway_weeks", 0)) < 20:
         alerts.append("runway_below_20_weeks")
+    if float(finance.get("runway_weeks", 0)) < 18 and not finance.get("last_raise_plan"):
+        alerts.append("fundraising_action_recommended")
     if float(customers.get("monthly_churn_rate", 0)) > 0.05:
         alerts.append("churn_above_5pct")
     if float(customers.get("trust_score", 1.0)) < 0.6:
@@ -205,6 +207,8 @@ def _build_metric_report(session: RuntimeSession) -> dict:
         "finance": {
             "treasury_concentration": finance.get("treasury_concentration"),
             "restricted_cash_usd": finance.get("restricted_cash_usd", 0.0),
+            "dilution_index": finance.get("dilution_index", 0.0),
+            "financing_events_count": finance.get("financing_events_count", 0),
         },
         "customers": {
             "paying_accounts": customers.get("paying_accounts"),
@@ -308,6 +312,61 @@ def execute_tool_call(session: RuntimeSession, tool_call: dict) -> dict:
             request_id,
             result={"finance": deepcopy(session.world_state["finance"])},
             state_delta_summary=state_delta,
+        )
+
+    if tool_name == "finance.raise.propose":
+        finance = session.world_state.setdefault("finance", {})
+        risk = session.world_state.setdefault("risk", {})
+        raise_amount_usd = max(0.0, float(arguments.get("raise_amount_usd", 0.0)))
+        dilution_pct = _clamp(float(arguments.get("dilution_pct", 0.1)), minimum=0.0, maximum=1.0)
+        monthly_burn_change_usd = float(arguments.get("monthly_burn_change_usd", 0.0))
+        financing_risk_reduction = max(0.0, float(arguments.get("financing_risk_reduction", 0.2)))
+        trust_delta = float(arguments.get("trust_delta", 0.0))
+        transaction_cost_usd = max(0.0, float(arguments.get("transaction_cost_usd", raise_amount_usd * 0.02)))
+
+        net_cash_added = max(0.0, raise_amount_usd - transaction_cost_usd)
+        apply_operations(
+            session.world_state,
+            [
+                {"op": "increment", "path": "finance.cash_usd", "value": net_cash_added},
+                {"op": "increment", "path": "finance.dilution_index", "value": dilution_pct},
+                {"op": "increment", "path": "finance.financing_events_count", "value": 1},
+                {"op": "increment", "path": "finance.monthly_burn_usd", "value": monthly_burn_change_usd},
+                {"op": "increment", "path": "risk.financing_pressure", "value": -financing_risk_reduction},
+                {"op": "clamp", "path": "risk.financing_pressure", "min": 0.0, "max": 1.0},
+                {"op": "increment", "path": "customers.trust_score", "value": trust_delta},
+                {"op": "clamp", "path": "customers.trust_score", "min": 0.0, "max": 1.0}
+            ],
+        )
+        finance["cash_usd"] = round(float(finance.get("cash_usd", 0.0)), 2)
+        finance["monthly_burn_usd"] = round(float(finance.get("monthly_burn_usd", 0.0)), 2)
+        finance["dilution_index"] = round(float(finance.get("dilution_index", 0.0)), 4)
+        risk["financing_pressure"] = round(float(risk.get("financing_pressure", 0.0)), 4)
+        finance["last_raise_plan"] = {
+            "raise_amount_usd": round(raise_amount_usd, 2),
+            "transaction_cost_usd": round(transaction_cost_usd, 2),
+            "net_cash_added_usd": round(net_cash_added, 2),
+            "dilution_pct": round(dilution_pct, 4),
+        }
+        recalculate_derived_metrics(session.world_state)
+        return _tool_result(
+            tool_name,
+            request_id,
+            result={
+                "financing": {
+                    "cash_usd": finance.get("cash_usd"),
+                    "liquid_cash_usd": finance.get("liquid_cash_usd"),
+                    "runway_weeks": finance.get("runway_weeks"),
+                    "dilution_index": finance.get("dilution_index"),
+                    "financing_pressure": risk.get("financing_pressure", 0.0),
+                }
+            },
+            state_delta_summary={
+                "finance.cash_usd": finance.get("cash_usd"),
+                "finance.runway_weeks": finance.get("runway_weeks"),
+                "finance.dilution_index": finance.get("dilution_index"),
+                "risk.financing_pressure": risk.get("financing_pressure", 0.0),
+            },
         )
 
     if tool_name == "finance.treasury.read":

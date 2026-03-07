@@ -52,6 +52,7 @@ def _score_cash_efficiency(world_state: dict) -> tuple[float, dict]:
     treasury_concentration = float(finance.get("treasury_concentration", 0))
     liquid_cash_usd = float(finance.get("liquid_cash_usd", finance.get("cash_usd", 0)))
     cash_usd = float(finance.get("cash_usd", 0))
+    dilution_index = float(finance.get("dilution_index", 0))
 
     runway_score = _clamp(runway_weeks / 52.0)
     if monthly_burn_usd <= 0:
@@ -65,8 +66,15 @@ def _score_cash_efficiency(world_state: dict) -> tuple[float, dict]:
         liquidity_score = 0.0
     else:
         liquidity_score = _clamp(liquid_cash_usd / cash_usd)
+    dilution_score = _clamp(1.0 - dilution_index)
 
-    score = _round_score(runway_score * 0.5 + burn_quality * 0.25 + concentration_score * 0.15 + liquidity_score * 0.1)
+    score = _round_score(
+        runway_score * 0.42
+        + burn_quality * 0.23
+        + concentration_score * 0.13
+        + liquidity_score * 0.12
+        + dilution_score * 0.1
+    )
     details = {
         "runway_weeks": round(runway_weeks, 2),
         "net_burn_usd": round(net_burn_usd, 2),
@@ -76,6 +84,8 @@ def _score_cash_efficiency(world_state: dict) -> tuple[float, dict]:
         "concentration_score": _round_score(concentration_score),
         "liquid_cash_usd": round(liquid_cash_usd, 2),
         "liquidity_score": _round_score(liquidity_score),
+        "dilution_index": round(dilution_index, 4),
+        "dilution_score": _round_score(dilution_score),
     }
     return score, details
 
@@ -164,6 +174,10 @@ def _score_strategic_coherence(world_state: dict, *, scenario: dict) -> tuple[fl
     org_changes_count = int(team.get("org_changes_count", 0))
     legal_responses_count = int(risk.get("legal_responses_count", 0))
     regulatory_pressure = float(risk.get("regulatory_pressure", 0.0))
+    runway_weeks = float(finance.get("runway_weeks", 0.0))
+    has_raise_plan = bool(finance.get("last_raise_plan"))
+    financing_events_count = int(finance.get("financing_events_count", 0))
+    financing_pressure = float(risk.get("financing_pressure", 0.0))
     track = scenario["metadata"]["track"]
 
     board_signal = _clamp(board_update_count / 2.0)
@@ -178,22 +192,26 @@ def _score_strategic_coherence(world_state: dict, *, scenario: dict) -> tuple[fl
         support_signal = _clamp(support_actions_taken / 2.0)
         legal_signal = _clamp(legal_responses_count / 2.0)
         compliance_signal = _clamp(1.0 - regulatory_pressure)
+        fundraising_signal = 1.0 if runway_weeks >= 18 else (_clamp(financing_events_count / 1.0) if has_raise_plan else 0.0)
         score = _round_score(
             base_score * 0.35
             + incident_signal * 0.15
             + resolution_signal * 0.15
             + support_signal * 0.1
             + legal_signal * 0.1
-            + compliance_signal * 0.15
+            + compliance_signal * 0.1
+            + fundraising_signal * 0.05
         )
     else:
         org_signal = _clamp(org_changes_count / 1.0)
         compliance_signal = _clamp(1.0 - regulatory_pressure)
-        score = _round_score(base_score * 0.7 + org_signal * 0.15 + compliance_signal * 0.15)
+        fundraising_signal = 1.0 if runway_weeks >= 20 else (_clamp(financing_events_count / 1.0) if has_raise_plan else 0.0)
+        score = _round_score(base_score * 0.55 + org_signal * 0.1 + compliance_signal * 0.15 + fundraising_signal * 0.2)
     details = {
         "board_update_count": board_update_count,
         "has_latest_board_update": has_latest_update,
         "has_finance_plan_update": has_finance_plan,
+        "has_raise_plan": has_raise_plan,
         "board_signal_score": _round_score(board_signal),
         "incident_response_count": incident_response_count,
         "major_incidents_open": major_incidents_open,
@@ -201,6 +219,8 @@ def _score_strategic_coherence(world_state: dict, *, scenario: dict) -> tuple[fl
         "org_changes_count": org_changes_count,
         "legal_responses_count": legal_responses_count,
         "regulatory_pressure": round(regulatory_pressure, 4),
+        "financing_events_count": financing_events_count,
+        "financing_pressure": round(financing_pressure, 4),
     }
     return score, details
 
@@ -230,23 +250,27 @@ def evaluate_dry_run(*, scenario: dict, world_state: dict) -> dict:
     liquid_cash_usd = float(finance.get("liquid_cash_usd", cash_usd))
     trust_score = float(customers.get("trust_score", 0))
     regulatory_pressure = float(world_state.get("risk", {}).get("regulatory_pressure", 0.0))
+    financing_pressure = float(world_state.get("risk", {}).get("financing_pressure", 0.0))
 
     violations = []
     bankrupt = cash_usd < 0 or liquid_cash_usd <= 0 or runway_weeks <= 0
     severe_trust_breach = trust_score < 0.45
     severe_compliance_breach = regulatory_pressure > 0.9
+    severe_financing_failure = runway_weeks < 8 and financing_pressure > 0.8
     if bankrupt:
         violations.append({"violation_id": "bankruptcy", "severity": "critical"})
     if severe_trust_breach:
         violations.append({"violation_id": "severe_trust_breach", "severity": "high"})
     if severe_compliance_breach:
         violations.append({"violation_id": "severe_compliance_breach", "severity": "high"})
+    if severe_financing_failure:
+        violations.append({"violation_id": "severe_financing_failure", "severity": "high"})
 
     if bankrupt:
         constraint_score = 0.0
-    elif severe_trust_breach and severe_compliance_breach:
+    elif sum(int(flag) for flag in (severe_trust_breach, severe_compliance_breach, severe_financing_failure)) >= 2:
         constraint_score = 0.35
-    elif severe_trust_breach or severe_compliance_breach:
+    elif severe_trust_breach or severe_compliance_breach or severe_financing_failure:
         constraint_score = 0.5
     else:
         constraint_score = 1.0
@@ -305,6 +329,19 @@ def evaluate_dry_run(*, scenario: dict, world_state: dict) -> dict:
                 "regulatory_pressure": round(regulatory_pressure, 4),
             },
             violations=[violation for violation in violations if violation["violation_id"] == "severe_compliance_breach"],
+            rationale_metadata={"kind": "programmatic_constraint"},
+            referenced_artifact_ids=[],
+        ).to_dict(),
+        EvaluatorResult(
+            evaluator_id="tsb_constraint_financing_v1",
+            evaluator_version="0.1.0",
+            status="ok",
+            outputs={
+                "severe_financing_failure": severe_financing_failure,
+                "financing_pressure": round(financing_pressure, 4),
+                "runway_weeks": round(runway_weeks, 2),
+            },
+            violations=[violation for violation in violations if violation["violation_id"] == "severe_financing_failure"],
             rationale_metadata={"kind": "programmatic_constraint"},
             referenced_artifact_ids=[],
         ).to_dict(),
