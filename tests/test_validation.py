@@ -29,7 +29,22 @@ class ValidationTests(unittest.TestCase):
         self.assertTrue(result.ok)
         self.assertEqual(result.issues, [])
 
+    def test_crisis_scenario_example_validates(self) -> None:
+        result = validate_artifact_file(
+            artifact_type="scenario",
+            path=REPO_ROOT / "examples" / "minimal_crisis_scenario.json",
+        )
+        self.assertTrue(result.ok)
+        self.assertEqual(result.issues, [])
+
+    def test_scenario_suite_example_validates(self) -> None:
+        result = validate_artifact_file(
+            artifact_type="scenario-suite",
+            path=REPO_ROOT / "examples" / "dev_scenario_suite.json",
+        )
+        self.assertTrue(result.ok)
+        self.assertEqual(result.issues, [])
+
 
 if __name__ == "__main__":
     unittest.main()
-

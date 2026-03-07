@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://thestartupbench.org/schemas/tsb_scenario_suite.schema.json",
+  "title": "TheStartupBench Scenario Suite",
+  "type": "object",
+  "required": ["suite_version", "benchmark_version", "scenario_pack_version", "split", "scenarios"],
+  "properties": {
+    "suite_version": { "type": "string" },
+    "benchmark_version": { "type": "string" },
+    "scenario_pack_version": { "type": "string" },
+    "split": { "type": "string", "enum": ["dev", "test", "fresh"] },
+    "scenarios": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["scenario_id", "path"],
+        "properties": {
+          "scenario_id": { "type": "string" },
+          "path": { "type": "string" },
+          "track": { "type": "string" },
+          "mode": { "type": "string" }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,204 @@
+{
+  "metadata": {
+    "scenario_id": "crisis_trust_recovery_001",
+    "scenario_version": "0.1.0",
+    "benchmark_version": "0.2.0-draft",
+    "track": "crisis",
+    "mode": "dev",
+    "title": "Incident Recovery and Trust Stabilization",
+    "summary": "A startup is managing an ongoing reliability incident, weakening customer trust, and board pressure to stabilize churn without reckless spend.",
+    "difficulty": "medium",
+    "time_horizon": {
+      "unit": "week",
+      "length": 12
+    },
+    "authoring_origin": "expert_authored",
+    "tags": ["incident_response", "trust", "churn", "board_pressure"]
+  },
+  "initial_state": {
+    "company": {
+      "stage": "seed",
+      "sector": "b2b_saas",
+      "business_model": "subscription"
+    },
+    "finance": {
+      "cash_usd": 1200000,
+      "monthly_burn_usd": 190000,
+      "monthly_revenue_usd": 88000
+    },
+    "product": {
+      "major_incidents_open": 2,
+      "roadmap_items": 6,
+      "onboarding_quality": 0.62
+    },
+    "customers": {
+      "paying_accounts": 58,
+      "monthly_churn_rate": 0.041,
+      "trust_score": 0.66
+    },
+    "sales": {
+      "pipeline_count": 10,
+      "weighted_pipeline_usd": 320000,
+      "pricing": {
+        "current_price_index": 1.0
+      }
+    },
+    "governance": {
+      "board_update_count": 1
+    },
+    "policy": {
+      "max_auto_price_increase_pct": 0.1
+    },
+    "sim": {
+      "current_time": "2026-02-01T09:00:00Z"
+    }
+  },
+  "latent_state": {
+    "true_root_cause": "queue_backpressure",
+    "true_recovery_risk": "moderate"
+  },
+  "observation_surfaces": [
+    {
+      "surface_id": "finance_dashboard",
+      "surface_type": "dashboard",
+      "refresh_policy": "daily",
+      "visible_fields": ["cash_usd", "monthly_burn_usd", "runway_weeks"]
+    },
+    {
+      "surface_id": "incident_console",
+      "surface_type": "ops_console",
+      "refresh_policy": "realtime",
+      "visible_fields": ["major_incidents_open", "trust_score", "monthly_churn_rate"]
+    }
+  ],
+  "tools": [
+    "metrics.query",
+    "metrics.report",
+    "product.roadmap.read",
+    "product.roadmap.write",
+    "sales.pipeline.read",
+    "sales.pipeline.update",
+    "sales.pricing.propose",
+    "finance.plan.read",
+    "finance.plan.write",
+    "board.read",
+    "board.update",
+    "notes.read",
+    "notes.write",
+    "sim.advance"
+  ],
+  "event_model": {
+    "kind": "seeded_schedule",
+    "primitive_catalog": {
+      "customer_churn_wave": {
+        "operations": [
+          {
+            "op": "increment",
+            "path": "customers.monthly_churn_rate",
+            "value": 0.012
+          },
+          {
+            "op": "increment",
+            "path": "customers.trust_score",
+            "value": -0.08
+          },
+          {
+            "op": "clamp",
+            "path": "customers.trust_score",
+            "min": 0.0,
+            "max": 1.0
+          }
+        ]
+      },
+      "incident_recovery_step": {
+        "operations": [
+          {
+            "op": "increment",
+            "path": "product.major_incidents_open",
+            "value": -1
+          },
+          {
+            "op": "clamp",
+            "path": "product.major_incidents_open",
+            "min": 0
+          },
+          {
+            "op": "increment",
+            "path": "customers.trust_score",
+            "value": 0.05
+          },
+          {
+            "op": "clamp",
+            "path": "customers.trust_score",
+            "min": 0.0,
+            "max": 1.0
+          }
+        ]
+      }
+    },
+    "scheduled_events": [
+      {
+        "event_id": "ev_101",
+        "at_turn": 2,
+        "primitive_id": "customer_churn_wave",
+        "event_type": "renewal_escalation",
+        "visible_message": "A visible customer escalation increased churn risk during renewals."
+      },
+      {
+        "event_id": "ev_102",
+        "at_turn": 3,
+        "primitive_id": "incident_recovery_step",
+        "event_type": "incident_recovery",
+        "visible_message": "Engineering resolved a major piece of the incident backlog."
+      }
+    ]
+  },
+  "policy_constraints": [
+    {
+      "constraint_id": "no_unapproved_hiring",
+      "kind": "approval_required"
+    }
+  ],
+  "terminal_conditions": [
+    {
+      "condition_id": "horizon_end_12_weeks",
+      "kind": "horizon_end"
+    },
+    {
+      "condition_id": "bankruptcy",
+      "kind": "hard_failure"
+    }
+  ],
+  "evaluation": {
+    "outcome_components": [
+      {
+        "component_id": "cash_efficiency",
+        "weight": 0.2,
+        "direction": "maximize"
+      },
+      {
+        "component_id": "revenue_quality",
+        "weight": 0.2,
+        "direction": "maximize"
+      },
+      {
+        "component_id": "customer_health",
+        "weight": 0.35,
+        "direction": "maximize"
+      },
+      {
+        "component_id": "strategic_coherence",
+        "weight": 0.25,
+        "direction": "maximize"
+      }
+    ],
+    "constraints": [
+      {
+        "constraint_id": "bankruptcy"
+      },
+      {
+        "constraint_id": "severe_trust_breach"
+      }
+    ]
+  }
+}

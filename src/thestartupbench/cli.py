@@ -63,6 +63,15 @@ def _build_parser() -> argparse.ArgumentParser:
     campaign_parser.add_argument("--max-turns", type=int, help="Optional turn cap when runner_type=baseline")
     campaign_parser.add_argument("--output-dir", help="Optional directory to write the batch report artifact")
 
+    suite_parser = subparsers.add_parser("run-suite", help="Run a scenario suite and aggregate across scenarios")
+    suite_parser.add_argument("suite_path", help="Path to the scenario suite JSON file")
+    suite_parser.add_argument("runner_type", help="Runner type: dry, baseline, or script")
+    suite_parser.add_argument("--seeds", required=True, help="Comma-separated seed list, e.g. 1,2,3")
+    suite_parser.add_argument("--baseline-id", help="Baseline id when runner_type=baseline")
+    suite_parser.add_argument("--tool-calls-path", help="Tool script path when runner_type=script")
+    suite_parser.add_argument("--max-turns", type=int, help="Optional turn cap when runner_type=baseline")
+    suite_parser.add_argument("--output-dir", help="Optional directory to write the suite report artifact")
+
     return parser
 
 
@@ -238,6 +247,34 @@ def _cmd_run_campaign(
     return 0 if result["validation"]["ok"] else 1
 
 
+def _cmd_run_suite(
+    suite_path: str,
+    runner_type: str,
+    seeds: str,
+    baseline_id: str | None,
+    tool_calls_path: str | None,
+    max_turns: int | None,
+    output_dir: str | None,
+) -> int:
+    from .campaign_runner import _parse_seeds
+    from .suite_runner import run_suite
+
+    result = run_suite(
+        suite_path=Path(suite_path),
+        runner_type=runner_type,
+        seeds=_parse_seeds(seeds),
+        baseline_id=baseline_id,
+        tool_calls_path=Path(tool_calls_path) if tool_calls_path else None,
+        max_turns=max_turns,
+    )
+    if output_dir:
+        out_dir = Path(output_dir)
+        out_dir.mkdir(parents=True, exist_ok=True)
+        (out_dir / "suite_report.json").write_text(json.dumps(result["suite_report"], indent=2), encoding="utf-8")
+    print(json.dumps(result, indent=2))
+    return 0 if result["validation"]["ok"] else 1
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = _build_parser()
     args = parser.parse_args(argv)
@@ -274,6 +311,16 @@ def main(argv: list[str] | None = None) -> int:
     if args.command == "run-campaign":
         return _cmd_run_campaign(
             args.scenario_path,
+            args.runner_type,
+            args.seeds,
+            args.baseline_id,
+            args.tool_calls_path,
+            args.max_turns,
+            args.output_dir,
+        )
+    if args.command == "run-suite":
+        return _cmd_run_suite(
+            args.suite_path,
             args.runner_type,
             args.seeds,
             args.baseline_id,

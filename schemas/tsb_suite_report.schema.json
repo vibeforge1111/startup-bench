@@ -1,0 +1,55 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://thestartupbench.org/schemas/tsb_suite_report.schema.json",
+  "title": "TheStartupBench Suite Report",
+  "type": "object",
+  "required": ["report_version", "benchmark_version", "scenario_pack_version", "split", "runner_type", "overall", "scenario_reports", "track_summaries"],
+  "properties": {
+    "report_version": { "type": "string" },
+    "benchmark_version": { "type": "string" },
+    "scenario_pack_version": { "type": "string" },
+    "split": { "type": "string", "enum": ["dev", "test", "fresh"] },
+    "runner_type": { "type": "string", "enum": ["dry", "script", "baseline"] },
+    "runner_id": { "type": "string" },
+    "overall": {
+      "type": "object",
+      "required": ["scenario_count", "scenario_score_mean", "pass_rate_mean"],
+      "properties": {
+        "scenario_count": { "type": "integer", "minimum": 1 },
+        "scenario_score_mean": { "type": "number" },
+        "pass_rate_mean": { "type": "number" }
+      },
+      "additionalProperties": false
+    },
+    "track_summaries": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["track", "scenario_count", "scenario_score_mean", "pass_rate_mean"],
+        "properties": {
+          "track": { "type": "string" },
+          "scenario_count": { "type": "integer", "minimum": 1 },
+          "scenario_score_mean": { "type": "number" },
+          "pass_rate_mean": { "type": "number" }
+        },
+        "additionalProperties": false
+      }
+    },
+    "scenario_reports": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["scenario_id", "track", "run_count", "scenario_score_mean", "pass_rate"],
+        "properties": {
+          "scenario_id": { "type": "string" },
+          "track": { "type": "string" },
+          "run_count": { "type": "integer", "minimum": 1 },
+          "scenario_score_mean": { "type": "number" },
+          "pass_rate": { "type": "number" }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}
