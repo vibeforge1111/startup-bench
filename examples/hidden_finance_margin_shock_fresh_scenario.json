@@ -1,0 +1,193 @@
+{
+  "metadata": {
+    "scenario_id": "hidden_finance_margin_shock_fresh_001",
+    "scenario_version": "0.1.0",
+    "benchmark_version": "0.2.0-draft",
+    "track": "finance",
+    "mode": "fresh",
+    "title": "Fresh Margin Reversal and Counterparty Delay",
+    "summary": "A fresh finance hidden scenario where margins reverse, accessible cash tightens, and the operator must combine treasury, spend, and financing responses.",
+    "difficulty": "hard",
+    "time_horizon": {
+      "unit": "week",
+      "length": 13
+    },
+    "authoring_origin": "expert_authored",
+    "tags": ["finance", "hidden_eval", "fresh", "margin", "liquidity"]
+  },
+  "initial_state": {
+    "company": {
+      "stage": "series_a",
+      "sector": "b2b_saas",
+      "business_model": "subscription"
+    },
+    "finance": {
+      "cash_usd": 2980000,
+      "restricted_cash_usd": 500000,
+      "monthly_burn_usd": 438000,
+      "monthly_revenue_usd": 292000,
+      "treasury_concentration": 0.76
+    },
+    "product": {
+      "major_incidents_open": 0,
+      "roadmap_items": 6,
+      "onboarding_quality": 0.66
+    },
+    "customers": {
+      "paying_accounts": 168,
+      "monthly_churn_rate": 0.027,
+      "trust_score": 0.69,
+      "segments": [
+        {
+          "segment_id": "enterprise",
+          "accounts": 34,
+          "revenue_share": 0.52,
+          "monthly_churn_rate": 0.02,
+          "trust_score": 0.7,
+          "support_load_index": 0.32,
+          "expansion_potential": 0.61,
+          "competitor_pressure_index": 0.35
+        },
+        {
+          "segment_id": "mid_market",
+          "accounts": 134,
+          "revenue_share": 0.48,
+          "monthly_churn_rate": 0.031,
+          "trust_score": 0.68,
+          "support_load_index": 0.39,
+          "expansion_potential": 0.45,
+          "competitor_pressure_index": 0.47
+        }
+      ]
+    },
+    "sales": {
+      "pipeline_count": 9,
+      "weighted_pipeline_usd": 730000,
+      "pricing": {
+        "current_price_index": 1.0
+      }
+    },
+    "governance": {
+      "board_update_count": 1
+    },
+    "market": {
+      "competitor_pressure": "moderate",
+      "competitor_pressure_index": 0.58,
+      "pricing_pressure_index": 0.53,
+      "demand_index": 0.72,
+      "latest_market_note": "Investors will still fund credible operators, but they will punish margin erosion and treasury complacency."
+    },
+    "policy": {
+      "max_auto_price_increase_pct": 0.05
+    },
+    "risk": {
+      "counterparty_risk": 0.62,
+      "financing_pressure": 0.71
+    },
+    "sim": {
+      "current_time": "2026-09-14T09:00:00Z"
+    }
+  },
+  "latent_state": {
+    "true_liquidity_problem": "margin_reversal_plus_counterparty_delay",
+    "true_fundraising_market": "tough_but_available_for_credible_operators"
+  },
+  "observation_surfaces": [
+    {
+      "surface_id": "finance_dashboard",
+      "surface_type": "dashboard",
+      "refresh_policy": "realtime",
+      "visible_fields": ["cash_usd", "liquid_cash_usd", "runway_weeks", "treasury_concentration"]
+    },
+    {
+      "surface_id": "board_packet",
+      "surface_type": "board_portal",
+      "refresh_policy": "weekly",
+      "visible_fields": ["financing_pressure", "monthly_burn_usd", "monthly_revenue_usd"]
+    }
+  ],
+  "tools": [
+    "metrics.query",
+    "metrics.report",
+    "finance.plan.read",
+    "finance.plan.write",
+    "finance.treasury.read",
+    "finance.treasury.rebalance",
+    "finance.raise.propose",
+    "research.market.read",
+    "sales.pipeline.read",
+    "sales.pipeline.update",
+    "board.read",
+    "board.update",
+    "notes.read",
+    "notes.write",
+    "sim.advance"
+  ],
+  "event_model": {
+    "kind": "seeded_schedule",
+    "primitive_catalog": {
+      "margin_reversal": {
+        "operations": [
+          { "op": "increment", "path": "finance.monthly_burn_usd", "value": 72000 },
+          { "op": "increment", "path": "risk.financing_pressure", "value": 0.08 },
+          { "op": "clamp", "path": "risk.financing_pressure", "min": 0.0, "max": 1.0 }
+        ]
+      },
+      "counterparty_delay": {
+        "operations": [
+          { "op": "increment", "path": "finance.restricted_cash_usd", "value": 260000 },
+          { "op": "increment", "path": "risk.counterparty_risk", "value": 0.12 },
+          { "op": "clamp", "path": "risk.counterparty_risk", "min": 0.0, "max": 1.0 },
+          { "op": "increment", "path": "risk.financing_pressure", "value": 0.08 },
+          { "op": "clamp", "path": "risk.financing_pressure", "min": 0.0, "max": 1.0 },
+          { "op": "increment", "path": "market.demand_index", "value": -0.04 },
+          { "op": "clamp", "path": "market.demand_index", "min": 0.0, "max": 1.5 }
+        ]
+      }
+    },
+    "scheduled_events": [
+      {
+        "event_id": "ev_hidden_fin_margin_fresh_001",
+        "at_turn": 2,
+        "primitive_id": "margin_reversal",
+        "event_type": "margin_reversal",
+        "visible_message": "The margin profile reversed faster than expected and raised questions about burn control."
+      },
+      {
+        "event_id": "ev_hidden_fin_margin_fresh_002",
+        "at_turn": 4,
+        "primitive_id": "counterparty_delay",
+        "event_type": "counterparty_delay",
+        "visible_message": "A counterparty delay reduced accessible cash and pushed the board toward financing questions."
+      }
+    ]
+  },
+  "policy_constraints": [
+    {
+      "constraint_id": "no_unapproved_hiring",
+      "kind": "approval_required"
+    }
+  ],
+  "terminal_conditions": [
+    {
+      "condition_id": "horizon_end_13_weeks",
+      "kind": "horizon_end"
+    },
+    {
+      "condition_id": "bankruptcy",
+      "kind": "hard_failure"
+    }
+  ],
+  "evaluation": {
+    "outcome_components": [
+      { "component_id": "cash_efficiency", "weight": 0.4, "direction": "maximize" },
+      { "component_id": "revenue_quality", "weight": 0.15, "direction": "maximize" },
+      { "component_id": "customer_health", "weight": 0.05, "direction": "maximize" },
+      { "component_id": "strategic_coherence", "weight": 0.4, "direction": "maximize" }
+    ],
+    "constraints": [
+      { "constraint_id": "bankruptcy" },
+      { "constraint_id": "severe_financing_failure" }
+    ]
+  }
+}

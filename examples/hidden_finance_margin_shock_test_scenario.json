@@ -1,0 +1,193 @@
+{
+  "metadata": {
+    "scenario_id": "hidden_finance_margin_shock_test_001",
+    "scenario_version": "0.1.0",
+    "benchmark_version": "0.2.0-draft",
+    "track": "finance",
+    "mode": "test",
+    "title": "Hidden Margin Shock and Payment Delay",
+    "summary": "A hidden finance scenario where gross margin compresses, counterparties delay cash, and the operator must choose between runway truth and shallow optimism.",
+    "difficulty": "hard",
+    "time_horizon": {
+      "unit": "week",
+      "length": 13
+    },
+    "authoring_origin": "expert_authored",
+    "tags": ["finance", "hidden_eval", "margin", "liquidity"]
+  },
+  "initial_state": {
+    "company": {
+      "stage": "series_a",
+      "sector": "b2b_saas",
+      "business_model": "subscription"
+    },
+    "finance": {
+      "cash_usd": 3120000,
+      "restricted_cash_usd": 420000,
+      "monthly_burn_usd": 425000,
+      "monthly_revenue_usd": 301000,
+      "treasury_concentration": 0.72
+    },
+    "product": {
+      "major_incidents_open": 0,
+      "roadmap_items": 6,
+      "onboarding_quality": 0.67
+    },
+    "customers": {
+      "paying_accounts": 173,
+      "monthly_churn_rate": 0.026,
+      "trust_score": 0.7,
+      "segments": [
+        {
+          "segment_id": "enterprise",
+          "accounts": 36,
+          "revenue_share": 0.54,
+          "monthly_churn_rate": 0.019,
+          "trust_score": 0.71,
+          "support_load_index": 0.31,
+          "expansion_potential": 0.64,
+          "competitor_pressure_index": 0.33
+        },
+        {
+          "segment_id": "mid_market",
+          "accounts": 137,
+          "revenue_share": 0.46,
+          "monthly_churn_rate": 0.031,
+          "trust_score": 0.69,
+          "support_load_index": 0.38,
+          "expansion_potential": 0.46,
+          "competitor_pressure_index": 0.46
+        }
+      ]
+    },
+    "sales": {
+      "pipeline_count": 10,
+      "weighted_pipeline_usd": 780000,
+      "pricing": {
+        "current_price_index": 1.0
+      }
+    },
+    "governance": {
+      "board_update_count": 1
+    },
+    "market": {
+      "competitor_pressure": "moderate",
+      "competitor_pressure_index": 0.56,
+      "pricing_pressure_index": 0.5,
+      "demand_index": 0.74,
+      "latest_market_note": "The financing market is still open, but investors now price in weaker software margins more aggressively."
+    },
+    "policy": {
+      "max_auto_price_increase_pct": 0.05
+    },
+    "risk": {
+      "counterparty_risk": 0.58,
+      "financing_pressure": 0.67
+    },
+    "sim": {
+      "current_time": "2026-08-10T09:00:00Z"
+    }
+  },
+  "latent_state": {
+    "true_liquidity_problem": "margin_shock_plus_delayed_cash_collection",
+    "true_fundraising_market": "selective_but_open"
+  },
+  "observation_surfaces": [
+    {
+      "surface_id": "finance_dashboard",
+      "surface_type": "dashboard",
+      "refresh_policy": "realtime",
+      "visible_fields": ["cash_usd", "liquid_cash_usd", "runway_weeks", "treasury_concentration"]
+    },
+    {
+      "surface_id": "board_packet",
+      "surface_type": "board_portal",
+      "refresh_policy": "weekly",
+      "visible_fields": ["financing_pressure", "monthly_burn_usd", "monthly_revenue_usd"]
+    }
+  ],
+  "tools": [
+    "metrics.query",
+    "metrics.report",
+    "finance.plan.read",
+    "finance.plan.write",
+    "finance.treasury.read",
+    "finance.treasury.rebalance",
+    "finance.raise.propose",
+    "research.market.read",
+    "sales.pipeline.read",
+    "sales.pipeline.update",
+    "board.read",
+    "board.update",
+    "notes.read",
+    "notes.write",
+    "sim.advance"
+  ],
+  "event_model": {
+    "kind": "seeded_schedule",
+    "primitive_catalog": {
+      "margin_shock": {
+        "operations": [
+          { "op": "increment", "path": "finance.monthly_burn_usd", "value": 68000 },
+          { "op": "increment", "path": "risk.financing_pressure", "value": 0.09 },
+          { "op": "clamp", "path": "risk.financing_pressure", "min": 0.0, "max": 1.0 }
+        ]
+      },
+      "payment_delay": {
+        "operations": [
+          { "op": "increment", "path": "finance.restricted_cash_usd", "value": 240000 },
+          { "op": "increment", "path": "risk.counterparty_risk", "value": 0.11 },
+          { "op": "clamp", "path": "risk.counterparty_risk", "min": 0.0, "max": 1.0 },
+          { "op": "increment", "path": "risk.financing_pressure", "value": 0.07 },
+          { "op": "clamp", "path": "risk.financing_pressure", "min": 0.0, "max": 1.0 },
+          { "op": "increment", "path": "market.demand_index", "value": -0.03 },
+          { "op": "clamp", "path": "market.demand_index", "min": 0.0, "max": 1.5 }
+        ]
+      }
+    },
+    "scheduled_events": [
+      {
+        "event_id": "ev_hidden_fin_margin_001",
+        "at_turn": 2,
+        "primitive_id": "margin_shock",
+        "event_type": "margin_shock",
+        "visible_message": "Infrastructure and servicing costs rose faster than planned, compressing margins."
+      },
+      {
+        "event_id": "ev_hidden_fin_margin_002",
+        "at_turn": 4,
+        "primitive_id": "payment_delay",
+        "event_type": "payment_delay",
+        "visible_message": "A payment delay reduced accessible cash and made the treasury position look riskier."
+      }
+    ]
+  },
+  "policy_constraints": [
+    {
+      "constraint_id": "no_unapproved_hiring",
+      "kind": "approval_required"
+    }
+  ],
+  "terminal_conditions": [
+    {
+      "condition_id": "horizon_end_13_weeks",
+      "kind": "horizon_end"
+    },
+    {
+      "condition_id": "bankruptcy",
+      "kind": "hard_failure"
+    }
+  ],
+  "evaluation": {
+    "outcome_components": [
+      { "component_id": "cash_efficiency", "weight": 0.4, "direction": "maximize" },
+      { "component_id": "revenue_quality", "weight": 0.15, "direction": "maximize" },
+      { "component_id": "customer_health", "weight": 0.05, "direction": "maximize" },
+      { "component_id": "strategic_coherence", "weight": 0.4, "direction": "maximize" }
+    ],
+    "constraints": [
+      { "constraint_id": "bankruptcy" },
+      { "constraint_id": "severe_financing_failure" }
+    ]
+  }
+}

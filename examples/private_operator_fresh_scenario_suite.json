@@ -1,7 +1,7 @@
 {
   "suite_version": "0.1.0",
   "benchmark_version": "0.2.0-draft",
-  "scenario_pack_version": "operator-fresh-pack-0.1.0",
+  "scenario_pack_version": "operator-fresh-pack-0.2.0",
   "split": "fresh",
   "scenarios": [
     {
@@ -11,8 +11,20 @@
       "mode": "fresh"
     },
     {
+      "scenario_id": "hidden_gtm_enterprise_freeze_fresh_001",
+      "path": "hidden_gtm_enterprise_freeze_fresh_scenario.json",
+      "track": "gtm",
+      "mode": "fresh"
+    },
+    {
       "scenario_id": "hidden_finance_liquidity_fresh_001",
       "path": "hidden_finance_liquidity_fresh_scenario.json",
+      "track": "finance",
+      "mode": "fresh"
+    },
+    {
+      "scenario_id": "hidden_finance_margin_shock_fresh_001",
+      "path": "hidden_finance_margin_shock_fresh_scenario.json",
       "track": "finance",
       "mode": "fresh"
     },

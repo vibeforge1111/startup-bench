@@ -1,0 +1,216 @@
+{
+  "metadata": {
+    "scenario_id": "hidden_gtm_enterprise_freeze_fresh_001",
+    "scenario_version": "0.1.0",
+    "benchmark_version": "0.2.0-draft",
+    "track": "gtm",
+    "mode": "fresh",
+    "title": "Fresh Enterprise GTM Stall With Reference Drag",
+    "summary": "A fresh GTM hidden scenario where enterprise pipeline slips, trust erodes, and the operator must prove reliability before aggressive pipeline rebuilding.",
+    "difficulty": "hard",
+    "time_horizon": {
+      "unit": "week",
+      "length": 15
+    },
+    "authoring_origin": "expert_authored",
+    "tags": ["gtm", "hidden_eval", "fresh", "enterprise", "trust"]
+  },
+  "initial_state": {
+    "company": {
+      "stage": "series_a",
+      "sector": "b2b_saas",
+      "business_model": "subscription"
+    },
+    "finance": {
+      "cash_usd": 2740000,
+      "monthly_burn_usd": 388000,
+      "monthly_revenue_usd": 238000
+    },
+    "product": {
+      "major_incidents_open": 0,
+      "roadmap_items": 7,
+      "onboarding_quality": 0.64
+    },
+    "customers": {
+      "paying_accounts": 137,
+      "monthly_churn_rate": 0.034,
+      "trust_score": 0.66,
+      "segments": [
+        {
+          "segment_id": "enterprise",
+          "accounts": 28,
+          "revenue_share": 0.52,
+          "monthly_churn_rate": 0.024,
+          "trust_score": 0.67,
+          "support_load_index": 0.38,
+          "expansion_potential": 0.7,
+          "competitor_pressure_index": 0.5
+        },
+        {
+          "segment_id": "mid_market",
+          "accounts": 109,
+          "revenue_share": 0.48,
+          "monthly_churn_rate": 0.039,
+          "trust_score": 0.65,
+          "support_load_index": 0.47,
+          "expansion_potential": 0.4,
+          "competitor_pressure_index": 0.59
+        }
+      ]
+    },
+    "sales": {
+      "pipeline_count": 10,
+      "weighted_pipeline_usd": 700000,
+      "pricing": {
+        "current_price_index": 0.97
+      }
+    },
+    "market": {
+      "competitor_pressure": "high",
+      "competitor_pressure_index": 0.7,
+      "pricing_pressure_index": 0.61,
+      "demand_index": 0.75,
+      "segment_signals": [
+        { "segment_id": "enterprise", "signal": "reference_checks_tighter" },
+        { "segment_id": "mid_market", "signal": "competitor_security_story" }
+      ],
+      "latest_market_note": "Enterprise buyers still want the product, but trust signals are now part of procurement gatekeeping."
+    },
+    "operations": {
+      "support_backlog": 27,
+      "support_sla_breach_risk": 0.31
+    },
+    "team": {
+      "headcount": 15,
+      "morale": 0.59,
+      "attrition_risk": 0.41,
+      "bandwidth_load": 0.81,
+      "hiring": {
+        "open_roles": 1,
+        "critical_roles_open": 0,
+        "sourced_candidates": 3,
+        "onsite_candidates": 1,
+        "offers_out": 0,
+        "time_to_fill_weeks": 7
+      }
+    },
+    "governance": {
+      "board_update_count": 0
+    },
+    "policy": {
+      "max_auto_price_increase_pct": 0.06
+    },
+    "risk": {
+      "financing_pressure": 0.61
+    },
+    "sim": {
+      "current_time": "2026-08-24T09:00:00Z"
+    }
+  },
+  "latent_state": {
+    "true_channel_problem": "enterprise_reference_quality_is_now_a_gate",
+    "true_expansion_potential": "delayed_until_trust_proof_is_visible"
+  },
+  "observation_surfaces": [
+    {
+      "surface_id": "crm_pipeline",
+      "surface_type": "crm",
+      "refresh_policy": "realtime",
+      "visible_fields": ["pipeline_count", "weighted_pipeline_usd", "current_price_index"]
+    },
+    {
+      "surface_id": "market_brief",
+      "surface_type": "research_brief",
+      "refresh_policy": "weekly",
+      "visible_fields": ["competitor_pressure_index", "pricing_pressure_index", "demand_index", "trust_score"]
+    }
+  ],
+  "tools": [
+    "metrics.query",
+    "metrics.report",
+    "product.roadmap.read",
+    "product.roadmap.write",
+    "sales.pipeline.read",
+    "sales.pipeline.update",
+    "sales.pricing.propose",
+    "research.market.read",
+    "finance.plan.read",
+    "finance.plan.write",
+    "ops.support.read",
+    "ops.support.resolve",
+    "people.hiring.read",
+    "people.hiring.update",
+    "board.read",
+    "board.update",
+    "notes.read",
+    "notes.write",
+    "sim.advance"
+  ],
+  "event_model": {
+    "kind": "seeded_schedule",
+    "primitive_catalog": {
+      "channel_decay": {
+        "operations": [
+          { "op": "increment", "path": "sales.pipeline_count", "value": -2 },
+          { "op": "clamp", "path": "sales.pipeline_count", "min": 0 },
+          { "op": "increment", "path": "sales.weighted_pipeline_usd", "value": -130000 },
+          { "op": "increment", "path": "market.competitor_pressure_index", "value": 0.05 },
+          { "op": "clamp", "path": "market.competitor_pressure_index", "min": 0.0, "max": 1.0 }
+        ]
+      },
+      "customer_backlash": {
+        "operations": [
+          { "op": "increment", "path": "customers.trust_score", "value": -0.05 },
+          { "op": "clamp", "path": "customers.trust_score", "min": 0.0, "max": 1.0 },
+          { "op": "increment", "path": "customers.monthly_churn_rate", "value": 0.006 },
+          { "op": "clamp", "path": "customers.monthly_churn_rate", "min": 0.0, "max": 1.0 },
+          { "op": "increment", "path": "operations.support_backlog", "value": 13 }
+        ]
+      }
+    },
+    "scheduled_events": [
+      {
+        "event_id": "ev_hidden_gtm_enterprise_fresh_001",
+        "at_turn": 2,
+        "primitive_id": "channel_decay",
+        "event_type": "channel_decay",
+        "visible_message": "Enterprise deal velocity weakened as references and proof points were scrutinized more heavily."
+      },
+      {
+        "event_id": "ev_hidden_gtm_enterprise_fresh_002",
+        "at_turn": 4,
+        "primitive_id": "customer_backlash",
+        "event_type": "customer_backlash",
+        "visible_message": "Prospects escalated trust concerns and demanded stronger onboarding and reference proof."
+      }
+    ]
+  },
+  "policy_constraints": [
+    {
+      "constraint_id": "no_unapproved_hiring",
+      "kind": "approval_required"
+    }
+  ],
+  "terminal_conditions": [
+    {
+      "condition_id": "horizon_end_15_weeks",
+      "kind": "horizon_end"
+    },
+    {
+      "condition_id": "bankruptcy",
+      "kind": "hard_failure"
+    }
+  ],
+  "evaluation": {
+    "outcome_components": [
+      { "component_id": "cash_efficiency", "weight": 0.15, "direction": "maximize" },
+      { "component_id": "revenue_quality", "weight": 0.35, "direction": "maximize" },
+      { "component_id": "customer_health", "weight": 0.2, "direction": "maximize" },
+      { "component_id": "strategic_coherence", "weight": 0.3, "direction": "maximize" }
+    ],
+    "constraints": [
+      { "constraint_id": "bankruptcy" },
+      { "constraint_id": "severe_trust_breach" }
+    ]
+  }
+}
