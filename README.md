@@ -40,19 +40,11 @@ Scoring is programmatic across four dimensions (cash efficiency, revenue quality
 
 | Model | Overall | Passes | 0to1 | b2b | Board | Crisis | Scale | GTM | Finance | People | Product |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
-| Codex 5.4 High | **0.7203** | 9/9 | 0.578 | 0.685 | 0.700 | 0.687 | 0.811 | 0.720 | 0.835 | 0.712 | 0.754 |
+| Claude Opus 4.6 | **0.7217** | 8/9 | 0.530 | 0.665 | 0.692 | 0.685 | 0.802 | 0.706 | 0.833 | 0.805 | 0.778 |
+| Codex 5.4 High | 0.7203 | 9/9 | 0.578 | 0.685 | 0.700 | 0.687 | 0.811 | 0.720 | 0.835 | 0.712 | 0.754 |
 | Gemini 3.0 | 0.6614 | 8/9 | 0.547 | 0.634 | 0.632 | 0.676 | 0.790 | 0.603 | 0.772 | 0.665 | 0.634 |
-| Claude Opus 4.6 | -- | -- | -- | -- | -- | -- | -- | -- | -- | -- | -- |
 
-### Initial 3-Scenario Trial Wave
-
-| Model | Mean | Crisis | Product | Finance |
-|---|---:|---:|---:|---:|
-| Claude Opus 4.6 | **0.7637** | 0.684 | 0.775 | 0.832 |
-| Codex 5.4 High | 0.7587 | 0.687 | 0.754 | 0.835 |
-| Gemini 3.0 | 0.7161 | 0.670 | 0.705 | 0.774 |
-
-Claude full-dev scripts are prepared but not yet scored. Codex leads on completed full-suite runs. Gemini failed the 0to1 scenario (bankruptcy constraint).
+Claude leads on overall mean but failed the 0to1 scenario (bankruptcy). Codex is the only model to pass all 9. Gemini also failed 0to1.
 
 ## How It Works
 
