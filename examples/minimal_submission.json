@@ -1,0 +1,36 @@
+{
+  "submission_version": "0.1.0",
+  "benchmark_version": "0.2.0-draft",
+  "scenario_pack_version": "dev-pack-0.1.0",
+  "scaffold_version": "0.1.0",
+  "model": {
+    "model_id": "heuristic_b2b_operator",
+    "provider": "baseline"
+  },
+  "evaluation": {
+    "repeat_count": 2,
+    "track_summaries": [
+      {
+        "track": "b2b_saas",
+        "mean_score": 0.6233,
+        "median_score": 0.6233,
+        "pass_at_1": 1.0,
+        "pass_at_k": 1.0,
+        "sem": 0.0,
+        "api_cost_usd": 0.0
+      },
+      {
+        "track": "crisis",
+        "mean_score": 0.5138,
+        "median_score": 0.5138,
+        "pass_at_1": 0.0,
+        "pass_at_k": 0.0,
+        "sem": 0.0,
+        "api_cost_usd": 0.0
+      }
+    ]
+  },
+  "contamination": {
+    "flag": "clean"
+  }
+}

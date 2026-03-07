@@ -1,0 +1,21 @@
+{
+  "manifest_version": "0.1.0",
+  "benchmark_version": "0.2.0-draft",
+  "scenario_pack_version": "test-pack-0.1.0",
+  "split": "test",
+  "scenario_count": 2,
+  "scenarios": [
+    {
+      "scenario_id": "b2b_saas_runway_pricing_001",
+      "track": "b2b_saas",
+      "mode": "test",
+      "hidden_ref": "test_000"
+    },
+    {
+      "scenario_id": "crisis_trust_recovery_001",
+      "track": "crisis",
+      "mode": "test",
+      "hidden_ref": "test_001"
+    }
+  ]
+}

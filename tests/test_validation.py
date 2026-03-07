@@ -45,6 +45,30 @@ class ValidationTests(unittest.TestCase):
         self.assertTrue(result.ok)
         self.assertEqual(result.issues, [])
 
+    def test_private_test_suite_example_validates(self) -> None:
+        result = validate_artifact_file(
+            artifact_type="scenario-suite",
+            path=REPO_ROOT / "examples" / "private_test_scenario_suite.json",
+        )
+        self.assertTrue(result.ok)
+        self.assertEqual(result.issues, [])
+
+    def test_public_suite_manifest_example_validates(self) -> None:
+        result = validate_artifact_file(
+            artifact_type="public-suite-manifest",
+            path=REPO_ROOT / "examples" / "minimal_public_suite_manifest.json",
+        )
+        self.assertTrue(result.ok)
+        self.assertEqual(result.issues, [])
+
+    def test_submission_example_validates(self) -> None:
+        result = validate_artifact_file(
+            artifact_type="submission",
+            path=REPO_ROOT / "examples" / "minimal_submission.json",
+        )
+        self.assertTrue(result.ok)
+        self.assertEqual(result.issues, [])
+
 
 if __name__ == "__main__":
     unittest.main()

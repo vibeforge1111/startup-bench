@@ -1,0 +1,20 @@
+{
+  "suite_version": "0.1.0",
+  "benchmark_version": "0.2.0-draft",
+  "scenario_pack_version": "test-pack-0.1.0",
+  "split": "test",
+  "scenarios": [
+    {
+      "scenario_id": "b2b_saas_runway_pricing_001",
+      "path": "minimal_b2b_saas_scenario.json",
+      "track": "b2b_saas",
+      "mode": "test"
+    },
+    {
+      "scenario_id": "crisis_trust_recovery_001",
+      "path": "minimal_crisis_scenario.json",
+      "track": "crisis",
+      "mode": "test"
+    }
+  ]
+}

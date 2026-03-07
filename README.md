@@ -15,6 +15,7 @@ Current status:
 - repeated-run campaign aggregation implemented
 - generic primitive/event operation engine implemented
 - multi-scenario suite packaging and reporting implemented
+- private/public suite packaging and submission assembly implemented
 
 Key documents:
 
@@ -45,12 +46,16 @@ Artifacts:
 - `schemas/tsb_score_report.schema.json`
 - `schemas/tsb_batch_report.schema.json`
 - `schemas/tsb_scenario_suite.schema.json`
+- `schemas/tsb_public_suite_manifest.schema.json`
 - `schemas/tsb_suite_report.schema.json`
 - `schemas/tsb_trace.schema.json`
 - `schemas/tsb_submission.schema.json`
 - `examples/minimal_b2b_saas_scenario.json`
 - `examples/minimal_crisis_scenario.json`
 - `examples/dev_scenario_suite.json`
+- `examples/private_test_scenario_suite.json`
+- `examples/minimal_public_suite_manifest.json`
+- `examples/minimal_submission.json`
 - `examples/minimal_world_state.json`
 - `examples/minimal_primitives.json`
 - `examples/minimal_tool_manifest.json`
@@ -76,6 +81,8 @@ python -m thestartupbench run-script examples/minimal_b2b_saas_scenario.json exa
 python -m thestartupbench run-baseline examples/minimal_b2b_saas_scenario.json heuristic_b2b_operator --seed 1 --max-turns 6 --output-dir tmp_out
 python -m thestartupbench run-campaign examples/minimal_b2b_saas_scenario.json baseline --baseline-id heuristic_b2b_operator --seeds 1,2,3 --max-turns 6 --output-dir tmp_out
 python -m thestartupbench run-suite examples/dev_scenario_suite.json baseline --baseline-id heuristic_b2b_operator --seeds 1,2 --max-turns 4 --output-dir tmp_out
+python -m thestartupbench redact-suite examples/private_test_scenario_suite.json --output-dir tmp_out
+python -m thestartupbench build-submission --suite-report-paths tmp_out/suite_report.json --model-id heuristic_b2b_operator --provider baseline --contamination-flag clean --output-dir tmp_out
 python -m unittest discover -s tests -p "test_*.py"
 ```
 

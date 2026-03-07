@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://thestartupbench.org/schemas/tsb_public_suite_manifest.schema.json",
+  "title": "TheStartupBench Public Suite Manifest",
+  "type": "object",
+  "required": ["manifest_version", "benchmark_version", "scenario_pack_version", "split", "scenario_count", "scenarios"],
+  "properties": {
+    "manifest_version": { "type": "string" },
+    "benchmark_version": { "type": "string" },
+    "scenario_pack_version": { "type": "string" },
+    "split": { "type": "string", "enum": ["dev", "test", "fresh"] },
+    "scenario_count": { "type": "integer", "minimum": 1 },
+    "scenarios": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["scenario_id", "track", "mode", "hidden_ref"],
+        "properties": {
+          "scenario_id": { "type": "string" },
+          "track": { "type": "string" },
+          "mode": { "type": "string" },
+          "hidden_ref": { "type": "string" }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

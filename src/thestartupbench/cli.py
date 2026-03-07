@@ -72,6 +72,20 @@ def _build_parser() -> argparse.ArgumentParser:
     suite_parser.add_argument("--max-turns", type=int, help="Optional turn cap when runner_type=baseline")
     suite_parser.add_argument("--output-dir", help="Optional directory to write the suite report artifact")
 
+    redact_parser = subparsers.add_parser("redact-suite", help="Emit a public redacted manifest from a private suite")
+    redact_parser.add_argument("suite_path", help="Path to the private scenario suite JSON file")
+    redact_parser.add_argument("--output-dir", help="Optional directory to write the public manifest artifact")
+
+    submission_parser = subparsers.add_parser("build-submission", help="Build a leaderboard submission from suite reports")
+    submission_parser.add_argument("--suite-report-paths", required=True, help="Comma-separated suite report paths")
+    submission_parser.add_argument("--model-id", required=True, help="Model id for the submission")
+    submission_parser.add_argument("--provider", required=True, help="Model provider")
+    submission_parser.add_argument("--contamination-flag", required=True, help="clean, possible_contamination, or known_contamination")
+    submission_parser.add_argument("--contamination-notes", default="", help="Optional contamination notes")
+    submission_parser.add_argument("--release-date", help="Optional model release date")
+    submission_parser.add_argument("--source-url", help="Optional source or trace manifest URL")
+    submission_parser.add_argument("--output-dir", help="Optional directory to write the submission artifact")
+
     return parser
 
 
@@ -275,6 +289,47 @@ def _cmd_run_suite(
     return 0 if result["validation"]["ok"] else 1
 
 
+def _cmd_redact_suite(suite_path: str, output_dir: str | None) -> int:
+    from .suite_manifest import redact_suite_manifest
+
+    result = redact_suite_manifest(Path(suite_path))
+    if output_dir:
+        out_dir = Path(output_dir)
+        out_dir.mkdir(parents=True, exist_ok=True)
+        (out_dir / "public_suite_manifest.json").write_text(json.dumps(result["manifest"], indent=2), encoding="utf-8")
+    print(json.dumps(result, indent=2))
+    return 0 if result["validation"]["ok"] else 1
+
+
+def _cmd_build_submission(
+    suite_report_paths: str,
+    model_id: str,
+    provider: str,
+    contamination_flag: str,
+    contamination_notes: str,
+    release_date: str | None,
+    source_url: str | None,
+    output_dir: str | None,
+) -> int:
+    from .submission_builder import build_submission
+
+    result = build_submission(
+        suite_report_paths=[Path(path.strip()) for path in suite_report_paths.split(",") if path.strip()],
+        model_id=model_id,
+        provider=provider,
+        contamination_flag=contamination_flag,
+        contamination_notes=contamination_notes,
+        release_date=release_date,
+        source_url=source_url,
+    )
+    if output_dir:
+        out_dir = Path(output_dir)
+        out_dir.mkdir(parents=True, exist_ok=True)
+        (out_dir / "submission.json").write_text(json.dumps(result["submission"], indent=2), encoding="utf-8")
+    print(json.dumps(result, indent=2))
+    return 0 if result["validation"]["ok"] else 1
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = _build_parser()
     args = parser.parse_args(argv)
@@ -326,6 +381,19 @@ def main(argv: list[str] | None = None) -> int:
             args.baseline_id,
             args.tool_calls_path,
             args.max_turns,
+            args.output_dir,
+        )
+    if args.command == "redact-suite":
+        return _cmd_redact_suite(args.suite_path, args.output_dir)
+    if args.command == "build-submission":
+        return _cmd_build_submission(
+            args.suite_report_paths,
+            args.model_id,
+            args.provider,
+            args.contamination_flag,
+            args.contamination_notes,
+            args.release_date,
+            args.source_url,
             args.output_dir,
         )
 
