@@ -21,6 +21,8 @@ Current status:
 - distinct hidden fresh pack variants and hidden-suite integrity enforcement implemented
 - uncertainty-aware reporting implemented for batch, suite, and submission artifacts
 - official evaluation profile and run-manifest support implemented
+- expanded benchmark coverage across GTM, finance, and people tracks
+- added a second hidden pack family for operator-style GTM, finance, and people evaluation
 
 Key documents:
 
@@ -67,9 +69,14 @@ Artifacts:
 - `examples/minimal_crisis_scenario.json`
 - `examples/minimal_0to1_scenario.json`
 - `examples/minimal_board_scenario.json`
+- `examples/minimal_gtm_scenario.json`
+- `examples/minimal_finance_scenario.json`
+- `examples/minimal_people_scenario.json`
 - `examples/minimal_scale_scenario.json`
 - `examples/dev_scenario_suite.json`
 - `examples/private_test_scenario_suite.json`
+- `examples/private_operator_test_scenario_suite.json`
+- `examples/private_operator_fresh_scenario_suite.json`
 - `examples/official_eval_profile.json`
 - `examples/minimal_run_manifest.json`
 - `examples/minimal_public_suite_manifest.json`

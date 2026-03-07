@@ -6,8 +6,8 @@ Last updated: 2026-03-07
 
 Current automated test surface:
 
-- `67` unit tests
-- `14` test files
+- `74` unit tests
+- `15` test files
 - all tests passing in the current tree
 
 The test suite is strongest on schema validation, core runtime mutations, baseline execution, and suite/submission packaging. It is weakest on evaluator nuance, adversarial scenario behavior, and broader scenario-corpus regression coverage.
@@ -103,6 +103,14 @@ The test suite is strongest on schema validation, core runtime mutations, baseli
   - lints the same scenario pack
   - runs the real-world suite with the resilient baseline
 
+### Hidden breadth packs
+
+- [test_operator_hidden_suite.py](/C:/Users/USER/Desktop/startup-bench/tests/test_operator_hidden_suite.py): `4` tests
+  - validates hidden operator `test` suite
+  - runs hidden operator `test` suite
+  - validates and runs hidden operator `fresh` suite
+  - checks hidden operator `test` and `fresh` suite-family integrity
+
 ## Smoke Test Commands
 
 Current note:
@@ -114,6 +122,9 @@ The following smoke commands are the minimum end-to-end checks worth preserving 
 
 ```bash
 PYTHONPATH=src python -m thestartupbench validate scenario examples/minimal_b2b_saas_scenario.json
+PYTHONPATH=src python -m thestartupbench validate scenario examples/minimal_gtm_scenario.json
+PYTHONPATH=src python -m thestartupbench validate scenario examples/minimal_finance_scenario.json
+PYTHONPATH=src python -m thestartupbench validate scenario examples/minimal_people_scenario.json
 PYTHONPATH=src python -m thestartupbench lint-scenario examples/minimal_b2b_saas_scenario.json
 PYTHONPATH=src python -m thestartupbench run-baseline examples/minimal_crisis_scenario.json heuristic_resilient_operator --seed 1 --max-turns 6 --output-dir tmp_smoke
 PYTHONPATH=src python -m thestartupbench check-trace tmp_smoke/trace.json
@@ -122,7 +133,11 @@ PYTHONPATH=src python -m thestartupbench emit-run-manifest examples/dev_scenario
 PYTHONPATH=src python -m thestartupbench run-suite examples/dev_scenario_suite.json baseline --baseline-id heuristic_resilient_operator --seeds 1,2 --max-turns 4 --profile-path examples/official_eval_profile.json --output-dir tmp_smoke
 PYTHONPATH=src python -m thestartupbench redact-suite examples/private_test_scenario_suite.json --output-dir tmp_smoke
 PYTHONPATH=src python -m thestartupbench check-suite-family examples/private_real_world_test_scenario_suite.json examples/private_real_world_fresh_scenario_suite.json
+PYTHONPATH=src python -m thestartupbench check-suite-family examples/private_operator_test_scenario_suite.json examples/private_operator_fresh_scenario_suite.json
+PYTHONPATH=src python -m thestartupbench run-suite examples/private_operator_test_scenario_suite.json baseline --baseline-id heuristic_resilient_operator --seeds 1 --max-turns 3 --output-dir tmp_smoke
+PYTHONPATH=src python -m thestartupbench run-suite examples/private_operator_fresh_scenario_suite.json baseline --baseline-id heuristic_resilient_operator --seeds 1 --max-turns 3 --output-dir tmp_smoke
 PYTHONPATH=src python -m thestartupbench redact-suite examples/private_real_world_fresh_scenario_suite.json --output-dir tmp_smoke
+PYTHONPATH=src python -m thestartupbench redact-suite examples/private_operator_fresh_scenario_suite.json --output-dir tmp_smoke
 PYTHONPATH=src python -m thestartupbench check-pack-changelog examples/public_pack_changelog.json
 PYTHONPATH=src python -m thestartupbench build-submission --suite-report-paths tmp_smoke/suite_report.json --model-id heuristic_resilient_operator --provider baseline --contamination-flag clean --output-dir tmp_smoke
 python -m unittest discover -s tests -p "test_*.py"
@@ -148,7 +163,7 @@ Observed on 2026-03-07:
   - repeated run count: `5`
   - profile id: `official-hosted-v0.1.0`
 - `run-suite ...dev_scenario_suite.json ... --seeds 1,2 --max-turns 4 --profile-path ...`: passed
-  - scenario count: `5`
+  - scenario count: `8`
   - overall score mean: `0.7056`
   - overall pass-rate mean: `1.0`
   - emitted run manifest alongside suite report
@@ -170,6 +185,17 @@ Observed on 2026-03-07:
 - `check-suite-family ...private_real_world_test_scenario_suite.json ...private_real_world_fresh_scenario_suite.json`: passed
   - suite count: `2`
   - issues: `0`
+- `check-suite-family ...private_operator_test_scenario_suite.json ...private_operator_fresh_scenario_suite.json`: passed
+  - suite count: `2`
+  - issues: `0`
+- `run-suite ...private_operator_test_scenario_suite.json ... --seeds 1 --max-turns 3`: passed
+  - scenario count: `3`
+  - overall score mean: `0.7187`
+  - overall pass-rate mean: `1.0`
+- `run-suite ...private_operator_fresh_scenario_suite.json ... --seeds 1 --max-turns 3`: passed
+  - scenario count: `3`
+  - overall score mean: `0.7027`
+  - overall pass-rate mean: `1.0`
 - `promote-suite ...private_real_world_test_scenario_suite.json --split fresh --scenario-pack-version real-world-fresh-pack-0.1.0`: correctly rejected by default
   - result: `ok: false`
   - reason: hidden split cloning now requires explicit draft-only override
@@ -185,8 +211,8 @@ Observed on 2026-03-07:
 - `python -m thestartupbench version`: passed
   - reported version: `0.1.0`
 - `python -m unittest discover -s tests -p "test_*.py"`: passed
-  - `67` tests
-  - `14` files
+  - `74` tests
+  - `15` files
 
 ## What Is Covered Well
 

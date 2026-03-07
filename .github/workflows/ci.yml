@@ -28,10 +28,15 @@ jobs:
       - name: Validate core scenarios
         run: |
           python -m thestartupbench validate scenario examples/minimal_b2b_saas_scenario.json
+          python -m thestartupbench validate scenario examples/minimal_gtm_scenario.json
+          python -m thestartupbench validate scenario examples/minimal_finance_scenario.json
+          python -m thestartupbench validate scenario examples/minimal_people_scenario.json
           python -m thestartupbench validate scenario examples/real_world_brex_svb_treasury_shock_scenario.json
           python -m thestartupbench validate scenario-suite examples/dev_scenario_suite.json
           python -m thestartupbench validate scenario-suite examples/real_world_crisis_scenario_suite.json
           python -m thestartupbench validate scenario-suite examples/private_real_world_fresh_scenario_suite.json
+          python -m thestartupbench validate scenario-suite examples/private_operator_test_scenario_suite.json
+          python -m thestartupbench validate scenario-suite examples/private_operator_fresh_scenario_suite.json
           python -m thestartupbench validate official-eval-profile examples/official_eval_profile.json
           python -m thestartupbench validate run-manifest examples/minimal_run_manifest.json
 
@@ -44,15 +49,18 @@ jobs:
       - name: Check hidden suite family integrity
         run: |
           python -m thestartupbench check-suite-family examples/private_real_world_test_scenario_suite.json examples/private_real_world_fresh_scenario_suite.json
+          python -m thestartupbench check-suite-family examples/private_operator_test_scenario_suite.json examples/private_operator_fresh_scenario_suite.json
 
       - name: Run benchmark smoke suites
         run: |
           python -m thestartupbench run-suite examples/dev_scenario_suite.json baseline --baseline-id heuristic_resilient_operator --seeds 1 --max-turns 3 --profile-path examples/official_eval_profile.json --output-dir tmp_ci_dev
           python -m thestartupbench run-suite examples/real_world_crisis_scenario_suite.json baseline --baseline-id heuristic_resilient_operator --seeds 1 --max-turns 3 --output-dir tmp_ci_real
+          python -m thestartupbench run-suite examples/private_operator_test_scenario_suite.json baseline --baseline-id heuristic_resilient_operator --seeds 1 --max-turns 3 --output-dir tmp_ci_operator
 
       - name: Build hidden-eval artifacts
         run: |
           python -m thestartupbench redact-suite examples/private_test_scenario_suite.json --output-dir tmp_ci_private
           python -m thestartupbench redact-suite examples/private_real_world_fresh_scenario_suite.json --output-dir tmp_ci_fresh
+          python -m thestartupbench redact-suite examples/private_operator_fresh_scenario_suite.json --output-dir tmp_ci_operator_fresh
           python -m thestartupbench emit-run-manifest examples/dev_scenario_suite.json baseline --seeds 1,2,3,4,5 --baseline-id heuristic_resilient_operator --max-turns 8 --profile-path examples/official_eval_profile.json --output-dir tmp_ci_manifest
           python -m thestartupbench build-submission --suite-report-paths tmp_ci_real/suite_report.json --model-id heuristic_resilient_operator --provider baseline --contamination-flag clean --output-dir tmp_ci_submission

@@ -119,6 +119,9 @@ Completed example tracks:
 - `b2b_saas`
 - `board`
 - `crisis`
+- `finance`
+- `gtm`
+- `people`
 - `scale`
 
 These are example-scale scenarios, not yet a production benchmark corpus.
@@ -160,6 +163,15 @@ Completed hidden real-world fresh pack:
   - security backlash with enterprise procurement freeze
   - restoration collapse with repeated tooling slippage
   - peak readiness with support spike and fatigue
+
+Completed hidden operator breadth packs:
+
+- `3` hidden `test` scenarios in [private_operator_test_scenario_suite.json](/C:/Users/USER/Desktop/startup-bench/examples/private_operator_test_scenario_suite.json)
+- `3` hidden `fresh` scenarios in [private_operator_fresh_scenario_suite.json](/C:/Users/USER/Desktop/startup-bench/examples/private_operator_fresh_scenario_suite.json)
+- current operator hidden coverage:
+  - GTM pipeline reset
+  - finance liquidity and treasury tradeoffs
+  - people attrition and support-load stabilization
 
 ## What Is Partially Done
 
@@ -203,6 +215,7 @@ Partially done:
 - private/test suite format exists
 - fresh hidden suite format exists
 - hidden `test` and `fresh` suites are now distinct in ids and files
+- a second hidden pack family now exists outside the crisis-heavy real-world family
 - public redacted suite manifest exists
 - public lifecycle changelog exists
 - suite and submission artifacts exist
@@ -241,6 +254,7 @@ Not done:
 - a large public dev set
 - a large hidden official test set
 - a larger distinct hidden fresh set
+- broader hidden coverage outside crisis-heavy scenarios
 - broad scenario coverage across product, GTM, finance, people, legal, and crisis operations
 - difficulty tiering and refresh lineages
 
