@@ -23,6 +23,7 @@ TheStartupBench is no longer just an RFC. It now has:
 - calibration reports and study manifests for hidden-pack operator alignment
 - executable study runs, review packets, and study-level calibration compilation
 - taskforce strategy and reviewer manual for organizing human calibration
+- reviewer assignment, exportable review forms, and import back into benchmark artifacts
 - CI for tests, validation, and smoke suites
 - unit tests and executable smoke paths
 
@@ -64,6 +65,9 @@ Completed:
   - `build-calibration-report`
   - `run-calibration-study`
   - `compile-calibration-study`
+  - `assign-reviewers`
+  - `export-review-forms`
+  - `import-review-forms`
 - official evaluation helpers:
   - `show-official-profile`
   - `emit-run-manifest`
@@ -335,6 +339,7 @@ Partially done:
 - a concrete study manifest now exists for canary, strategy, and real-world hidden packs
 - the reference tooling can now run a full study wave and compile partial study reports
 - the repo now includes practical docs for recruiting and guiding a human calibration taskforce
+- the repo now includes reviewer-facing CSV and Markdown form workflows for external operators
 
 What remains inside this category:
 

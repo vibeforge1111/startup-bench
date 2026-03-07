@@ -57,6 +57,9 @@ Machine-readable schemas:
 - `../schemas/tsb_review_packet.schema.json`
 - `../schemas/tsb_calibration_study_run.schema.json`
 - `../schemas/tsb_calibration_study_report.schema.json`
+- `../schemas/tsb_review_assignments.schema.json`
+- `../schemas/tsb_review_form_export.schema.json`
+- `../schemas/tsb_review_form_import.schema.json`
 
 Example:
 
@@ -108,6 +111,7 @@ Reference implementation status:
 - operator review aggregation and calibration artifacts are implemented
 - calibration-study manifests are implemented
 - executable study runs, review packets, and study reports are implemented
+- reviewer assignment, form export, and form import workflows are implemented
 - smoke tests exist under `tests/`
 
 ## Canonical terms

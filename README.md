@@ -30,6 +30,7 @@ Current status:
 - added operator/founder calibration artifacts, schemas, and review aggregation support
 - added calibration reports and study manifests for hidden-pack operator alignment work
 - added executable study runs, review packets, and study-level compilation for operator calibration waves
+- added reviewer assignment, exportable review forms, and review-form import workflows
 
 Key documents:
 
@@ -83,6 +84,9 @@ Artifacts:
 - `schemas/tsb_review_packet.schema.json`
 - `schemas/tsb_calibration_study_run.schema.json`
 - `schemas/tsb_calibration_study_report.schema.json`
+- `schemas/tsb_review_assignments.schema.json`
+- `schemas/tsb_review_form_export.schema.json`
+- `schemas/tsb_review_form_import.schema.json`
 - `examples/minimal_b2b_saas_scenario.json`
 - `examples/minimal_crisis_scenario.json`
 - `examples/minimal_0to1_scenario.json`
@@ -142,6 +146,9 @@ python -m thestartupbench check-suite-family examples/private_canary_test_scenar
 python -m thestartupbench aggregate-operator-reviews examples/minimal_operator_review.json --output-dir tmp_out
 python -m thestartupbench build-calibration-report --suite-report-path tmp_out/suite_report.json --review-paths examples/minimal_operator_review.json --output-dir tmp_out
 python -m thestartupbench run-calibration-study examples/operator_calibration_study_manifest.json --output-dir tmp_out
+python -m thestartupbench assign-reviewers examples/operator_calibration_study_manifest.json --study-run-dir tmp_out --roster-path examples/reviewer_roster_template.csv --output-dir tmp_out
+python -m thestartupbench export-review-forms tmp_out/review_assignments.json --output-dir tmp_out
+python -m thestartupbench import-review-forms tmp_out --output-dir tmp_out
 python -m thestartupbench compile-calibration-study examples/operator_calibration_study_manifest.json --study-run-dir tmp_out --review-paths examples/minimal_operator_review.json --output-dir tmp_out
 python -m thestartupbench build-submission --suite-report-paths tmp_out/suite_report.json --model-id heuristic_resilient_operator --provider baseline --contamination-flag clean --output-dir tmp_out
 python -m unittest discover -s tests -p "test_*.py"
