@@ -5,6 +5,12 @@
   "split": "dev",
   "scenarios": [
     {
+      "scenario_id": "real_world_airbnb_emergency_financing_001",
+      "path": "real_world_airbnb_emergency_financing_scenario.json",
+      "track": "board",
+      "mode": "dev"
+    },
+    {
       "scenario_id": "real_world_airbnb_demand_shock_001",
       "path": "real_world_airbnb_demand_shock_scenario.json",
       "track": "board",
@@ -43,6 +49,12 @@
     {
       "scenario_id": "real_world_atlassian_restoration_001",
       "path": "real_world_atlassian_restoration_scenario.json",
+      "track": "crisis",
+      "mode": "dev"
+    },
+    {
+      "scenario_id": "real_world_brex_svb_treasury_shock_001",
+      "path": "real_world_brex_svb_treasury_shock_scenario.json",
       "track": "crisis",
       "mode": "dev"
     },

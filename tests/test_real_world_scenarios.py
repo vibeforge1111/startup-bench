@@ -15,7 +15,9 @@ from thestartupbench.validation import validate_artifact_file
 REPO_ROOT = Path(__file__).resolve().parents[1]
 EXAMPLES_DIR = REPO_ROOT / "examples"
 REAL_WORLD_SCENARIOS = [
+    "real_world_airbnb_emergency_financing_scenario.json",
     "real_world_airbnb_demand_shock_scenario.json",
+    "real_world_brex_svb_treasury_shock_scenario.json",
     "real_world_buffer_runway_crunch_scenario.json",
     "real_world_zoom_security_freeze_scenario.json",
     "real_world_robinhood_volatility_outage_scenario.json",
@@ -64,8 +66,8 @@ class RealWorldScenarioTests(unittest.TestCase):
 
         self.assertTrue(result["validation"]["ok"])
         report = result["suite_report"]
-        self.assertEqual(report["overall"]["scenario_count"], 8)
-        self.assertEqual(len(report["scenario_reports"]), 8)
+        self.assertEqual(report["overall"]["scenario_count"], 10)
+        self.assertEqual(len(report["scenario_reports"]), 10)
         tracks = {item["track"] for item in report["track_summaries"]}
         self.assertEqual(tracks, {"board", "crisis", "scale"})
 

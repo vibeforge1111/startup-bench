@@ -1,0 +1,181 @@
+{
+  "metadata": {
+    "scenario_id": "real_world_airbnb_emergency_financing_001",
+    "scenario_version": "0.1.0",
+    "benchmark_version": "0.2.0-draft",
+    "track": "board",
+    "mode": "dev",
+    "title": "Emergency Financing Under Market Shock",
+    "summary": "Derived from Airbnb's 2020 crisis financing period. Demand has already collapsed, the board wants a credible survival plan, and the company must decide whether to accept expensive financing before the market window gets worse.",
+    "difficulty": "frontier",
+    "time_horizon": {
+      "unit": "week",
+      "length": 10
+    },
+    "authoring_origin": "real_world_derived",
+    "tags": ["real_world", "airbnb", "financing", "board", "market_shock", "runway"],
+    "inspired_by": {
+      "company": "Airbnb",
+      "year": 2020,
+      "pattern": "emergency financing under demand shock"
+    }
+  },
+  "initial_state": {
+    "company": {
+      "stage": "series_d",
+      "sector": "marketplace",
+      "business_model": "transaction_fee"
+    },
+    "finance": {
+      "cash_usd": 2500000,
+      "restricted_cash_usd": 0,
+      "monthly_burn_usd": 710000,
+      "monthly_revenue_usd": 340000,
+      "treasury_concentration": 0.42
+    },
+    "product": {
+      "major_incidents_open": 0,
+      "roadmap_items": 10,
+      "onboarding_quality": 0.62
+    },
+    "customers": {
+      "paying_accounts": 260,
+      "monthly_churn_rate": 0.041,
+      "trust_score": 0.68
+    },
+    "sales": {
+      "pipeline_count": 11,
+      "weighted_pipeline_usd": 540000,
+      "pricing": {
+        "current_price_index": 1.0
+      }
+    },
+    "team": {
+      "morale": 0.53,
+      "attrition_risk": 0.58,
+      "bandwidth_load": 0.84
+    },
+    "governance": {
+      "board_update_count": 1
+    },
+    "policy": {
+      "max_auto_price_increase_pct": 0.03
+    },
+    "risk": {
+      "financing_pressure": 0.74
+    },
+    "sim": {
+      "current_time": "2026-03-23T09:00:00Z"
+    }
+  },
+  "latent_state": {
+    "true_root_cause": "market_window_closing",
+    "true_board_patience": "low"
+  },
+  "observation_surfaces": [
+    {
+      "surface_id": "finance_dashboard",
+      "surface_type": "dashboard",
+      "refresh_policy": "daily",
+      "visible_fields": ["cash_usd", "liquid_cash_usd", "runway_weeks", "monthly_burn_usd"]
+    },
+    {
+      "surface_id": "board_packet",
+      "surface_type": "board_portal",
+      "refresh_policy": "weekly",
+      "visible_fields": ["board_update_count", "weighted_pipeline_usd", "financing_pressure"]
+    },
+    {
+      "surface_id": "team_dashboard",
+      "surface_type": "dashboard",
+      "refresh_policy": "weekly",
+      "visible_fields": ["morale", "attrition_risk", "bandwidth_load"]
+    }
+  ],
+  "tools": [
+    "metrics.query",
+    "metrics.report",
+    "product.roadmap.read",
+    "product.roadmap.write",
+    "sales.pipeline.read",
+    "sales.pipeline.update",
+    "finance.plan.read",
+    "finance.plan.write",
+    "finance.raise.propose",
+    "board.read",
+    "board.update",
+    "people.org.read",
+    "people.org.adjust",
+    "notes.read",
+    "notes.write",
+    "sim.advance"
+  ],
+  "event_model": {
+    "kind": "seeded_schedule",
+    "primitive_catalog": {
+      "financing_window_worsens": {
+        "operations": [
+          { "op": "increment", "path": "risk.financing_pressure", "value": 0.16 },
+          { "op": "clamp", "path": "risk.financing_pressure", "min": 0.0, "max": 1.0 },
+          { "op": "increment", "path": "sales.weighted_pipeline_usd", "value": -130000 },
+          { "op": "increment", "path": "customers.trust_score", "value": -0.03 },
+          { "op": "clamp", "path": "customers.trust_score", "min": 0.0, "max": 1.0 }
+        ]
+      },
+      "team_fatigue_wave": {
+        "operations": [
+          { "op": "increment", "path": "team.morale", "value": -0.06 },
+          { "op": "clamp", "path": "team.morale", "min": 0.0, "max": 1.0 },
+          { "op": "increment", "path": "team.attrition_risk", "value": 0.08 },
+          { "op": "clamp", "path": "team.attrition_risk", "min": 0.0, "max": 1.0 },
+          { "op": "increment", "path": "customers.monthly_churn_rate", "value": 0.005 }
+        ]
+      }
+    },
+    "scheduled_events": [
+      {
+        "event_id": "ev_airbnb_fin_001",
+        "at_turn": 2,
+        "primitive_id": "financing_window_worsens",
+        "event_type": "financing_window_worsens",
+        "visible_message": "Financing terms worsened again and investor appetite became more selective."
+      },
+      {
+        "event_id": "ev_airbnb_fin_002",
+        "at_turn": 3,
+        "primitive_id": "team_fatigue_wave",
+        "event_type": "team_fatigue_wave",
+        "visible_message": "Sustained uncertainty began to affect execution quality and morale."
+      }
+    ]
+  },
+  "policy_constraints": [
+    {
+      "constraint_id": "no_unapproved_hiring",
+      "kind": "approval_required"
+    }
+  ],
+  "terminal_conditions": [
+    {
+      "condition_id": "horizon_end_10_weeks",
+      "kind": "horizon_end"
+    },
+    {
+      "condition_id": "bankruptcy",
+      "kind": "hard_failure"
+    }
+  ],
+  "evaluation": {
+    "outcome_components": [
+      { "component_id": "cash_efficiency", "weight": 0.35, "direction": "maximize" },
+      { "component_id": "revenue_quality", "weight": 0.15, "direction": "maximize" },
+      { "component_id": "customer_health", "weight": 0.15, "direction": "maximize" },
+      { "component_id": "strategic_coherence", "weight": 0.35, "direction": "maximize" }
+    ],
+    "constraints": [
+      { "constraint_id": "bankruptcy" },
+      { "constraint_id": "severe_trust_breach" },
+      { "constraint_id": "severe_financing_failure" }
+    ]
+  }
+}
