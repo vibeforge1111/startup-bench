@@ -85,6 +85,14 @@ class ValidationTests(unittest.TestCase):
         self.assertTrue(result.ok)
         self.assertEqual(result.issues, [])
 
+    def test_product_scenario_example_validates(self) -> None:
+        result = validate_artifact_file(
+            artifact_type="scenario",
+            path=REPO_ROOT / "examples" / "minimal_product_scenario.json",
+        )
+        self.assertTrue(result.ok)
+        self.assertEqual(result.issues, [])
+
     def test_scenario_suite_example_validates(self) -> None:
         result = validate_artifact_file(
             artifact_type="scenario-suite",
@@ -137,6 +145,22 @@ class ValidationTests(unittest.TestCase):
         result = validate_artifact_file(
             artifact_type="public-suite-manifest",
             path=REPO_ROOT / "examples" / "real_world_public_fresh_manifest.json",
+        )
+        self.assertTrue(result.ok)
+        self.assertEqual(result.issues, [])
+
+    def test_strategy_public_test_manifest_example_validates(self) -> None:
+        result = validate_artifact_file(
+            artifact_type="public-suite-manifest",
+            path=REPO_ROOT / "examples" / "strategy_public_test_manifest.json",
+        )
+        self.assertTrue(result.ok)
+        self.assertEqual(result.issues, [])
+
+    def test_strategy_public_fresh_manifest_example_validates(self) -> None:
+        result = validate_artifact_file(
+            artifact_type="public-suite-manifest",
+            path=REPO_ROOT / "examples" / "strategy_public_fresh_manifest.json",
         )
         self.assertTrue(result.ok)
         self.assertEqual(result.issues, [])

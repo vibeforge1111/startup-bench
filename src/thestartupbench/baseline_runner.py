@@ -18,6 +18,7 @@ from .validation import validate_instance
 
 _BASELINE_IDS = {
     "heuristic_b2b_operator",
+    "heuristic_long_horizon_operator",
     "heuristic_market_aware_operator",
     "heuristic_resilient_operator",
 }
@@ -523,9 +524,226 @@ def _heuristic_market_aware_actions(session: RuntimeSession, *, turn_index: int)
     return actions
 
 
+def _heuristic_long_horizon_actions(session: RuntimeSession, *, turn_index: int) -> list[dict]:
+    finance = session.world_state.get("finance", {})
+    product = session.world_state.get("product", {})
+    customers = session.world_state.get("customers", {})
+    sales = session.world_state.get("sales", {})
+    governance = session.world_state.get("governance", {})
+    operations = session.world_state.get("operations", {})
+    team = session.world_state.get("team", {})
+    hiring = team.get("hiring", {})
+    risk = session.world_state.get("risk", {})
+    market = session.world_state.get("market", {})
+    actions: list[dict] = []
+    action_index = 0
+
+    actions.append(
+        {
+            "tool_name": "metrics.report",
+            "request_id": _next_request_id(turn_index, action_index),
+            "arguments": {},
+        }
+    )
+    action_index += 1
+
+    actions.append(
+        {
+            "tool_name": "research.market.read",
+            "request_id": _next_request_id(turn_index, action_index),
+            "arguments": {},
+        }
+    )
+    action_index += 1
+
+    if float(finance.get("runway_weeks", 999.0)) < 28 and not finance.get("last_plan_update"):
+        actions.append(
+            {
+                "tool_name": "finance.plan.write",
+                "request_id": _next_request_id(turn_index, action_index),
+                "arguments": {"budget_changes": {"monthly_burn_usd": -20000}},
+            }
+        )
+        action_index += 1
+
+    if float(finance.get("runway_weeks", 999.0)) < 18 or float(risk.get("financing_pressure", 0.0)) > 0.75:
+        if not finance.get("last_raise_plan"):
+            actions.append(
+                {
+                    "tool_name": "finance.raise.propose",
+                    "request_id": _next_request_id(turn_index, action_index),
+                    "arguments": {
+                        "raise_amount_usd": max(850000.0, float(finance.get("monthly_burn_usd", 0.0)) * 5.0),
+                        "dilution_pct": 0.1,
+                        "monthly_burn_change_usd": 0,
+                        "financing_risk_reduction": 0.26,
+                        "transaction_cost_usd": 24000,
+                    },
+                }
+            )
+            action_index += 1
+
+    if float(finance.get("treasury_concentration", 0.0)) > 0.8:
+        actions.append(
+            {
+                "tool_name": "finance.treasury.rebalance",
+                "request_id": _next_request_id(turn_index, action_index),
+                "arguments": {"target_concentration": 0.4, "rebalance_cost_usd": 7000},
+            }
+        )
+        action_index += 1
+
+    if (
+        float(product.get("onboarding_quality", 0.0)) < 0.7
+        or int(product.get("roadmap_items", 0)) > 7
+        or float(market.get("competitor_pressure_index", market.get("competitor_pressure", 0.0))) > 0.58
+    ):
+        actions.append(
+            {
+                "tool_name": "product.roadmap.write",
+                "request_id": _next_request_id(turn_index, action_index),
+                "arguments": {
+                    "roadmap_items_delta": -1,
+                    "onboarding_quality_delta": 0.08,
+                    "major_incidents_delta": 0,
+                    "budget_change_monthly_burn_usd": 4000,
+                },
+            }
+        )
+        action_index += 1
+
+    if int(product.get("major_incidents_open", 0)) > 0:
+        actions.append(
+            {
+                "tool_name": "ops.incident.respond",
+                "request_id": _next_request_id(turn_index, action_index),
+                "arguments": {
+                    "incident_reduction": 1,
+                    "trust_recovery": 0.05,
+                    "churn_reduction": 0.008,
+                    "monthly_burn_increase_usd": 8500,
+                },
+            }
+        )
+        action_index += 1
+
+    if float(operations.get("support_backlog", 0.0)) > 34 or float(operations.get("support_sla_breach_risk", 0.0)) > 0.38:
+        actions.append(
+            {
+                "tool_name": "ops.support.resolve",
+                "request_id": _next_request_id(turn_index, action_index),
+                "arguments": {
+                    "backlog_reduction": 18,
+                    "sla_risk_reduction": 0.18,
+                    "trust_recovery": 0.03,
+                    "churn_reduction": 0.005,
+                    "monthly_burn_increase_usd": 6500,
+                },
+            }
+        )
+        action_index += 1
+
+    if int(hiring.get("open_roles", team.get("open_roles", 0))) > 0 and (
+        float(team.get("bandwidth_load", 0.0)) > 0.74
+        or float(team.get("delivery_capacity_index", 1.0)) < 0.62
+        or int(hiring.get("critical_roles_open", 0)) > 0
+    ):
+        actions.append(
+            {
+                "tool_name": "people.hiring.update",
+                "request_id": _next_request_id(turn_index, action_index),
+                "arguments": {
+                    "sourced_candidates_delta": 5 if int(hiring.get("sourced_candidates", 0)) < 7 else 0,
+                    "onsite_candidates_delta": 2 if int(hiring.get("sourced_candidates", 0)) >= 5 else 0,
+                    "offers_out_delta": 1 if int(hiring.get("onsite_candidates", 0)) >= 2 else 0,
+                    "accepted_hires": 1 if int(hiring.get("offers_out", 0)) >= 1 else 0,
+                    "monthly_burn_change_usd": 14000 if int(hiring.get("offers_out", 0)) >= 1 else 3200,
+                    "morale_delta": 0.03 if int(hiring.get("offers_out", 0)) >= 1 else 0.01,
+                    "bandwidth_load_delta": -0.06 if int(hiring.get("offers_out", 0)) >= 1 else -0.01,
+                    "support_backlog_delta": -4 if int(hiring.get("offers_out", 0)) >= 1 else 0,
+                    "onboarding_quality_delta": 0.015 if int(hiring.get("offers_out", 0)) >= 1 else 0.0,
+                },
+            }
+        )
+        action_index += 1
+
+    if float(team.get("morale", 0.7)) < 0.58 or float(team.get("attrition_risk", 0.0)) > 0.52:
+        actions.append(
+            {
+                "tool_name": "people.org.adjust",
+                "request_id": _next_request_id(turn_index, action_index),
+                "arguments": {
+                    "morale_delta": 0.07,
+                    "attrition_risk_delta": -0.1,
+                    "bandwidth_load_delta": -0.08,
+                    "monthly_burn_change_usd": 8000,
+                    "onboarding_quality_delta": 0.02,
+                },
+            }
+        )
+        action_index += 1
+
+    if float(sales.get("weighted_pipeline_usd", 0.0)) < float(finance.get("monthly_burn_usd", 0.0)) * 5.8:
+        actions.append(
+            {
+                "tool_name": "sales.pipeline.update",
+                "request_id": _next_request_id(turn_index, action_index),
+                "arguments": {
+                    "pipeline_count_delta": 1,
+                    "weighted_pipeline_usd_delta": 55000 if float(market.get("demand_index", 1.0)) >= 0.76 else 40000,
+                },
+            }
+        )
+        action_index += 1
+
+    if (
+        float(customers.get("trust_score", 0.0)) >= 0.76
+        and float(market.get("pricing_pressure_index", market.get("pricing_pressure", 0.0))) < 0.48
+        and float(sales.get("pricing", {}).get("current_price_index", 1.0)) < 1.03
+    ):
+        actions.append(
+            {
+                "tool_name": "sales.pricing.propose",
+                "request_id": _next_request_id(turn_index, action_index),
+                "arguments": {"price_change_pct": 0.02},
+            }
+        )
+        action_index += 1
+
+    if turn_index % 2 == 0 or int(governance.get("board_update_count", 0)) == 0:
+        actions.append(
+            {
+                "tool_name": "board.update",
+                "request_id": _next_request_id(turn_index, action_index),
+                "arguments": {
+                    "summary": "Protected long-horizon trust, delivery capacity, and financing optionality ahead of short-term narrative wins.",
+                    "forecast": {
+                        "runway_weeks": finance.get("runway_weeks"),
+                        "support_backlog": operations.get("support_backlog"),
+                        "delivery_capacity_index": team.get("delivery_capacity_index"),
+                        "trust_score": customers.get("trust_score"),
+                    },
+                    "asks": ["support sequencing quality and capacity investments before aggressive expansion"],
+                },
+            }
+        )
+        action_index += 1
+
+    actions.append(
+        {
+            "tool_name": "sim.advance",
+            "request_id": _next_request_id(turn_index, action_index),
+            "arguments": {"advance_by": 1, "unit": "week"},
+        }
+    )
+    return actions
+
+
 def _proposed_actions_for_baseline(session: RuntimeSession, *, baseline_id: str, turn_index: int) -> list[dict]:
     if baseline_id == "heuristic_b2b_operator":
         return _heuristic_b2b_actions(session, turn_index=turn_index)
+    if baseline_id == "heuristic_long_horizon_operator":
+        return _heuristic_long_horizon_actions(session, turn_index=turn_index)
     if baseline_id == "heuristic_market_aware_operator":
         return _heuristic_market_aware_actions(session, turn_index=turn_index)
     if baseline_id == "heuristic_resilient_operator":

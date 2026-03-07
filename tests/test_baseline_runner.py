@@ -14,11 +14,13 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 SCENARIO_PATH = REPO_ROOT / "examples" / "minimal_b2b_saas_scenario.json"
 CRISIS_SCENARIO_PATH = REPO_ROOT / "examples" / "minimal_crisis_scenario.json"
 GTM_SCENARIO_PATH = REPO_ROOT / "examples" / "minimal_gtm_scenario.json"
+PRODUCT_SCENARIO_PATH = REPO_ROOT / "examples" / "minimal_product_scenario.json"
 
 
 class BaselineRunnerTests(unittest.TestCase):
     def test_list_baselines_contains_heuristic_operator(self) -> None:
         self.assertIn("heuristic_b2b_operator", list_baselines())
+        self.assertIn("heuristic_long_horizon_operator", list_baselines())
         self.assertIn("heuristic_market_aware_operator", list_baselines())
         self.assertIn("heuristic_resilient_operator", list_baselines())
 
@@ -85,6 +87,27 @@ class BaselineRunnerTests(unittest.TestCase):
             market_aware["trace"]["state_snapshots"][-1]["state"].get("market", {}).get("market_reads_count", 0),
             1,
         )
+
+    def test_long_horizon_baseline_outperforms_b2b_on_product_scenario(self) -> None:
+        b2b_style = run_baseline(
+            scenario_path=PRODUCT_SCENARIO_PATH,
+            baseline_id="heuristic_b2b_operator",
+            seed=23,
+            max_turns=5,
+        )
+        long_horizon = run_baseline(
+            scenario_path=PRODUCT_SCENARIO_PATH,
+            baseline_id="heuristic_long_horizon_operator",
+            seed=23,
+            max_turns=5,
+        )
+
+        self.assertGreater(
+            long_horizon["score_report"]["scenario_score"],
+            b2b_style["score_report"]["scenario_score"],
+        )
+        final_state = long_horizon["trace"]["state_snapshots"][-1]["state"]
+        self.assertGreaterEqual(final_state.get("governance", {}).get("board_update_count", 0), 2)
 
 
 if __name__ == "__main__":

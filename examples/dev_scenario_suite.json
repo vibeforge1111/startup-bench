@@ -51,6 +51,12 @@
       "path": "minimal_people_scenario.json",
       "track": "people",
       "mode": "dev"
+    },
+    {
+      "scenario_id": "product_quality_debt_001",
+      "path": "minimal_product_scenario.json",
+      "track": "product",
+      "mode": "dev"
     }
   ]
 }

@@ -41,7 +41,7 @@ class SubmissionBuilderTests(unittest.TestCase):
         submission = result["submission"]
         self.assertEqual(submission["evaluation"]["repeat_count"], 2)
         tracks = {item["track"] for item in submission["evaluation"]["track_summaries"]}
-        self.assertEqual(tracks, {"0to1", "b2b_saas", "board", "crisis", "finance", "gtm", "people", "scale"})
+        self.assertEqual(tracks, {"0to1", "b2b_saas", "board", "crisis", "finance", "gtm", "people", "product", "scale"})
         self.assertIn("sem", submission["evaluation"]["track_summaries"][0])
         self.assertIn("ci95_low", submission["evaluation"]["track_summaries"][0])
         self.assertIn("ci95_high", submission["evaluation"]["track_summaries"][0])

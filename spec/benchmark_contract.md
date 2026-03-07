@@ -28,6 +28,10 @@ Official track IDs:
 - `crisis`
 - `scale`
 - `board`
+- `gtm`
+- `finance`
+- `people`
+- `product`
 
 Each scenario MUST belong to exactly one primary track.
 
@@ -131,4 +135,3 @@ Major benchmark versions MAY change:
 - leaderboard policy
 
 Patch versions MUST only fix bugs or clarify requirements.
-

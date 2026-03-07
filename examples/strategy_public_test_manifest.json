@@ -1,0 +1,27 @@
+{
+  "manifest_version": "0.1.0",
+  "benchmark_version": "0.2.0-draft",
+  "scenario_pack_version": "strategy-test-pack-0.1.0",
+  "split": "test",
+  "scenario_count": 3,
+  "scenarios": [
+    {
+      "scenario_id": "hidden_board_stakeholder_conflict_test_001",
+      "track": "board",
+      "mode": "test",
+      "hidden_ref": "test_000"
+    },
+    {
+      "scenario_id": "hidden_product_delayed_consequence_test_001",
+      "track": "product",
+      "mode": "test",
+      "hidden_ref": "test_001"
+    },
+    {
+      "scenario_id": "hidden_scale_multi_quarter_test_001",
+      "track": "scale",
+      "mode": "test",
+      "hidden_ref": "test_002"
+    }
+  ]
+}

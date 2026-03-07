@@ -1,0 +1,26 @@
+{
+  "suite_version": "0.1.0",
+  "benchmark_version": "0.2.0-draft",
+  "scenario_pack_version": "strategy-fresh-pack-0.1.0",
+  "split": "fresh",
+  "scenarios": [
+    {
+      "scenario_id": "hidden_board_stakeholder_conflict_fresh_001",
+      "path": "hidden_board_stakeholder_conflict_fresh_scenario.json",
+      "track": "board",
+      "mode": "fresh"
+    },
+    {
+      "scenario_id": "hidden_product_delayed_consequence_fresh_001",
+      "path": "hidden_product_delayed_consequence_fresh_scenario.json",
+      "track": "product",
+      "mode": "fresh"
+    },
+    {
+      "scenario_id": "hidden_scale_multi_quarter_fresh_001",
+      "path": "hidden_scale_multi_quarter_fresh_scenario.json",
+      "track": "scale",
+      "mode": "fresh"
+    }
+  ]
+}

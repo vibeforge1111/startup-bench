@@ -36,7 +36,7 @@
         "benchmark_version": { "type": "string" },
         "track": {
           "type": "string",
-          "enum": ["0to1", "b2b_saas", "consumer", "deeptech", "marketplace", "crisis", "scale", "board", "gtm", "finance", "people"]
+          "enum": ["0to1", "b2b_saas", "consumer", "deeptech", "marketplace", "crisis", "scale", "board", "gtm", "finance", "people", "product"]
         },
         "mode": { "type": "string", "enum": ["dev", "test", "fresh"] },
         "title": { "type": "string" },
