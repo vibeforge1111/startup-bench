@@ -252,12 +252,12 @@ Observed on 2026-03-08:
   - suite count: `2`
   - issues: `0`
 - `run-suite ...private_operator_test_scenario_suite.json ... --seeds 1 --max-turns 3`: passed
-  - scenario count: `7`
-  - overall score mean: `0.7298`
+  - scenario count: `9`
+  - overall score mean: `0.7393`
   - overall pass-rate mean: `1.0`
 - `run-suite ...private_operator_fresh_scenario_suite.json ... --seeds 1 --max-turns 3`: passed
-  - scenario count: `7`
-  - overall score mean: `0.7119`
+  - scenario count: `9`
+  - overall score mean: `0.7261`
   - overall pass-rate mean: `1.0`
 - `check-suite-family ...private_canary_test_scenario_suite.json ...private_canary_fresh_scenario_suite.json`: passed
   - suite count: `2`
@@ -285,7 +285,7 @@ Observed on 2026-03-08:
   - result: `ok: false`
   - reason: hidden split cloning now requires explicit draft-only override
 - `check-pack-changelog ...public_pack_changelog.json`: passed
-  - changelog entry count: `21`
+  - changelog entry count: `25`
   - validation: `ok`
 - `aggregate-operator-reviews ...minimal_operator_review.json`: passed
   - review count: `1`

@@ -238,16 +238,18 @@ Completed hidden real-world fresh pack:
 
 Completed hidden operator breadth packs:
 
-- `7` hidden `test` scenarios in [private_operator_test_scenario_suite.json](/C:/Users/USER/Desktop/startup-bench/examples/private_operator_test_scenario_suite.json)
-- `7` hidden `fresh` scenarios in [private_operator_fresh_scenario_suite.json](/C:/Users/USER/Desktop/startup-bench/examples/private_operator_fresh_scenario_suite.json)
+- `9` hidden `test` scenarios in [private_operator_test_scenario_suite.json](/C:/Users/USER/Desktop/startup-bench/examples/private_operator_test_scenario_suite.json)
+- `9` hidden `fresh` scenarios in [private_operator_fresh_scenario_suite.json](/C:/Users/USER/Desktop/startup-bench/examples/private_operator_fresh_scenario_suite.json)
 - current operator hidden coverage:
   - GTM pipeline reset
   - GTM enterprise freeze under trust fragility
   - GTM reference decay under pipeline erosion
   - finance liquidity and treasury tradeoffs
   - finance margin shock under payment delay
+  - finance covenant squeeze under collections drag
   - people attrition and support-load stabilization
   - people reorg drag under morale pressure
+  - people manager-span overload under burnout risk
 
 Completed hidden strategy packs:
 

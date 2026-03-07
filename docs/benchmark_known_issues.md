@@ -48,6 +48,9 @@ Current mitigation:
 - hidden packs are versioned
 - `test`/`fresh` families are distinct
 - canary packs exist for exploit detection
+- operator hidden coverage now includes three GTM slices, three finance slices, and three people/org slices
+- strategy hidden coverage now includes three board-governance slices
+- real-world hidden coverage now includes broader crisis, board, finance, and scale slices
 
 Exit condition:
 
