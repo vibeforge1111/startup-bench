@@ -18,6 +18,7 @@ from .validation import validate_instance
 
 _BASELINE_IDS = {
     "heuristic_b2b_operator",
+    "heuristic_liquidity_operator",
     "heuristic_long_horizon_operator",
     "heuristic_market_aware_operator",
     "heuristic_resilient_operator",
@@ -74,6 +75,54 @@ def _long_horizon_board_update_payload(session: RuntimeSession) -> dict:
             "trust_score": customers.get("trust_score"),
             "major_incidents_open": product.get("major_incidents_open"),
             "financing_pressure": risk.get("financing_pressure"),
+        },
+        "asks": asks,
+    }
+
+
+def _liquidity_board_update_payload(session: RuntimeSession) -> dict:
+    finance = session.world_state.get("finance", {})
+    customers = session.world_state.get("customers", {})
+    governance = session.world_state.get("governance", {})
+    risk = session.world_state.get("risk", {})
+    team = session.world_state.get("team", {})
+
+    board_update_count = int(governance.get("board_update_count", 0))
+    runway = float(finance.get("runway_weeks", 999.0))
+    liquid_cash = float(finance.get("liquid_cash_usd", finance.get("cash_usd", 0.0)))
+    burn = max(1.0, float(finance.get("monthly_burn_usd", 1.0)))
+    treasury_concentration = float(finance.get("treasury_concentration", 0.0))
+    financing_pressure = float(risk.get("financing_pressure", 0.0))
+    counterparty_risk = float(risk.get("counterparty_risk", 0.0))
+
+    summary = "Protected liquidity first, preserved payroll continuity, and kept bridge-financing options open while avoiding narrative overreach."
+    asks = ["support a liquidity-first operating plan until cash access and financing pressure normalize"]
+
+    if treasury_concentration > 0.72 or counterparty_risk > 0.72:
+        summary = "Reduced treasury concentration, prioritized cash access, and treated payroll continuity as the primary operating constraint."
+        asks = ["support treasury diversification and short-horizon cash controls before new growth commitments"]
+    elif runway < 18 or liquid_cash < burn * 2.0:
+        summary = "Reset the board on immediate survival math, paired burn control with bridge financing, and avoided cosmetic growth narratives."
+        asks = ["support emergency financing and hard spend discipline until liquidity stabilizes"]
+    elif board_update_count >= 1 and financing_pressure > 0.78:
+        summary = "Shifted the board conversation from pipeline optics to financing risk, cash access, and downside protection."
+        asks = ["support transparent liquidity reporting and fast contingency planning"]
+    elif float(customers.get("trust_score", 1.0)) < 0.68:
+        summary = "Balanced liquidity actions with customer trust protection so a financing fix does not become a retention failure."
+        asks = ["support retention-preserving cuts and selective trust repair work"]
+    elif float(team.get("morale", 1.0)) < 0.55:
+        summary = "Stabilized cash and team durability together so the company can survive the reset without a hidden execution collapse."
+        asks = ["support morale-protecting changes tied to the financial reset"]
+
+    return {
+        "summary": summary,
+        "forecast": {
+            "runway_weeks": finance.get("runway_weeks"),
+            "liquid_cash_usd": finance.get("liquid_cash_usd"),
+            "restricted_cash_usd": finance.get("restricted_cash_usd"),
+            "treasury_concentration": finance.get("treasury_concentration"),
+            "financing_pressure": risk.get("financing_pressure"),
+            "counterparty_risk": risk.get("counterparty_risk"),
         },
         "asks": asks,
     }
@@ -571,6 +620,215 @@ def _heuristic_market_aware_actions(session: RuntimeSession, *, turn_index: int)
     return actions
 
 
+def _heuristic_liquidity_actions(session: RuntimeSession, *, turn_index: int) -> list[dict]:
+    track = session.scenario["metadata"]["track"]
+    finance = session.world_state.get("finance", {})
+    product = session.world_state.get("product", {})
+    customers = session.world_state.get("customers", {})
+    sales = session.world_state.get("sales", {})
+    governance = session.world_state.get("governance", {})
+    operations = session.world_state.get("operations", {})
+    team = session.world_state.get("team", {})
+    risk = session.world_state.get("risk", {})
+    market = session.world_state.get("market", {})
+    actions: list[dict] = []
+    action_index = 0
+
+    runway = float(finance.get("runway_weeks", 999.0))
+    monthly_burn = float(finance.get("monthly_burn_usd", 0.0))
+    liquid_cash = float(finance.get("liquid_cash_usd", finance.get("cash_usd", 0.0)))
+    treasury_concentration = float(finance.get("treasury_concentration", 0.0))
+    restricted_cash = float(finance.get("restricted_cash_usd", 0.0))
+    financing_pressure = float(risk.get("financing_pressure", 0.0))
+    counterparty_risk = float(risk.get("counterparty_risk", 0.0))
+
+    actions.append(
+        {
+            "tool_name": "metrics.report",
+            "request_id": _next_request_id(turn_index, action_index),
+            "arguments": {},
+        }
+    )
+    action_index += 1
+
+    if treasury_concentration > 0.55 or restricted_cash > 0 or financing_pressure > 0.7:
+        actions.append(
+            {
+                "tool_name": "finance.treasury.read",
+                "request_id": _next_request_id(turn_index, action_index),
+                "arguments": {},
+            }
+        )
+        action_index += 1
+
+    if financing_pressure > 0.68 or runway < 26:
+        actions.append(
+            {
+                "tool_name": "finance.plan.read",
+                "request_id": _next_request_id(turn_index, action_index),
+                "arguments": {},
+            }
+        )
+        action_index += 1
+
+    if track in {"board", "crisis", "finance"} and (turn_index == 0 or turn_index % 2 == 0):
+        actions.append(
+            {
+                "tool_name": "board.read",
+                "request_id": _next_request_id(turn_index, action_index),
+                "arguments": {},
+            }
+        )
+        action_index += 1
+
+    if treasury_concentration > 0.72 or counterparty_risk > 0.74:
+        actions.append(
+            {
+                "tool_name": "finance.treasury.rebalance",
+                "request_id": _next_request_id(turn_index, action_index),
+                "arguments": {
+                    "target_concentration": 0.32 if treasury_concentration > 0.88 else 0.4,
+                    "rebalance_cost_usd": 9000,
+                },
+            }
+        )
+        action_index += 1
+
+    if (runway < 26 or financing_pressure > 0.7 or liquid_cash < monthly_burn * 2.5) and not finance.get("last_plan_update"):
+        burn_cut = -32000 if runway < 18 or financing_pressure > 0.82 else -22000
+        actions.append(
+            {
+                "tool_name": "finance.plan.write",
+                "request_id": _next_request_id(turn_index, action_index),
+                "arguments": {"budget_changes": {"monthly_burn_usd": burn_cut}},
+            }
+        )
+        action_index += 1
+
+    if (
+        not finance.get("last_raise_plan")
+        and (financing_pressure > 0.82 or liquid_cash < monthly_burn * 2.0 or restricted_cash > float(finance.get("cash_usd", 0.0)) * 0.25)
+    ):
+        actions.append(
+            {
+                "tool_name": "finance.raise.propose",
+                "request_id": _next_request_id(turn_index, action_index),
+                "arguments": {
+                    "raise_amount_usd": max(900000.0, monthly_burn * 7.0),
+                    "dilution_pct": 0.13,
+                    "monthly_burn_change_usd": 0,
+                    "financing_risk_reduction": 0.34,
+                    "transaction_cost_usd": 28000,
+                },
+            }
+        )
+        action_index += 1
+
+    if int(product.get("major_incidents_open", 0)) > 0:
+        actions.append(
+            {
+                "tool_name": "ops.incident.respond",
+                "request_id": _next_request_id(turn_index, action_index),
+                "arguments": {
+                    "incident_reduction": 1,
+                    "trust_recovery": 0.04,
+                    "churn_reduction": 0.006,
+                    "monthly_burn_increase_usd": 7000,
+                },
+            }
+        )
+        action_index += 1
+
+    if float(operations.get("support_backlog", 0.0)) > 34 or float(operations.get("support_sla_breach_risk", 0.0)) > 0.42:
+        actions.append(
+            {
+                "tool_name": "ops.support.resolve",
+                "request_id": _next_request_id(turn_index, action_index),
+                "arguments": {
+                    "backlog_reduction": 16,
+                    "sla_risk_reduction": 0.16,
+                    "trust_recovery": 0.025,
+                    "churn_reduction": 0.004,
+                    "monthly_burn_increase_usd": 5500,
+                },
+            }
+        )
+        action_index += 1
+
+    if float(risk.get("regulatory_pressure", 0.0)) > 0.55 or int(risk.get("active_legal_matters", 0)) > 0:
+        actions.append(
+            {
+                "tool_name": "legal.compliance.respond",
+                "request_id": _next_request_id(turn_index, action_index),
+                "arguments": {
+                    "pressure_reduction": 0.2,
+                    "matters_reduction": 1,
+                    "compliance_backlog_reduction": 6,
+                    "trust_recovery": 0.02,
+                    "monthly_burn_increase_usd": 9000,
+                },
+            }
+        )
+        action_index += 1
+
+    if (
+        (float(team.get("morale", 1.0)) < 0.52 or float(team.get("attrition_risk", 0.0)) > 0.62)
+        and runway > 14
+        and financing_pressure < 0.9
+    ):
+        actions.append(
+            {
+                "tool_name": "people.org.adjust",
+                "request_id": _next_request_id(turn_index, action_index),
+                "arguments": {
+                    "morale_delta": 0.05,
+                    "attrition_risk_delta": -0.07,
+                    "bandwidth_load_delta": -0.06,
+                    "monthly_burn_change_usd": 4000,
+                    "onboarding_quality_delta": 0.015,
+                },
+            }
+        )
+        action_index += 1
+
+    if (
+        financing_pressure < 0.72
+        and runway > 22
+        and float(market.get("demand_index", 0.8)) > 0.74
+        and float(sales.get("weighted_pipeline_usd", 0.0)) < monthly_burn * 4.5
+    ):
+        actions.append(
+            {
+                "tool_name": "sales.pipeline.update",
+                "request_id": _next_request_id(turn_index, action_index),
+                "arguments": {
+                    "pipeline_count_delta": 1,
+                    "weighted_pipeline_usd_delta": 45000,
+                },
+            }
+        )
+        action_index += 1
+
+    if turn_index % 2 == 0 or int(governance.get("board_update_count", 0)) == 0:
+        actions.append(
+            {
+                "tool_name": "board.update",
+                "request_id": _next_request_id(turn_index, action_index),
+                "arguments": _liquidity_board_update_payload(session),
+            }
+        )
+        action_index += 1
+
+    actions.append(
+        {
+            "tool_name": "sim.advance",
+            "request_id": _next_request_id(turn_index, action_index),
+            "arguments": {"advance_by": 1, "unit": "week"},
+        }
+    )
+    return actions
+
+
 def _heuristic_long_horizon_actions(session: RuntimeSession, *, turn_index: int) -> list[dict]:
     track = session.scenario["metadata"]["track"]
     finance = session.world_state.get("finance", {})
@@ -791,6 +1049,8 @@ def _heuristic_long_horizon_actions(session: RuntimeSession, *, turn_index: int)
 def _proposed_actions_for_baseline(session: RuntimeSession, *, baseline_id: str, turn_index: int) -> list[dict]:
     if baseline_id == "heuristic_b2b_operator":
         return _heuristic_b2b_actions(session, turn_index=turn_index)
+    if baseline_id == "heuristic_liquidity_operator":
+        return _heuristic_liquidity_actions(session, turn_index=turn_index)
     if baseline_id == "heuristic_long_horizon_operator":
         return _heuristic_long_horizon_actions(session, turn_index=turn_index)
     if baseline_id == "heuristic_market_aware_operator":

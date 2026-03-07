@@ -16,11 +16,13 @@ CRISIS_SCENARIO_PATH = REPO_ROOT / "examples" / "minimal_crisis_scenario.json"
 GTM_SCENARIO_PATH = REPO_ROOT / "examples" / "minimal_gtm_scenario.json"
 PRODUCT_SCENARIO_PATH = REPO_ROOT / "examples" / "minimal_product_scenario.json"
 BOARD_STRATEGY_SCENARIO_PATH = REPO_ROOT / "examples" / "hidden_board_stakeholder_conflict_test_scenario.json"
+BREX_TREASURY_SCENARIO_PATH = REPO_ROOT / "examples" / "real_world_brex_svb_treasury_shock_test_scenario.json"
 
 
 class BaselineRunnerTests(unittest.TestCase):
     def test_list_baselines_contains_heuristic_operator(self) -> None:
         self.assertIn("heuristic_b2b_operator", list_baselines())
+        self.assertIn("heuristic_liquidity_operator", list_baselines())
         self.assertIn("heuristic_long_horizon_operator", list_baselines())
         self.assertIn("heuristic_market_aware_operator", list_baselines())
         self.assertIn("heuristic_resilient_operator", list_baselines())
@@ -134,6 +136,27 @@ class BaselineRunnerTests(unittest.TestCase):
         self.assertGreaterEqual(len(board_updates), 2)
         self.assertGreater(len(set(board_updates)), 1)
         self.assertGreaterEqual(len(board_reads), 1)
+
+    def test_liquidity_baseline_outperforms_resilient_on_treasury_shock(self) -> None:
+        resilient = run_baseline(
+            scenario_path=BREX_TREASURY_SCENARIO_PATH,
+            baseline_id="heuristic_resilient_operator",
+            seed=1,
+            max_turns=4,
+        )
+        liquidity = run_baseline(
+            scenario_path=BREX_TREASURY_SCENARIO_PATH,
+            baseline_id="heuristic_liquidity_operator",
+            seed=1,
+            max_turns=4,
+        )
+
+        self.assertGreater(
+            liquidity["score_report"]["scenario_score"],
+            resilient["score_report"]["scenario_score"],
+        )
+        final_state = liquidity["trace"]["state_snapshots"][-1]["state"]
+        self.assertIn("last_raise_plan", final_state.get("finance", {}))
 
 
 if __name__ == "__main__":
