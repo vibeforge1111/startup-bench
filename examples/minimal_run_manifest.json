@@ -1,0 +1,33 @@
+{
+  "manifest_version": "0.1.0",
+  "benchmark_version": "0.2.0-draft",
+  "scenario_pack_version": "dev-pack-0.1.0",
+  "scaffold_version": "0.1.0",
+  "split": "dev",
+  "suite_path": "examples/dev_scenario_suite.json",
+  "official_profile": {
+    "profile_id": "official-hosted-v0.1.0",
+    "profile_version": "0.1.0",
+    "source_path": "examples/official_eval_profile.json",
+    "hosted_evaluation": true
+  },
+  "policy_bundle": {
+    "system_prompt_policy_version": "system-policy-v0.1.0",
+    "tool_policy_version": "tool-policy-v0.1.0",
+    "context_policy_version": "context-policy-v0.1.0",
+    "retry_policy_version": "retry-policy-v0.1.0",
+    "timeout_policy_version": "timeout-policy-v0.1.0"
+  },
+  "run_configuration": {
+    "runner_type": "baseline",
+    "runner_id": "heuristic_resilient_operator",
+    "seeds": [1, 2, 3, 4, 5],
+    "repeated_run_count": 5,
+    "max_turns": 8,
+    "timeout_seconds": 900
+  },
+  "provenance": {
+    "generator": "thestartupbench",
+    "generated_by": "emit-run-manifest"
+  }
+}

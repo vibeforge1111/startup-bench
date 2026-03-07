@@ -70,7 +70,21 @@ def _build_parser() -> argparse.ArgumentParser:
     suite_parser.add_argument("--baseline-id", help="Baseline id when runner_type=baseline")
     suite_parser.add_argument("--tool-calls-path", help="Tool script path when runner_type=script")
     suite_parser.add_argument("--max-turns", type=int, help="Optional turn cap when runner_type=baseline")
+    suite_parser.add_argument("--profile-path", help="Optional official evaluation profile path; emits a run manifest when used with --output-dir")
     suite_parser.add_argument("--output-dir", help="Optional directory to write the suite report artifact")
+
+    official_profile_parser = subparsers.add_parser("show-official-profile", help="Print a validated official evaluation profile")
+    official_profile_parser.add_argument("path", nargs="?", default="examples/official_eval_profile.json", help="Path to the official evaluation profile JSON file")
+
+    run_manifest_parser = subparsers.add_parser("emit-run-manifest", help="Emit a validated run manifest for an official evaluation")
+    run_manifest_parser.add_argument("suite_path", help="Path to the scenario suite JSON file")
+    run_manifest_parser.add_argument("runner_type", help="Runner type: baseline or script")
+    run_manifest_parser.add_argument("--seeds", required=True, help="Comma-separated seed list, e.g. 1,2,3,4,5")
+    run_manifest_parser.add_argument("--baseline-id", help="Baseline id when runner_type=baseline")
+    run_manifest_parser.add_argument("--tool-calls-path", help="Tool script path when runner_type=script")
+    run_manifest_parser.add_argument("--max-turns", type=int, help="Optional turn cap; defaults to the profile default")
+    run_manifest_parser.add_argument("--profile-path", default="examples/official_eval_profile.json", help="Official evaluation profile JSON path")
+    run_manifest_parser.add_argument("--output-dir", help="Optional directory to write the run manifest artifact")
 
     redact_parser = subparsers.add_parser("redact-suite", help="Emit a public redacted manifest from a private suite")
     redact_parser.add_argument("suite_path", help="Path to the private scenario suite JSON file")
@@ -285,15 +299,18 @@ def _cmd_run_suite(
     baseline_id: str | None,
     tool_calls_path: str | None,
     max_turns: int | None,
+    profile_path: str | None,
     output_dir: str | None,
 ) -> int:
     from .campaign_runner import _parse_seeds
+    from .official_eval import build_run_manifest
     from .suite_runner import run_suite
 
+    parsed_seeds = _parse_seeds(seeds)
     result = run_suite(
         suite_path=Path(suite_path),
         runner_type=runner_type,
-        seeds=_parse_seeds(seeds),
+        seeds=parsed_seeds,
         baseline_id=baseline_id,
         tool_calls_path=Path(tool_calls_path) if tool_calls_path else None,
         max_turns=max_turns,
@@ -302,6 +319,69 @@ def _cmd_run_suite(
         out_dir = Path(output_dir)
         out_dir.mkdir(parents=True, exist_ok=True)
         (out_dir / "suite_report.json").write_text(json.dumps(result["suite_report"], indent=2), encoding="utf-8")
+        if profile_path:
+            try:
+                manifest_result = build_run_manifest(
+                    suite_path=Path(suite_path),
+                    profile_path=Path(profile_path),
+                    runner_type=runner_type,
+                    seeds=parsed_seeds,
+                    baseline_id=baseline_id,
+                    tool_calls_path=Path(tool_calls_path) if tool_calls_path else None,
+                    max_turns=max_turns,
+                )
+            except ValueError as exc:
+                print(json.dumps({"ok": False, "error": str(exc)}, indent=2))
+                return 1
+            (out_dir / "run_manifest.json").write_text(json.dumps(manifest_result["run_manifest"], indent=2), encoding="utf-8")
+    print(json.dumps(result, indent=2))
+    return 0 if result["validation"]["ok"] else 1
+
+
+def _cmd_show_official_profile(path: str) -> int:
+    from .official_eval import load_official_eval_profile
+    from .validation import validate_instance
+
+    profile = load_official_eval_profile(Path(path))
+    validation = validate_instance(
+        artifact_type="official-eval-profile",
+        instance=profile,
+        path=Path(path),
+    )
+    print(json.dumps({"profile": profile, "validation": validation.to_dict()}, indent=2))
+    return 0 if validation.ok else 1
+
+
+def _cmd_emit_run_manifest(
+    suite_path: str,
+    runner_type: str,
+    seeds: str,
+    baseline_id: str | None,
+    tool_calls_path: str | None,
+    max_turns: int | None,
+    profile_path: str,
+    output_dir: str | None,
+) -> int:
+    from .campaign_runner import _parse_seeds
+    from .official_eval import build_run_manifest
+
+    try:
+        result = build_run_manifest(
+            suite_path=Path(suite_path),
+            profile_path=Path(profile_path),
+            runner_type=runner_type,
+            seeds=_parse_seeds(seeds),
+            baseline_id=baseline_id,
+            tool_calls_path=Path(tool_calls_path) if tool_calls_path else None,
+            max_turns=max_turns,
+        )
+    except ValueError as exc:
+        print(json.dumps({"ok": False, "error": str(exc)}, indent=2))
+        return 1
+    if output_dir:
+        out_dir = Path(output_dir)
+        out_dir.mkdir(parents=True, exist_ok=True)
+        (out_dir / "run_manifest.json").write_text(json.dumps(result["run_manifest"], indent=2), encoding="utf-8")
     print(json.dumps(result, indent=2))
     return 0 if result["validation"]["ok"] else 1
 
@@ -448,6 +528,20 @@ def main(argv: list[str] | None = None) -> int:
             args.baseline_id,
             args.tool_calls_path,
             args.max_turns,
+            args.profile_path,
+            args.output_dir,
+        )
+    if args.command == "show-official-profile":
+        return _cmd_show_official_profile(args.path)
+    if args.command == "emit-run-manifest":
+        return _cmd_emit_run_manifest(
+            args.suite_path,
+            args.runner_type,
+            args.seeds,
+            args.baseline_id,
+            args.tool_calls_path,
+            args.max_turns,
+            args.profile_path,
             args.output_dir,
         )
     if args.command == "redact-suite":

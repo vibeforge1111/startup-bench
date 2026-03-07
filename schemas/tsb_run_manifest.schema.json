@@ -1,0 +1,81 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://thestartupbench.org/schemas/tsb_run_manifest.schema.json",
+  "title": "TheStartupBench Run Manifest",
+  "type": "object",
+  "required": [
+    "manifest_version",
+    "benchmark_version",
+    "scenario_pack_version",
+    "scaffold_version",
+    "split",
+    "suite_path",
+    "official_profile",
+    "policy_bundle",
+    "run_configuration"
+  ],
+  "properties": {
+    "manifest_version": { "type": "string" },
+    "benchmark_version": { "type": "string" },
+    "scenario_pack_version": { "type": "string" },
+    "scaffold_version": { "type": "string" },
+    "split": { "type": "string", "enum": ["dev", "test", "fresh"] },
+    "suite_path": { "type": "string" },
+    "official_profile": {
+      "type": "object",
+      "required": ["profile_id", "profile_version", "source_path", "hosted_evaluation"],
+      "properties": {
+        "profile_id": { "type": "string" },
+        "profile_version": { "type": "string" },
+        "source_path": { "type": "string" },
+        "hosted_evaluation": { "type": "boolean" }
+      },
+      "additionalProperties": false
+    },
+    "policy_bundle": {
+      "type": "object",
+      "required": [
+        "system_prompt_policy_version",
+        "tool_policy_version",
+        "context_policy_version",
+        "retry_policy_version",
+        "timeout_policy_version"
+      ],
+      "properties": {
+        "system_prompt_policy_version": { "type": "string" },
+        "tool_policy_version": { "type": "string" },
+        "context_policy_version": { "type": "string" },
+        "retry_policy_version": { "type": "string" },
+        "timeout_policy_version": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "run_configuration": {
+      "type": "object",
+      "required": ["runner_type", "runner_id", "seeds", "repeated_run_count", "max_turns", "timeout_seconds"],
+      "properties": {
+        "runner_type": { "type": "string", "enum": ["dry", "script", "baseline"] },
+        "runner_id": { "type": "string" },
+        "seeds": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "integer" }
+        },
+        "repeated_run_count": { "type": "integer", "minimum": 1 },
+        "max_turns": { "type": "integer", "minimum": 1 },
+        "timeout_seconds": { "type": "integer", "minimum": 1 },
+        "tool_calls_path": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "provenance": {
+      "type": "object",
+      "properties": {
+        "generator": { "type": "string" },
+        "generated_by": { "type": "string" }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

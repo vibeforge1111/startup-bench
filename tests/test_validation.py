@@ -125,6 +125,22 @@ class ValidationTests(unittest.TestCase):
         self.assertTrue(result.ok)
         self.assertEqual(result.issues, [])
 
+    def test_official_eval_profile_example_validates(self) -> None:
+        result = validate_artifact_file(
+            artifact_type="official-eval-profile",
+            path=REPO_ROOT / "examples" / "official_eval_profile.json",
+        )
+        self.assertTrue(result.ok)
+        self.assertEqual(result.issues, [])
+
+    def test_run_manifest_example_validates(self) -> None:
+        result = validate_artifact_file(
+            artifact_type="run-manifest",
+            path=REPO_ROOT / "examples" / "minimal_run_manifest.json",
+        )
+        self.assertTrue(result.ok)
+        self.assertEqual(result.issues, [])
+
     def test_submission_example_validates(self) -> None:
         result = validate_artifact_file(
             artifact_type="submission",
