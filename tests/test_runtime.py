@@ -50,7 +50,7 @@ class RuntimeTests(unittest.TestCase):
 
         self.assertTrue(response["ok"])
         self.assertEqual(response["result"]["items"]["sales.pricing.current_price_index"], 1.0)
-        self.assertEqual(response["result"]["items"]["health_index"], 0.8374)
+        self.assertEqual(response["result"]["items"]["health_index"], 0.853)
 
     def test_metrics_report_surfaces_alerts_and_headline_metrics(self) -> None:
         self.session.world_state["operations"]["support_backlog"] = 58
@@ -369,6 +369,99 @@ class RuntimeTests(unittest.TestCase):
         self.assertEqual(self.session.world_state["team"]["attrition_risk"], 0.5)
         self.assertEqual(self.session.world_state["product"]["onboarding_quality"], 0.59)
         self.assertEqual(self.session.world_state["finance"]["monthly_burn_usd"], 212000.0)
+
+    def test_people_hiring_update_increases_headcount_and_capacity(self) -> None:
+        self.session.world_state["team"]["headcount"] = 9
+        self.session.world_state["team"]["bandwidth_load"] = 0.92
+        self.session.world_state["team"]["hiring"] = {
+            "open_roles": 3,
+            "critical_roles_open": 1,
+            "sourced_candidates": 8,
+            "onsite_candidates": 2,
+            "offers_out": 1,
+        }
+        response = execute_tool_call(
+            self.session,
+            {
+                "tool_name": "people.hiring.update",
+                "request_id": "req_hiring_001",
+                "arguments": {
+                    "accepted_hires": 1,
+                    "monthly_burn_change_usd": 15000,
+                    "morale_delta": 0.03,
+                    "bandwidth_load_delta": -0.08,
+                    "support_backlog_delta": -4,
+                    "onboarding_quality_delta": 0.02,
+                },
+            },
+        )
+
+        self.assertTrue(response["ok"])
+        self.assertEqual(self.session.world_state["team"]["headcount"], 10)
+        self.assertEqual(self.session.world_state["team"]["hiring"]["open_roles"], 2)
+        self.assertEqual(self.session.world_state["team"]["hiring"]["critical_roles_open"], 0)
+        self.assertEqual(self.session.world_state["team"]["bandwidth_load"], 0.84)
+        self.assertGreater(self.session.world_state["team"]["delivery_capacity_index"], 0.0)
+        self.assertEqual(self.session.world_state["finance"]["monthly_burn_usd"], 220000.0)
+
+    def test_market_read_returns_competitor_and_segment_state(self) -> None:
+        self.session.world_state["market"] = {
+            "competitor_pressure": "high",
+            "competitor_pressure_index": 0.75,
+            "pricing_pressure_index": 0.62,
+            "demand_index": 0.71,
+            "segment_signals": [{"segment_id": "mid_market", "signal": "slowing"}],
+            "latest_market_note": "A larger competitor launched aggressive bundle pricing.",
+        }
+        self.session.world_state["customers"]["segment_mix_index"] = 0.58
+        response = execute_tool_call(
+            self.session,
+            {
+                "tool_name": "research.market.read",
+                "request_id": "req_market_001",
+                "arguments": {},
+            },
+        )
+
+        self.assertTrue(response["ok"])
+        state = response["result"]["market_state"]
+        self.assertEqual(state["competitor_pressure_index"], 0.75)
+        self.assertEqual(state["demand_index"], 0.71)
+        self.assertEqual(state["segment_mix_index"], 0.58)
+        self.assertEqual(self.session.world_state["market"]["market_reads_count"], 1)
+
+    def test_sim_advance_applies_market_and_hiring_drift(self) -> None:
+        self.session.world_state["team"]["headcount"] = 8
+        self.session.world_state["team"]["bandwidth_load"] = 0.9
+        self.session.world_state["team"]["hiring"] = {
+            "open_roles": 3,
+            "critical_roles_open": 1,
+            "sourced_candidates": 1,
+            "onsite_candidates": 0,
+            "offers_out": 0,
+        }
+        self.session.world_state["market"] = {
+            "competitor_pressure_index": 0.78,
+            "pricing_pressure_index": 0.66,
+            "demand_index": 0.69,
+        }
+        initial_revenue = self.session.world_state["finance"]["monthly_revenue_usd"]
+        initial_pipeline = self.session.world_state["sales"]["weighted_pipeline_usd"]
+
+        response = execute_tool_call(
+            self.session,
+            {
+                "tool_name": "sim.advance",
+                "request_id": "req_adv_market_001",
+                "arguments": {"advance_by": 1, "unit": "week"},
+            },
+        )
+
+        self.assertTrue(response["ok"])
+        self.assertLess(self.session.world_state["finance"]["monthly_revenue_usd"], initial_revenue)
+        self.assertLess(self.session.world_state["sales"]["weighted_pipeline_usd"], initial_pipeline)
+        self.assertGreater(self.session.world_state["operations"]["support_backlog"], 0)
+        self.assertLess(self.session.world_state["team"]["morale"], 0.74)
 
     def test_legal_compliance_respond_reduces_regulatory_pressure(self) -> None:
         self.session.world_state["risk"]["regulatory_pressure"] = 0.82

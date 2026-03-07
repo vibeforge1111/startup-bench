@@ -24,6 +24,60 @@ def _format_iso8601(value: datetime) -> str:
     return value.astimezone(timezone.utc).isoformat().replace("+00:00", "Z")
 
 
+def _clamp(value: float, *, minimum: float = 0.0, maximum: float = 1.0) -> float:
+    return max(minimum, min(maximum, value))
+
+
+def _pressure_to_index(value: object) -> float:
+    if isinstance(value, (int, float)):
+        return _clamp(float(value))
+    if isinstance(value, str):
+        mapping = {
+            "very_low": 0.1,
+            "low": 0.25,
+            "moderate": 0.5,
+            "high": 0.75,
+            "very_high": 0.9,
+        }
+        return mapping.get(value.lower(), 0.5)
+    return 0.5
+
+
+def _derive_segment_mix_index(customers: dict, *, fallback_trust: float, fallback_churn: float) -> float:
+    segments = customers.get("segments", [])
+    if not isinstance(segments, list) or not segments:
+        return _clamp((fallback_trust * 0.6) + ((1.0 - fallback_churn * 4.0) * 0.4))
+
+    weight_total = 0.0
+    weighted_score = 0.0
+    for index, segment in enumerate(segments):
+        if not isinstance(segment, dict):
+            continue
+        default_weight = 1.0 / max(len(segments), 1)
+        weight = max(0.0, float(segment.get("revenue_share", default_weight)))
+        trust = _clamp(float(segment.get("trust_score", fallback_trust)))
+        churn = _clamp(float(segment.get("monthly_churn_rate", fallback_churn)), maximum=1.0)
+        support_load = _clamp(float(segment.get("support_load_index", 0.3)))
+        expansion = _clamp(float(segment.get("expansion_potential", 0.5)))
+        competitor_pressure = _clamp(float(segment.get("competitor_pressure_index", 0.3)))
+        retention_signal = _clamp(1.0 - (churn / 0.12))
+        segment_score = _clamp(
+            trust * 0.3
+            + retention_signal * 0.35
+            + (1.0 - support_load) * 0.1
+            + expansion * 0.15
+            + (1.0 - competitor_pressure) * 0.1
+        )
+        weighted_score += segment_score * weight
+        weight_total += weight
+        segment["segment_id"] = segment.get("segment_id", f"segment_{index + 1}")
+        segment["health_index"] = round(segment_score, 4)
+
+    if weight_total <= 0:
+        return _clamp((fallback_trust * 0.6) + ((1.0 - fallback_churn * 4.0) * 0.4))
+    return _clamp(weighted_score / weight_total)
+
+
 def _derive_horizon_end(*, current_time: str, time_horizon: dict) -> str:
     start = _parse_iso8601(current_time)
     unit = time_horizon["unit"]
@@ -49,6 +103,7 @@ def recalculate_derived_metrics(world_state: dict) -> None:
     operations = world_state.setdefault("operations", {})
     team = world_state.setdefault("team", {})
     risk = world_state.setdefault("risk", {})
+    market = world_state.setdefault("market", {})
 
     cash_usd = float(finance.get("cash_usd", 0))
     restricted_cash = max(0.0, float(finance.get("restricted_cash_usd", 0)))
@@ -65,6 +120,13 @@ def recalculate_derived_metrics(world_state: dict) -> None:
     concentration = float(finance.get("treasury_concentration", 0))
     finance["treasury_concentration"] = round(max(0.0, min(1.0, concentration)), 4)
 
+    competitor_pressure_index = _pressure_to_index(market.get("competitor_pressure", market.get("competitor_pressure_index", 0.3)))
+    pricing_pressure_index = _pressure_to_index(market.get("pricing_pressure", market.get("pricing_pressure_index", 0.2)))
+    demand_index = _clamp(float(market.get("demand_index", 0.85)), minimum=0.0, maximum=1.5)
+    market["competitor_pressure_index"] = round(competitor_pressure_index, 4)
+    market["pricing_pressure_index"] = round(pricing_pressure_index, 4)
+    market["demand_index"] = round(demand_index, 4)
+
     churn = float(customers.get("monthly_churn_rate", 0))
     trust = float(customers.get("trust_score", 0.7))
     support_backlog = float(operations.get("support_backlog", 0))
@@ -72,6 +134,36 @@ def recalculate_derived_metrics(world_state: dict) -> None:
     morale = float(team.get("morale", 0.7))
     attrition_risk = float(team.get("attrition_risk", 0.2))
     regulatory_pressure = float(risk.get("regulatory_pressure", 0.0))
+    segment_mix_index = _derive_segment_mix_index(customers, fallback_trust=trust, fallback_churn=churn)
+    customers["segment_mix_index"] = round(segment_mix_index, 4)
+
+    hiring = team.setdefault("hiring", {})
+    open_roles = int(hiring.get("open_roles", team.get("open_roles", 0)))
+    sourced_candidates = int(hiring.get("sourced_candidates", 0))
+    onsite_candidates = int(hiring.get("onsite_candidates", 0))
+    offers_out = int(hiring.get("offers_out", 0))
+    headcount = int(team.get("headcount", 0))
+    critical_roles_open = int(hiring.get("critical_roles_open", min(open_roles, 1 if open_roles else 0)))
+    funnel_capacity = (
+        min(1.0, sourced_candidates / max(open_roles * 6.0, 1.0)) * 0.35
+        + min(1.0, onsite_candidates / max(open_roles * 2.0, 1.0)) * 0.35
+        + min(1.0, offers_out / max(open_roles, 1.0)) * 0.3
+    )
+    hiring["open_roles"] = open_roles
+    hiring["critical_roles_open"] = critical_roles_open
+    hiring["hiring_capacity_index"] = round(_clamp(funnel_capacity), 4)
+    hiring["funnel_depth"] = sourced_candidates + onsite_candidates + offers_out
+    staffing_gap = _clamp((open_roles + critical_roles_open) / max(headcount + open_roles, 1), maximum=1.0)
+    team["delivery_capacity_index"] = round(
+        _clamp(
+            (1.0 - float(team.get("bandwidth_load", 0.7))) * 0.35
+            + (1.0 - attrition_risk) * 0.2
+            + morale * 0.2
+            + (1.0 - staffing_gap) * 0.15
+            + hiring["hiring_capacity_index"] * 0.1
+        ),
+        4,
+    )
     health_index = max(
         0.0,
         min(
@@ -81,7 +173,11 @@ def recalculate_derived_metrics(world_state: dict) -> None:
             + support_pressure * 0.15
             + morale * 0.1
             + (1.0 - attrition_risk) * 0.03
-            + (1.0 - regulatory_pressure) * 0.02,
+            + (1.0 - regulatory_pressure) * 0.01
+            + segment_mix_index * 0.01
+            + (1.0 - competitor_pressure_index) * 0.02
+            - (pricing_pressure_index * 0.01)
+            + ((demand_index / 1.5) * 0.01),
         ),
     )
     customers["health_index"] = round(health_index, 4)

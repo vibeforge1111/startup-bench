@@ -93,10 +93,15 @@ def _score_cash_efficiency(world_state: dict) -> tuple[float, dict]:
 def _score_revenue_quality(world_state: dict) -> tuple[float, dict]:
     finance = world_state.get("finance", {})
     sales = world_state.get("sales", {})
+    market = world_state.get("market", {})
+    customers = world_state.get("customers", {})
     monthly_revenue_usd = float(finance.get("monthly_revenue_usd", 0))
     monthly_burn_usd = float(finance.get("monthly_burn_usd", 0))
     weighted_pipeline_usd = float(sales.get("weighted_pipeline_usd", 0))
     current_price_index = float(sales.get("pricing", {}).get("current_price_index", 1.0))
+    demand_index = float(market.get("demand_index", 0.85))
+    competitor_pressure = float(market.get("competitor_pressure_index", market.get("competitor_pressure", 0.3)))
+    segment_mix_index = float(customers.get("segment_mix_index", customers.get("health_index", 0.6)))
 
     if monthly_burn_usd <= 0:
         revenue_coverage = 1.0
@@ -106,8 +111,18 @@ def _score_revenue_quality(world_state: dict) -> tuple[float, dict]:
     expected_pipeline_floor = max(monthly_burn_usd * 6.0, 1.0)
     pipeline_coverage = _clamp(weighted_pipeline_usd / expected_pipeline_floor)
     pricing_signal = _clamp(current_price_index / 1.2)
+    demand_signal = _clamp(demand_index / 1.1)
+    competitor_signal = _clamp(1.0 - competitor_pressure)
+    segment_signal = _clamp(segment_mix_index)
 
-    score = _round_score(revenue_coverage * 0.5 + pipeline_coverage * 0.35 + pricing_signal * 0.15)
+    score = _round_score(
+        revenue_coverage * 0.36
+        + pipeline_coverage * 0.28
+        + pricing_signal * 0.12
+        + demand_signal * 0.1
+        + competitor_signal * 0.07
+        + segment_signal * 0.07
+    )
     details = {
         "monthly_revenue_usd": round(monthly_revenue_usd, 2),
         "weighted_pipeline_usd": round(weighted_pipeline_usd, 2),
@@ -115,6 +130,12 @@ def _score_revenue_quality(world_state: dict) -> tuple[float, dict]:
         "revenue_coverage_score": _round_score(revenue_coverage),
         "pipeline_coverage_score": _round_score(pipeline_coverage),
         "pricing_signal_score": _round_score(pricing_signal),
+        "demand_index": round(demand_index, 4),
+        "demand_signal_score": _round_score(demand_signal),
+        "competitor_pressure_index": round(competitor_pressure, 4),
+        "competitor_signal_score": _round_score(competitor_signal),
+        "segment_mix_index": round(segment_mix_index, 4),
+        "segment_signal_score": _round_score(segment_signal),
     }
     return score, details
 
@@ -123,24 +144,34 @@ def _score_customer_health(world_state: dict) -> tuple[float, dict]:
     customers = world_state.get("customers", {})
     operations = world_state.get("operations", {})
     team = world_state.get("team", {})
+    market = world_state.get("market", {})
     trust_score = float(customers.get("trust_score", 0))
     churn_rate = float(customers.get("monthly_churn_rate", 0))
     health_index = float(customers.get("health_index", 0))
+    segment_mix_index = float(customers.get("segment_mix_index", health_index))
     support_backlog = float(operations.get("support_backlog", 0))
     morale = float(team.get("morale", 0.7))
+    delivery_capacity = float(team.get("delivery_capacity_index", 0.6))
+    competitor_pressure = float(market.get("competitor_pressure_index", market.get("competitor_pressure", 0.3)))
 
     trust_component = _clamp(trust_score)
     churn_component = _clamp(1.0 - (churn_rate / 0.12))
     health_component = _clamp(health_index)
     support_component = _clamp(1.0 - (support_backlog / 120.0))
     morale_component = _clamp(morale)
+    segment_component = _clamp(segment_mix_index)
+    delivery_component = _clamp(delivery_capacity)
+    market_component = _clamp(1.0 - competitor_pressure)
 
     score = _round_score(
-        trust_component * 0.3
-        + churn_component * 0.25
-        + health_component * 0.25
-        + support_component * 0.1
-        + morale_component * 0.1
+        trust_component * 0.24
+        + churn_component * 0.2
+        + health_component * 0.2
+        + support_component * 0.08
+        + morale_component * 0.08
+        + segment_component * 0.1
+        + delivery_component * 0.06
+        + market_component * 0.04
     )
     details = {
         "trust_score": round(trust_score, 4),
@@ -153,6 +184,12 @@ def _score_customer_health(world_state: dict) -> tuple[float, dict]:
         "support_component_score": _round_score(support_component),
         "morale": round(morale, 4),
         "morale_component_score": _round_score(morale_component),
+        "segment_mix_index": round(segment_mix_index, 4),
+        "segment_component_score": _round_score(segment_component),
+        "delivery_capacity_index": round(delivery_capacity, 4),
+        "delivery_component_score": _round_score(delivery_component),
+        "market_pressure_index": round(competitor_pressure, 4),
+        "market_component_score": _round_score(market_component),
     }
     return score, details
 
@@ -164,6 +201,8 @@ def _score_strategic_coherence(world_state: dict, *, scenario: dict) -> tuple[fl
     product = world_state.get("product", {})
     team = world_state.get("team", {})
     risk = world_state.get("risk", {})
+    market = world_state.get("market", {})
+    hiring = team.get("hiring", {})
 
     board_update_count = int(governance.get("board_update_count", 0))
     has_latest_update = bool(governance.get("latest_board_update"))
@@ -178,6 +217,10 @@ def _score_strategic_coherence(world_state: dict, *, scenario: dict) -> tuple[fl
     has_raise_plan = bool(finance.get("last_raise_plan"))
     financing_events_count = int(finance.get("financing_events_count", 0))
     financing_pressure = float(risk.get("financing_pressure", 0.0))
+    market_reads_count = int(market.get("market_reads_count", 0))
+    hiring_actions_count = int(hiring.get("hiring_actions_count", 0))
+    open_roles = int(hiring.get("open_roles", team.get("open_roles", 0)))
+    hiring_capacity_index = float(hiring.get("hiring_capacity_index", 0.0))
     track = scenario["metadata"]["track"]
 
     board_signal = _clamp(board_update_count / 2.0)
@@ -206,7 +249,48 @@ def _score_strategic_coherence(world_state: dict, *, scenario: dict) -> tuple[fl
         org_signal = _clamp(org_changes_count / 1.0)
         compliance_signal = _clamp(1.0 - regulatory_pressure)
         fundraising_signal = 1.0 if runway_weeks >= 20 else (_clamp(financing_events_count / 1.0) if has_raise_plan else 0.0)
-        score = _round_score(base_score * 0.55 + org_signal * 0.1 + compliance_signal * 0.15 + fundraising_signal * 0.2)
+        market_signal = _clamp(market_reads_count / 1.0)
+        hiring_signal = (
+            1.0
+            if open_roles == 0
+            else _clamp((hiring_actions_count / 2.0) * 0.6 + hiring_capacity_index * 0.4)
+        )
+        if track == "gtm":
+            score = _round_score(
+                base_score * 0.38
+                + compliance_signal * 0.12
+                + fundraising_signal * 0.12
+                + market_signal * 0.2
+                + hiring_signal * 0.08
+                + _clamp(1.0 - float(market.get("competitor_pressure_index", market.get("competitor_pressure", 0.3)))) * 0.1
+            )
+        elif track == "people":
+            score = _round_score(
+                base_score * 0.28
+                + org_signal * 0.18
+                + hiring_signal * 0.22
+                + compliance_signal * 0.08
+                + fundraising_signal * 0.08
+                + _clamp(float(team.get("delivery_capacity_index", 0.6))) * 0.16
+            )
+        elif track == "finance":
+            score = _round_score(
+                base_score * 0.3
+                + compliance_signal * 0.12
+                + fundraising_signal * 0.28
+                + market_signal * 0.12
+                + hiring_signal * 0.06
+                + _clamp(1.0 - financing_pressure) * 0.12
+            )
+        else:
+            score = _round_score(
+                base_score * 0.43
+                + org_signal * 0.1
+                + compliance_signal * 0.13
+                + fundraising_signal * 0.16
+                + market_signal * 0.1
+                + hiring_signal * 0.08
+            )
     details = {
         "board_update_count": board_update_count,
         "has_latest_board_update": has_latest_update,
@@ -221,6 +305,10 @@ def _score_strategic_coherence(world_state: dict, *, scenario: dict) -> tuple[fl
         "regulatory_pressure": round(regulatory_pressure, 4),
         "financing_events_count": financing_events_count,
         "financing_pressure": round(financing_pressure, 4),
+        "market_reads_count": market_reads_count,
+        "hiring_actions_count": hiring_actions_count,
+        "open_roles": open_roles,
+        "hiring_capacity_index": round(hiring_capacity_index, 4),
     }
     return score, details
 

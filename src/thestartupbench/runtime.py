@@ -112,6 +112,7 @@ def _apply_weekly_business_drift(session: RuntimeSession, *, weeks: int) -> None
     risk = session.world_state.setdefault("risk", {})
     product = session.world_state.setdefault("product", {})
     sales = session.world_state.setdefault("sales", {})
+    market = session.world_state.setdefault("market", {})
     monthly_revenue = float(finance.get("monthly_revenue_usd", 0))
     monthly_burn = float(finance.get("monthly_burn_usd", 0))
     cash = float(finance.get("cash_usd", 0))
@@ -122,6 +123,15 @@ def _apply_weekly_business_drift(session: RuntimeSession, *, weeks: int) -> None
     churn = float(customers.get("monthly_churn_rate", 0))
     accounts_lost = int(round(paying_accounts * (churn / 4.0) * weeks))
     customers["paying_accounts"] = max(0, paying_accounts - accounts_lost)
+    segment_states = customers.get("segments", [])
+    if isinstance(segment_states, list):
+        for segment in segment_states:
+            if not isinstance(segment, dict):
+                continue
+            segment_churn = float(segment.get("monthly_churn_rate", churn))
+            segment_accounts = int(segment.get("accounts", 0))
+            segment_accounts_lost = int(round(segment_accounts * (segment_churn / 4.0) * weeks))
+            segment["accounts"] = max(0, segment_accounts - segment_accounts_lost)
 
     support_backlog = float(operations.get("support_backlog", 0))
     if support_backlog > 40:
@@ -146,6 +156,68 @@ def _apply_weekly_business_drift(session: RuntimeSession, *, weeks: int) -> None
     if attrition_risk > 0.6:
         customers["trust_score"] = round(
             _clamp(float(customers.get("trust_score", 0.7)) - (0.01 * weeks), minimum=0.0, maximum=1.0),
+            4,
+        )
+
+    competitor_pressure = float(market.get("competitor_pressure_index", market.get("competitor_pressure", 0.3)))
+    pricing_pressure = float(market.get("pricing_pressure_index", market.get("pricing_pressure", 0.2)))
+    demand_index = float(market.get("demand_index", 0.85))
+    if competitor_pressure > 0.65:
+        sales["weighted_pipeline_usd"] = round(
+            max(0.0, float(sales.get("weighted_pipeline_usd", 0.0)) - ((15000 + 18000 * pricing_pressure) * weeks)),
+            2,
+        )
+        customers["trust_score"] = round(
+            _clamp(float(customers.get("trust_score", 0.7)) - (0.006 * weeks), minimum=0.0, maximum=1.0),
+            4,
+        )
+    if demand_index < 0.72:
+        revenue_drag = (0.78 - max(0.0, demand_index)) * 18000 * weeks
+        finance["monthly_revenue_usd"] = round(max(0.0, float(finance.get("monthly_revenue_usd", 0.0)) - revenue_drag), 2)
+        sales["weighted_pipeline_usd"] = round(max(0.0, float(sales.get("weighted_pipeline_usd", 0.0)) - (20000 * weeks)), 2)
+
+    if isinstance(segment_states, list):
+        for segment in segment_states:
+            if not isinstance(segment, dict):
+                continue
+            segment_competitor_pressure = float(segment.get("competitor_pressure_index", competitor_pressure))
+            segment_support_load = float(segment.get("support_load_index", 0.3))
+            segment["competitor_pressure_index"] = round(_clamp(segment_competitor_pressure), 4)
+            if segment_competitor_pressure > 0.65:
+                segment["monthly_churn_rate"] = round(
+                    _clamp(float(segment.get("monthly_churn_rate", churn)) + (0.0025 * weeks), minimum=0.0, maximum=1.0),
+                    4,
+                )
+            if support_backlog > 40:
+                segment["support_load_index"] = round(
+                    _clamp(segment_support_load + min(0.02 * weeks, support_backlog / 2500.0), minimum=0.0, maximum=1.0),
+                    4,
+                )
+            segment["trust_score"] = round(
+                _clamp(float(segment.get("trust_score", customers.get("trust_score", 0.7))), minimum=0.0, maximum=1.0),
+                4,
+            )
+
+    hiring = team.setdefault("hiring", {})
+    open_roles = int(hiring.get("open_roles", team.get("open_roles", 0)))
+    critical_roles_open = int(hiring.get("critical_roles_open", 0))
+    hiring_capacity_index = float(hiring.get("hiring_capacity_index", 0.0))
+    if open_roles > 0 and float(team.get("bandwidth_load", 0.7)) > 0.78:
+        team["morale"] = round(
+            _clamp(float(team.get("morale", 0.7)) - (0.008 * weeks) - (0.004 * critical_roles_open), minimum=0.0, maximum=1.0),
+            4,
+        )
+        team["attrition_risk"] = round(
+            _clamp(float(team.get("attrition_risk", 0.2)) + (0.01 * weeks), minimum=0.0, maximum=1.0),
+            4,
+        )
+        operations["support_backlog"] = round(max(0.0, float(operations.get("support_backlog", 0.0)) + ((2 + critical_roles_open) * weeks)), 2)
+    if open_roles > 0 and hiring_capacity_index < 0.4:
+        sales["weighted_pipeline_usd"] = round(max(0.0, float(sales.get("weighted_pipeline_usd", 0.0)) - (12000 * weeks)), 2)
+
+    if float(team.get("delivery_capacity_index", 0.6)) < 0.45:
+        product["onboarding_quality"] = round(
+            _clamp(float(product.get("onboarding_quality", 0.7)) - (0.012 * weeks), minimum=0.0, maximum=1.0),
             4,
         )
 
@@ -174,7 +246,9 @@ def _build_metric_report(session: RuntimeSession) -> dict:
     operations = session.world_state.get("operations", {})
     team = session.world_state.get("team", {})
     risk = session.world_state.get("risk", {})
+    market = session.world_state.get("market", {})
     sim = session.world_state.get("sim", {})
+    hiring = team.get("hiring", {})
 
     alerts = []
     if float(finance.get("runway_weeks", 0)) < 20:
@@ -193,6 +267,12 @@ def _build_metric_report(session: RuntimeSession) -> dict:
         alerts.append("regulatory_pressure_high")
     if float(finance.get("treasury_concentration", 0.0)) > 0.8:
         alerts.append("treasury_concentration_high")
+    if int(hiring.get("critical_roles_open", 0)) > 0:
+        alerts.append("critical_roles_open")
+    if float(market.get("competitor_pressure_index", market.get("competitor_pressure", 0.0))) > 0.7:
+        alerts.append("competitor_pressure_high")
+    if float(market.get("demand_index", 1.0)) < 0.72:
+        alerts.append("market_demand_softening")
     if int(sim.get("pending_event_count", 0)) > 0:
         alerts.append("pending_scheduled_events")
 
@@ -215,6 +295,7 @@ def _build_metric_report(session: RuntimeSession) -> dict:
             "monthly_churn_rate": customers.get("monthly_churn_rate"),
             "trust_score": customers.get("trust_score"),
             "health_index": customers.get("health_index"),
+            "segment_mix_index": customers.get("segment_mix_index"),
         },
         "sales": {
             "pipeline_count": sales.get("pipeline_count"),
@@ -232,11 +313,25 @@ def _build_metric_report(session: RuntimeSession) -> dict:
             "morale": team.get("morale"),
             "attrition_risk": team.get("attrition_risk"),
             "bandwidth_load": team.get("bandwidth_load"),
+            "delivery_capacity_index": team.get("delivery_capacity_index"),
+            "headcount": team.get("headcount"),
+            "hiring": {
+                "open_roles": hiring.get("open_roles", 0),
+                "critical_roles_open": hiring.get("critical_roles_open", 0),
+                "hiring_capacity_index": hiring.get("hiring_capacity_index", 0.0),
+                "offers_out": hiring.get("offers_out", 0),
+            },
         },
         "risk": {
             "regulatory_pressure": risk.get("regulatory_pressure", 0.0),
             "active_legal_matters": risk.get("active_legal_matters", 0),
             "counterparty_risk": risk.get("counterparty_risk", 0.0),
+        },
+        "market": {
+            "competitor_pressure_index": market.get("competitor_pressure_index", market.get("competitor_pressure")),
+            "pricing_pressure_index": market.get("pricing_pressure_index", market.get("pricing_pressure")),
+            "demand_index": market.get("demand_index"),
+            "latest_market_note": market.get("latest_market_note"),
         },
         "alerts": alerts,
     }
@@ -679,6 +774,126 @@ def execute_tool_call(session: RuntimeSession, tool_call: dict) -> dict:
                 "finance.monthly_burn_usd": finance.get("monthly_burn_usd"),
                 "product.onboarding_quality": product.get("onboarding_quality"),
             },
+        )
+
+    if tool_name == "people.hiring.read":
+        team = session.world_state.setdefault("team", {})
+        hiring = team.setdefault("hiring", {})
+        return _tool_result(
+            tool_name,
+            request_id,
+            result={
+                "hiring_state": {
+                    "headcount": team.get("headcount", 0),
+                    "open_roles": hiring.get("open_roles", team.get("open_roles", 0)),
+                    "critical_roles_open": hiring.get("critical_roles_open", 0),
+                    "sourced_candidates": hiring.get("sourced_candidates", 0),
+                    "onsite_candidates": hiring.get("onsite_candidates", 0),
+                    "offers_out": hiring.get("offers_out", 0),
+                    "hiring_capacity_index": hiring.get("hiring_capacity_index", 0.0),
+                    "time_to_fill_weeks": hiring.get("time_to_fill_weeks", 8),
+                }
+            },
+        )
+
+    if tool_name == "people.hiring.update":
+        team = session.world_state.setdefault("team", {})
+        hiring = team.setdefault("hiring", {})
+        finance = session.world_state.setdefault("finance", {})
+        operations = session.world_state.setdefault("operations", {})
+        product = session.world_state.setdefault("product", {})
+
+        sourced_candidates_delta = int(arguments.get("sourced_candidates_delta", 0))
+        onsite_candidates_delta = int(arguments.get("onsite_candidates_delta", 0))
+        offers_out_delta = int(arguments.get("offers_out_delta", 0))
+        accepted_hires = max(0, int(arguments.get("accepted_hires", 0)))
+        open_roles_delta = int(arguments.get("open_roles_delta", 0))
+        critical_roles_delta = int(arguments.get("critical_roles_delta", 0))
+        recruiting_spend = max(0.0, float(arguments.get("monthly_burn_change_usd", accepted_hires * 14000 + max(0, sourced_candidates_delta) * 900)))
+        morale_delta = float(arguments.get("morale_delta", 0.015 * accepted_hires))
+        bandwidth_delta = float(arguments.get("bandwidth_load_delta", -0.05 * accepted_hires))
+        support_backlog_delta = float(arguments.get("support_backlog_delta", -3 * accepted_hires))
+        onboarding_delta = float(arguments.get("onboarding_quality_delta", 0.015 * accepted_hires))
+
+        apply_operations(
+            session.world_state,
+            [
+                {"op": "increment", "path": "team.hiring.open_roles", "value": open_roles_delta - accepted_hires},
+                {"op": "clamp", "path": "team.hiring.open_roles", "min": 0},
+                {"op": "increment", "path": "team.hiring.critical_roles_open", "value": critical_roles_delta - accepted_hires},
+                {"op": "clamp", "path": "team.hiring.critical_roles_open", "min": 0},
+                {"op": "increment", "path": "team.hiring.sourced_candidates", "value": sourced_candidates_delta - accepted_hires},
+                {"op": "clamp", "path": "team.hiring.sourced_candidates", "min": 0},
+                {"op": "increment", "path": "team.hiring.onsite_candidates", "value": onsite_candidates_delta - accepted_hires},
+                {"op": "clamp", "path": "team.hiring.onsite_candidates", "min": 0},
+                {"op": "increment", "path": "team.hiring.offers_out", "value": offers_out_delta - accepted_hires},
+                {"op": "clamp", "path": "team.hiring.offers_out", "min": 0},
+                {"op": "increment", "path": "team.headcount", "value": accepted_hires},
+                {"op": "increment", "path": "finance.monthly_burn_usd", "value": recruiting_spend},
+                {"op": "increment", "path": "team.morale", "value": morale_delta},
+                {"op": "clamp", "path": "team.morale", "min": 0.0, "max": 1.0},
+                {"op": "increment", "path": "team.attrition_risk", "value": -0.035 * accepted_hires},
+                {"op": "clamp", "path": "team.attrition_risk", "min": 0.0, "max": 1.0},
+                {"op": "increment", "path": "team.bandwidth_load", "value": bandwidth_delta},
+                {"op": "clamp", "path": "team.bandwidth_load", "min": 0.0, "max": 1.5},
+                {"op": "increment", "path": "operations.support_backlog", "value": support_backlog_delta},
+                {"op": "clamp", "path": "operations.support_backlog", "min": 0},
+                {"op": "increment", "path": "product.onboarding_quality", "value": onboarding_delta},
+                {"op": "clamp", "path": "product.onboarding_quality", "min": 0.0, "max": 1.0},
+                {"op": "increment", "path": "team.hiring.hiring_actions_count", "value": 1},
+            ],
+        )
+        finance["monthly_burn_usd"] = round(float(finance.get("monthly_burn_usd", 0.0)), 2)
+        team["morale"] = round(float(team.get("morale", 0.0)), 4)
+        team["attrition_risk"] = round(float(team.get("attrition_risk", 0.0)), 4)
+        team["bandwidth_load"] = round(float(team.get("bandwidth_load", 0.0)), 4)
+        product["onboarding_quality"] = round(float(product.get("onboarding_quality", 0.0)), 4)
+        recalculate_derived_metrics(session.world_state)
+        return _tool_result(
+            tool_name,
+            request_id,
+            result={
+                "hiring_state": {
+                    "headcount": team.get("headcount", 0),
+                    "open_roles": hiring.get("open_roles", 0),
+                    "critical_roles_open": hiring.get("critical_roles_open", 0),
+                    "sourced_candidates": hiring.get("sourced_candidates", 0),
+                    "onsite_candidates": hiring.get("onsite_candidates", 0),
+                    "offers_out": hiring.get("offers_out", 0),
+                    "hiring_capacity_index": hiring.get("hiring_capacity_index", 0.0),
+                    "delivery_capacity_index": team.get("delivery_capacity_index", 0.0),
+                }
+            },
+            state_delta_summary={
+                "team.headcount": team.get("headcount", 0),
+                "team.hiring.open_roles": hiring.get("open_roles", 0),
+                "team.hiring.critical_roles_open": hiring.get("critical_roles_open", 0),
+                "team.bandwidth_load": team.get("bandwidth_load", 0.0),
+                "team.delivery_capacity_index": team.get("delivery_capacity_index", 0.0),
+                "finance.monthly_burn_usd": finance.get("monthly_burn_usd"),
+            },
+        )
+
+    if tool_name == "research.market.read":
+        market = session.world_state.setdefault("market", {})
+        customers = session.world_state.setdefault("customers", {})
+        market["market_reads_count"] = int(market.get("market_reads_count", 0)) + 1
+        return _tool_result(
+            tool_name,
+            request_id,
+            result={
+                "market_state": {
+                    "competitor_pressure": market.get("competitor_pressure", market.get("competitor_pressure_index", 0.0)),
+                    "competitor_pressure_index": market.get("competitor_pressure_index", 0.0),
+                    "pricing_pressure_index": market.get("pricing_pressure_index", market.get("pricing_pressure", 0.0)),
+                    "demand_index": market.get("demand_index", 0.0),
+                    "segment_signals": deepcopy(market.get("segment_signals", [])),
+                    "latest_market_note": market.get("latest_market_note"),
+                    "segment_mix_index": customers.get("segment_mix_index"),
+                    "market_reads_count": market.get("market_reads_count", 0),
+                }
+            },
+            state_delta_summary={"market.market_reads_count": market.get("market_reads_count", 0)},
         )
 
     if tool_name == "notes.read":
