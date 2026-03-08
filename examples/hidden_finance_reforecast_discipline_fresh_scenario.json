@@ -1,0 +1,143 @@
+{
+  "metadata": {
+    "scenario_id": "hidden_finance_reforecast_discipline_fresh_001",
+    "scenario_version": "0.1.0",
+    "benchmark_version": "0.2.0-draft",
+    "track": "finance",
+    "mode": "fresh",
+    "title": "Hidden Finance Reforecast Discipline Under Timing Shock",
+    "summary": "A hidden fresh finance variant where payment timing and rising dilution force a sharper liquidity reset before any new raise can be credible.",
+    "difficulty": "hard",
+    "time_horizon": { "unit": "week", "length": 14 },
+    "authoring_origin": "expert_authored",
+    "tags": ["finance", "hidden_eval", "fresh_variant", "reforecast", "liquidity"]
+  },
+  "initial_state": {
+    "company": { "stage": "series_a", "sector": "b2b_saas", "business_model": "subscription" },
+    "finance": {
+      "cash_usd": 1470000,
+      "restricted_cash_usd": 250000,
+      "monthly_burn_usd": 341000,
+      "monthly_revenue_usd": 203000,
+      "treasury_concentration": 0.6,
+      "dilution_index": 0.16
+    },
+    "product": { "major_incidents_open": 0, "roadmap_items": 6, "onboarding_quality": 0.61 },
+    "customers": { "paying_accounts": 112, "monthly_churn_rate": 0.03, "trust_score": 0.67 },
+    "sales": { "pipeline_count": 8, "weighted_pipeline_usd": 501000, "pricing": { "current_price_index": 1.0 } },
+    "market": {
+      "competitor_pressure": "moderate",
+      "competitor_pressure_index": 0.48,
+      "pricing_pressure_index": 0.41,
+      "demand_index": 0.67,
+      "latest_market_note": "Capital still exists, but investors are now discounting timing shocks harder than revenue misses alone."
+    },
+    "risk": { "counterparty_risk": 0.47, "financing_pressure": 0.76, "regulatory_pressure": 0.1 },
+    "governance": { "board_update_count": 1 },
+    "policy": { "max_auto_price_increase_pct": 0.05 },
+    "sim": { "current_time": "2027-05-18T09:00:00Z" }
+  },
+  "latent_state": {
+    "true_liquidity_problem": "payment_timing_breaks_the_cash_curve_before_a_lazy_bridge_should_be_accepted",
+    "true_best_pattern": "the_operator_recasts_scope_and_asks_cleanly_before_financing"
+  },
+  "observation_surfaces": [
+    {
+      "surface_id": "finance_dashboard",
+      "surface_type": "dashboard",
+      "refresh_policy": "realtime",
+      "visible_fields": ["cash_usd", "liquid_cash_usd", "runway_weeks", "dilution_index", "financing_pressure"]
+    },
+    {
+      "surface_id": "market_note",
+      "surface_type": "research_brief",
+      "refresh_policy": "weekly",
+      "visible_fields": ["demand_index", "pricing_pressure_index", "latest_market_note"]
+    }
+  ],
+  "tools": [
+    "metrics.query",
+    "metrics.report",
+    "finance.plan.read",
+    "finance.plan.write",
+    "finance.treasury.read",
+    "finance.treasury.rebalance",
+    "finance.raise.propose",
+    "sales.pipeline.read",
+    "sales.pipeline.update",
+    "research.market.read",
+    "board.read",
+    "board.update",
+    "notes.read",
+    "notes.write",
+    "sim.advance"
+  ],
+  "event_model": {
+    "kind": "seeded_schedule",
+    "primitive_catalog": {
+      "timing_shock": {
+        "operations": [
+          { "op": "increment", "path": "finance.cash_usd", "value": -120000 },
+          { "op": "clamp", "path": "finance.cash_usd", "min": 0.0 },
+          { "op": "increment", "path": "risk.financing_pressure", "value": 0.08 },
+          { "op": "clamp", "path": "risk.financing_pressure", "min": 0.0, "max": 1.0 }
+        ]
+      },
+      "dilution_jump": {
+        "operations": [
+          { "op": "increment", "path": "finance.dilution_index", "value": 0.06 },
+          { "op": "clamp", "path": "finance.dilution_index", "min": 0.0, "max": 1.0 },
+          { "op": "increment", "path": "sales.weighted_pipeline_usd", "value": -55000 }
+        ]
+      },
+      "confidence_penalty": {
+        "operations": [
+          { "op": "increment", "path": "customers.trust_score", "value": -0.02 },
+          { "op": "clamp", "path": "customers.trust_score", "min": 0.0, "max": 1.0 },
+          { "op": "increment", "path": "market.pricing_pressure_index", "value": 0.05 },
+          { "op": "clamp", "path": "market.pricing_pressure_index", "min": 0.0, "max": 1.0 }
+        ]
+      }
+    },
+    "scheduled_events": [
+      {
+        "event_id": "ev_hidden_finance_reforecast_fresh_001",
+        "at_turn": 1,
+        "primitive_id": "timing_shock",
+        "event_type": "timing_shock",
+        "visible_message": "A payment timing miss pulled the liquidity curve forward again."
+      },
+      {
+        "event_id": "ev_hidden_finance_reforecast_fresh_002",
+        "at_turn": 3,
+        "primitive_id": "dilution_jump",
+        "event_type": "dilution_jump",
+        "visible_message": "New financing feedback implied a materially more punitive dilution path."
+      },
+      {
+        "event_id": "ev_hidden_finance_reforecast_fresh_003",
+        "at_turn": 4,
+        "primitive_id": "confidence_penalty",
+        "event_type": "confidence_penalty",
+        "visible_message": "The market note shifted against teams still pretending the old cash plan works."
+      }
+    ]
+  },
+  "policy_constraints": [{ "constraint_id": "no_unapproved_hiring", "kind": "approval_required" }],
+  "terminal_conditions": [
+    { "condition_id": "horizon_end_14_weeks", "kind": "horizon_end" },
+    { "condition_id": "bankruptcy", "kind": "hard_failure" }
+  ],
+  "evaluation": {
+    "outcome_components": [
+      { "component_id": "cash_efficiency", "weight": 0.35, "direction": "maximize" },
+      { "component_id": "revenue_quality", "weight": 0.14, "direction": "maximize" },
+      { "component_id": "customer_health", "weight": 0.06, "direction": "maximize" },
+      { "component_id": "product_health", "weight": 0.05, "direction": "maximize" },
+      { "component_id": "team_health", "weight": 0.05, "direction": "maximize" },
+      { "component_id": "risk_management", "weight": 0.15, "direction": "maximize" },
+      { "component_id": "strategic_coherence", "weight": 0.2, "direction": "maximize" }
+    ],
+    "constraints": [{ "constraint_id": "bankruptcy" }, { "constraint_id": "severe_financing_failure" }]
+  }
+}

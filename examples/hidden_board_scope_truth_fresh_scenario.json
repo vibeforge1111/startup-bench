@@ -1,0 +1,152 @@
+{
+  "metadata": {
+    "scenario_id": "hidden_board_scope_truth_fresh_001",
+    "scenario_version": "0.1.0",
+    "benchmark_version": "0.2.0-draft",
+    "track": "board",
+    "mode": "fresh",
+    "title": "Hidden Board Scope Truth Under Capacity Slip",
+    "summary": "A hidden fresh board variant where the operator needs to shrink to a credible scope and make a concrete board ask instead of defending the whole roadmap.",
+    "difficulty": "frontier",
+    "time_horizon": { "unit": "week", "length": 17 },
+    "authoring_origin": "expert_authored",
+    "tags": ["board", "hidden_eval", "fresh_variant", "scope", "forecasting"]
+  },
+  "initial_state": {
+    "company": { "stage": "series_b", "sector": "b2b_saas", "business_model": "subscription" },
+    "finance": { "cash_usd": 3740000, "monthly_burn_usd": 472000, "monthly_revenue_usd": 391000 },
+    "product": { "major_incidents_open": 1, "roadmap_items": 9, "onboarding_quality": 0.58 },
+    "customers": { "paying_accounts": 199, "monthly_churn_rate": 0.03, "trust_score": 0.63 },
+    "sales": { "pipeline_count": 15, "weighted_pipeline_usd": 1350000, "pricing": { "current_price_index": 1.0 } },
+    "operations": { "support_backlog": 42, "support_sla_breach_risk": 0.42 },
+    "team": {
+      "morale": 0.53,
+      "attrition_risk": 0.56,
+      "bandwidth_load": 0.91,
+      "headcount": 25,
+      "hiring": {
+        "open_roles": 2,
+        "critical_roles_open": 1,
+        "sourced_candidates": 3,
+        "onsite_candidates": 1,
+        "offers_out": 0,
+        "time_to_fill_weeks": 9
+      }
+    },
+    "market": {
+      "competitor_pressure": "high",
+      "competitor_pressure_index": 0.64,
+      "pricing_pressure_index": 0.6,
+      "demand_index": 0.73,
+      "latest_market_note": "Boards still want growth, but they are beginning to reward teams that admit the smaller credible path sooner."
+    },
+    "risk": { "financing_pressure": 0.73, "regulatory_pressure": 0.13, "counterparty_risk": 0.2 },
+    "governance": { "board_update_count": 0 },
+    "policy": { "max_auto_price_increase_pct": 0.05 },
+    "sim": { "current_time": "2027-02-02T09:00:00Z" }
+  },
+  "latent_state": {
+    "true_failure_mode": "the_team_keeps_the_board_on_a_broad_story_after_capacity_has_already_broken_the_forecast",
+    "true_win_condition": "board_truth_shrinks_scope_early_and_secures_specific_help"
+  },
+  "observation_surfaces": [
+    {
+      "surface_id": "board_portal",
+      "surface_type": "board_portal",
+      "refresh_policy": "weekly",
+      "visible_fields": ["monthly_revenue_usd", "runway_weeks", "support_backlog", "board_update_count"]
+    },
+    {
+      "surface_id": "delivery_watch",
+      "surface_type": "dashboard",
+      "refresh_policy": "daily",
+      "visible_fields": ["major_incidents_open", "support_backlog", "trust_score", "bandwidth_load"]
+    }
+  ],
+  "tools": [
+    "metrics.query",
+    "metrics.report",
+    "ops.support.read",
+    "ops.support.resolve",
+    "product.roadmap.read",
+    "product.roadmap.write",
+    "finance.plan.read",
+    "finance.plan.write",
+    "finance.raise.propose",
+    "research.market.read",
+    "board.read",
+    "board.update",
+    "notes.read",
+    "notes.write",
+    "sim.advance"
+  ],
+  "event_model": {
+    "kind": "seeded_schedule",
+    "primitive_catalog": {
+      "capacity_drag": {
+        "operations": [
+          { "op": "increment", "path": "operations.support_backlog", "value": 14 },
+          { "op": "increment", "path": "team.bandwidth_load", "value": 0.04 },
+          { "op": "clamp", "path": "team.bandwidth_load", "min": 0.0, "max": 1.0 },
+          { "op": "increment", "path": "customers.trust_score", "value": -0.03 },
+          { "op": "clamp", "path": "customers.trust_score", "min": 0.0, "max": 1.0 }
+        ]
+      },
+      "forecast_shortfall": {
+        "operations": [
+          { "op": "increment", "path": "sales.weighted_pipeline_usd", "value": -110000 },
+          { "op": "increment", "path": "risk.financing_pressure", "value": 0.06 },
+          { "op": "clamp", "path": "risk.financing_pressure", "min": 0.0, "max": 1.0 }
+        ]
+      },
+      "narrative_pull": {
+        "operations": [
+          { "op": "increment", "path": "market.pricing_pressure_index", "value": 0.05 },
+          { "op": "clamp", "path": "market.pricing_pressure_index", "min": 0.0, "max": 1.0 },
+          { "op": "increment", "path": "team.morale", "value": -0.04 },
+          { "op": "clamp", "path": "team.morale", "min": 0.0, "max": 1.0 }
+        ]
+      }
+    },
+    "scheduled_events": [
+      {
+        "event_id": "ev_hidden_board_scope_truth_fresh_001",
+        "at_turn": 2,
+        "primitive_id": "capacity_drag",
+        "event_type": "capacity_drag",
+        "visible_message": "Customer work pulled more capacity off the roadmap than the board packet had implied."
+      },
+      {
+        "event_id": "ev_hidden_board_scope_truth_fresh_002",
+        "at_turn": 4,
+        "primitive_id": "forecast_shortfall",
+        "event_type": "forecast_shortfall",
+        "visible_message": "Pipeline softness widened the gap between the roadmap story and the forecast."
+      },
+      {
+        "event_id": "ev_hidden_board_scope_truth_fresh_003",
+        "at_turn": 5,
+        "primitive_id": "narrative_pull",
+        "event_type": "narrative_pull",
+        "visible_message": "A director still pushed for the broader plan even though the smaller credible path had become obvious."
+      }
+    ]
+  },
+  "policy_constraints": [{ "constraint_id": "no_unapproved_hiring", "kind": "approval_required" }],
+  "terminal_conditions": [
+    { "condition_id": "horizon_end_17_weeks", "kind": "horizon_end" },
+    { "condition_id": "bankruptcy", "kind": "hard_failure" }
+  ],
+  "evaluation": {
+    "outcome_components": [
+      { "component_id": "cash_efficiency", "weight": 0.08, "direction": "maximize" },
+      { "component_id": "revenue_quality", "weight": 0.08, "direction": "maximize" },
+      { "component_id": "customer_health", "weight": 0.17, "direction": "maximize" },
+      { "component_id": "product_health", "weight": 0.17, "direction": "maximize" },
+      { "component_id": "team_health", "weight": 0.1, "direction": "maximize" },
+      { "component_id": "risk_management", "weight": 0.12, "direction": "maximize" },
+      { "component_id": "strategic_coherence", "weight": 0.28, "direction": "maximize" }
+    ],
+    "constraints": [{ "constraint_id": "bankruptcy" }, { "constraint_id": "severe_trust_breach" }]
+  }
+}

@@ -228,8 +228,8 @@ These are example-scale scenarios, not yet a production benchmark corpus.
 
 Completed hidden coverage breadth packs:
 
-- `17` hidden `test` scenarios in [private_coverage_test_scenario_suite.json](/C:/Users/USER/Desktop/startup-bench/examples/private_coverage_test_scenario_suite.json)
-- `17` hidden `fresh` scenarios in [private_coverage_fresh_scenario_suite.json](/C:/Users/USER/Desktop/startup-bench/examples/private_coverage_fresh_scenario_suite.json)
+- `20` hidden `test` scenarios in [private_coverage_test_scenario_suite.json](/C:/Users/USER/Desktop/startup-bench/examples/private_coverage_test_scenario_suite.json)
+- `20` hidden `fresh` scenarios in [private_coverage_fresh_scenario_suite.json](/C:/Users/USER/Desktop/startup-bench/examples/private_coverage_fresh_scenario_suite.json)
 - current hidden coverage:
   - PMF activation loop
   - PMF false demand
@@ -248,6 +248,9 @@ Completed hidden coverage breadth packs:
   - board forecast discipline
   - hiring priority under manager-capacity drag
   - growth review discipline under support spillover
+  - crisis follow-through under escalation echo
+  - finance reforecast discipline under collections slip
+  - board scope truth under delivery compression
 
 Completed real-world-derived scenario pack:
 

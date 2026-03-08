@@ -1,7 +1,7 @@
 {
   "suite_version": "0.1.0",
   "benchmark_version": "0.2.0-draft",
-  "scenario_pack_version": "coverage-fresh-pack-0.10.0",
+  "scenario_pack_version": "coverage-fresh-pack-0.11.0",
   "split": "fresh",
   "scenarios": [
     {
@@ -104,6 +104,24 @@
       "scenario_id": "hidden_growth_review_discipline_fresh_001",
       "path": "hidden_growth_review_discipline_fresh_scenario.json",
       "track": "gtm",
+      "mode": "fresh"
+    },
+    {
+      "scenario_id": "hidden_crisis_followthrough_fresh_001",
+      "path": "hidden_crisis_followthrough_fresh_scenario.json",
+      "track": "crisis",
+      "mode": "fresh"
+    },
+    {
+      "scenario_id": "hidden_finance_reforecast_discipline_fresh_001",
+      "path": "hidden_finance_reforecast_discipline_fresh_scenario.json",
+      "track": "finance",
+      "mode": "fresh"
+    },
+    {
+      "scenario_id": "hidden_board_scope_truth_fresh_001",
+      "path": "hidden_board_scope_truth_fresh_scenario.json",
+      "track": "board",
       "mode": "fresh"
     }
   ]

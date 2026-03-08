@@ -368,7 +368,7 @@
         "growth is balanced across thin tracks",
         "promotion metadata and governance docs are updated"
       ],
-      "progress_notes": "Active hidden test inventory is now 70 after the operator hidden pack grew to 22 scenarios via procurement-slip, vendor-prepay, and escalation-load families."
+      "progress_notes": "Active hidden test inventory is now 73 after the coverage hidden pack grew to 20 scenarios via crisis follow-through, finance reforecast discipline, and board scope-truth families."
     },
     {
       "task_id": "BT-016",
@@ -463,6 +463,34 @@
         "examples/private_operator_fresh_scenario_suite.json",
         "examples/operator_public_test_manifest.json",
         "examples/operator_public_fresh_manifest.json"
+      ]
+    },
+    {
+      "task_id": "BT-020",
+      "title": "Add coverage depth batch 003",
+      "workstream": "corpus-scale",
+      "milestone_id": "v0.10.0",
+      "priority": "high",
+      "status": "completed",
+      "benchmark_risk": "medium",
+      "owner": "core-benchmark",
+      "completion_criteria": [
+        "at least 3 new hidden coverage scenarios exist",
+        "matching fresh variants exist",
+        "coverage suite and manifests are updated"
+      ],
+      "progress_notes": "The coverage pack now includes crisis follow-through, finance reforecast discipline, and board scope-truth variants, bringing active coverage hidden test inventory to 20 and benchmark-wide hidden test inventory to 73.",
+      "artifacts": [
+        "examples/hidden_crisis_followthrough_test_scenario.json",
+        "examples/hidden_crisis_followthrough_fresh_scenario.json",
+        "examples/hidden_finance_reforecast_discipline_test_scenario.json",
+        "examples/hidden_finance_reforecast_discipline_fresh_scenario.json",
+        "examples/hidden_board_scope_truth_test_scenario.json",
+        "examples/hidden_board_scope_truth_fresh_scenario.json",
+        "examples/private_coverage_test_scenario_suite.json",
+        "examples/private_coverage_fresh_scenario_suite.json",
+        "examples/coverage_public_test_manifest.json",
+        "examples/coverage_public_fresh_manifest.json"
       ]
     }
   ]

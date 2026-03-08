@@ -44,7 +44,7 @@ Success targets:
 
 - `BT-015` hidden corpus expansion to `75`
   - milestone: `v0.10.0`
-  - focus: continue balanced hidden-pack growth from `70` toward `75` while keeping calibration, canary, and pack-rotation discipline intact
+  - focus: continue balanced hidden-pack growth from `73` toward `75` while keeping calibration, canary, and pack-rotation discipline intact
 
 ## Completed
 
@@ -111,6 +111,10 @@ Success targets:
 - `BT-019` operator depth batch 002
   - milestone: `v0.10.0`
   - focus: added procurement-slip, vendor-prepay, and escalation-load hidden variants; operator hidden `test` inventory is now `22` and benchmark-wide hidden `test` inventory is `70`
+
+- `BT-020` coverage depth batch 003
+  - milestone: `v0.10.0`
+  - focus: added crisis follow-through, finance reforecast discipline, and board scope-truth hidden variants; coverage hidden `test` inventory is now `20` and benchmark-wide hidden `test` inventory is `73`
 
 ## Ready
 

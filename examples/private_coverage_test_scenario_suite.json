@@ -1,7 +1,7 @@
 {
   "suite_version": "0.1.0",
   "benchmark_version": "0.2.0-draft",
-  "scenario_pack_version": "coverage-test-pack-0.10.0",
+  "scenario_pack_version": "coverage-test-pack-0.11.0",
   "split": "test",
   "scenarios": [
     {
@@ -104,6 +104,24 @@
       "scenario_id": "hidden_growth_review_discipline_test_001",
       "path": "hidden_growth_review_discipline_test_scenario.json",
       "track": "gtm",
+      "mode": "test"
+    },
+    {
+      "scenario_id": "hidden_crisis_followthrough_test_001",
+      "path": "hidden_crisis_followthrough_test_scenario.json",
+      "track": "crisis",
+      "mode": "test"
+    },
+    {
+      "scenario_id": "hidden_finance_reforecast_discipline_test_001",
+      "path": "hidden_finance_reforecast_discipline_test_scenario.json",
+      "track": "finance",
+      "mode": "test"
+    },
+    {
+      "scenario_id": "hidden_board_scope_truth_test_001",
+      "path": "hidden_board_scope_truth_test_scenario.json",
+      "track": "board",
       "mode": "test"
     }
   ]

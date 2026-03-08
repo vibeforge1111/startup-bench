@@ -37,7 +37,7 @@ class CoverageHiddenSuiteTests(unittest.TestCase):
 
         self.assertTrue(result["validation"]["ok"])
         report = result["suite_report"]
-        self.assertEqual(report["overall"]["scenario_count"], 17)
+        self.assertEqual(report["overall"]["scenario_count"], 20)
         tracks = {item["track"] for item in report["track_summaries"]}
         self.assertEqual(tracks, {"0to1", "board", "crisis", "finance", "people", "gtm"})
 
@@ -59,7 +59,7 @@ class CoverageHiddenSuiteTests(unittest.TestCase):
 
         self.assertTrue(result["validation"]["ok"])
         report = result["suite_report"]
-        self.assertEqual(report["overall"]["scenario_count"], 17)
+        self.assertEqual(report["overall"]["scenario_count"], 20)
         tracks = {item["track"] for item in report["track_summaries"]}
         self.assertEqual(tracks, {"0to1", "board", "crisis", "finance", "people", "gtm"})
 

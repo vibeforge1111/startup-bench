@@ -12,7 +12,7 @@ This document records the active pack set for the `v0.9-precalibration` freeze.
 - `operator-test-pack-0.7.0`
   - public manifest: [operator_public_test_manifest.json](/C:/Users/USER/Desktop/startup-bench/examples/operator_public_test_manifest.json)
   - focus: GTM, finance, and people operator behavior
-- `coverage-test-pack-0.10.0`
+- `coverage-test-pack-0.11.0`
   - public manifest: [coverage_public_test_manifest.json](/C:/Users/USER/Desktop/startup-bench/examples/coverage_public_test_manifest.json)
   - focus: 0to1, launch, growth, communication, and safe expansion slices
 - `strategy-test-pack-0.9.0`
@@ -26,7 +26,7 @@ This document records the active pack set for the `v0.9-precalibration` freeze.
 
 - `canary-fresh-pack-0.3.0`
 - `operator-fresh-pack-0.7.0`
-- `coverage-fresh-pack-0.10.0`
+- `coverage-fresh-pack-0.11.0`
 - `strategy-fresh-pack-0.9.0`
 - `real-world-fresh-pack-0.5.0`
 

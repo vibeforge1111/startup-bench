@@ -775,12 +775,25 @@
       "pack_version": "coverage-test-pack-0.10.0",
       "split": "test",
       "visibility": "hidden",
-      "action": "created",
-      "lifecycle_state": "active",
+      "action": "retired",
+      "lifecycle_state": "retired",
       "contamination_status": "clean",
       "predecessor_pack_version": "coverage-test-pack-0.9.0",
       "manifest_path": "examples/coverage_public_test_manifest.json",
-      "notes": "Expanded hidden coverage test pack spanning PMF, finance, people leadership, launch-distribution, growth-experimentation, communication-quality slices, and a bounded second batch for board forecast discipline, hiring priority drag, and growth review discipline."
+      "successor_pack_version": "coverage-test-pack-0.11.0",
+      "notes": "Expanded hidden coverage test pack retired after adding crisis follow-through, finance reforecast discipline, and board scope-truth slices."
+    },
+    {
+      "effective_date": "2026-03-08",
+      "pack_version": "coverage-test-pack-0.11.0",
+      "split": "test",
+      "visibility": "hidden",
+      "action": "created",
+      "lifecycle_state": "active",
+      "contamination_status": "clean",
+      "predecessor_pack_version": "coverage-test-pack-0.10.0",
+      "manifest_path": "examples/coverage_public_test_manifest.json",
+      "notes": "Expanded hidden coverage test pack spanning PMF, finance, people leadership, launch-distribution, growth-experimentation, communication-quality slices, and a bounded third batch for crisis follow-through, finance reforecast discipline, and board scope truth."
     },
     {
       "effective_date": "2026-03-08",
@@ -865,12 +878,25 @@
       "pack_version": "coverage-fresh-pack-0.10.0",
       "split": "fresh",
       "visibility": "hidden",
-      "action": "created",
-      "lifecycle_state": "active",
+      "action": "retired",
+      "lifecycle_state": "retired",
       "contamination_status": "clean",
       "predecessor_pack_version": "coverage-test-pack-0.10.0",
       "manifest_path": "examples/coverage_public_fresh_manifest.json",
-      "notes": "Expanded hidden coverage fresh pack for contamination-resistant evaluation across PMF, finance, people leadership, launch-distribution, growth-experimentation, communication-quality slices, and distinct board forecast discipline, hiring priority drag, and growth review discipline variants."
+      "successor_pack_version": "coverage-fresh-pack-0.11.0",
+      "notes": "Expanded hidden coverage fresh pack retired after adding distinct crisis follow-through, finance reforecast discipline, and board scope-truth variants."
+    },
+    {
+      "effective_date": "2026-03-08",
+      "pack_version": "coverage-fresh-pack-0.11.0",
+      "split": "fresh",
+      "visibility": "hidden",
+      "action": "created",
+      "lifecycle_state": "active",
+      "contamination_status": "clean",
+      "predecessor_pack_version": "coverage-test-pack-0.11.0",
+      "manifest_path": "examples/coverage_public_fresh_manifest.json",
+      "notes": "Expanded hidden coverage fresh pack for contamination-resistant evaluation across PMF, finance, people leadership, launch-distribution, growth-experimentation, communication-quality slices, and distinct crisis follow-through, finance reforecast discipline, and board scope-truth variants."
     },
     {
       "effective_date": "2026-03-08",
