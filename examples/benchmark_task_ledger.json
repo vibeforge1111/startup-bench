@@ -1,0 +1,201 @@
+{
+  "ledger_version": "0.1.0",
+  "benchmark_version": "0.2.0-draft",
+  "last_updated": "2026-03-08",
+  "milestones": [
+    {
+      "milestone_id": "v0.9.5",
+      "status": "in_progress",
+      "objective": "Stabilize TheStartupBench as a serious internal benchmark candidate.",
+      "success_targets": [
+        "hidden test inventory >= 50",
+        "strategy hidden pack broadened further across long-horizon tracks",
+        "official benchmark task system adopted",
+        "calibration execution moved into active planning"
+      ]
+    },
+    {
+      "milestone_id": "v0.10.0",
+      "status": "pending",
+      "objective": "Become a community-credible benchmark candidate.",
+      "success_targets": [
+        "hidden test inventory >= 75",
+        "hidden fresh inventory >= 40",
+        "operator calibration completed for promoted packs",
+        "official evaluation window frozen"
+      ]
+    },
+    {
+      "milestone_id": "v1.0.0",
+      "status": "pending",
+      "objective": "Ship a defensible public benchmark release.",
+      "success_targets": [
+        "hidden test inventory >= 100",
+        "fresh refresh process live",
+        "human/operator baseline published",
+        "leaderboard operations live"
+      ]
+    }
+  ],
+  "tasks": [
+    {
+      "task_id": "BT-001",
+      "title": "Publish benchmark maturity plan",
+      "workstream": "benchmark-operations",
+      "milestone_id": "v0.9.5",
+      "priority": "high",
+      "status": "completed",
+      "benchmark_risk": "low",
+      "owner": "core-benchmark",
+      "completion_criteria": [
+        "maturity rubric documented",
+        "milestone targets documented",
+        "implementation sequence documented"
+      ],
+      "artifacts": [
+        "docs/benchmark_maturity_plan.md"
+      ]
+    },
+    {
+      "task_id": "BT-002",
+      "title": "Establish benchmark task system",
+      "workstream": "benchmark-operations",
+      "milestone_id": "v0.9.5",
+      "priority": "high",
+      "status": "completed",
+      "benchmark_risk": "low",
+      "owner": "core-benchmark",
+      "completion_criteria": [
+        "machine-readable ledger exists",
+        "human-readable board exists",
+        "docs link to the task system"
+      ],
+      "artifacts": [
+        "examples/benchmark_task_ledger.json",
+        "docs/benchmark_task_board.md"
+      ]
+    },
+    {
+      "task_id": "BT-003",
+      "title": "Expand hidden test corpus to at least 50 scenarios",
+      "workstream": "corpus-scale",
+      "milestone_id": "v0.9.5",
+      "priority": "highest",
+      "status": "in_progress",
+      "benchmark_risk": "medium",
+      "owner": "core-benchmark",
+      "completion_criteria": [
+        "hidden test inventory >= 50",
+        "growth is balanced across thin tracks",
+        "promotion metadata updated"
+      ],
+      "progress_notes": "Current hidden test inventory is 39 active scenarios across strategy, coverage, operator, real-world, and canary packs."
+    },
+    {
+      "task_id": "BT-004",
+      "title": "Broaden strategy pack across long-horizon tracks",
+      "workstream": "corpus-scale",
+      "milestone_id": "v0.9.5",
+      "priority": "highest",
+      "status": "in_progress",
+      "benchmark_risk": "medium",
+      "owner": "core-benchmark",
+      "completion_criteria": [
+        "strategy pack covers board, product, scale, and gtm",
+        "each added family has fresh/test variants",
+        "strategy hidden suite remains distinct and valid"
+      ],
+      "progress_notes": "Now covers board, product, scale, and gtm; still needs more total volume and depth."
+    },
+    {
+      "task_id": "BT-005",
+      "title": "Run operator calibration wave 002 for promoted strategy families",
+      "workstream": "calibration",
+      "milestone_id": "v0.10.0",
+      "priority": "highest",
+      "status": "ready",
+      "benchmark_risk": "high",
+      "owner": "calibration-taskforce",
+      "completion_criteria": [
+        "review roster assigned",
+        "promoted strategy scenarios reviewed by operators",
+        "score-vs-operator disagreements logged"
+      ]
+    },
+    {
+      "task_id": "BT-006",
+      "title": "Freeze one official evaluation reporting window",
+      "workstream": "official-eval",
+      "milestone_id": "v0.10.0",
+      "priority": "high",
+      "status": "ready",
+      "benchmark_risk": "high",
+      "owner": "core-benchmark",
+      "completion_criteria": [
+        "official run settings frozen",
+        "window start and end dates documented",
+        "hosted vs self-reported distinction documented"
+      ]
+    },
+    {
+      "task_id": "BT-007",
+      "title": "Publish leaderboard governance pack",
+      "workstream": "benchmark-operations",
+      "milestone_id": "v0.10.0",
+      "priority": "high",
+      "status": "ready",
+      "benchmark_risk": "high",
+      "owner": "core-benchmark",
+      "completion_criteria": [
+        "leaderboard entry types defined",
+        "contamination response path documented",
+        "release note and retirement rules documented"
+      ]
+    },
+    {
+      "task_id": "BT-008",
+      "title": "Define hidden pack rotation policy",
+      "workstream": "hidden-eval-integrity",
+      "milestone_id": "v0.10.0",
+      "priority": "high",
+      "status": "ready",
+      "benchmark_risk": "high",
+      "owner": "core-benchmark",
+      "completion_criteria": [
+        "pack refresh cadence defined",
+        "retirement triggers defined",
+        "fresh-to-test promotion rules defined"
+      ]
+    },
+    {
+      "task_id": "BT-009",
+      "title": "Add second 0to1 ambiguity expansion batch",
+      "workstream": "corpus-scale",
+      "milestone_id": "v0.9.5",
+      "priority": "highest",
+      "status": "ready",
+      "benchmark_risk": "medium",
+      "owner": "core-benchmark",
+      "completion_criteria": [
+        "at least 3 new hidden 0to1 scenarios exist",
+        "test and fresh coverage both expand",
+        "evaluation remains programmatic-first"
+      ]
+    },
+    {
+      "task_id": "BT-010",
+      "title": "Add scale-finance interaction strategy family",
+      "workstream": "corpus-scale",
+      "milestone_id": "v0.9.5",
+      "priority": "high",
+      "status": "ready",
+      "benchmark_risk": "medium",
+      "owner": "core-benchmark",
+      "completion_criteria": [
+        "new dev scenario exists",
+        "hidden test and fresh variants exist",
+        "strategy pack metadata and tests are updated"
+      ]
+    }
+  ]
+}

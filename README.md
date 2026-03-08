@@ -176,6 +176,8 @@ thestartupbench/
 **Benchmark design:**
 - [RFC](THE_STARTUP_BENCH_RFC.md)
 - [Benchmark status](docs/benchmark_status.md)
+- [Benchmark maturity plan](docs/benchmark_maturity_plan.md)
+- [Benchmark task board](docs/benchmark_task_board.md)
 - [Coverage expansion policy](docs/coverage_expansion_policy.md)
 - [Coverage build plan](docs/coverage_build_plan.md)
 - [Known issues](docs/benchmark_known_issues.md)
