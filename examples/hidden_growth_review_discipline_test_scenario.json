@@ -1,0 +1,200 @@
+{
+  "metadata": {
+    "scenario_id": "hidden_growth_review_discipline_test_001",
+    "scenario_version": "0.1.0",
+    "benchmark_version": "0.2.0-draft",
+    "track": "gtm",
+    "mode": "test",
+    "title": "Hidden Growth Review Discipline Under Support Spillover",
+    "summary": "A hidden GTM scenario where the first experiment is easy to start, but only disciplined review and support-aware follow-through prevent a false scale-up.",
+    "difficulty": "hard",
+    "time_horizon": {
+      "unit": "week",
+      "length": 15
+    },
+    "authoring_origin": "expert_authored",
+    "tags": ["gtm", "hidden_eval", "growth", "experiments", "review_discipline"]
+  },
+  "initial_state": {
+    "company": {
+      "stage": "series_a",
+      "sector": "b2b_saas",
+      "business_model": "subscription"
+    },
+    "finance": {
+      "cash_usd": 2740000,
+      "monthly_burn_usd": 358000,
+      "monthly_revenue_usd": 236000
+    },
+    "product": {
+      "major_incidents_open": 0,
+      "roadmap_items": 7,
+      "onboarding_quality": 0.56
+    },
+    "customers": {
+      "paying_accounts": 139,
+      "monthly_churn_rate": 0.032,
+      "trust_score": 0.64
+    },
+    "growth": {
+      "activation_index": 0.49,
+      "experiment_count": 0,
+      "active_channels": ["content_syndication", "partner_referrals"]
+    },
+    "sales": {
+      "pipeline_count": 12,
+      "weighted_pipeline_usd": 812000,
+      "pricing": {
+        "current_price_index": 1.0
+      }
+    },
+    "operations": {
+      "support_backlog": 40,
+      "support_sla_breach_risk": 0.36
+    },
+    "team": {
+      "headcount": 16,
+      "morale": 0.59,
+      "attrition_risk": 0.43,
+      "bandwidth_load": 0.83
+    },
+    "market": {
+      "competitor_pressure": "moderate",
+      "competitor_pressure_index": 0.57,
+      "pricing_pressure_index": 0.35,
+      "demand_index": 0.82,
+      "latest_market_note": "Demand is still there, but the support and onboarding path remains the real gating factor."
+    },
+    "governance": {
+      "board_update_count": 0
+    },
+    "policy": {
+      "max_auto_price_increase_pct": 0.06
+    },
+    "sim": {
+      "current_time": "2027-02-23T09:00:00Z"
+    }
+  },
+  "latent_state": {
+    "true_core_problem": "the_team_can_launch_an_experiment_but_misreads_noise_without_review_discipline",
+    "true_recovery_path": "treat_experiments_as_learning_loops_and_support_their_operating_consequences"
+  },
+  "observation_surfaces": [
+    {
+      "surface_id": "growth_dashboard",
+      "surface_type": "dashboard",
+      "refresh_policy": "daily",
+      "visible_fields": ["activation_index", "weighted_pipeline_usd", "support_backlog", "trust_score"]
+    },
+    {
+      "surface_id": "market_brief",
+      "surface_type": "research_brief",
+      "refresh_policy": "weekly",
+      "visible_fields": ["competitor_pressure_index", "demand_index", "latest_market_note"]
+    }
+  ],
+  "tools": [
+    "metrics.query",
+    "metrics.report",
+    "product.roadmap.read",
+    "product.roadmap.write",
+    "growth.experiment.create",
+    "growth.experiment.review",
+    "sales.pipeline.read",
+    "sales.pipeline.update",
+    "ops.support.read",
+    "ops.support.resolve",
+    "finance.plan.read",
+    "finance.plan.write",
+    "research.market.read",
+    "board.read",
+    "board.update",
+    "notes.read",
+    "notes.write",
+    "sim.advance"
+  ],
+  "event_model": {
+    "kind": "seeded_schedule",
+    "primitive_catalog": {
+      "lead_spike": {
+        "operations": [
+          { "op": "increment", "path": "sales.pipeline_count", "value": 2 },
+          { "op": "increment", "path": "sales.weighted_pipeline_usd", "value": 70000 },
+          { "op": "increment", "path": "market.demand_index", "value": 0.02 },
+          { "op": "clamp", "path": "market.demand_index", "min": 0.0, "max": 1.5 }
+        ]
+      },
+      "support_spillover": {
+        "operations": [
+          { "op": "increment", "path": "operations.support_backlog", "value": 16 },
+          { "op": "increment", "path": "operations.support_sla_breach_risk", "value": 0.12 },
+          { "op": "clamp", "path": "operations.support_sla_breach_risk", "min": 0.0, "max": 1.0 },
+          { "op": "increment", "path": "customers.trust_score", "value": -0.04 },
+          { "op": "clamp", "path": "customers.trust_score", "min": 0.0, "max": 1.0 }
+        ]
+      },
+      "activation_drop": {
+        "operations": [
+          { "op": "increment", "path": "growth.activation_index", "value": -0.07 },
+          { "op": "clamp", "path": "growth.activation_index", "min": 0.0, "max": 1.0 },
+          { "op": "increment", "path": "team.morale", "value": -0.03 },
+          { "op": "clamp", "path": "team.morale", "min": 0.0, "max": 1.0 }
+        ]
+      }
+    },
+    "scheduled_events": [
+      {
+        "event_id": "ev_hidden_growth_review_001",
+        "at_turn": 2,
+        "primitive_id": "lead_spike",
+        "event_type": "lead_spike",
+        "visible_message": "Lead volume improved quickly and the team started to talk about the channel like it had already won."
+      },
+      {
+        "event_id": "ev_hidden_growth_review_002",
+        "at_turn": 4,
+        "primitive_id": "support_spillover",
+        "event_type": "support_spillover",
+        "visible_message": "The experiment pulled more accounts into support and exposed the cost of scaling before review discipline caught up."
+      },
+      {
+        "event_id": "ev_hidden_growth_review_003",
+        "at_turn": 5,
+        "primitive_id": "activation_drop",
+        "event_type": "activation_drop",
+        "visible_message": "Activation quality fell once the fuller customer journey was measured."
+      }
+    ]
+  },
+  "policy_constraints": [
+    {
+      "constraint_id": "no_unapproved_hiring",
+      "kind": "approval_required"
+    }
+  ],
+  "terminal_conditions": [
+    {
+      "condition_id": "horizon_end_15_weeks",
+      "kind": "horizon_end"
+    },
+    {
+      "condition_id": "bankruptcy",
+      "kind": "hard_failure"
+    }
+  ],
+  "evaluation": {
+    "outcome_components": [
+      { "component_id": "cash_efficiency", "weight": 0.08, "direction": "maximize" },
+      { "component_id": "revenue_quality", "weight": 0.18, "direction": "maximize" },
+      { "component_id": "customer_health", "weight": 0.19, "direction": "maximize" },
+      { "component_id": "product_health", "weight": 0.17, "direction": "maximize" },
+      { "component_id": "team_health", "weight": 0.08, "direction": "maximize" },
+      { "component_id": "risk_management", "weight": 0.11, "direction": "maximize" },
+      { "component_id": "strategic_coherence", "weight": 0.19, "direction": "maximize" }
+    ],
+    "constraints": [
+      { "constraint_id": "bankruptcy" },
+      { "constraint_id": "severe_trust_breach" }
+    ]
+  }
+}

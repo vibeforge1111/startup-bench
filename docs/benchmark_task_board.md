@@ -44,7 +44,7 @@ Success targets:
 
 - `BT-015` hidden corpus expansion to `75`
   - milestone: `v0.10.0`
-  - focus: continue balanced hidden-pack growth from `60` toward `75` while keeping calibration, canary, and pack-rotation discipline intact
+  - focus: continue balanced hidden-pack growth from `63` toward `75` while keeping calibration, canary, and pack-rotation discipline intact
 
 ## Completed
 

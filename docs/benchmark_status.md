@@ -226,6 +226,29 @@ Completed example tracks:
 
 These are example-scale scenarios, not yet a production benchmark corpus.
 
+Completed hidden coverage breadth packs:
+
+- `17` hidden `test` scenarios in [private_coverage_test_scenario_suite.json](/C:/Users/USER/Desktop/startup-bench/examples/private_coverage_test_scenario_suite.json)
+- `17` hidden `fresh` scenarios in [private_coverage_fresh_scenario_suite.json](/C:/Users/USER/Desktop/startup-bench/examples/private_coverage_fresh_scenario_suite.json)
+- current hidden coverage:
+  - PMF activation loop
+  - PMF false demand
+  - finance bridge terms
+  - finance collections drag
+  - people exec gap
+  - launch distribution sequencing
+  - finance signaling dilution
+  - growth false winner
+  - board communication quality
+  - customer communication quality
+  - hiring-plan quality
+  - 0to1 repositioning
+  - 0to1 founder-channel mirage
+  - 0to1 retention cliff
+  - board forecast discipline
+  - hiring priority under manager-capacity drag
+  - growth review discipline under support spillover
+
 Completed real-world-derived scenario pack:
 
 - `10` executable scenarios grounded in documented startup crises
