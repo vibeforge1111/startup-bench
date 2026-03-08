@@ -1,9 +1,9 @@
 {
   "manifest_version": "0.1.0",
   "benchmark_version": "0.2.0-draft",
-  "scenario_pack_version": "operator-fresh-pack-0.4.0",
+  "scenario_pack_version": "operator-fresh-pack-0.5.0",
   "split": "fresh",
-  "scenario_count": 9,
+  "scenario_count": 16,
   "scenarios": [
     {
       "scenario_id": "hidden_gtm_pipeline_reset_fresh_001",
@@ -58,6 +58,48 @@
       "track": "people",
       "mode": "fresh",
       "hidden_ref": "fresh_008"
+    },
+    {
+      "scenario_id": "hidden_gtm_discount_spiral_fresh_001",
+      "track": "gtm",
+      "mode": "fresh",
+      "hidden_ref": "fresh_009"
+    },
+    {
+      "scenario_id": "hidden_gtm_partner_backfire_fresh_001",
+      "track": "gtm",
+      "mode": "fresh",
+      "hidden_ref": "fresh_010"
+    },
+    {
+      "scenario_id": "hidden_finance_receivables_freeze_fresh_001",
+      "track": "finance",
+      "mode": "fresh",
+      "hidden_ref": "fresh_011"
+    },
+    {
+      "scenario_id": "hidden_finance_stepdown_raise_fresh_001",
+      "track": "finance",
+      "mode": "fresh",
+      "hidden_ref": "fresh_012"
+    },
+    {
+      "scenario_id": "hidden_people_exec_backfill_fresh_001",
+      "track": "people",
+      "mode": "fresh",
+      "hidden_ref": "fresh_013"
+    },
+    {
+      "scenario_id": "hidden_people_support_burnout_fresh_001",
+      "track": "people",
+      "mode": "fresh",
+      "hidden_ref": "fresh_014"
+    },
+    {
+      "scenario_id": "hidden_people_decision_latency_fresh_001",
+      "track": "people",
+      "mode": "fresh",
+      "hidden_ref": "fresh_015"
     }
   ]
 }

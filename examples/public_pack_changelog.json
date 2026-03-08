@@ -131,12 +131,25 @@
       "pack_version": "operator-test-pack-0.4.0",
       "split": "test",
       "visibility": "hidden",
-      "action": "created",
-      "lifecycle_state": "active",
+      "action": "retired",
+      "lifecycle_state": "retired",
       "contamination_status": "clean",
       "predecessor_pack_version": "operator-test-pack-0.3.0",
       "manifest_path": "examples/operator_public_test_manifest.json",
-      "notes": "Expanded operator hidden test pack covering three GTM slices, three finance slices, and three people/org slices."
+      "successor_pack_version": "operator-test-pack-0.5.0",
+      "notes": "Expanded operator hidden test pack retired after adding two GTM slices, two finance slices, and three people execution slices to reach broader hidden operator coverage."
+    },
+    {
+      "effective_date": "2026-03-08",
+      "pack_version": "operator-test-pack-0.5.0",
+      "split": "test",
+      "visibility": "hidden",
+      "action": "created",
+      "lifecycle_state": "active",
+      "contamination_status": "clean",
+      "predecessor_pack_version": "operator-test-pack-0.4.0",
+      "manifest_path": "examples/operator_public_test_manifest.json",
+      "notes": "Expanded operator hidden test pack covering five GTM slices, five finance slices, and six people/org slices across pipeline quality, financing credibility, and execution-stability pressure."
     },
     {
       "effective_date": "2026-03-07",
@@ -181,12 +194,25 @@
       "pack_version": "operator-fresh-pack-0.4.0",
       "split": "fresh",
       "visibility": "hidden",
-      "action": "created",
-      "lifecycle_state": "active",
+      "action": "retired",
+      "lifecycle_state": "retired",
       "contamination_status": "clean",
       "predecessor_pack_version": "operator-test-pack-0.4.0",
       "manifest_path": "examples/operator_public_fresh_manifest.json",
-      "notes": "Expanded operator hidden fresh pack for contamination-resistant evaluation across broader GTM, finance, and people/org coverage."
+      "successor_pack_version": "operator-fresh-pack-0.5.0",
+      "notes": "Expanded operator hidden fresh pack retired after adding distinct GTM, finance, and people execution variants for broader contamination-resistant operator coverage."
+    },
+    {
+      "effective_date": "2026-03-08",
+      "pack_version": "operator-fresh-pack-0.5.0",
+      "split": "fresh",
+      "visibility": "hidden",
+      "action": "created",
+      "lifecycle_state": "active",
+      "contamination_status": "clean",
+      "predecessor_pack_version": "operator-test-pack-0.5.0",
+      "manifest_path": "examples/operator_public_fresh_manifest.json",
+      "notes": "Expanded operator hidden fresh pack for contamination-resistant evaluation across five GTM slices, five finance slices, and six people/org slices."
     },
     {
       "effective_date": "2026-03-07",

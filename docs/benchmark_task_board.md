@@ -38,23 +38,23 @@ Success targets:
 
 ## In Progress
 
-- `BT-001` benchmark maturity plan
-  - milestone: `v0.9.5`
-  - focus: publish deeper maturity assessment and implementation sequence
-
-- `BT-002` benchmark task system
-  - milestone: `v0.9.5`
-  - focus: establish task ledger and board as execution source of truth
-
-- `BT-003` hidden corpus expansion to `50`
-  - milestone: `v0.9.5`
-  - focus: add at least `7` more hidden `test` scenarios across thin tracks
-
 - `BT-004` strategy pack expansion
   - milestone: `v0.9.5`
   - focus: continue long-horizon additions with balanced track growth after the new scale-finance interaction slice
 
 ## Completed
+
+- `BT-001` benchmark maturity plan
+  - milestone: `v0.9.5`
+  - focus: published deeper maturity assessment and implementation sequence
+
+- `BT-002` benchmark task system
+  - milestone: `v0.9.5`
+  - focus: established the task ledger and board as the execution source of truth
+
+- `BT-003` hidden corpus expansion to `50`
+  - milestone: `v0.9.5`
+  - focus: added seven new hidden `test` scenarios across the operator pack to reach `50` active hidden `test` scenarios benchmark-wide
 
 - `BT-010` scale-finance interaction strategy family
   - milestone: `v0.9.5`
@@ -84,7 +84,7 @@ Success targets:
 
 ## Next up by priority
 
-1. hidden corpus growth in thin tracks
+1. strategy pack depth in product, board, scale, and gtm
 2. calibration execution planning
 3. official evaluation freeze rules
 4. leaderboard operations and contamination workflow

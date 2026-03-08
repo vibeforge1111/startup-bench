@@ -1,7 +1,7 @@
 {
   "suite_version": "0.1.0",
   "benchmark_version": "0.2.0-draft",
-  "scenario_pack_version": "operator-test-pack-0.4.0",
+  "scenario_pack_version": "operator-test-pack-0.5.0",
   "split": "test",
   "scenarios": [
     {
@@ -55,6 +55,48 @@
     {
       "scenario_id": "hidden_people_manager_span_test_001",
       "path": "hidden_people_manager_span_test_scenario.json",
+      "track": "people",
+      "mode": "test"
+    },
+    {
+      "scenario_id": "hidden_gtm_discount_spiral_test_001",
+      "path": "hidden_gtm_discount_spiral_test_scenario.json",
+      "track": "gtm",
+      "mode": "test"
+    },
+    {
+      "scenario_id": "hidden_gtm_partner_backfire_test_001",
+      "path": "hidden_gtm_partner_backfire_test_scenario.json",
+      "track": "gtm",
+      "mode": "test"
+    },
+    {
+      "scenario_id": "hidden_finance_receivables_freeze_test_001",
+      "path": "hidden_finance_receivables_freeze_test_scenario.json",
+      "track": "finance",
+      "mode": "test"
+    },
+    {
+      "scenario_id": "hidden_finance_stepdown_raise_test_001",
+      "path": "hidden_finance_stepdown_raise_test_scenario.json",
+      "track": "finance",
+      "mode": "test"
+    },
+    {
+      "scenario_id": "hidden_people_exec_backfill_test_001",
+      "path": "hidden_people_exec_backfill_test_scenario.json",
+      "track": "people",
+      "mode": "test"
+    },
+    {
+      "scenario_id": "hidden_people_support_burnout_test_001",
+      "path": "hidden_people_support_burnout_test_scenario.json",
+      "track": "people",
+      "mode": "test"
+    },
+    {
+      "scenario_id": "hidden_people_decision_latency_test_001",
+      "path": "hidden_people_decision_latency_test_scenario.json",
       "track": "people",
       "mode": "test"
     }

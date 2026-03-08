@@ -5,7 +5,7 @@
   "milestones": [
     {
       "milestone_id": "v0.9.5",
-      "status": "in_progress",
+      "status": "completed",
       "objective": "Stabilize TheStartupBench as a serious internal benchmark candidate.",
       "success_targets": [
         "hidden test inventory >= 50",
@@ -89,7 +89,20 @@
         "growth is balanced across thin tracks",
         "promotion metadata updated"
       ],
-      "progress_notes": "Current hidden test inventory is 43 active scenarios across strategy, coverage, operator, real-world, and canary packs."
+      "progress_notes": "Current hidden test inventory is 50 active scenarios across strategy, coverage, operator, real-world, and canary packs.",
+      "artifacts": [
+        "examples/private_operator_test_scenario_suite.json",
+        "examples/private_operator_fresh_scenario_suite.json",
+        "examples/operator_public_test_manifest.json",
+        "examples/operator_public_fresh_manifest.json",
+        "examples/hidden_gtm_discount_spiral_test_scenario.json",
+        "examples/hidden_gtm_partner_backfire_test_scenario.json",
+        "examples/hidden_finance_receivables_freeze_test_scenario.json",
+        "examples/hidden_finance_stepdown_raise_test_scenario.json",
+        "examples/hidden_people_exec_backfill_test_scenario.json",
+        "examples/hidden_people_support_burnout_test_scenario.json",
+        "examples/hidden_people_decision_latency_test_scenario.json"
+      ]
     },
     {
       "task_id": "BT-004",
