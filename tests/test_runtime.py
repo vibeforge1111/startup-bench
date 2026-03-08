@@ -116,6 +116,73 @@ class RuntimeTests(unittest.TestCase):
         self.assertEqual(self.session.world_state["product"]["major_incidents_open"], 0)
         self.assertEqual(self.session.world_state["finance"]["monthly_burn_usd"], 217000.0)
 
+    def test_product_launch_updates_growth_revenue_and_support_state(self) -> None:
+        response = execute_tool_call(
+            self.session,
+            {
+                "tool_name": "product.launch",
+                "request_id": "req_launch_001",
+                "arguments": {
+                    "launch_name": "Guided onboarding",
+                    "monthly_revenue_delta_usd": 12000,
+                    "weighted_pipeline_usd_delta": 45000,
+                    "pipeline_count_delta": 1,
+                    "demand_index_delta": 0.05,
+                    "activation_delta": 0.08,
+                    "trust_delta": 0.02,
+                    "support_backlog_delta": 6,
+                    "monthly_burn_change_usd": 9000,
+                },
+            },
+        )
+
+        self.assertTrue(response["ok"])
+        self.assertEqual(self.session.world_state["product"]["launch_count"], 1)
+        self.assertEqual(self.session.world_state["growth"]["launch_count"], 1)
+        self.assertEqual(self.session.world_state["finance"]["monthly_revenue_usd"], 83000.0)
+        self.assertEqual(self.session.world_state["sales"]["weighted_pipeline_usd"], 425000.0)
+        self.assertEqual(self.session.world_state["operations"]["support_backlog"], 6.0)
+        self.assertEqual(self.session.world_state["growth"]["activation_index"], 0.63)
+
+    def test_growth_experiment_tools_track_active_experiments(self) -> None:
+        create = execute_tool_call(
+            self.session,
+            {
+                "tool_name": "growth.experiment.create",
+                "request_id": "req_growth_001",
+                "arguments": {
+                    "experiment_id": "exp_onboarding_001",
+                    "experiment_name": "Lifecycle email experiment",
+                    "channel": "lifecycle_email",
+                    "budget_change_monthly_burn_usd": 4000,
+                    "weighted_pipeline_usd_delta": 25000,
+                    "demand_index_delta": 0.03,
+                    "activation_delta": 0.05,
+                },
+            },
+        )
+
+        self.assertTrue(create["ok"])
+        self.assertEqual(self.session.world_state["growth"]["experiment_count"], 1)
+        self.assertEqual(self.session.world_state["growth"]["active_experiment_count"], 1)
+        self.assertEqual(self.session.world_state["finance"]["monthly_burn_usd"], 209000.0)
+        self.assertEqual(self.session.world_state["sales"]["weighted_pipeline_usd"], 405000.0)
+
+        review = execute_tool_call(
+            self.session,
+            {
+                "tool_name": "growth.experiment.review",
+                "request_id": "req_growth_002",
+                "arguments": {},
+            },
+        )
+
+        self.assertTrue(review["ok"])
+        growth_state = review["result"]["growth_state"]
+        self.assertEqual(growth_state["latest_experiment"], "Lifecycle email experiment")
+        self.assertEqual(growth_state["active_channels"], ["lifecycle_email"])
+        self.assertEqual(growth_state["experiments"][0]["experiment_id"], "exp_onboarding_001")
+
     def test_sales_pipeline_update_changes_pipeline_and_revenue(self) -> None:
         response = execute_tool_call(
             self.session,
@@ -404,6 +471,30 @@ class RuntimeTests(unittest.TestCase):
         self.assertGreater(self.session.world_state["team"]["delivery_capacity_index"], 0.0)
         self.assertEqual(self.session.world_state["finance"]["monthly_burn_usd"], 220000.0)
 
+    def test_people_org_propose_records_pending_change_without_mutating_team_state(self) -> None:
+        response = execute_tool_call(
+            self.session,
+            {
+                "tool_name": "people.org.propose",
+                "request_id": "req_org_proposal_001",
+                "arguments": {
+                    "summary": "Consolidate support and onboarding under one manager.",
+                    "target_function": "customer_ops",
+                    "expected_morale_delta": 0.03,
+                    "expected_bandwidth_load_delta": -0.05,
+                    "expected_monthly_burn_change_usd": 0,
+                },
+            },
+        )
+
+        self.assertTrue(response["ok"])
+        self.assertEqual(self.session.world_state["team"]["org_proposal_count"], 1)
+        self.assertEqual(
+            self.session.world_state["team"]["last_org_proposal"]["summary"],
+            "Consolidate support and onboarding under one manager.",
+        )
+        self.assertNotIn("morale", self.session.world_state["team"])
+
     def test_market_read_returns_competitor_and_segment_state(self) -> None:
         self.session.world_state["market"] = {
             "competitor_pressure": "high",
@@ -429,6 +520,34 @@ class RuntimeTests(unittest.TestCase):
         self.assertEqual(state["demand_index"], 0.71)
         self.assertEqual(state["segment_mix_index"], 0.58)
         self.assertEqual(self.session.world_state["market"]["market_reads_count"], 1)
+
+    def test_metrics_report_includes_growth_summary(self) -> None:
+        execute_tool_call(
+            self.session,
+            {
+                "tool_name": "growth.experiment.create",
+                "request_id": "req_growth_metrics_001",
+                "arguments": {
+                    "experiment_name": "Paid search funnel refresh",
+                    "channel": "paid_search",
+                    "activation_delta": 0.04,
+                },
+            },
+        )
+        response = execute_tool_call(
+            self.session,
+            {
+                "tool_name": "metrics.report",
+                "request_id": "req_metrics_growth_001",
+                "arguments": {},
+            },
+        )
+
+        self.assertTrue(response["ok"])
+        growth_report = response["result"]["report"]["growth"]
+        self.assertEqual(growth_report["experiment_count"], 1)
+        self.assertEqual(growth_report["active_experiment_count"], 1)
+        self.assertEqual(growth_report["latest_experiment"], "Paid search funnel refresh")
 
     def test_sim_advance_applies_market_and_hiring_drift(self) -> None:
         self.session.world_state["team"]["headcount"] = 8

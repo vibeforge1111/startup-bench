@@ -104,6 +104,8 @@ def recalculate_derived_metrics(world_state: dict) -> None:
     team = world_state.setdefault("team", {})
     risk = world_state.setdefault("risk", {})
     market = world_state.setdefault("market", {})
+    product = world_state.setdefault("product", {})
+    growth = world_state.setdefault("growth", {})
 
     cash_usd = float(finance.get("cash_usd", 0))
     restricted_cash = max(0.0, float(finance.get("restricted_cash_usd", 0)))
@@ -181,6 +183,20 @@ def recalculate_derived_metrics(world_state: dict) -> None:
         ),
     )
     customers["health_index"] = round(health_index, 4)
+
+    experiments = growth.get("experiments", [])
+    if not isinstance(experiments, list):
+        experiments = []
+        growth["experiments"] = experiments
+    growth["activation_index"] = round(
+        _clamp(float(growth.get("activation_index", product.get("onboarding_quality", 0.5))), minimum=0.0, maximum=1.0),
+        4,
+    )
+    growth["experiment_count"] = max(int(growth.get("experiment_count", len(experiments))), len(experiments))
+    growth["active_experiment_count"] = sum(
+        1 for experiment in experiments if isinstance(experiment, dict) and experiment.get("status", "active") == "active"
+    )
+    growth["launch_count"] = max(int(growth.get("launch_count", product.get("launch_count", 0))), int(product.get("launch_count", 0)))
 
 
 def initialize_world_state(scenario: dict, *, seed: int) -> dict:

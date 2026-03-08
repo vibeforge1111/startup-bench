@@ -244,9 +244,11 @@ def _apply_weekly_business_drift(session: RuntimeSession, *, weeks: int) -> None
 def _build_metric_report(session: RuntimeSession) -> dict:
     finance = session.world_state.get("finance", {})
     customers = session.world_state.get("customers", {})
+    growth = session.world_state.get("growth", {})
     sales = session.world_state.get("sales", {})
     governance = session.world_state.get("governance", {})
     operations = session.world_state.get("operations", {})
+    product = session.world_state.get("product", {})
     team = session.world_state.get("team", {})
     risk = session.world_state.get("risk", {})
     market = session.world_state.get("market", {})
@@ -304,6 +306,13 @@ def _build_metric_report(session: RuntimeSession) -> dict:
             "pipeline_count": sales.get("pipeline_count"),
             "weighted_pipeline_usd": sales.get("weighted_pipeline_usd"),
             "pricing": sales.get("pricing", {}),
+        },
+        "growth": {
+            "activation_index": growth.get("activation_index"),
+            "experiment_count": growth.get("experiment_count", 0),
+            "active_experiment_count": growth.get("active_experiment_count", 0),
+            "launch_count": growth.get("launch_count", product.get("launch_count", 0)),
+            "latest_experiment": growth.get("latest_experiment"),
         },
         "governance": {
             "board_update_count": governance.get("board_update_count", 0),
@@ -388,6 +397,86 @@ def execute_tool_call(session: RuntimeSession, tool_call: dict) -> dict:
                 "product.onboarding_quality": product["onboarding_quality"],
                 "product.major_incidents_open": product["major_incidents_open"],
                 "finance.monthly_burn_usd": finance.get("monthly_burn_usd"),
+            },
+        )
+
+    if tool_name == "product.launch":
+        product = session.world_state.setdefault("product", {})
+        finance = session.world_state.setdefault("finance", {})
+        customers = session.world_state.setdefault("customers", {})
+        sales = session.world_state.setdefault("sales", {})
+        operations = session.world_state.setdefault("operations", {})
+        market = session.world_state.setdefault("market", {})
+        growth = session.world_state.setdefault("growth", {})
+
+        launch_name = str(arguments.get("launch_name", f"launch_turn_{session.world_state['sim']['current_turn']}"))
+        monthly_revenue_delta_usd = float(arguments.get("monthly_revenue_delta_usd", 0.0))
+        pipeline_count_delta = int(arguments.get("pipeline_count_delta", 0))
+        weighted_pipeline_usd_delta = float(arguments.get("weighted_pipeline_usd_delta", 0.0))
+        demand_index_delta = float(arguments.get("demand_index_delta", 0.0))
+        trust_delta = float(arguments.get("trust_delta", 0.0))
+        onboarding_quality_delta = float(arguments.get("onboarding_quality_delta", 0.0))
+        support_backlog_delta = float(arguments.get("support_backlog_delta", 0.0))
+        monthly_burn_change_usd = float(arguments.get("monthly_burn_change_usd", 0.0))
+        major_incidents_delta = int(arguments.get("major_incidents_delta", 0))
+        activation_delta = float(arguments.get("activation_delta", 0.0))
+
+        apply_operations(
+            session.world_state,
+            [
+                {"op": "increment", "path": "product.launch_count", "value": 1},
+                {"op": "increment", "path": "growth.launch_count", "value": 1},
+                {"op": "increment", "path": "finance.monthly_revenue_usd", "value": monthly_revenue_delta_usd},
+                {"op": "increment", "path": "sales.pipeline_count", "value": pipeline_count_delta},
+                {"op": "clamp", "path": "sales.pipeline_count", "min": 0},
+                {"op": "increment", "path": "sales.weighted_pipeline_usd", "value": weighted_pipeline_usd_delta},
+                {"op": "clamp", "path": "sales.weighted_pipeline_usd", "min": 0.0},
+                {"op": "increment", "path": "market.demand_index", "value": demand_index_delta},
+                {"op": "clamp", "path": "market.demand_index", "min": 0.0, "max": 1.5},
+                {"op": "increment", "path": "customers.trust_score", "value": trust_delta},
+                {"op": "clamp", "path": "customers.trust_score", "min": 0.0, "max": 1.0},
+                {"op": "increment", "path": "product.onboarding_quality", "value": onboarding_quality_delta},
+                {"op": "clamp", "path": "product.onboarding_quality", "min": 0.0, "max": 1.0},
+                {"op": "increment", "path": "operations.support_backlog", "value": support_backlog_delta},
+                {"op": "clamp", "path": "operations.support_backlog", "min": 0.0},
+                {"op": "increment", "path": "finance.monthly_burn_usd", "value": monthly_burn_change_usd},
+                {"op": "increment", "path": "product.major_incidents_open", "value": major_incidents_delta},
+                {"op": "clamp", "path": "product.major_incidents_open", "min": 0},
+                {"op": "increment", "path": "growth.activation_index", "value": activation_delta},
+                {"op": "clamp", "path": "growth.activation_index", "min": 0.0, "max": 1.0},
+            ],
+        )
+        product["last_launch"] = {
+            "launch_name": launch_name,
+            "timestamp": session.world_state["sim"]["current_time"],
+        }
+        finance["monthly_revenue_usd"] = round(float(finance.get("monthly_revenue_usd", 0.0)), 2)
+        finance["monthly_burn_usd"] = round(float(finance.get("monthly_burn_usd", 0.0)), 2)
+        customers["trust_score"] = round(float(customers.get("trust_score", 0.0)), 4)
+        product["onboarding_quality"] = round(float(product.get("onboarding_quality", 0.0)), 4)
+        market["demand_index"] = round(float(market.get("demand_index", 0.0)), 4)
+        growth["activation_index"] = round(float(growth.get("activation_index", 0.0)), 4)
+        recalculate_derived_metrics(session.world_state)
+        return _tool_result(
+            tool_name,
+            request_id,
+            result={
+                "launch_state": {
+                    "launch_name": launch_name,
+                    "launch_count": product.get("launch_count", 0),
+                    "monthly_revenue_usd": finance.get("monthly_revenue_usd"),
+                    "weighted_pipeline_usd": sales.get("weighted_pipeline_usd"),
+                    "support_backlog": operations.get("support_backlog", 0),
+                    "activation_index": growth.get("activation_index", 0.0),
+                }
+            },
+            state_delta_summary={
+                "product.launch_count": product.get("launch_count", 0),
+                "growth.launch_count": growth.get("launch_count", 0),
+                "finance.monthly_revenue_usd": finance.get("monthly_revenue_usd"),
+                "finance.monthly_burn_usd": finance.get("monthly_burn_usd"),
+                "sales.weighted_pipeline_usd": sales.get("weighted_pipeline_usd"),
+                "market.demand_index": market.get("demand_index"),
             },
         )
 
@@ -729,6 +818,28 @@ def execute_tool_call(session: RuntimeSession, tool_call: dict) -> dict:
             },
         )
 
+    if tool_name == "people.org.propose":
+        team = session.world_state.setdefault("team", {})
+        proposal = {
+            "summary": arguments.get("summary", ""),
+            "target_function": arguments.get("target_function"),
+            "expected_morale_delta": float(arguments.get("expected_morale_delta", 0.0)),
+            "expected_bandwidth_load_delta": float(arguments.get("expected_bandwidth_load_delta", 0.0)),
+            "expected_monthly_burn_change_usd": float(arguments.get("expected_monthly_burn_change_usd", 0.0)),
+            "timestamp": session.world_state["sim"]["current_time"],
+        }
+        team["last_org_proposal"] = proposal
+        team["org_proposal_count"] = int(team.get("org_proposal_count", 0)) + 1
+        return _tool_result(
+            tool_name,
+            request_id,
+            result={"proposal": deepcopy(proposal)},
+            state_delta_summary={
+                "team.org_proposal_count": team.get("org_proposal_count", 0),
+                "team.last_org_proposal": "updated",
+            },
+        )
+
     if tool_name == "people.org.adjust":
         team = session.world_state.setdefault("team", {})
         finance = session.world_state.setdefault("finance", {})
@@ -874,6 +985,99 @@ def execute_tool_call(session: RuntimeSession, tool_call: dict) -> dict:
                 "team.bandwidth_load": team.get("bandwidth_load", 0.0),
                 "team.delivery_capacity_index": team.get("delivery_capacity_index", 0.0),
                 "finance.monthly_burn_usd": finance.get("monthly_burn_usd"),
+            },
+        )
+
+    if tool_name == "growth.experiment.create":
+        growth = session.world_state.setdefault("growth", {})
+        finance = session.world_state.setdefault("finance", {})
+        sales = session.world_state.setdefault("sales", {})
+        market = session.world_state.setdefault("market", {})
+        customers = session.world_state.setdefault("customers", {})
+
+        experiments = growth.setdefault("experiments", [])
+        experiment_id = str(arguments.get("experiment_id", f"exp_{len(experiments) + 1:03d}"))
+        experiment_name = str(arguments.get("experiment_name", experiment_id))
+        channel = str(arguments.get("channel", "unassigned"))
+        budget_change_monthly_burn_usd = float(arguments.get("budget_change_monthly_burn_usd", 0.0))
+        monthly_revenue_delta_usd = float(arguments.get("monthly_revenue_delta_usd", 0.0))
+        pipeline_count_delta = int(arguments.get("pipeline_count_delta", 0))
+        weighted_pipeline_usd_delta = float(arguments.get("weighted_pipeline_usd_delta", 0.0))
+        demand_index_delta = float(arguments.get("demand_index_delta", 0.0))
+        trust_delta = float(arguments.get("trust_delta", 0.0))
+        activation_delta = float(arguments.get("activation_delta", 0.0))
+
+        experiment = {
+            "experiment_id": experiment_id,
+            "experiment_name": experiment_name,
+            "channel": channel,
+            "status": "active",
+            "created_at": session.world_state["sim"]["current_time"],
+        }
+        experiments.append(experiment)
+        growth["latest_experiment"] = experiment_name
+        growth["active_channels"] = list(dict.fromkeys([*growth.get("active_channels", []), channel]))
+
+        apply_operations(
+            session.world_state,
+            [
+                {"op": "increment", "path": "growth.experiment_count", "value": 1},
+                {"op": "increment", "path": "finance.monthly_burn_usd", "value": budget_change_monthly_burn_usd},
+                {"op": "increment", "path": "finance.monthly_revenue_usd", "value": monthly_revenue_delta_usd},
+                {"op": "increment", "path": "sales.pipeline_count", "value": pipeline_count_delta},
+                {"op": "clamp", "path": "sales.pipeline_count", "min": 0},
+                {"op": "increment", "path": "sales.weighted_pipeline_usd", "value": weighted_pipeline_usd_delta},
+                {"op": "clamp", "path": "sales.weighted_pipeline_usd", "min": 0.0},
+                {"op": "increment", "path": "market.demand_index", "value": demand_index_delta},
+                {"op": "clamp", "path": "market.demand_index", "min": 0.0, "max": 1.5},
+                {"op": "increment", "path": "customers.trust_score", "value": trust_delta},
+                {"op": "clamp", "path": "customers.trust_score", "min": 0.0, "max": 1.0},
+                {"op": "increment", "path": "growth.activation_index", "value": activation_delta},
+                {"op": "clamp", "path": "growth.activation_index", "min": 0.0, "max": 1.0},
+            ],
+        )
+        finance["monthly_burn_usd"] = round(float(finance.get("monthly_burn_usd", 0.0)), 2)
+        finance["monthly_revenue_usd"] = round(float(finance.get("monthly_revenue_usd", 0.0)), 2)
+        customers["trust_score"] = round(float(customers.get("trust_score", 0.0)), 4)
+        market["demand_index"] = round(float(market.get("demand_index", 0.0)), 4)
+        growth["activation_index"] = round(float(growth.get("activation_index", 0.0)), 4)
+        recalculate_derived_metrics(session.world_state)
+        return _tool_result(
+            tool_name,
+            request_id,
+            result={
+                "growth_state": {
+                    "experiment_id": experiment_id,
+                    "experiment_name": experiment_name,
+                    "active_experiment_count": growth.get("active_experiment_count", 0),
+                    "experiment_count": growth.get("experiment_count", 0),
+                    "activation_index": growth.get("activation_index", 0.0),
+                    "weighted_pipeline_usd": sales.get("weighted_pipeline_usd"),
+                }
+            },
+            state_delta_summary={
+                "growth.experiment_count": growth.get("experiment_count", 0),
+                "growth.active_experiment_count": growth.get("active_experiment_count", 0),
+                "growth.activation_index": growth.get("activation_index", 0.0),
+                "finance.monthly_burn_usd": finance.get("monthly_burn_usd"),
+                "sales.weighted_pipeline_usd": sales.get("weighted_pipeline_usd"),
+            },
+        )
+
+    if tool_name == "growth.experiment.review":
+        growth = session.world_state.setdefault("growth", {})
+        return _tool_result(
+            tool_name,
+            request_id,
+            result={
+                "growth_state": {
+                    "activation_index": growth.get("activation_index", 0.0),
+                    "experiment_count": growth.get("experiment_count", 0),
+                    "active_experiment_count": growth.get("active_experiment_count", 0),
+                    "latest_experiment": growth.get("latest_experiment"),
+                    "experiments": deepcopy(growth.get("experiments", [])),
+                    "active_channels": deepcopy(growth.get("active_channels", [])),
+                }
             },
         )
 
