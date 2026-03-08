@@ -164,3 +164,4 @@ Current execution focus:
 - keep board-communication scoring rubric-bound and minority-weighted, starting with `board.update` completeness against live operating stress
 - extend multi-quarter strategy and sequencing through the dedicated hidden strategy pack rather than diluting it into generic coverage packs
 - keep strategy-pack additions focused on executable delayed-consequence and sequencing tradeoffs such as platform capacity, migration quality, hiring lead time, and renewal timing rather than memo-only strategy prompts
+- extend board/product interaction coverage through truth-telling and launch-sequencing scenarios, not generic “board memo” judging
