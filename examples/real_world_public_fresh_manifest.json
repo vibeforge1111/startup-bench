@@ -1,9 +1,9 @@
 {
   "manifest_version": "0.1.0",
   "benchmark_version": "0.2.0-draft",
-  "scenario_pack_version": "real-world-fresh-pack-0.4.0",
+  "scenario_pack_version": "real-world-fresh-pack-0.5.0",
   "split": "fresh",
-  "scenario_count": 10,
+  "scenario_count": 12,
   "scenarios": [
     {
       "scenario_id": "real_world_airbnb_emergency_financing_fresh_001",
@@ -64,6 +64,18 @@
       "track": "crisis",
       "mode": "fresh",
       "hidden_ref": "fresh_009"
+    },
+    {
+      "scenario_id": "real_world_wework_burn_reset_fresh_001",
+      "track": "board",
+      "mode": "fresh",
+      "hidden_ref": "fresh_010"
+    },
+    {
+      "scenario_id": "real_world_instacart_capacity_surge_fresh_001",
+      "track": "scale",
+      "mode": "fresh",
+      "hidden_ref": "fresh_011"
     }
   ]
 }

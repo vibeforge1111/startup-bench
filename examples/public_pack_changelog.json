@@ -97,24 +97,50 @@
       "pack_version": "real-world-test-pack-0.4.0",
       "split": "test",
       "visibility": "hidden",
-      "action": "created",
-      "lifecycle_state": "active",
+      "action": "retired",
+      "lifecycle_state": "retired",
       "contamination_status": "clean",
       "predecessor_pack_version": "real-world-test-pack-0.3.0",
       "manifest_path": "examples/real_world_public_test_manifest.json",
-      "notes": "Expanded real-world hidden test pack with additional Airbnb demand-shock and Robinhood volatility-outage slices alongside existing finance, board, scale, and crisis coverage."
+      "successor_pack_version": "real-world-test-pack-0.5.0",
+      "notes": "Expanded real-world hidden test pack retired after adding WeWork burn-reset and Instacart capacity-surge hidden variants."
+    },
+    {
+      "effective_date": "2026-03-08",
+      "pack_version": "real-world-test-pack-0.5.0",
+      "split": "test",
+      "visibility": "hidden",
+      "action": "created",
+      "lifecycle_state": "active",
+      "contamination_status": "clean",
+      "predecessor_pack_version": "real-world-test-pack-0.4.0",
+      "manifest_path": "examples/real_world_public_test_manifest.json",
+      "notes": "Expanded real-world hidden test pack with WeWork burn-reset and Instacart capacity-surge slices alongside existing finance, board, scale, and crisis coverage."
     },
     {
       "effective_date": "2026-03-08",
       "pack_version": "real-world-fresh-pack-0.4.0",
       "split": "fresh",
       "visibility": "hidden",
-      "action": "created",
-      "lifecycle_state": "active",
+      "action": "retired",
+      "lifecycle_state": "retired",
       "contamination_status": "clean",
       "predecessor_pack_version": "real-world-test-pack-0.4.0",
       "manifest_path": "examples/real_world_public_fresh_manifest.json",
-      "notes": "Expanded real-world hidden fresh pack for contamination-resistant reporting across Airbnb demand-shock, Robinhood volatility-outage, and the existing finance, scale, and crisis slices."
+      "successor_pack_version": "real-world-fresh-pack-0.5.0",
+      "notes": "Expanded real-world hidden fresh pack retired after adding distinct WeWork burn-reset and Instacart capacity-surge variants."
+    },
+    {
+      "effective_date": "2026-03-08",
+      "pack_version": "real-world-fresh-pack-0.5.0",
+      "split": "fresh",
+      "visibility": "hidden",
+      "action": "created",
+      "lifecycle_state": "active",
+      "contamination_status": "clean",
+      "predecessor_pack_version": "real-world-test-pack-0.5.0",
+      "manifest_path": "examples/real_world_public_fresh_manifest.json",
+      "notes": "Expanded real-world hidden fresh pack for contamination-resistant reporting across WeWork burn-reset, Instacart capacity-surge, and the existing finance, scale, board, and crisis slices."
     },
     {
       "effective_date": "2026-03-07",

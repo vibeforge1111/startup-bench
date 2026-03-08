@@ -1,7 +1,7 @@
 {
   "suite_version": "0.1.0",
   "benchmark_version": "0.2.0-draft",
-  "scenario_pack_version": "real-world-test-pack-0.4.0",
+  "scenario_pack_version": "real-world-test-pack-0.5.0",
   "split": "test",
   "scenarios": [
     {
@@ -62,6 +62,18 @@
       "scenario_id": "real_world_robinhood_volatility_outage_test_001",
       "path": "real_world_robinhood_volatility_outage_test_scenario.json",
       "track": "crisis",
+      "mode": "test"
+    },
+    {
+      "scenario_id": "real_world_wework_burn_reset_test_001",
+      "path": "real_world_wework_burn_reset_test_scenario.json",
+      "track": "board",
+      "mode": "test"
+    },
+    {
+      "scenario_id": "real_world_instacart_capacity_surge_test_001",
+      "path": "real_world_instacart_capacity_surge_test_scenario.json",
+      "track": "scale",
       "mode": "test"
     }
   ]

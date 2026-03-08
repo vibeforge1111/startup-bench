@@ -18,7 +18,7 @@ This document records the active pack set for the `v0.9-precalibration` freeze.
 - `strategy-test-pack-0.9.0`
   - public manifest: [strategy_public_test_manifest.json](/C:/Users/USER/Desktop/startup-bench/examples/strategy_public_test_manifest.json)
   - focus: board, product, scale, GTM, and finance-interaction long-horizon judgment
-- `real-world-test-pack-0.4.0`
+- `real-world-test-pack-0.5.0`
   - public manifest: [real_world_public_test_manifest.json](/C:/Users/USER/Desktop/startup-bench/examples/real_world_public_test_manifest.json)
   - focus: crisis and board scenarios derived from documented startup/company events
 
@@ -28,7 +28,7 @@ This document records the active pack set for the `v0.9-precalibration` freeze.
 - `operator-fresh-pack-0.6.0`
 - `coverage-fresh-pack-0.10.0`
 - `strategy-fresh-pack-0.9.0`
-- `real-world-fresh-pack-0.4.0`
+- `real-world-fresh-pack-0.5.0`
 
 Fresh pack details and retirements are tracked in [pack_lifecycle_changelog.md](/C:/Users/USER/Desktop/startup-bench/docs/pack_lifecycle_changelog.md).
 

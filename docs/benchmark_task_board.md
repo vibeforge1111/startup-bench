@@ -44,7 +44,7 @@ Success targets:
 
 - `BT-015` hidden corpus expansion to `75`
   - milestone: `v0.10.0`
-  - focus: continue balanced hidden-pack growth from `65` toward `75` while keeping calibration, canary, and pack-rotation discipline intact
+  - focus: continue balanced hidden-pack growth from `67` toward `75` while keeping calibration, canary, and pack-rotation discipline intact
 
 ## Completed
 
@@ -103,6 +103,10 @@ Success targets:
 - `BT-017` canary depth batch 002
   - milestone: `v0.10.0`
   - focus: added launch-surge and experiment-vanity exploit traps; canary hidden `test` inventory is now `6` and benchmark-wide hidden `test` inventory is `65`
+
+- `BT-018` real-world depth batch 002
+  - milestone: `v0.10.0`
+  - focus: added WeWork burn-reset and Instacart capacity-surge hidden variants; real-world hidden `test` inventory is now `12` and benchmark-wide hidden `test` inventory is `67`
 
 ## Ready
 

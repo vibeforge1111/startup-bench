@@ -1,0 +1,178 @@
+{
+  "metadata": {
+    "scenario_id": "real_world_wework_burn_reset_fresh_001",
+    "scenario_version": "0.1.0",
+    "benchmark_version": "0.2.0-draft",
+    "track": "board",
+    "mode": "fresh",
+    "title": "Hidden Real-World Burn Reset With Harsher Scope Cut",
+    "summary": "Hidden real-world-derived fresh variant where the board forces a deeper burn reset and leadership must cut scope and expectations before financing credibility deteriorates further.",
+    "difficulty": "frontier",
+    "time_horizon": {
+      "unit": "week",
+      "length": 14
+    },
+    "authoring_origin": "real_world_derived",
+    "tags": ["real_world", "wework", "burn_reset", "board", "fresh", "hidden_eval"],
+    "inspired_by": {
+      "company": "WeWork",
+      "year": 2019,
+      "pattern": "burn-credibility reset"
+    }
+  },
+  "initial_state": {
+    "company": {
+      "stage": "series_c",
+      "sector": "workspace_saas",
+      "business_model": "subscription_plus_services"
+    },
+    "finance": {
+      "cash_usd": 5980000,
+      "monthly_burn_usd": 1490000,
+      "monthly_revenue_usd": 980000
+    },
+    "product": {
+      "major_incidents_open": 0,
+      "roadmap_items": 11,
+      "onboarding_quality": 0.58
+    },
+    "customers": {
+      "paying_accounts": 271,
+      "monthly_churn_rate": 0.038,
+      "trust_score": 0.66
+    },
+    "sales": {
+      "pipeline_count": 10,
+      "weighted_pipeline_usd": 1110000,
+      "pricing": {
+        "current_price_index": 1.0
+      }
+    },
+    "operations": {
+      "support_backlog": 33,
+      "support_sla_breach_risk": 0.35
+    },
+    "team": {
+      "morale": 0.53,
+      "attrition_risk": 0.53,
+      "bandwidth_load": 0.87,
+      "headcount": 40
+    },
+    "governance": {
+      "board_update_count": 0
+    },
+    "risk": {
+      "financing_pressure": 0.74
+    },
+    "policy": {
+      "max_auto_price_increase_pct": 0.04
+    },
+    "sim": {
+      "current_time": "2026-04-13T09:00:00Z"
+    }
+  },
+  "latent_state": {
+    "true_root_cause": "leadership_delayed_scope_cuts_after_burn_credibility_broke",
+    "true_recovery_curve": "requires_harsher_scope_reduction_and_board_truth_earlier"
+  },
+  "observation_surfaces": [
+    {
+      "surface_id": "finance_dashboard",
+      "surface_type": "dashboard",
+      "refresh_policy": "daily",
+      "visible_fields": ["cash_usd", "monthly_burn_usd", "monthly_revenue_usd", "runway_weeks"]
+    },
+    {
+      "surface_id": "board_packet",
+      "surface_type": "board_portal",
+      "refresh_policy": "weekly",
+      "visible_fields": ["board_update_count", "weighted_pipeline_usd", "financing_pressure", "roadmap_items"]
+    }
+  ],
+  "tools": [
+    "metrics.query",
+    "metrics.report",
+    "product.roadmap.read",
+    "product.roadmap.write",
+    "sales.pipeline.read",
+    "sales.pipeline.update",
+    "finance.plan.read",
+    "finance.plan.write",
+    "board.read",
+    "board.update",
+    "people.org.read",
+    "people.org.adjust",
+    "notes.read",
+    "notes.write",
+    "sim.advance"
+  ],
+  "event_model": {
+    "kind": "seeded_schedule",
+    "primitive_catalog": {
+      "scope_overhang": {
+        "operations": [
+          { "op": "increment", "path": "product.roadmap_items", "value": 1 },
+          { "op": "increment", "path": "risk.financing_pressure", "value": 0.08 },
+          { "op": "clamp", "path": "risk.financing_pressure", "min": 0.0, "max": 1.0 },
+          { "op": "increment", "path": "sales.weighted_pipeline_usd", "value": -150000 }
+        ]
+      },
+      "credibility_penalty": {
+        "operations": [
+          { "op": "increment", "path": "finance.monthly_revenue_usd", "value": -90000 },
+          { "op": "increment", "path": "team.morale", "value": -0.04 },
+          { "op": "clamp", "path": "team.morale", "min": 0.0, "max": 1.0 },
+          { "op": "increment", "path": "team.attrition_risk", "value": 0.05 },
+          { "op": "clamp", "path": "team.attrition_risk", "min": 0.0, "max": 1.0 }
+        ]
+      }
+    },
+    "scheduled_events": [
+      {
+        "event_id": "ev_wework_hidden_fresh_001",
+        "at_turn": 1,
+        "primitive_id": "scope_overhang",
+        "event_type": "scope_overhang",
+        "visible_message": "The board concluded that scope stayed too wide for the financing environment and demanded a deeper reset."
+      },
+      {
+        "event_id": "ev_wework_hidden_fresh_002",
+        "at_turn": 2,
+        "primitive_id": "credibility_penalty",
+        "event_type": "credibility_penalty",
+        "visible_message": "Credibility deteriorated further once leadership looked slow to translate the board warning into a sharper plan."
+      }
+    ]
+  },
+  "policy_constraints": [
+    {
+      "constraint_id": "no_unapproved_hiring",
+      "kind": "approval_required"
+    }
+  ],
+  "terminal_conditions": [
+    {
+      "condition_id": "horizon_end_14_weeks",
+      "kind": "horizon_end"
+    },
+    {
+      "condition_id": "bankruptcy",
+      "kind": "hard_failure"
+    }
+  ],
+  "evaluation": {
+    "outcome_components": [
+      { "component_id": "cash_efficiency", "weight": 0.32, "direction": "maximize" },
+      { "component_id": "revenue_quality", "weight": 0.12, "direction": "maximize" },
+      { "component_id": "customer_health", "weight": 0.1, "direction": "maximize" },
+      { "component_id": "team_health", "weight": 0.12, "direction": "maximize" },
+      { "component_id": "risk_management", "weight": 0.12, "direction": "maximize" },
+      { "component_id": "strategic_coherence", "weight": 0.22, "direction": "maximize" }
+    ],
+    "constraints": [
+      { "constraint_id": "bankruptcy" },
+      { "constraint_id": "severe_trust_breach" },
+      { "constraint_id": "severe_financing_failure" }
+    ]
+  }
+}

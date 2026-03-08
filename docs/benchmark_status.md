@@ -267,7 +267,7 @@ Completed real-world-derived scenario pack:
 
 Completed hidden real-world test pack:
 
-- `10` hidden test scenarios with non-dev ids and altered operating conditions
+- `12` hidden test scenarios with non-dev ids and altered operating conditions
 - public redacted manifest in [real_world_public_test_manifest.json](/C:/Users/USER/Desktop/startup-bench/examples/real_world_public_test_manifest.json)
 - current hidden pack coverage:
   - emergency financing
@@ -280,10 +280,12 @@ Completed hidden real-world test pack:
   - peak readiness under lower headroom
   - demand shock under board-facing burn reset
   - volatility outage under trust recovery pressure
+  - burn reset under board credibility loss
+  - fulfillment capacity surge under service strain
 
 Completed hidden real-world fresh pack:
 
-- `10` fresh hidden scenarios with distinct scenario ids and distinct scenario files from the hidden `test` pack
+- `12` fresh hidden scenarios with distinct scenario ids and distinct scenario files from the hidden `test` pack
 - public redacted manifest in [real_world_public_fresh_manifest.json](/C:/Users/USER/Desktop/startup-bench/examples/real_world_public_fresh_manifest.json)
 - current hidden fresh pack coverage:
   - bridge financing with harsher board terms
@@ -296,6 +298,8 @@ Completed hidden real-world fresh pack:
   - peak readiness with support spike and fatigue
   - demand freeze with refund-heavy revenue drag
   - volatility outage with renewed customer trust collapse
+  - burn reset with harsher scope reduction
+  - fulfillment surge with faster trust aftershock
 
 Completed hidden operator breadth packs:
 

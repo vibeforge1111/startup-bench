@@ -368,7 +368,7 @@
         "growth is balanced across thin tracks",
         "promotion metadata and governance docs are updated"
       ],
-      "progress_notes": "Active hidden test inventory is now 65 after the canary hidden pack grew to 6 scenarios via launch-surge and experiment-vanity exploit-trap families."
+      "progress_notes": "Active hidden test inventory is now 67 after the real-world hidden pack grew to 12 scenarios via WeWork burn-reset and Instacart capacity-surge families."
     },
     {
       "task_id": "BT-016",
@@ -409,6 +409,32 @@
         "examples/private_canary_fresh_scenario_suite.json",
         "examples/canary_public_test_manifest.json",
         "examples/canary_public_fresh_manifest.json"
+      ]
+    },
+    {
+      "task_id": "BT-018",
+      "title": "Add real-world depth batch 002",
+      "workstream": "corpus-scale",
+      "milestone_id": "v0.10.0",
+      "priority": "high",
+      "status": "completed",
+      "benchmark_risk": "medium",
+      "owner": "core-benchmark",
+      "completion_criteria": [
+        "at least 2 new hidden real-world scenarios exist",
+        "matching fresh variants exist",
+        "real-world suite and manifests are updated"
+      ],
+      "progress_notes": "The real-world pack now includes WeWork burn-reset and Instacart capacity-surge hidden variants, bringing active real-world hidden test inventory to 12 and benchmark-wide hidden test inventory to 67.",
+      "artifacts": [
+        "examples/real_world_wework_burn_reset_test_scenario.json",
+        "examples/real_world_wework_burn_reset_fresh_scenario.json",
+        "examples/real_world_instacart_capacity_surge_test_scenario.json",
+        "examples/real_world_instacart_capacity_surge_fresh_scenario.json",
+        "examples/private_real_world_test_scenario_suite.json",
+        "examples/private_real_world_fresh_scenario_suite.json",
+        "examples/real_world_public_test_manifest.json",
+        "examples/real_world_public_fresh_manifest.json"
       ]
     }
   ]
