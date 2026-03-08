@@ -115,12 +115,15 @@ Completed:
   - pricing changes
   - market and competitor research
   - product roadmap changes
+  - product launch actions
+  - growth experiment creation and review
   - board updates
   - note taking
   - incident reading/response
   - support backlog handling
   - legal/compliance response
   - hiring funnel and capacity updates
+  - org proposal capture
   - people/org adjustment
   - time advancement
 

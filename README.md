@@ -17,7 +17,7 @@
        +-----------+     +-----------+     +-----------+
             |                  |                 |
             v                  v                 v
-       9 scenarios        27 tools         4 dimensions
+       9 scenarios        32 tools         4 dimensions
        4 difficulty      board comms      cash efficiency
        hidden packs      hiring/firing    revenue quality
        real-world        fundraising      customer health
@@ -100,16 +100,17 @@ python -m thestartupbench run-script \
 
 ## Tools
 
-The agent interacts with the simulated startup through 27 tools across 8 domains:
+The agent interacts with the simulated startup through 32 tools across 9 domains:
 
 | Domain | Tools | What They Do |
 |---|---|---|
 | **Metrics** | `metrics.query`, `metrics.report` | Read current state and KPIs |
-| **Product** | `product.roadmap.read`, `product.roadmap.write` | Ship features, improve quality, resolve incidents |
+| **Product** | `product.roadmap.read`, `product.roadmap.write`, `product.launch` | Ship features, improve quality, resolve incidents, and launch product changes |
+| **Growth** | `growth.experiment.create`, `growth.experiment.review` | Run and inspect bounded growth and activation experiments |
 | **Sales** | `sales.pipeline.read`, `sales.pipeline.update`, `sales.pricing.propose` | Manage deals and pricing |
 | **Finance** | `finance.plan.read/write`, `finance.treasury.read/rebalance`, `finance.raise.propose` | Burn control, treasury, fundraising |
 | **Ops** | `ops.incident.read/respond`, `ops.support.read/resolve` | Incident response and support backlog |
-| **People** | `people.hiring.read/update`, `people.org.read/adjust` | Hiring and org changes |
+| **People** | `people.hiring.read/update`, `people.org.propose`, `people.org.read/adjust` | Hiring actions, org proposals, and org changes |
 | **Governance** | `board.read`, `board.update`, `legal.compliance.read/respond` | Board comms and compliance |
 | **General** | `research.market.read`, `notes.read/write`, `sim.advance` | Market intel, notes, advance time |
 
