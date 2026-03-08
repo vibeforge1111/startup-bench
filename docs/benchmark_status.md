@@ -27,6 +27,7 @@ TheStartupBench is no longer just an RFC. It now has:
 - synthetic reviewer panel guidance and fillable JSON template for LLM-based shadow review
 - model-review prompt bundle export and raw model-review import for synthetic panels
 - a tracked pre-human hardening plan in [pre_human_calibration_execution_plan.md](/C:/Users/USER/Desktop/startup-bench/docs/pre_human_calibration_execution_plan.md)
+- a coverage expansion policy in [coverage_expansion_policy.md](/C:/Users/USER/Desktop/startup-bench/docs/coverage_expansion_policy.md) to keep future breadth growth aligned with benchmark standards
 - a known-issues ledger, evaluator adjudication log, and pre-freeze checklist for benchmark governance
 - CI for tests, validation, and smoke suites
 - unit tests and executable smoke paths
