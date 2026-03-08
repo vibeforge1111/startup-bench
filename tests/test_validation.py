@@ -381,6 +381,14 @@ class ValidationTests(unittest.TestCase):
         self.assertTrue(result.ok)
         self.assertEqual(result.issues, [])
 
+    def test_leaderboard_governance_pack_example_validates(self) -> None:
+        result = validate_artifact_file(
+            artifact_type="leaderboard-governance-pack",
+            path=REPO_ROOT / "examples" / "leaderboard_governance_pack_v0_9_0.json",
+        )
+        self.assertTrue(result.ok)
+        self.assertEqual(result.issues, [])
+
     def test_run_manifest_example_validates(self) -> None:
         result = validate_artifact_file(
             artifact_type="run-manifest",
