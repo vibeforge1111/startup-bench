@@ -480,6 +480,56 @@ def _score_customer_comms_plan(
     }
 
 
+def _extract_hiring_update_arguments(turns: list[dict], *, start_turn_index: int = 0) -> list[dict[str, Any]]:
+    updates: list[dict[str, Any]] = []
+    for index, turn in enumerate(turns):
+        if index < start_turn_index:
+            continue
+        for action in turn.get("actions", []):
+            if action.get("tool_name") != "people.hiring.update":
+                continue
+            arguments = action.get("arguments", {})
+            if isinstance(arguments, dict):
+                updates.append(arguments)
+            else:
+                updates.append({})
+    return updates
+
+
+def _score_hiring_plan(
+    plan: dict[str, Any] | None,
+    *,
+    required_fields: set[str],
+) -> dict[str, Any]:
+    if not plan:
+        return {
+            "has_plan": False,
+            "covered_required_fields": [],
+            "missing_required_fields": sorted(required_fields),
+        }
+
+    covered_required_fields: list[str] = []
+    for field in sorted(required_fields):
+        value = plan.get(field)
+        if field in {"summary", "owner", "hiring_pace", "risk_guardrail"} and isinstance(value, str) and value.strip():
+            covered_required_fields.append(field)
+        elif field == "priority_roles" and isinstance(value, list) and any(
+            isinstance(item, str) and item.strip() for item in value
+        ):
+            covered_required_fields.append(field)
+        elif field == "success_metrics" and isinstance(value, list) and any(
+            isinstance(item, str) and item.strip() for item in value
+        ):
+            covered_required_fields.append(field)
+
+    missing_required_fields = [field for field in sorted(required_fields) if field not in covered_required_fields]
+    return {
+        "has_plan": True,
+        "covered_required_fields": covered_required_fields,
+        "missing_required_fields": missing_required_fields,
+    }
+
+
 def _behavioral_penalty(
     *,
     world_state: dict,
@@ -628,6 +678,26 @@ def _behavioral_penalty(
         financing_pressure = float(world_state.get("risk", {}).get("financing_pressure", 0.0))
         unresolved_hiring_pressure = open_roles > 0 and financing_pressure >= 0.55
         no_response = hiring_response_count == 0 and finance_response_count == 0
+        required_hiring_plan_fields: set[str] = set()
+        if hiring_response_count > 0:
+            required_hiring_plan_fields.update({"summary", "priority_roles", "owner"})
+            if soft_demand_alert_turn_count >= 3 or demand_decline >= 0.03 or pipeline_decline_ratio >= 0.2:
+                required_hiring_plan_fields.add("success_metrics")
+            if financing_pressure >= 0.55:
+                required_hiring_plan_fields.update({"hiring_pace", "risk_guardrail"})
+
+        relevant_hiring_updates = _extract_hiring_update_arguments(turns)
+        latest_relevant_hiring_update = relevant_hiring_updates[-1] if relevant_hiring_updates else None
+        latest_hiring_plan = None
+        if latest_relevant_hiring_update is not None:
+            candidate_plan = latest_relevant_hiring_update.get("hiring_plan")
+            if isinstance(candidate_plan, dict):
+                latest_hiring_plan = candidate_plan
+        latest_hiring_plan_quality = _score_hiring_plan(
+            latest_hiring_plan,
+            required_fields=required_hiring_plan_fields,
+        )
+        hiring_plan_quality_penalty = 0.0
 
         penalty = 0.0
         if soft_demand_alert_turn_count >= 3 and unresolved_hiring_pressure and hiring_response_count == 0:
@@ -638,6 +708,16 @@ def _behavioral_penalty(
             penalty += 0.02
         if rigid_loop_penalty_applied and no_response and soft_demand_alert_turn_count >= 3:
             penalty += 0.01
+        if hiring_response_count > 0 and not latest_hiring_plan_quality["has_plan"]:
+            hiring_plan_quality_penalty += 0.015
+        if required_hiring_plan_fields and latest_hiring_plan_quality["has_plan"]:
+            covered_required_fields = len(latest_hiring_plan_quality["covered_required_fields"])
+            if covered_required_fields == 0:
+                hiring_plan_quality_penalty += 0.02
+            elif covered_required_fields < len(required_hiring_plan_fields):
+                hiring_plan_quality_penalty += 0.01
+
+        penalty += hiring_plan_quality_penalty
 
         penalty = _round_score(penalty)
         return penalty, {
@@ -653,6 +733,11 @@ def _behavioral_penalty(
             "hiring_response_count": hiring_response_count,
             "finance_response_count": finance_response_count,
             "unresolved_hiring_pressure": unresolved_hiring_pressure,
+            "hiring_plan_quality_penalty": _round_score(hiring_plan_quality_penalty),
+            "required_hiring_plan_fields": sorted(required_hiring_plan_fields),
+            "latest_hiring_plan_has_plan": latest_hiring_plan_quality["has_plan"],
+            "latest_hiring_plan_covered_required_fields": latest_hiring_plan_quality["covered_required_fields"],
+            "latest_hiring_plan_missing_required_fields": latest_hiring_plan_quality["missing_required_fields"],
             "rigid_loop_penalty_applied": rigid_loop_penalty_applied,
         }
 
@@ -979,6 +1064,11 @@ def _behavioral_penalty(
         "hiring_response_count": 0,
         "finance_response_count": 0,
         "unresolved_hiring_pressure": False,
+        "hiring_plan_quality_penalty": 0.0,
+        "required_hiring_plan_fields": [],
+        "latest_hiring_plan_has_plan": False,
+        "latest_hiring_plan_covered_required_fields": [],
+        "latest_hiring_plan_missing_required_fields": [],
         "trust_recovery": 0.0,
         "product_response_count": 0,
         "customer_comms_quality_penalty": 0.0,
@@ -1215,7 +1305,7 @@ def evaluate_dry_run(*, scenario: dict, world_state: dict, trace_evidence: dict[
     evaluator_results = [
         EvaluatorResult(
             evaluator_id="tsb_programmatic_outcome_v1",
-            evaluator_version="0.1.2",
+            evaluator_version="0.1.3",
             status="ok",
             outputs={
                 "component_scores": component_scores,

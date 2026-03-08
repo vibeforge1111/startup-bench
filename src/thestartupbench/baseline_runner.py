@@ -205,6 +205,51 @@ def _incident_customer_comms_plan(session: RuntimeSession) -> dict:
     }
 
 
+def _hiring_plan_payload(session: RuntimeSession) -> dict:
+    team = session.world_state.get("team", {})
+    hiring = team.get("hiring", {})
+    operations = session.world_state.get("operations", {})
+    risk = session.world_state.get("risk", {})
+    market = session.world_state.get("market", {})
+
+    open_roles = int(hiring.get("open_roles", team.get("open_roles", 0)))
+    critical_roles_open = int(hiring.get("critical_roles_open", 0))
+    bandwidth_load = float(team.get("bandwidth_load", 0.0))
+    financing_pressure = float(risk.get("financing_pressure", 0.0))
+    demand_index = float(market.get("demand_index", 1.0))
+    support_backlog = float(operations.get("support_backlog", 0.0))
+
+    summary = "Prioritize the most leveraged roles first, keep hiring pace tied to delivery relief, and avoid opening more commitments than the company can fund."
+    priority_roles = ["customer_ops_lead", "senior_engineer"]
+    owner = "vp_ops"
+    success_metrics = ["time_to_fill_under_8_weeks", "delivery_capacity_index_up", "support_backlog_down"]
+    hiring_pace = "stage sourcing first, then move offers only on the top one or two roles"
+    risk_guardrail = "do not add new noncritical roles until delivery capacity and cash visibility improve"
+
+    if critical_roles_open > 1 or support_backlog >= 38:
+        priority_roles = ["customer_ops_lead", "support_manager", "senior_engineer"]
+        owner = "head_of_customer_ops"
+    elif demand_index < 0.76 or financing_pressure >= 0.55:
+        priority_roles = ["senior_engineer"]
+        owner = "ceo"
+        success_metrics = ["critical_role_filled", "bandwidth_load_down", "runway_weeks_stable"]
+        hiring_pace = "advance one critical role at a time and defer broader expansion"
+        risk_guardrail = "freeze discretionary hiring until demand and financing signals recover"
+    elif bandwidth_load > 0.9:
+        priority_roles = ["product_engineer", "customer_ops_lead"]
+        owner = "vp_product"
+
+    return {
+        "summary": summary,
+        "priority_roles": priority_roles,
+        "owner": owner,
+        "success_metrics": success_metrics,
+        "hiring_pace": hiring_pace,
+        "risk_guardrail": risk_guardrail,
+        "open_roles": open_roles,
+    }
+
+
 def _market_launch_payload(session: RuntimeSession) -> dict:
     product = session.world_state.get("product", {})
     customers = session.world_state.get("customers", {})
@@ -579,6 +624,7 @@ def _heuristic_resilient_actions(session: RuntimeSession, *, turn_index: int) ->
                     "bandwidth_load_delta": -0.06 if int(hiring.get("offers_out", 0)) >= 1 else -0.01,
                     "support_backlog_delta": -4 if int(hiring.get("offers_out", 0)) >= 1 else 0,
                     "onboarding_quality_delta": 0.015 if int(hiring.get("offers_out", 0)) >= 1 else 0.0,
+                    "hiring_plan": _hiring_plan_payload(session),
                 },
             }
         )
@@ -830,6 +876,7 @@ def _heuristic_market_aware_actions(session: RuntimeSession, *, turn_index: int)
                     "bandwidth_load_delta": -0.05 if int(hiring.get("offers_out", 0)) >= 1 else -0.01,
                     "support_backlog_delta": -3 if int(hiring.get("offers_out", 0)) >= 1 else 0,
                     "onboarding_quality_delta": 0.012 if int(hiring.get("offers_out", 0)) >= 1 else 0.0,
+                    "hiring_plan": _hiring_plan_payload(session),
                 },
             }
         )
@@ -1223,6 +1270,7 @@ def _heuristic_governance_actions(session: RuntimeSession, *, turn_index: int) -
                     "bandwidth_load_delta": -0.05 if int(hiring.get("offers_out", 0)) >= 1 else -0.01,
                     "support_backlog_delta": -4 if int(hiring.get("offers_out", 0)) >= 1 else 0,
                     "onboarding_quality_delta": 0.015 if int(hiring.get("offers_out", 0)) >= 1 else 0.0,
+                    "hiring_plan": _hiring_plan_payload(session),
                 },
             }
         )
@@ -1457,6 +1505,7 @@ def _heuristic_long_horizon_actions(session: RuntimeSession, *, turn_index: int)
                     "bandwidth_load_delta": -0.06 if int(hiring.get("offers_out", 0)) >= 1 else -0.01,
                     "support_backlog_delta": -4 if int(hiring.get("offers_out", 0)) >= 1 else 0,
                     "onboarding_quality_delta": 0.015 if int(hiring.get("offers_out", 0)) >= 1 else 0.0,
+                    "hiring_plan": _hiring_plan_payload(session),
                 },
             }
         )

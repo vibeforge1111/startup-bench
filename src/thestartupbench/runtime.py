@@ -933,6 +933,7 @@ def execute_tool_call(session: RuntimeSession, tool_call: dict) -> dict:
         bandwidth_delta = float(arguments.get("bandwidth_load_delta", -0.05 * accepted_hires))
         support_backlog_delta = float(arguments.get("support_backlog_delta", -3 * accepted_hires))
         onboarding_delta = float(arguments.get("onboarding_quality_delta", 0.015 * accepted_hires))
+        hiring_plan = arguments.get("hiring_plan")
 
         apply_operations(
             session.world_state,
@@ -967,6 +968,8 @@ def execute_tool_call(session: RuntimeSession, tool_call: dict) -> dict:
         team["attrition_risk"] = round(float(team.get("attrition_risk", 0.0)), 4)
         team["bandwidth_load"] = round(float(team.get("bandwidth_load", 0.0)), 4)
         product["onboarding_quality"] = round(float(product.get("onboarding_quality", 0.0)), 4)
+        if hiring_plan is not None:
+            hiring["last_hiring_plan"] = hiring_plan
         recalculate_derived_metrics(session.world_state)
         return _tool_result(
             tool_name,
@@ -981,6 +984,7 @@ def execute_tool_call(session: RuntimeSession, tool_call: dict) -> dict:
                     "offers_out": hiring.get("offers_out", 0),
                     "hiring_capacity_index": hiring.get("hiring_capacity_index", 0.0),
                     "delivery_capacity_index": team.get("delivery_capacity_index", 0.0),
+                    "last_hiring_plan": hiring.get("last_hiring_plan"),
                 }
             },
             state_delta_summary={
@@ -990,6 +994,7 @@ def execute_tool_call(session: RuntimeSession, tool_call: dict) -> dict:
                 "team.bandwidth_load": team.get("bandwidth_load", 0.0),
                 "team.delivery_capacity_index": team.get("delivery_capacity_index", 0.0),
                 "finance.monthly_burn_usd": finance.get("monthly_burn_usd"),
+                "team.hiring.last_hiring_plan": "updated" if hiring_plan is not None else "unchanged",
             },
         )
 
