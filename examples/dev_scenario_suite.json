@@ -1,7 +1,7 @@
 {
   "suite_version": "0.1.0",
   "benchmark_version": "0.2.0-draft",
-  "scenario_pack_version": "dev-pack-0.2.0",
+  "scenario_pack_version": "dev-pack-0.3.0",
   "split": "dev",
   "scenarios": [
     {
@@ -37,6 +37,12 @@
     {
       "scenario_id": "gtm_channel_mix_reset_001",
       "path": "minimal_gtm_scenario.json",
+      "track": "gtm",
+      "mode": "dev"
+    },
+    {
+      "scenario_id": "gtm_launch_distribution_001",
+      "path": "minimal_launch_distribution_scenario.json",
       "track": "gtm",
       "mode": "dev"
     },

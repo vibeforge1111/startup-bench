@@ -1,7 +1,7 @@
 {
   "suite_version": "0.1.0",
   "benchmark_version": "0.2.0-draft",
-  "scenario_pack_version": "coverage-test-pack-0.2.0",
+  "scenario_pack_version": "coverage-test-pack-0.3.0",
   "split": "test",
   "scenarios": [
     {
@@ -32,6 +32,12 @@
       "scenario_id": "hidden_people_exec_gap_test_001",
       "path": "hidden_people_exec_gap_test_scenario.json",
       "track": "people",
+      "mode": "test"
+    },
+    {
+      "scenario_id": "hidden_launch_distribution_test_001",
+      "path": "hidden_launch_distribution_test_scenario.json",
+      "track": "gtm",
       "mode": "test"
     }
   ]

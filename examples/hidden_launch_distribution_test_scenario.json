@@ -1,0 +1,200 @@
+{
+  "metadata": {
+    "scenario_id": "hidden_launch_distribution_test_001",
+    "scenario_version": "0.1.0",
+    "benchmark_version": "0.2.0-draft",
+    "track": "gtm",
+    "mode": "test",
+    "title": "Hidden Launch Distribution Misfire",
+    "summary": "A hidden GTM scenario where partner demand and launch urgency are real, but onboarding quality and support readiness are too thin for a broad rollout. The operator must sequence launch scope and channel experiments instead of scaling distribution on optics.",
+    "difficulty": "hard",
+    "time_horizon": {
+      "unit": "week",
+      "length": 15
+    },
+    "authoring_origin": "expert_authored",
+    "tags": ["gtm", "hidden_eval", "launch", "distribution", "support"]
+  },
+  "initial_state": {
+    "company": {
+      "stage": "series_a",
+      "sector": "b2b_saas",
+      "business_model": "subscription"
+    },
+    "finance": {
+      "cash_usd": 2780000,
+      "monthly_burn_usd": 372000,
+      "monthly_revenue_usd": 232000
+    },
+    "product": {
+      "major_incidents_open": 0,
+      "roadmap_items": 8,
+      "onboarding_quality": 0.56
+    },
+    "customers": {
+      "paying_accounts": 136,
+      "monthly_churn_rate": 0.032,
+      "trust_score": 0.66
+    },
+    "growth": {
+      "activation_index": 0.45,
+      "active_channels": ["partner_referrals", "webinars"]
+    },
+    "sales": {
+      "pipeline_count": 12,
+      "weighted_pipeline_usd": 884000,
+      "pricing": {
+        "current_price_index": 1.0
+      }
+    },
+    "operations": {
+      "support_backlog": 46,
+      "support_sla_breach_risk": 0.43
+    },
+    "team": {
+      "headcount": 16,
+      "morale": 0.59,
+      "attrition_risk": 0.44,
+      "bandwidth_load": 0.84,
+      "hiring": {
+        "open_roles": 2,
+        "critical_roles_open": 1,
+        "sourced_candidates": 4,
+        "onsite_candidates": 1,
+        "offers_out": 0,
+        "time_to_fill_weeks": 7
+      }
+    },
+    "market": {
+      "competitor_pressure": "moderate",
+      "competitor_pressure_index": 0.58,
+      "pricing_pressure_index": 0.39,
+      "demand_index": 0.82,
+      "latest_market_note": "Partners are asking to push the launch harder, but reference buyers are probing onboarding and support readiness."
+    },
+    "governance": {
+      "board_update_count": 0
+    },
+    "policy": {
+      "max_auto_price_increase_pct": 0.06
+    },
+    "sim": {
+      "current_time": "2026-12-07T09:00:00Z"
+    }
+  },
+  "latent_state": {
+    "true_core_problem": "channel_interest_outruns_readiness",
+    "true_recovery_path": "narrow_launch_scope_with_distribution_learning"
+  },
+  "observation_surfaces": [
+    {
+      "surface_id": "launch_dashboard",
+      "surface_type": "dashboard",
+      "refresh_policy": "daily",
+      "visible_fields": ["activation_index", "weighted_pipeline_usd", "support_backlog", "trust_score"]
+    },
+    {
+      "surface_id": "market_brief",
+      "surface_type": "research_brief",
+      "refresh_policy": "weekly",
+      "visible_fields": ["competitor_pressure_index", "demand_index", "latest_market_note"]
+    }
+  ],
+  "tools": [
+    "metrics.query",
+    "metrics.report",
+    "product.roadmap.read",
+    "product.roadmap.write",
+    "product.launch",
+    "growth.experiment.create",
+    "growth.experiment.review",
+    "sales.pipeline.read",
+    "sales.pipeline.update",
+    "ops.support.read",
+    "ops.support.resolve",
+    "finance.plan.read",
+    "finance.plan.write",
+    "people.hiring.read",
+    "people.hiring.update",
+    "research.market.read",
+    "board.read",
+    "board.update",
+    "notes.read",
+    "notes.write",
+    "sim.advance"
+  ],
+  "event_model": {
+    "kind": "seeded_schedule",
+    "primitive_catalog": {
+      "launch_attention_wave": {
+        "operations": [
+          { "op": "increment", "path": "sales.weighted_pipeline_usd", "value": 120000 },
+          { "op": "increment", "path": "market.demand_index", "value": 0.04 },
+          { "op": "clamp", "path": "market.demand_index", "min": 0.0, "max": 1.5 },
+          { "op": "increment", "path": "operations.support_backlog", "value": 10 },
+          { "op": "increment", "path": "growth.activation_index", "value": 0.015 },
+          { "op": "clamp", "path": "growth.activation_index", "min": 0.0, "max": 1.0 }
+        ]
+      },
+      "support_spillover": {
+        "operations": [
+          { "op": "increment", "path": "operations.support_backlog", "value": 18 },
+          { "op": "increment", "path": "operations.support_sla_breach_risk", "value": 0.13 },
+          { "op": "clamp", "path": "operations.support_sla_breach_risk", "min": 0.0, "max": 1.0 },
+          { "op": "increment", "path": "customers.trust_score", "value": -0.045 },
+          { "op": "clamp", "path": "customers.trust_score", "min": 0.0, "max": 1.0 },
+          { "op": "increment", "path": "customers.monthly_churn_rate", "value": 0.007 },
+          { "op": "increment", "path": "growth.activation_index", "value": -0.05 },
+          { "op": "clamp", "path": "growth.activation_index", "min": 0.0, "max": 1.0 }
+        ]
+      }
+    },
+    "scheduled_events": [
+      {
+        "event_id": "ev_hidden_launch_001",
+        "at_turn": 2,
+        "primitive_id": "launch_attention_wave",
+        "event_type": "launch_attention_wave",
+        "visible_message": "Partner and buyer attention surged once the launch date became visible."
+      },
+      {
+        "event_id": "ev_hidden_launch_002",
+        "at_turn": 4,
+        "primitive_id": "support_spillover",
+        "event_type": "support_spillover",
+        "visible_message": "The broader rollout exposed support and activation weaknesses that the team had not fully contained."
+      }
+    ]
+  },
+  "policy_constraints": [
+    {
+      "constraint_id": "no_unapproved_hiring",
+      "kind": "approval_required"
+    }
+  ],
+  "terminal_conditions": [
+    {
+      "condition_id": "horizon_end_15_weeks",
+      "kind": "horizon_end"
+    },
+    {
+      "condition_id": "bankruptcy",
+      "kind": "hard_failure"
+    }
+  ],
+  "evaluation": {
+    "outcome_components": [
+      { "component_id": "cash_efficiency", "weight": 0.08, "direction": "maximize" },
+      { "component_id": "revenue_quality", "weight": 0.18, "direction": "maximize" },
+      { "component_id": "customer_health", "weight": 0.2, "direction": "maximize" },
+      { "component_id": "product_health", "weight": 0.17, "direction": "maximize" },
+      { "component_id": "team_health", "weight": 0.1, "direction": "maximize" },
+      { "component_id": "risk_management", "weight": 0.1, "direction": "maximize" },
+      { "component_id": "strategic_coherence", "weight": 0.17, "direction": "maximize" }
+    ],
+    "constraints": [
+      { "constraint_id": "bankruptcy" },
+      { "constraint_id": "severe_trust_breach" }
+    ]
+  }
+}
