@@ -188,22 +188,37 @@
     "outcome_components": [
       {
         "component_id": "cash_efficiency",
-        "weight": 0.42,
+        "weight": 0.26,
         "direction": "maximize"
       },
       {
         "component_id": "revenue_quality",
-        "weight": 0.16,
+        "weight": 0.13,
         "direction": "maximize"
       },
       {
         "component_id": "customer_health",
-        "weight": 0.08,
+        "weight": 0.05,
+        "direction": "maximize"
+      },
+      {
+        "component_id": "product_health",
+        "weight": 0.07,
+        "direction": "maximize"
+      },
+      {
+        "component_id": "team_health",
+        "weight": 0.11,
+        "direction": "maximize"
+      },
+      {
+        "component_id": "risk_management",
+        "weight": 0.24,
         "direction": "maximize"
       },
       {
         "component_id": "strategic_coherence",
-        "weight": 0.34,
+        "weight": 0.14,
         "direction": "maximize"
       }
     ],
