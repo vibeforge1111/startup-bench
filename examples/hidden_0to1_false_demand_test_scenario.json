@@ -1,0 +1,221 @@
+{
+  "metadata": {
+    "scenario_id": "hidden_0to1_false_demand_test_001",
+    "scenario_version": "0.1.0",
+    "benchmark_version": "0.2.0-draft",
+    "track": "0to1",
+    "mode": "test",
+    "title": "Hidden False Demand Narrative",
+    "summary": "A hidden 0to1 scenario where top-of-funnel interest makes the startup look healthier than real product pull, and the wrong reaction burns runway without improving activation.",
+    "difficulty": "medium",
+    "time_horizon": {
+      "unit": "week",
+      "length": 18
+    },
+    "authoring_origin": "expert_authored",
+    "tags": ["0to1", "false_signal", "activation", "pmf"]
+  },
+  "initial_state": {
+    "company": {
+      "stage": "pre_seed",
+      "sector": "b2b_saas",
+      "business_model": "subscription"
+    },
+    "finance": {
+      "cash_usd": 455000,
+      "monthly_burn_usd": 86000,
+      "monthly_revenue_usd": 8000
+    },
+    "product": {
+      "major_incidents_open": 0,
+      "roadmap_items": 6,
+      "onboarding_quality": 0.39
+    },
+    "customers": {
+      "paying_accounts": 8,
+      "monthly_churn_rate": 0.047,
+      "trust_score": 0.7
+    },
+    "growth": {
+      "activation_index": 0.35,
+      "active_channels": ["community", "waitlist", "founder_led_sales"]
+    },
+    "sales": {
+      "pipeline_count": 14,
+      "weighted_pipeline_usd": 160000,
+      "pricing": {
+        "current_price_index": 1.0
+      }
+    },
+    "team": {
+      "headcount": 6,
+      "morale": 0.63,
+      "bandwidth_load": 0.88
+    },
+    "market": {
+      "competitor_pressure_index": 0.33,
+      "demand_index": 0.86,
+      "latest_market_note": "Discovery demand is healthy, but actual buyer urgency still weakens after the first live demo."
+    },
+    "governance": {
+      "board_update_count": 0
+    },
+    "policy": {
+      "max_auto_price_increase_pct": 0.04
+    },
+    "sim": {
+      "current_time": "2026-03-09T09:00:00Z"
+    }
+  },
+  "latent_state": {
+    "true_problem": "interest_is_cheap_but_activation_and_repeat_value_are_not",
+    "true_failure_mode": "growth_story_masks_poor_product_pull"
+  },
+  "observation_surfaces": [
+    {
+      "surface_id": "finance_dashboard",
+      "surface_type": "dashboard",
+      "refresh_policy": "daily",
+      "visible_fields": ["cash_usd", "monthly_burn_usd", "runway_weeks"]
+    },
+    {
+      "surface_id": "growth_notes",
+      "surface_type": "notebook",
+      "refresh_policy": "weekly",
+      "visible_fields": ["activation_index", "pipeline_count", "weighted_pipeline_usd"]
+    }
+  ],
+  "tools": [
+    "metrics.query",
+    "metrics.report",
+    "product.roadmap.read",
+    "product.roadmap.write",
+    "product.launch",
+    "growth.experiment.create",
+    "growth.experiment.review",
+    "sales.pipeline.read",
+    "sales.pipeline.update",
+    "finance.plan.read",
+    "finance.plan.write",
+    "board.read",
+    "board.update",
+    "research.market.read",
+    "notes.read",
+    "notes.write",
+    "sim.advance"
+  ],
+  "event_model": {
+    "kind": "seeded_schedule",
+    "primitive_catalog": {
+      "vanity_growth_bump": {
+        "operations": [
+          {
+            "op": "increment",
+            "path": "sales.pipeline_count",
+            "value": 2
+          },
+          {
+            "op": "increment",
+            "path": "sales.weighted_pipeline_usd",
+            "value": 28000
+          }
+        ]
+      },
+      "pull_reality_check": {
+        "operations": [
+          {
+            "op": "increment",
+            "path": "growth.activation_index",
+            "value": -0.07
+          },
+          {
+            "op": "clamp",
+            "path": "growth.activation_index",
+            "min": 0.0,
+            "max": 1.0
+          },
+          {
+            "op": "increment",
+            "path": "customers.monthly_churn_rate",
+            "value": 0.007
+          },
+          {
+            "op": "clamp",
+            "path": "customers.monthly_churn_rate",
+            "min": 0.0,
+            "max": 1.0
+          },
+          {
+            "op": "increment",
+            "path": "sales.weighted_pipeline_usd",
+            "value": -45000
+          }
+        ]
+      }
+    },
+    "scheduled_events": [
+      {
+        "event_id": "ev_hidden_false_001",
+        "at_turn": 1,
+        "primitive_id": "vanity_growth_bump",
+        "event_type": "vanity_growth_bump",
+        "visible_message": "A burst of inbound signups made the pipeline look stronger than it really is."
+      },
+      {
+        "event_id": "ev_hidden_false_002",
+        "at_turn": 3,
+        "primitive_id": "pull_reality_check",
+        "event_type": "pull_reality_check",
+        "visible_message": "Most of the new demand failed to convert into real activation or retained usage."
+      }
+    ]
+  },
+  "policy_constraints": [
+    {
+      "constraint_id": "no_unapproved_hiring",
+      "kind": "approval_required"
+    }
+  ],
+  "terminal_conditions": [
+    {
+      "condition_id": "horizon_end_18_weeks",
+      "kind": "horizon_end"
+    },
+    {
+      "condition_id": "bankruptcy",
+      "kind": "hard_failure"
+    }
+  ],
+  "evaluation": {
+    "outcome_components": [
+      {
+        "component_id": "cash_efficiency",
+        "weight": 0.22,
+        "direction": "maximize"
+      },
+      {
+        "component_id": "revenue_quality",
+        "weight": 0.29,
+        "direction": "maximize"
+      },
+      {
+        "component_id": "customer_health",
+        "weight": 0.22,
+        "direction": "maximize"
+      },
+      {
+        "component_id": "strategic_coherence",
+        "weight": 0.27,
+        "direction": "maximize"
+      }
+    ],
+    "constraints": [
+      {
+        "constraint_id": "bankruptcy"
+      },
+      {
+        "constraint_id": "severe_trust_breach"
+      }
+    ]
+  }
+}

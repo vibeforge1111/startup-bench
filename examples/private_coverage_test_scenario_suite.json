@@ -1,0 +1,32 @@
+{
+  "suite_version": "0.1.0",
+  "benchmark_version": "0.2.0-draft",
+  "scenario_pack_version": "coverage-test-pack-0.1.0",
+  "split": "test",
+  "scenarios": [
+    {
+      "scenario_id": "hidden_0to1_activation_loop_test_001",
+      "path": "hidden_0to1_activation_loop_test_scenario.json",
+      "track": "0to1",
+      "mode": "test"
+    },
+    {
+      "scenario_id": "hidden_0to1_false_demand_test_001",
+      "path": "hidden_0to1_false_demand_test_scenario.json",
+      "track": "0to1",
+      "mode": "test"
+    },
+    {
+      "scenario_id": "hidden_finance_bridge_terms_test_001",
+      "path": "hidden_finance_bridge_terms_test_scenario.json",
+      "track": "finance",
+      "mode": "test"
+    },
+    {
+      "scenario_id": "hidden_finance_collection_drag_test_001",
+      "path": "hidden_finance_collection_drag_test_scenario.json",
+      "track": "finance",
+      "mode": "test"
+    }
+  ]
+}

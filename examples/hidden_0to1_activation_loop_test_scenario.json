@@ -1,0 +1,216 @@
+{
+  "metadata": {
+    "scenario_id": "hidden_0to1_activation_loop_test_001",
+    "scenario_version": "0.1.0",
+    "benchmark_version": "0.2.0-draft",
+    "track": "0to1",
+    "mode": "test",
+    "title": "Hidden Activation Loop Narrowing",
+    "summary": "A hidden 0to1 scenario where early activation is weak, founder-led demand looks better than retention reality, and the team must focus the onboarding loop before runway confidence fades.",
+    "difficulty": "medium",
+    "time_horizon": {
+      "unit": "week",
+      "length": 18
+    },
+    "authoring_origin": "expert_authored",
+    "tags": ["0to1", "activation", "pmf", "founder_led_sales"]
+  },
+  "initial_state": {
+    "company": {
+      "stage": "pre_seed",
+      "sector": "b2b_saas",
+      "business_model": "subscription"
+    },
+    "finance": {
+      "cash_usd": 505000,
+      "monthly_burn_usd": 97000,
+      "monthly_revenue_usd": 11000
+    },
+    "product": {
+      "major_incidents_open": 0,
+      "roadmap_items": 5,
+      "onboarding_quality": 0.43
+    },
+    "customers": {
+      "paying_accounts": 10,
+      "monthly_churn_rate": 0.043,
+      "trust_score": 0.72
+    },
+    "growth": {
+      "activation_index": 0.39,
+      "active_channels": ["founder_led_sales", "community"]
+    },
+    "sales": {
+      "pipeline_count": 12,
+      "weighted_pipeline_usd": 148000,
+      "pricing": {
+        "current_price_index": 1.0
+      }
+    },
+    "team": {
+      "headcount": 7,
+      "morale": 0.65,
+      "bandwidth_load": 0.82
+    },
+    "market": {
+      "competitor_pressure_index": 0.41,
+      "demand_index": 0.81,
+      "latest_market_note": "Prospects will still take meetings, but conversion depends on a much clearer implementation story."
+    },
+    "governance": {
+      "board_update_count": 0
+    },
+    "policy": {
+      "max_auto_price_increase_pct": 0.05
+    },
+    "sim": {
+      "current_time": "2026-02-09T09:00:00Z"
+    }
+  },
+  "latent_state": {
+    "true_problem": "activation_loop_is_too_fragile_for_broad_positioning",
+    "true_upside": "focused_onboarding_and_narrower_sales_motion_can_unlock_real_signal"
+  },
+  "observation_surfaces": [
+    {
+      "surface_id": "finance_dashboard",
+      "surface_type": "dashboard",
+      "refresh_policy": "daily",
+      "visible_fields": ["cash_usd", "monthly_burn_usd", "runway_weeks"]
+    },
+    {
+      "surface_id": "activation_board",
+      "surface_type": "dashboard",
+      "refresh_policy": "weekly",
+      "visible_fields": ["activation_index", "weighted_pipeline_usd", "onboarding_quality"]
+    }
+  ],
+  "tools": [
+    "metrics.query",
+    "metrics.report",
+    "product.roadmap.read",
+    "product.roadmap.write",
+    "product.launch",
+    "growth.experiment.create",
+    "growth.experiment.review",
+    "sales.pipeline.read",
+    "sales.pipeline.update",
+    "finance.plan.read",
+    "finance.plan.write",
+    "board.read",
+    "board.update",
+    "research.market.read",
+    "notes.read",
+    "notes.write",
+    "sim.advance"
+  ],
+  "event_model": {
+    "kind": "seeded_schedule",
+    "primitive_catalog": {
+      "messaging_drag": {
+        "operations": [
+          {
+            "op": "increment",
+            "path": "sales.weighted_pipeline_usd",
+            "value": -32000
+          },
+          {
+            "op": "increment",
+            "path": "growth.activation_index",
+            "value": -0.04
+          },
+          {
+            "op": "clamp",
+            "path": "growth.activation_index",
+            "min": 0.0,
+            "max": 1.0
+          }
+        ]
+      },
+      "focus_pays_off": {
+        "operations": [
+          {
+            "op": "increment",
+            "path": "finance.monthly_revenue_usd",
+            "value": 14000
+          },
+          {
+            "op": "increment",
+            "path": "customers.trust_score",
+            "value": 0.025
+          },
+          {
+            "op": "clamp",
+            "path": "customers.trust_score",
+            "min": 0.0,
+            "max": 1.0
+          }
+        ]
+      }
+    },
+    "scheduled_events": [
+      {
+        "event_id": "ev_hidden_pmf_001",
+        "at_turn": 2,
+        "primitive_id": "messaging_drag",
+        "event_type": "messaging_drag",
+        "visible_message": "Several prospects disengaged because the pitch still feels too broad for their workflow."
+      },
+      {
+        "event_id": "ev_hidden_pmf_002",
+        "at_turn": 5,
+        "primitive_id": "focus_pays_off",
+        "event_type": "focus_pays_off",
+        "visible_message": "A narrower onboarding flow improved early implementation confidence."
+      }
+    ]
+  },
+  "policy_constraints": [
+    {
+      "constraint_id": "no_unapproved_hiring",
+      "kind": "approval_required"
+    }
+  ],
+  "terminal_conditions": [
+    {
+      "condition_id": "horizon_end_18_weeks",
+      "kind": "horizon_end"
+    },
+    {
+      "condition_id": "bankruptcy",
+      "kind": "hard_failure"
+    }
+  ],
+  "evaluation": {
+    "outcome_components": [
+      {
+        "component_id": "cash_efficiency",
+        "weight": 0.24,
+        "direction": "maximize"
+      },
+      {
+        "component_id": "revenue_quality",
+        "weight": 0.31,
+        "direction": "maximize"
+      },
+      {
+        "component_id": "customer_health",
+        "weight": 0.19,
+        "direction": "maximize"
+      },
+      {
+        "component_id": "strategic_coherence",
+        "weight": 0.26,
+        "direction": "maximize"
+      }
+    ],
+    "constraints": [
+      {
+        "constraint_id": "bankruptcy"
+      },
+      {
+        "constraint_id": "severe_trust_breach"
+      }
+    ]
+  }
+}

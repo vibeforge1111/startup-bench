@@ -1,0 +1,216 @@
+{
+  "metadata": {
+    "scenario_id": "hidden_0to1_activation_loop_fresh_001",
+    "scenario_version": "0.1.0",
+    "benchmark_version": "0.2.0-draft",
+    "track": "0to1",
+    "mode": "fresh",
+    "title": "Fresh Activation Loop Compression",
+    "summary": "A fresh hidden 0to1 scenario where the startup has less time, weaker activation, and more pressure to separate signal from story.",
+    "difficulty": "medium",
+    "time_horizon": {
+      "unit": "week",
+      "length": 16
+    },
+    "authoring_origin": "expert_authored",
+    "tags": ["0to1", "activation", "pmf", "fresh"]
+  },
+  "initial_state": {
+    "company": {
+      "stage": "pre_seed",
+      "sector": "b2b_saas",
+      "business_model": "subscription"
+    },
+    "finance": {
+      "cash_usd": 438000,
+      "monthly_burn_usd": 94000,
+      "monthly_revenue_usd": 9000
+    },
+    "product": {
+      "major_incidents_open": 0,
+      "roadmap_items": 5,
+      "onboarding_quality": 0.4
+    },
+    "customers": {
+      "paying_accounts": 8,
+      "monthly_churn_rate": 0.045,
+      "trust_score": 0.71
+    },
+    "growth": {
+      "activation_index": 0.34,
+      "active_channels": ["founder_led_sales", "community"]
+    },
+    "sales": {
+      "pipeline_count": 11,
+      "weighted_pipeline_usd": 130000,
+      "pricing": {
+        "current_price_index": 1.0
+      }
+    },
+    "team": {
+      "headcount": 6,
+      "morale": 0.61,
+      "bandwidth_load": 0.86
+    },
+    "market": {
+      "competitor_pressure_index": 0.44,
+      "demand_index": 0.77,
+      "latest_market_note": "The category still draws interest, but buyers now expect a much cleaner first implementation path."
+    },
+    "governance": {
+      "board_update_count": 0
+    },
+    "policy": {
+      "max_auto_price_increase_pct": 0.04
+    },
+    "sim": {
+      "current_time": "2026-04-13T09:00:00Z"
+    }
+  },
+  "latent_state": {
+    "true_problem": "activation_is_thinner_and_time_to_find_signal_is_shorter",
+    "true_upside": "tight_experiment_loops_can_recover_real_signal"
+  },
+  "observation_surfaces": [
+    {
+      "surface_id": "finance_dashboard",
+      "surface_type": "dashboard",
+      "refresh_policy": "daily",
+      "visible_fields": ["cash_usd", "monthly_burn_usd", "runway_weeks"]
+    },
+    {
+      "surface_id": "activation_board",
+      "surface_type": "dashboard",
+      "refresh_policy": "weekly",
+      "visible_fields": ["activation_index", "weighted_pipeline_usd", "onboarding_quality"]
+    }
+  ],
+  "tools": [
+    "metrics.query",
+    "metrics.report",
+    "product.roadmap.read",
+    "product.roadmap.write",
+    "product.launch",
+    "growth.experiment.create",
+    "growth.experiment.review",
+    "sales.pipeline.read",
+    "sales.pipeline.update",
+    "finance.plan.read",
+    "finance.plan.write",
+    "board.read",
+    "board.update",
+    "research.market.read",
+    "notes.read",
+    "notes.write",
+    "sim.advance"
+  ],
+  "event_model": {
+    "kind": "seeded_schedule",
+    "primitive_catalog": {
+      "story_drag": {
+        "operations": [
+          {
+            "op": "increment",
+            "path": "sales.weighted_pipeline_usd",
+            "value": -30000
+          },
+          {
+            "op": "increment",
+            "path": "growth.activation_index",
+            "value": -0.05
+          },
+          {
+            "op": "clamp",
+            "path": "growth.activation_index",
+            "min": 0.0,
+            "max": 1.0
+          }
+        ]
+      },
+      "implementation_lift": {
+        "operations": [
+          {
+            "op": "increment",
+            "path": "finance.monthly_revenue_usd",
+            "value": 15000
+          },
+          {
+            "op": "increment",
+            "path": "customers.trust_score",
+            "value": 0.03
+          },
+          {
+            "op": "clamp",
+            "path": "customers.trust_score",
+            "min": 0.0,
+            "max": 1.0
+          }
+        ]
+      }
+    },
+    "scheduled_events": [
+      {
+        "event_id": "ev_fresh_pmf_001",
+        "at_turn": 1,
+        "primitive_id": "story_drag",
+        "event_type": "story_drag",
+        "visible_message": "Prospects reacted well to the category story but hesitated once implementation details got concrete."
+      },
+      {
+        "event_id": "ev_fresh_pmf_002",
+        "at_turn": 4,
+        "primitive_id": "implementation_lift",
+        "event_type": "implementation_lift",
+        "visible_message": "A more concrete activation path improved early buyer confidence."
+      }
+    ]
+  },
+  "policy_constraints": [
+    {
+      "constraint_id": "no_unapproved_hiring",
+      "kind": "approval_required"
+    }
+  ],
+  "terminal_conditions": [
+    {
+      "condition_id": "horizon_end_16_weeks",
+      "kind": "horizon_end"
+    },
+    {
+      "condition_id": "bankruptcy",
+      "kind": "hard_failure"
+    }
+  ],
+  "evaluation": {
+    "outcome_components": [
+      {
+        "component_id": "cash_efficiency",
+        "weight": 0.25,
+        "direction": "maximize"
+      },
+      {
+        "component_id": "revenue_quality",
+        "weight": 0.31,
+        "direction": "maximize"
+      },
+      {
+        "component_id": "customer_health",
+        "weight": 0.18,
+        "direction": "maximize"
+      },
+      {
+        "component_id": "strategic_coherence",
+        "weight": 0.26,
+        "direction": "maximize"
+      }
+    ],
+    "constraints": [
+      {
+        "constraint_id": "bankruptcy"
+      },
+      {
+        "constraint_id": "severe_trust_breach"
+      }
+    ]
+  }
+}

@@ -1,0 +1,219 @@
+{
+  "metadata": {
+    "scenario_id": "hidden_finance_collection_drag_fresh_001",
+    "scenario_version": "0.1.0",
+    "benchmark_version": "0.2.0-draft",
+    "track": "finance",
+    "mode": "fresh",
+    "title": "Fresh Collections and Liquidity Compression",
+    "summary": "A fresh hidden finance scenario where collections slow further, liquidity is tighter, and small planning misses compound into financing risk.",
+    "difficulty": "medium",
+    "time_horizon": {
+      "unit": "week",
+      "length": 16
+    },
+    "authoring_origin": "expert_authored",
+    "tags": ["finance", "collections", "fresh", "liquidity"]
+  },
+  "initial_state": {
+    "company": {
+      "stage": "series_a",
+      "sector": "b2b_saas",
+      "business_model": "subscription"
+    },
+    "finance": {
+      "cash_usd": 2050000,
+      "restricted_cash_usd": 390000,
+      "monthly_burn_usd": 405000,
+      "monthly_revenue_usd": 249000,
+      "treasury_concentration": 0.77,
+      "dilution_index": 0.07
+    },
+    "product": {
+      "major_incidents_open": 0,
+      "roadmap_items": 5,
+      "onboarding_quality": 0.64
+    },
+    "customers": {
+      "paying_accounts": 138,
+      "monthly_churn_rate": 0.028,
+      "trust_score": 0.71
+    },
+    "sales": {
+      "pipeline_count": 12,
+      "weighted_pipeline_usd": 670000,
+      "pricing": {
+        "current_price_index": 1.0
+      }
+    },
+    "team": {
+      "headcount": 27,
+      "morale": 0.6,
+      "bandwidth_load": 0.78
+    },
+    "governance": {
+      "board_update_count": 1
+    },
+    "market": {
+      "competitor_pressure_index": 0.48,
+      "pricing_pressure_index": 0.43,
+      "demand_index": 0.73,
+      "latest_market_note": "Collections are slower, investor patience is thinner, and buyers are approving fewer broad platform contracts."
+    },
+    "risk": {
+      "financing_pressure": 0.68,
+      "counterparty_risk": 0.61,
+      "regulatory_pressure": 0.09
+    },
+    "policy": {
+      "max_auto_price_increase_pct": 0.05
+    },
+    "sim": {
+      "current_time": "2026-05-18T09:00:00Z"
+    }
+  },
+  "latent_state": {
+    "true_problem": "collections_and_liquidity_risk_are_now_more_severe_than_headline_revenue_suggests",
+    "true_failure_mode": "mild_softness_compounds_into_a_financing_problem"
+  },
+  "observation_surfaces": [
+    {
+      "surface_id": "finance_dashboard",
+      "surface_type": "dashboard",
+      "refresh_policy": "realtime",
+      "visible_fields": ["cash_usd", "liquid_cash_usd", "runway_weeks", "treasury_concentration"]
+    },
+    {
+      "surface_id": "market_packet",
+      "surface_type": "board_portal",
+      "refresh_policy": "weekly",
+      "visible_fields": ["monthly_revenue_usd", "monthly_burn_usd", "weighted_pipeline_usd", "financing_pressure"]
+    }
+  ],
+  "tools": [
+    "metrics.query",
+    "metrics.report",
+    "finance.plan.read",
+    "finance.plan.write",
+    "finance.treasury.read",
+    "finance.treasury.rebalance",
+    "finance.raise.propose",
+    "sales.pipeline.read",
+    "sales.pipeline.update",
+    "research.market.read",
+    "board.read",
+    "board.update",
+    "notes.read",
+    "notes.write",
+    "sim.advance"
+  ],
+  "event_model": {
+    "kind": "seeded_schedule",
+    "primitive_catalog": {
+      "cash_access_drag": {
+        "operations": [
+          {
+            "op": "increment",
+            "path": "finance.restricted_cash_usd",
+            "value": 310000
+          },
+          {
+            "op": "increment",
+            "path": "risk.financing_pressure",
+            "value": 0.09
+          },
+          {
+            "op": "clamp",
+            "path": "risk.financing_pressure",
+            "min": 0.0,
+            "max": 1.0
+          }
+        ]
+      },
+      "budget_delay": {
+        "operations": [
+          {
+            "op": "increment",
+            "path": "sales.weighted_pipeline_usd",
+            "value": -85000
+          },
+          {
+            "op": "increment",
+            "path": "market.demand_index",
+            "value": -0.05
+          },
+          {
+            "op": "clamp",
+            "path": "market.demand_index",
+            "min": 0.0,
+            "max": 1.5
+          }
+        ]
+      }
+    },
+    "scheduled_events": [
+      {
+        "event_id": "ev_fresh_col_001",
+        "at_turn": 2,
+        "primitive_id": "cash_access_drag",
+        "event_type": "cash_access_drag",
+        "visible_message": "Cash access tightened further as collections stretched beyond the prior forecast."
+      },
+      {
+        "event_id": "ev_fresh_col_002",
+        "at_turn": 4,
+        "primitive_id": "budget_delay",
+        "event_type": "budget_delay",
+        "visible_message": "Buyer budget approvals slipped again, weakening the timing of expected new revenue."
+      }
+    ]
+  },
+  "policy_constraints": [
+    {
+      "constraint_id": "no_unapproved_hiring",
+      "kind": "approval_required"
+    }
+  ],
+  "terminal_conditions": [
+    {
+      "condition_id": "horizon_end_16_weeks",
+      "kind": "horizon_end"
+    },
+    {
+      "condition_id": "bankruptcy",
+      "kind": "hard_failure"
+    }
+  ],
+  "evaluation": {
+    "outcome_components": [
+      {
+        "component_id": "cash_efficiency",
+        "weight": 0.42,
+        "direction": "maximize"
+      },
+      {
+        "component_id": "revenue_quality",
+        "weight": 0.16,
+        "direction": "maximize"
+      },
+      {
+        "component_id": "customer_health",
+        "weight": 0.08,
+        "direction": "maximize"
+      },
+      {
+        "component_id": "strategic_coherence",
+        "weight": 0.34,
+        "direction": "maximize"
+      }
+    ],
+    "constraints": [
+      {
+        "constraint_id": "bankruptcy"
+      },
+      {
+        "constraint_id": "severe_financing_failure"
+      }
+    ]
+  }
+}
