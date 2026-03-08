@@ -368,7 +368,7 @@
         "growth is balanced across thin tracks",
         "promotion metadata and governance docs are updated"
       ],
-      "progress_notes": "Active hidden test inventory is now 67 after the real-world hidden pack grew to 12 scenarios via WeWork burn-reset and Instacart capacity-surge families."
+      "progress_notes": "Active hidden test inventory is now 70 after the operator hidden pack grew to 22 scenarios via procurement-slip, vendor-prepay, and escalation-load families."
     },
     {
       "task_id": "BT-016",
@@ -435,6 +435,34 @@
         "examples/private_real_world_fresh_scenario_suite.json",
         "examples/real_world_public_test_manifest.json",
         "examples/real_world_public_fresh_manifest.json"
+      ]
+    },
+    {
+      "task_id": "BT-019",
+      "title": "Add operator depth batch 002",
+      "workstream": "corpus-scale",
+      "milestone_id": "v0.10.0",
+      "priority": "high",
+      "status": "completed",
+      "benchmark_risk": "medium",
+      "owner": "core-benchmark",
+      "completion_criteria": [
+        "at least 3 new hidden operator scenarios exist",
+        "matching fresh variants exist",
+        "operator suite and manifests are updated"
+      ],
+      "progress_notes": "The operator pack now includes procurement-slip, vendor-prepay, and escalation-load hidden variants, bringing active operator hidden test inventory to 22 and benchmark-wide hidden test inventory to 70.",
+      "artifacts": [
+        "examples/hidden_gtm_procurement_slip_test_scenario.json",
+        "examples/hidden_gtm_procurement_slip_fresh_scenario.json",
+        "examples/hidden_finance_vendor_prepay_test_scenario.json",
+        "examples/hidden_finance_vendor_prepay_fresh_scenario.json",
+        "examples/hidden_people_escalation_load_test_scenario.json",
+        "examples/hidden_people_escalation_load_fresh_scenario.json",
+        "examples/private_operator_test_scenario_suite.json",
+        "examples/private_operator_fresh_scenario_suite.json",
+        "examples/operator_public_test_manifest.json",
+        "examples/operator_public_fresh_manifest.json"
       ]
     }
   ]

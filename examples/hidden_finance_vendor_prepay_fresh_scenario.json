@@ -1,0 +1,103 @@
+{
+  "metadata": {
+    "scenario_id": "hidden_finance_vendor_prepay_fresh_001",
+    "scenario_version": "0.1.0",
+    "benchmark_version": "0.2.0-draft",
+    "track": "finance",
+    "mode": "fresh",
+    "title": "Hidden Finance Vendor Prepay Shock With Tighter Cash Window",
+    "summary": "A hidden finance fresh scenario where vendor terms harden and the cash window shortens faster, demanding a sharper reforecast and financing response.",
+    "difficulty": "hard",
+    "time_horizon": { "unit": "week", "length": 13 },
+    "authoring_origin": "expert_authored",
+    "tags": ["finance", "hidden_eval", "fresh", "liquidity", "vendor_terms"]
+  },
+  "initial_state": {
+    "company": { "stage": "series_a", "sector": "b2b_saas", "business_model": "subscription" },
+    "finance": {
+      "cash_usd": 1450000,
+      "restricted_cash_usd": 230000,
+      "monthly_burn_usd": 326000,
+      "monthly_revenue_usd": 208000,
+      "treasury_concentration": 0.6,
+      "dilution_index": 0.13
+    },
+    "customers": { "paying_accounts": 118, "monthly_churn_rate": 0.03, "trust_score": 0.69 },
+    "sales": { "pipeline_count": 8, "weighted_pipeline_usd": 536000, "pricing": { "current_price_index": 1.0 } },
+    "market": {
+      "competitor_pressure": "moderate",
+      "competitor_pressure_index": 0.45,
+      "pricing_pressure_index": 0.39,
+      "demand_index": 0.69,
+      "latest_market_note": "Investors still show up, but only if the team updates cash timing quickly when counterparties harden terms."
+    },
+    "risk": { "counterparty_risk": 0.46, "financing_pressure": 0.74 },
+    "governance": { "board_update_count": 1 },
+    "policy": { "max_auto_price_increase_pct": 0.05 },
+    "sim": { "current_time": "2027-03-30T09:00:00Z" }
+  },
+  "latent_state": {
+    "true_liquidity_problem": "vendor_prepay_and_weaker_collections_compress_the_cash_window",
+    "true_fundraising_market": "still_available_but_impatient_with_old_assumptions"
+  },
+  "observation_surfaces": [
+    { "surface_id": "finance_dashboard", "surface_type": "dashboard", "refresh_policy": "realtime", "visible_fields": ["cash_usd", "liquid_cash_usd", "runway_weeks", "dilution_index"] },
+    { "surface_id": "board_packet", "surface_type": "board_portal", "refresh_policy": "weekly", "visible_fields": ["financing_pressure", "monthly_burn_usd", "monthly_revenue_usd"] }
+  ],
+  "tools": [
+    "metrics.query",
+    "metrics.report",
+    "finance.plan.read",
+    "finance.plan.write",
+    "finance.treasury.read",
+    "finance.treasury.rebalance",
+    "finance.raise.propose",
+    "research.market.read",
+    "sales.pipeline.read",
+    "sales.pipeline.update",
+    "board.read",
+    "board.update",
+    "notes.read",
+    "notes.write",
+    "sim.advance"
+  ],
+  "event_model": {
+    "kind": "seeded_schedule",
+    "primitive_catalog": {
+      "term_hardening": {
+        "operations": [
+          { "op": "increment", "path": "finance.cash_usd", "value": -150000 },
+          { "op": "clamp", "path": "finance.cash_usd", "min": 0.0 },
+          { "op": "increment", "path": "risk.financing_pressure", "value": 0.08 },
+          { "op": "clamp", "path": "risk.financing_pressure", "min": 0.0, "max": 1.0 }
+        ]
+      },
+      "market_penalty": {
+        "operations": [
+          { "op": "increment", "path": "finance.dilution_index", "value": 0.045 },
+          { "op": "clamp", "path": "finance.dilution_index", "min": 0.0, "max": 1.0 },
+          { "op": "increment", "path": "sales.weighted_pipeline_usd", "value": -55000 }
+        ]
+      }
+    },
+    "scheduled_events": [
+      { "event_id": "ev_hidden_fin_vendor_fresh_001", "at_turn": 1, "primitive_id": "term_hardening", "event_type": "term_hardening", "visible_message": "Vendor terms hardened again and shortened the company's near-term cash window." },
+      { "event_id": "ev_hidden_fin_vendor_fresh_002", "at_turn": 2, "primitive_id": "market_penalty", "event_type": "market_penalty", "visible_message": "The next financing discussion started to price in a stronger penalty once the updated cash curve still was not reflected clearly enough." }
+    ]
+  },
+  "policy_constraints": [{ "constraint_id": "no_unapproved_hiring", "kind": "approval_required" }],
+  "terminal_conditions": [
+    { "condition_id": "horizon_end_13_weeks", "kind": "horizon_end" },
+    { "condition_id": "bankruptcy", "kind": "hard_failure" }
+  ],
+  "evaluation": {
+    "outcome_components": [
+      { "component_id": "cash_efficiency", "weight": 0.36, "direction": "maximize" },
+      { "component_id": "revenue_quality", "weight": 0.14, "direction": "maximize" },
+      { "component_id": "customer_health", "weight": 0.08, "direction": "maximize" },
+      { "component_id": "risk_management", "weight": 0.12, "direction": "maximize" },
+      { "component_id": "strategic_coherence", "weight": 0.3, "direction": "maximize" }
+    ],
+    "constraints": [{ "constraint_id": "bankruptcy" }, { "constraint_id": "severe_financing_failure" }]
+  }
+}

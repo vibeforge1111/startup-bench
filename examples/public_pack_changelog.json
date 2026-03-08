@@ -273,24 +273,50 @@
       "pack_version": "operator-test-pack-0.6.0",
       "split": "test",
       "visibility": "hidden",
-      "action": "created",
-      "lifecycle_state": "active",
+      "action": "retired",
+      "lifecycle_state": "retired",
       "contamination_status": "clean",
       "predecessor_pack_version": "operator-test-pack-0.5.0",
       "manifest_path": "examples/operator_public_test_manifest.json",
-      "notes": "Expanded operator hidden test pack covering six GTM slices, six finance slices, and seven people/org slices across pipeline quality, forecasting credibility, and execution-stability pressure."
+      "successor_pack_version": "operator-test-pack-0.7.0",
+      "notes": "Expanded operator hidden test pack retired after adding procurement-slip, vendor-prepay, and escalation-load hidden slices."
+    },
+    {
+      "effective_date": "2026-03-08",
+      "pack_version": "operator-test-pack-0.7.0",
+      "split": "test",
+      "visibility": "hidden",
+      "action": "created",
+      "lifecycle_state": "active",
+      "contamination_status": "clean",
+      "predecessor_pack_version": "operator-test-pack-0.6.0",
+      "manifest_path": "examples/operator_public_test_manifest.json",
+      "notes": "Expanded operator hidden test pack covering seven GTM slices, seven finance slices, and eight people/org slices across pipeline quality, forecasting credibility, and execution-stability pressure."
     },
     {
       "effective_date": "2026-03-08",
       "pack_version": "operator-fresh-pack-0.6.0",
       "split": "fresh",
       "visibility": "hidden",
-      "action": "created",
-      "lifecycle_state": "active",
+      "action": "retired",
+      "lifecycle_state": "retired",
       "contamination_status": "clean",
       "predecessor_pack_version": "operator-test-pack-0.6.0",
       "manifest_path": "examples/operator_public_fresh_manifest.json",
-      "notes": "Expanded operator hidden fresh pack for contamination-resistant evaluation across multithread stall, reforecast drag, onboarding-manager-gap, and the existing GTM, finance, and people execution slices."
+      "successor_pack_version": "operator-fresh-pack-0.7.0",
+      "notes": "Expanded operator hidden fresh pack retired after adding distinct procurement-slip, vendor-prepay, and escalation-load variants."
+    },
+    {
+      "effective_date": "2026-03-08",
+      "pack_version": "operator-fresh-pack-0.7.0",
+      "split": "fresh",
+      "visibility": "hidden",
+      "action": "created",
+      "lifecycle_state": "active",
+      "contamination_status": "clean",
+      "predecessor_pack_version": "operator-test-pack-0.7.0",
+      "manifest_path": "examples/operator_public_fresh_manifest.json",
+      "notes": "Expanded operator hidden fresh pack for contamination-resistant evaluation across procurement-slip, vendor-prepay, escalation-load, and the existing GTM, finance, and people execution slices."
     },
     {
       "effective_date": "2026-03-07",

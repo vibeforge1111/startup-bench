@@ -1,0 +1,103 @@
+{
+  "metadata": {
+    "scenario_id": "hidden_finance_vendor_prepay_test_001",
+    "scenario_version": "0.1.0",
+    "benchmark_version": "0.2.0-draft",
+    "track": "finance",
+    "mode": "test",
+    "title": "Hidden Finance Vendor Prepay Shock",
+    "summary": "A hidden finance scenario where a vendor shifts terms forward, pulling cash demand earlier and forcing a faster liquidity reset than the old plan assumed.",
+    "difficulty": "hard",
+    "time_horizon": { "unit": "week", "length": 13 },
+    "authoring_origin": "expert_authored",
+    "tags": ["finance", "hidden_eval", "liquidity", "vendor_terms", "reforecast"]
+  },
+  "initial_state": {
+    "company": { "stage": "series_a", "sector": "b2b_saas", "business_model": "subscription" },
+    "finance": {
+      "cash_usd": 1490000,
+      "restricted_cash_usd": 240000,
+      "monthly_burn_usd": 329000,
+      "monthly_revenue_usd": 211000,
+      "treasury_concentration": 0.61,
+      "dilution_index": 0.12
+    },
+    "customers": { "paying_accounts": 120, "monthly_churn_rate": 0.03, "trust_score": 0.68 },
+    "sales": { "pipeline_count": 8, "weighted_pipeline_usd": 552000, "pricing": { "current_price_index": 1.0 } },
+    "market": {
+      "competitor_pressure": "moderate",
+      "competitor_pressure_index": 0.46,
+      "pricing_pressure_index": 0.4,
+      "demand_index": 0.7,
+      "latest_market_note": "Capital is still available, but investors now expect teams to move immediately when cash timing assumptions break."
+    },
+    "risk": { "counterparty_risk": 0.48, "financing_pressure": 0.73 },
+    "governance": { "board_update_count": 1 },
+    "policy": { "max_auto_price_increase_pct": 0.05 },
+    "sim": { "current_time": "2027-03-23T09:00:00Z" }
+  },
+  "latent_state": {
+    "true_liquidity_problem": "vendor_term_changes_pull_the_cash_curve_forward",
+    "true_fundraising_market": "still_open_but_less_tolerant_of_slow_reforecasting"
+  },
+  "observation_surfaces": [
+    { "surface_id": "finance_dashboard", "surface_type": "dashboard", "refresh_policy": "realtime", "visible_fields": ["cash_usd", "liquid_cash_usd", "runway_weeks", "dilution_index"] },
+    { "surface_id": "board_packet", "surface_type": "board_portal", "refresh_policy": "weekly", "visible_fields": ["financing_pressure", "monthly_burn_usd", "monthly_revenue_usd"] }
+  ],
+  "tools": [
+    "metrics.query",
+    "metrics.report",
+    "finance.plan.read",
+    "finance.plan.write",
+    "finance.treasury.read",
+    "finance.treasury.rebalance",
+    "finance.raise.propose",
+    "research.market.read",
+    "sales.pipeline.read",
+    "sales.pipeline.update",
+    "board.read",
+    "board.update",
+    "notes.read",
+    "notes.write",
+    "sim.advance"
+  ],
+  "event_model": {
+    "kind": "seeded_schedule",
+    "primitive_catalog": {
+      "prepay_pullforward": {
+        "operations": [
+          { "op": "increment", "path": "finance.cash_usd", "value": -140000 },
+          { "op": "clamp", "path": "finance.cash_usd", "min": 0.0 },
+          { "op": "increment", "path": "risk.financing_pressure", "value": 0.08 },
+          { "op": "clamp", "path": "risk.financing_pressure", "min": 0.0, "max": 1.0 }
+        ]
+      },
+      "pricing_penalty": {
+        "operations": [
+          { "op": "increment", "path": "finance.dilution_index", "value": 0.04 },
+          { "op": "clamp", "path": "finance.dilution_index", "min": 0.0, "max": 1.0 },
+          { "op": "increment", "path": "sales.weighted_pipeline_usd", "value": -50000 }
+        ]
+      }
+    },
+    "scheduled_events": [
+      { "event_id": "ev_hidden_fin_vendor_001", "at_turn": 1, "primitive_id": "prepay_pullforward", "event_type": "prepay_pullforward", "visible_message": "A vendor moved to prepaid terms and pulled the cash curve forward faster than the plan assumed." },
+      { "event_id": "ev_hidden_fin_vendor_002", "at_turn": 2, "primitive_id": "pricing_penalty", "event_type": "pricing_penalty", "visible_message": "The financing market started pricing in a penalty once the team looked slow to absorb the new cash timing." }
+    ]
+  },
+  "policy_constraints": [{ "constraint_id": "no_unapproved_hiring", "kind": "approval_required" }],
+  "terminal_conditions": [
+    { "condition_id": "horizon_end_13_weeks", "kind": "horizon_end" },
+    { "condition_id": "bankruptcy", "kind": "hard_failure" }
+  ],
+  "evaluation": {
+    "outcome_components": [
+      { "component_id": "cash_efficiency", "weight": 0.36, "direction": "maximize" },
+      { "component_id": "revenue_quality", "weight": 0.14, "direction": "maximize" },
+      { "component_id": "customer_health", "weight": 0.08, "direction": "maximize" },
+      { "component_id": "risk_management", "weight": 0.12, "direction": "maximize" },
+      { "component_id": "strategic_coherence", "weight": 0.3, "direction": "maximize" }
+    ],
+    "constraints": [{ "constraint_id": "bankruptcy" }, { "constraint_id": "severe_financing_failure" }]
+  }
+}
