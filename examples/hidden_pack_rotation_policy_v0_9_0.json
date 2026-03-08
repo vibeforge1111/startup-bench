@@ -1,0 +1,63 @@
+{
+  "policy_version": "0.1.0",
+  "policy_id": "hidden-pack-rotation-v0.9.0-precalibration",
+  "benchmark_version": "0.9.0-precalibration",
+  "official_window_path": "examples/official_eval_window_v0_9_0.json",
+  "rotation_cadence": {
+    "fresh_refresh_target": "refresh each hidden fresh family at least once per reporting quarter or before the next official evaluation window opens",
+    "test_window_boundary_rule": "do not change the active hidden test packs inside a frozen official window unless contamination or critical evaluator invalidation forces retirement",
+    "canary_review_target": "review canary freshness and exploit sensitivity before each new official window",
+    "minimum_rotation_review_frequency": "review all active hidden families monthly even if no rotation is executed"
+  },
+  "retirement_triggers": [
+    "confirmed hidden-content leakage or material inferability",
+    "official window closure followed by a successor pack set",
+    "critical evaluator bug that changes pack meaning materially",
+    "fresh successor promotion that makes the active pack stale or redundant",
+    "track imbalance or coverage drift severe enough to make the pack misleading"
+  ],
+  "promotion_rules": {
+    "fresh_to_test_requirements": [
+      "candidate scenarios must already exist in a hidden fresh pack with distinct ids and files",
+      "validation, lint, and smoke checks must pass on the candidate family",
+      "exploit review or canary review must not show unresolved benchmark-specific gaming risk",
+      "public test and fresh manifests must remain redacted and version-correct after promotion"
+    ],
+    "test_successor_requirements": [
+      "retire the superseded pack in the public changelog before accepting new leaderboard entries against the successor",
+      "publish the successor pack version in frozen active packs and the official window docs",
+      "keep legacy history visible rather than deleting prior pack references"
+    ],
+    "metadata_update_requirements": [
+      "update the public pack changelog",
+      "update pack lifecycle changelog",
+      "update frozen active packs when the official window uses the new set",
+      "update benchmark status and task tracking when the rotation changes benchmark claims"
+    ]
+  },
+  "operational_requirements": {
+    "required_docs": [
+      "docs/frozen_active_packs.md",
+      "docs/pack_lifecycle_changelog.md",
+      "docs/official_evaluation_window_v0_9_0.md"
+    ],
+    "required_public_artifacts": [
+      "examples/public_pack_changelog.json",
+      "examples/canary_public_test_manifest.json",
+      "examples/operator_public_test_manifest.json",
+      "examples/coverage_public_test_manifest.json",
+      "examples/strategy_public_test_manifest.json",
+      "examples/real_world_public_test_manifest.json"
+    ],
+    "required_validations": [
+      "scenario-suite validation",
+      "public manifest validation",
+      "check-suite-family for active hidden families",
+      "targeted hidden-suite execution before promotion"
+    ]
+  },
+  "notes": [
+    "This policy makes rotation cadence explicit without forcing synthetic churn inside a frozen reporting window.",
+    "Fresh packs are short-window contamination pressure tools, not permanent side tables."
+  ]
+}

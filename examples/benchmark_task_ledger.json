@@ -193,13 +193,19 @@
       "workstream": "hidden-eval-integrity",
       "milestone_id": "v0.10.0",
       "priority": "high",
-      "status": "ready",
+      "status": "completed",
       "benchmark_risk": "high",
       "owner": "core-benchmark",
       "completion_criteria": [
         "pack refresh cadence defined",
         "retirement triggers defined",
         "fresh-to-test promotion rules defined"
+      ],
+      "progress_notes": "A versioned hidden-pack rotation policy now defines fresh refresh cadence, test-window boundary rules, retirement triggers, fresh-to-test promotion requirements, and the required metadata updates for pack rotation events.",
+      "artifacts": [
+        "examples/hidden_pack_rotation_policy_v0_9_0.json",
+        "docs/hidden_pack_rotation_policy_v0_9_0.md",
+        "spec/hidden_eval_policy.md"
       ]
     },
     {

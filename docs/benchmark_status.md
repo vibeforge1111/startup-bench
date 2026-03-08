@@ -18,6 +18,7 @@ TheStartupBench is no longer just an RFC. It now has:
 - hidden suite family integrity enforcement and uncertainty-aware reporting
 - official evaluation profile and run-manifest support
 - official evaluation window and leaderboard governance pack support
+- hidden pack rotation policy support
 - a third hidden pack family for long-horizon startup judgment
 - a fourth hidden pack family for canary exploit and overfit detection
 - operator/founder calibration protocol and machine-readable review artifacts
@@ -45,6 +46,7 @@ Freeze status:
 - frozen active packs are listed in [frozen_active_packs.md](/C:/Users/USER/Desktop/startup-bench/docs/frozen_active_packs.md)
 - official reporting window rules are in [official_evaluation_window_v0_9_0.md](/C:/Users/USER/Desktop/startup-bench/docs/official_evaluation_window_v0_9_0.md)
 - leaderboard governance rules are in [leaderboard_governance_pack_v0_9_0.md](/C:/Users/USER/Desktop/startup-bench/docs/leaderboard_governance_pack_v0_9_0.md)
+- hidden pack rotation rules are in [hidden_pack_rotation_policy_v0_9_0.md](/C:/Users/USER/Desktop/startup-bench/docs/hidden_pack_rotation_policy_v0_9_0.md)
 
 Synthetic calibration status:
 

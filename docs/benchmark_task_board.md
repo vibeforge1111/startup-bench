@@ -76,19 +76,19 @@ Success targets:
   - milestone: `v0.10.0`
   - focus: defined leaderboard entry types, contamination response, release-note rules, and retirement rules in a versioned governance pack
 
-## Ready
-
 - `BT-008` hidden pack rotation policy
   - milestone: `v0.10.0`
-  - focus: define refresh cadence and pack replacement rules
+  - focus: defined rotation cadence, retirement triggers, fresh-to-test promotion rules, and metadata update requirements in a versioned policy artifact
+
+## Ready
 
 ## Next up by priority
 
 1. strategy pack depth in product, board, scale, and gtm
 2. calibration execution and operator review collection
-3. hidden pack rotation policy
-4. calibration execution and operator review collection
-5. external benchmark adoption materials
+3. calibration execution and operator review collection
+4. external benchmark adoption materials
+5. hidden inventory growth toward `75`
 
 ## Operating rules
 

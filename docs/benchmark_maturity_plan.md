@@ -301,6 +301,8 @@ Current execution artifact set:
 - [official_evaluation_window_v0_9_0.md](/C:/Users/USER/Desktop/startup-bench/docs/official_evaluation_window_v0_9_0.md)
 - [leaderboard_governance_pack_v0_9_0.json](/C:/Users/USER/Desktop/startup-bench/examples/leaderboard_governance_pack_v0_9_0.json)
 - [leaderboard_governance_pack_v0_9_0.md](/C:/Users/USER/Desktop/startup-bench/docs/leaderboard_governance_pack_v0_9_0.md)
+- [hidden_pack_rotation_policy_v0_9_0.json](/C:/Users/USER/Desktop/startup-bench/examples/hidden_pack_rotation_policy_v0_9_0.json)
+- [hidden_pack_rotation_policy_v0_9_0.md](/C:/Users/USER/Desktop/startup-bench/docs/hidden_pack_rotation_policy_v0_9_0.md)
 
 ### Workstream 4. Evaluator hardening
 

@@ -125,3 +125,16 @@ What still remains:
 
 - automated hidden-pack review checklist enforcement
 - broader pack rotation cadence across multiple hidden families
+
+## 12. Rotation policy
+
+Operational hidden-pack rotation SHOULD be frozen in a versioned policy artifact that defines:
+
+- refresh cadence
+- retirement triggers
+- fresh-to-test promotion requirements
+- metadata update requirements
+
+Current reference:
+
+- [hidden_pack_rotation_policy_v0_9_0.json](/C:/Users/USER/Desktop/startup-bench/examples/hidden_pack_rotation_policy_v0_9_0.json)

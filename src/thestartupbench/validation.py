@@ -18,6 +18,7 @@ SCHEMA_BY_ARTIFACT_TYPE = {
     "official-eval-profile": "tsb_official_eval_profile.schema.json",
     "official-eval-window": "tsb_official_eval_window.schema.json",
     "leaderboard-governance-pack": "tsb_leaderboard_governance_pack.schema.json",
+    "hidden-pack-rotation-policy": "tsb_hidden_pack_rotation_policy.schema.json",
     "run-manifest": "tsb_run_manifest.schema.json",
     "trace": "tsb_trace.schema.json",
     "submission": "tsb_submission.schema.json",
