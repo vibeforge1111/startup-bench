@@ -1,0 +1,176 @@
+{
+  "metadata": {
+    "scenario_id": "hidden_0to1_repositioning_test_001",
+    "scenario_version": "0.1.0",
+    "benchmark_version": "0.2.0-draft",
+    "track": "0to1",
+    "mode": "test",
+    "title": "Hidden 0to1 Repositioning Under Narrow Wedge Pressure",
+    "summary": "A hidden 0to1 scenario where broad demand signals mask that only one buyer wedge has real pull. The agent must reposition toward that wedge before runway and activation decay accelerate.",
+    "difficulty": "hard",
+    "time_horizon": {
+      "unit": "week",
+      "length": 18
+    },
+    "authoring_origin": "expert_authored",
+    "tags": ["0to1", "hidden_eval", "repositioning", "pmf", "ambiguity"]
+  },
+  "initial_state": {
+    "company": {
+      "stage": "pre_seed",
+      "sector": "b2b_saas",
+      "business_model": "subscription"
+    },
+    "finance": {
+      "cash_usd": 462000,
+      "monthly_burn_usd": 91000,
+      "monthly_revenue_usd": 8000
+    },
+    "product": {
+      "major_incidents_open": 0,
+      "roadmap_items": 5,
+      "onboarding_quality": 0.41
+    },
+    "customers": {
+      "paying_accounts": 8,
+      "monthly_churn_rate": 0.047,
+      "trust_score": 0.7
+    },
+    "growth": {
+      "activation_index": 0.34,
+      "active_channels": ["founder_led_sales", "community", "workshops"]
+    },
+    "sales": {
+      "pipeline_count": 14,
+      "weighted_pipeline_usd": 149000,
+      "pricing": {
+        "current_price_index": 1.0
+      }
+    },
+    "team": {
+      "headcount": 6,
+      "morale": 0.61,
+      "bandwidth_load": 0.87
+    },
+    "market": {
+      "competitor_pressure_index": 0.41,
+      "demand_index": 0.78,
+      "latest_market_note": "Interest exists, but concrete urgency keeps clustering around one narrow workflow the team still treats as just one of many use cases."
+    },
+    "governance": {
+      "board_update_count": 0
+    },
+    "policy": {
+      "max_auto_price_increase_pct": 0.05
+    },
+    "sim": {
+      "current_time": "2026-04-20T09:00:00Z"
+    }
+  },
+  "latent_state": {
+    "true_problem": "the_real_wedge_is_underweighted_in_positioning_and_experiment_design",
+    "true_upside": "narrower_positioning_can_raise_activation_and_revenue_quality"
+  },
+  "observation_surfaces": [
+    {
+      "surface_id": "finance_dashboard",
+      "surface_type": "dashboard",
+      "refresh_policy": "daily",
+      "visible_fields": ["cash_usd", "monthly_burn_usd", "runway_weeks"]
+    },
+    {
+      "surface_id": "signal_board",
+      "surface_type": "dashboard",
+      "refresh_policy": "weekly",
+      "visible_fields": ["activation_index", "weighted_pipeline_usd", "onboarding_quality"]
+    }
+  ],
+  "tools": [
+    "metrics.query",
+    "metrics.report",
+    "product.roadmap.read",
+    "product.roadmap.write",
+    "growth.experiment.create",
+    "growth.experiment.review",
+    "sales.pipeline.read",
+    "sales.pipeline.update",
+    "finance.plan.read",
+    "finance.plan.write",
+    "board.read",
+    "board.update",
+    "research.market.read",
+    "notes.read",
+    "notes.write",
+    "sim.advance"
+  ],
+  "event_model": {
+    "kind": "seeded_schedule",
+    "primitive_catalog": {
+      "positioning_drag": {
+        "operations": [
+          { "op": "increment", "path": "sales.weighted_pipeline_usd", "value": -34000 },
+          { "op": "increment", "path": "growth.activation_index", "value": -0.045 },
+          { "op": "clamp", "path": "growth.activation_index", "min": 0.0, "max": 1.0 },
+          { "op": "increment", "path": "market.demand_index", "value": -0.04 },
+          { "op": "clamp", "path": "market.demand_index", "min": 0.0, "max": 1.5 }
+        ]
+      },
+      "wedge_signal_unlock": {
+        "operations": [
+          { "op": "increment", "path": "growth.activation_index", "value": 0.085 },
+          { "op": "clamp", "path": "growth.activation_index", "min": 0.0, "max": 1.0 },
+          { "op": "increment", "path": "customers.trust_score", "value": 0.03 },
+          { "op": "clamp", "path": "customers.trust_score", "min": 0.0, "max": 1.0 },
+          { "op": "increment", "path": "finance.monthly_revenue_usd", "value": 11000 }
+        ]
+      }
+    },
+    "scheduled_events": [
+      {
+        "event_id": "ev_hidden_0to1_reposition_001",
+        "at_turn": 2,
+        "primitive_id": "positioning_drag",
+        "event_type": "positioning_drag",
+        "visible_message": "Broad positioning started weakening conversion because buyers still could not see one urgent, repeatable workflow."
+      },
+      {
+        "event_id": "ev_hidden_0to1_reposition_002",
+        "at_turn": 5,
+        "primitive_id": "wedge_signal_unlock",
+        "event_type": "wedge_signal_unlock",
+        "visible_message": "A narrower wedge started improving activation and design-partner quality."
+      }
+    ]
+  },
+  "policy_constraints": [
+    {
+      "constraint_id": "no_unapproved_hiring",
+      "kind": "approval_required"
+    }
+  ],
+  "terminal_conditions": [
+    {
+      "condition_id": "horizon_end_18_weeks",
+      "kind": "horizon_end"
+    },
+    {
+      "condition_id": "bankruptcy",
+      "kind": "hard_failure"
+    }
+  ],
+  "evaluation": {
+    "outcome_components": [
+      { "component_id": "cash_efficiency", "weight": 0.18, "direction": "maximize" },
+      { "component_id": "revenue_quality", "weight": 0.18, "direction": "maximize" },
+      { "component_id": "customer_health", "weight": 0.13, "direction": "maximize" },
+      { "component_id": "product_health", "weight": 0.18, "direction": "maximize" },
+      { "component_id": "team_health", "weight": 0.11, "direction": "maximize" },
+      { "component_id": "risk_management", "weight": 0.07, "direction": "maximize" },
+      { "component_id": "strategic_coherence", "weight": 0.15, "direction": "maximize" }
+    ],
+    "constraints": [
+      { "constraint_id": "bankruptcy" },
+      { "constraint_id": "severe_trust_breach" }
+    ]
+  }
+}

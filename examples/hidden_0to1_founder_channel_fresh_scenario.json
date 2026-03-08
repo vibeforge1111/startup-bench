@@ -1,0 +1,175 @@
+{
+  "metadata": {
+    "scenario_id": "hidden_0to1_founder_channel_fresh_001",
+    "scenario_version": "0.1.0",
+    "benchmark_version": "0.2.0-draft",
+    "track": "0to1",
+    "mode": "fresh",
+    "title": "Hidden Fresh 0to1 Founder Channel Mirage",
+    "summary": "A fresh hidden 0to1 scenario where founder hustle still produces top-of-funnel motion, but the channel is not repeatable and activation remains too weak. The agent must separate founder effort from real PMF signal.",
+    "difficulty": "hard",
+    "time_horizon": {
+      "unit": "week",
+      "length": 17
+    },
+    "authoring_origin": "expert_authored",
+    "tags": ["0to1", "fresh", "founder_led_sales", "channel_quality", "pmf"]
+  },
+  "initial_state": {
+    "company": {
+      "stage": "pre_seed",
+      "sector": "b2b_saas",
+      "business_model": "subscription"
+    },
+    "finance": {
+      "cash_usd": 432000,
+      "monthly_burn_usd": 83000,
+      "monthly_revenue_usd": 8000
+    },
+    "product": {
+      "major_incidents_open": 0,
+      "roadmap_items": 6,
+      "onboarding_quality": 0.39
+    },
+    "customers": {
+      "paying_accounts": 7,
+      "monthly_churn_rate": 0.05,
+      "trust_score": 0.68
+    },
+    "growth": {
+      "activation_index": 0.35,
+      "active_channels": ["founder_led_sales", "warm_intros", "events"]
+    },
+    "sales": {
+      "pipeline_count": 14,
+      "weighted_pipeline_usd": 166000,
+      "pricing": {
+        "current_price_index": 1.0
+      }
+    },
+    "team": {
+      "headcount": 5,
+      "morale": 0.6,
+      "bandwidth_load": 0.9
+    },
+    "market": {
+      "competitor_pressure_index": 0.33,
+      "demand_index": 0.8,
+      "latest_market_note": "Founders can still unlock meetings manually, but the product is not yet carrying its own repeatable distribution weight."
+    },
+    "governance": {
+      "board_update_count": 0
+    },
+    "policy": {
+      "max_auto_price_increase_pct": 0.04
+    },
+    "sim": {
+      "current_time": "2026-06-08T09:00:00Z"
+    }
+  },
+  "latent_state": {
+    "true_problem": "founder_output_is_masking_channel_nonrepeatability",
+    "true_failure_mode": "meeting_volume_outruns_real_activation_and_retention"
+  },
+  "observation_surfaces": [
+    {
+      "surface_id": "finance_dashboard",
+      "surface_type": "dashboard",
+      "refresh_policy": "daily",
+      "visible_fields": ["cash_usd", "monthly_burn_usd", "runway_weeks"]
+    },
+    {
+      "surface_id": "channel_board",
+      "surface_type": "dashboard",
+      "refresh_policy": "weekly",
+      "visible_fields": ["activation_index", "pipeline_count", "weighted_pipeline_usd"]
+    }
+  ],
+  "tools": [
+    "metrics.query",
+    "metrics.report",
+    "product.roadmap.read",
+    "product.roadmap.write",
+    "growth.experiment.create",
+    "growth.experiment.review",
+    "sales.pipeline.read",
+    "sales.pipeline.update",
+    "finance.plan.read",
+    "finance.plan.write",
+    "board.read",
+    "board.update",
+    "research.market.read",
+    "notes.read",
+    "notes.write",
+    "sim.advance"
+  ],
+  "event_model": {
+    "kind": "seeded_schedule",
+    "primitive_catalog": {
+      "founder_pipeline_bump": {
+        "operations": [
+          { "op": "increment", "path": "sales.pipeline_count", "value": 2 },
+          { "op": "increment", "path": "sales.weighted_pipeline_usd", "value": 24000 }
+        ]
+      },
+      "channel_reality_check": {
+        "operations": [
+          { "op": "increment", "path": "growth.activation_index", "value": -0.06 },
+          { "op": "clamp", "path": "growth.activation_index", "min": 0.0, "max": 1.0 },
+          { "op": "increment", "path": "customers.monthly_churn_rate", "value": 0.0075 },
+          { "op": "clamp", "path": "customers.monthly_churn_rate", "min": 0.0, "max": 1.0 },
+          { "op": "increment", "path": "finance.monthly_revenue_usd", "value": -3000 },
+          { "op": "increment", "path": "team.morale", "value": -0.03 },
+          { "op": "clamp", "path": "team.morale", "min": 0.0, "max": 1.0 }
+        ]
+      }
+    },
+    "scheduled_events": [
+      {
+        "event_id": "ev_hidden_0to1_founder_fresh_001",
+        "at_turn": 1,
+        "primitive_id": "founder_pipeline_bump",
+        "event_type": "founder_pipeline_bump",
+        "visible_message": "Founder hustle lifted meeting volume and made the motion look stronger than the product reality."
+      },
+      {
+        "event_id": "ev_hidden_0to1_founder_fresh_002",
+        "at_turn": 3,
+        "primitive_id": "channel_reality_check",
+        "event_type": "channel_reality_check",
+        "visible_message": "The apparent channel strength faded once the product had to carry more of the conversion burden."
+      }
+    ]
+  },
+  "policy_constraints": [
+    {
+      "constraint_id": "no_unapproved_hiring",
+      "kind": "approval_required"
+    }
+  ],
+  "terminal_conditions": [
+    {
+      "condition_id": "horizon_end_17_weeks",
+      "kind": "horizon_end"
+    },
+    {
+      "condition_id": "bankruptcy",
+      "kind": "hard_failure"
+    }
+  ],
+  "evaluation": {
+    "outcome_components": [
+      { "component_id": "cash_efficiency", "weight": 0.18, "direction": "maximize" },
+      { "component_id": "revenue_quality", "weight": 0.17, "direction": "maximize" },
+      { "component_id": "customer_health", "weight": 0.15, "direction": "maximize" },
+      { "component_id": "product_health", "weight": 0.19, "direction": "maximize" },
+      { "component_id": "team_health", "weight": 0.11, "direction": "maximize" },
+      { "component_id": "risk_management", "weight": 0.07, "direction": "maximize" },
+      { "component_id": "strategic_coherence", "weight": 0.13, "direction": "maximize" }
+    ],
+    "constraints": [
+      { "constraint_id": "bankruptcy" },
+      { "constraint_id": "severe_trust_breach" }
+    ]
+  }
+}

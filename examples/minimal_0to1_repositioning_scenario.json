@@ -1,0 +1,176 @@
+{
+  "metadata": {
+    "scenario_id": "zero_to_one_repositioning_003",
+    "scenario_version": "0.1.0",
+    "benchmark_version": "0.2.0-draft",
+    "track": "0to1",
+    "mode": "dev",
+    "title": "Repositioning Toward a Real Wedge",
+    "summary": "A pre-seed startup has broad interest but weak activation and unclear buyer urgency. The agent must narrow toward a real wedge and run disciplined experiments before the runway gets consumed by a vague story.",
+    "difficulty": "medium",
+    "time_horizon": {
+      "unit": "week",
+      "length": 18
+    },
+    "authoring_origin": "expert_authored",
+    "tags": ["0to1", "pmf", "repositioning", "experiments", "ambiguity"]
+  },
+  "initial_state": {
+    "company": {
+      "stage": "pre_seed",
+      "sector": "b2b_saas",
+      "business_model": "subscription"
+    },
+    "finance": {
+      "cash_usd": 470000,
+      "monthly_burn_usd": 88000,
+      "monthly_revenue_usd": 7000
+    },
+    "product": {
+      "major_incidents_open": 0,
+      "roadmap_items": 5,
+      "onboarding_quality": 0.42
+    },
+    "customers": {
+      "paying_accounts": 7,
+      "monthly_churn_rate": 0.046,
+      "trust_score": 0.71
+    },
+    "growth": {
+      "activation_index": 0.37,
+      "active_channels": ["founder_led_sales", "community", "workshops"]
+    },
+    "sales": {
+      "pipeline_count": 13,
+      "weighted_pipeline_usd": 142000,
+      "pricing": {
+        "current_price_index": 1.0
+      }
+    },
+    "team": {
+      "headcount": 6,
+      "morale": 0.62,
+      "bandwidth_load": 0.86
+    },
+    "market": {
+      "competitor_pressure_index": 0.4,
+      "demand_index": 0.79,
+      "latest_market_note": "Prospects like the idea, but most urgency concentrates around one workflow and falls off once the broader pitch shows up."
+    },
+    "governance": {
+      "board_update_count": 0
+    },
+    "policy": {
+      "max_auto_price_increase_pct": 0.05
+    },
+    "sim": {
+      "current_time": "2026-04-06T09:00:00Z"
+    }
+  },
+  "latent_state": {
+    "true_core_problem": "broad_positioning_is_hiding_one_real_wedge",
+    "true_upside_if_focused": "a_narrower_workflow_story_can_raise_activation_and_design_partner_quality"
+  },
+  "observation_surfaces": [
+    {
+      "surface_id": "finance_dashboard",
+      "surface_type": "dashboard",
+      "refresh_policy": "daily",
+      "visible_fields": ["cash_usd", "monthly_burn_usd", "runway_weeks"]
+    },
+    {
+      "surface_id": "signal_board",
+      "surface_type": "dashboard",
+      "refresh_policy": "weekly",
+      "visible_fields": ["activation_index", "weighted_pipeline_usd", "onboarding_quality"]
+    }
+  ],
+  "tools": [
+    "metrics.query",
+    "metrics.report",
+    "product.roadmap.read",
+    "product.roadmap.write",
+    "growth.experiment.create",
+    "growth.experiment.review",
+    "sales.pipeline.read",
+    "sales.pipeline.update",
+    "finance.plan.read",
+    "finance.plan.write",
+    "board.read",
+    "board.update",
+    "research.market.read",
+    "notes.read",
+    "notes.write",
+    "sim.advance"
+  ],
+  "event_model": {
+    "kind": "seeded_schedule",
+    "primitive_catalog": {
+      "wedge_confusion": {
+        "operations": [
+          { "op": "increment", "path": "sales.weighted_pipeline_usd", "value": -32000 },
+          { "op": "increment", "path": "growth.activation_index", "value": -0.04 },
+          { "op": "clamp", "path": "growth.activation_index", "min": 0.0, "max": 1.0 },
+          { "op": "increment", "path": "market.demand_index", "value": -0.04 },
+          { "op": "clamp", "path": "market.demand_index", "min": 0.0, "max": 1.5 }
+        ]
+      },
+      "narrower_message_lift": {
+        "operations": [
+          { "op": "increment", "path": "growth.activation_index", "value": 0.08 },
+          { "op": "clamp", "path": "growth.activation_index", "min": 0.0, "max": 1.0 },
+          { "op": "increment", "path": "customers.trust_score", "value": 0.025 },
+          { "op": "clamp", "path": "customers.trust_score", "min": 0.0, "max": 1.0 },
+          { "op": "increment", "path": "finance.monthly_revenue_usd", "value": 10000 }
+        ]
+      }
+    },
+    "scheduled_events": [
+      {
+        "event_id": "ev_0to1_reposition_001",
+        "at_turn": 2,
+        "primitive_id": "wedge_confusion",
+        "event_type": "wedge_confusion",
+        "visible_message": "Several prospects liked the idea but still could not map the product clearly to a must-have workflow."
+      },
+      {
+        "event_id": "ev_0to1_reposition_002",
+        "at_turn": 5,
+        "primitive_id": "narrower_message_lift",
+        "event_type": "narrower_message_lift",
+        "visible_message": "A narrower workflow story improved early activation and the quality of design-partner conversations."
+      }
+    ]
+  },
+  "policy_constraints": [
+    {
+      "constraint_id": "no_unapproved_hiring",
+      "kind": "approval_required"
+    }
+  ],
+  "terminal_conditions": [
+    {
+      "condition_id": "horizon_end_18_weeks",
+      "kind": "horizon_end"
+    },
+    {
+      "condition_id": "bankruptcy",
+      "kind": "hard_failure"
+    }
+  ],
+  "evaluation": {
+    "outcome_components": [
+      { "component_id": "cash_efficiency", "weight": 0.18, "direction": "maximize" },
+      { "component_id": "revenue_quality", "weight": 0.18, "direction": "maximize" },
+      { "component_id": "customer_health", "weight": 0.13, "direction": "maximize" },
+      { "component_id": "product_health", "weight": 0.18, "direction": "maximize" },
+      { "component_id": "team_health", "weight": 0.11, "direction": "maximize" },
+      { "component_id": "risk_management", "weight": 0.07, "direction": "maximize" },
+      { "component_id": "strategic_coherence", "weight": 0.15, "direction": "maximize" }
+    ],
+    "constraints": [
+      { "constraint_id": "bankruptcy" },
+      { "constraint_id": "severe_trust_breach" }
+    ]
+  }
+}

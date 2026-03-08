@@ -1,0 +1,174 @@
+{
+  "metadata": {
+    "scenario_id": "hidden_0to1_retention_cliff_fresh_001",
+    "scenario_version": "0.1.0",
+    "benchmark_version": "0.2.0-draft",
+    "track": "0to1",
+    "mode": "fresh",
+    "title": "Hidden Fresh 0to1 Retention Cliff After Early Revenue",
+    "summary": "A fresh hidden 0to1 scenario where early paid traction looks encouraging, but usage falls off after onboarding. The agent must privilege retention quality over shallow revenue proof.",
+    "difficulty": "hard",
+    "time_horizon": {
+      "unit": "week",
+      "length": 18
+    },
+    "authoring_origin": "expert_authored",
+    "tags": ["0to1", "fresh", "retention", "pmf", "early_revenue"]
+  },
+  "initial_state": {
+    "company": {
+      "stage": "pre_seed",
+      "sector": "b2b_saas",
+      "business_model": "subscription"
+    },
+    "finance": {
+      "cash_usd": 439000,
+      "monthly_burn_usd": 86000,
+      "monthly_revenue_usd": 13000
+    },
+    "product": {
+      "major_incidents_open": 0,
+      "roadmap_items": 5,
+      "onboarding_quality": 0.42
+    },
+    "customers": {
+      "paying_accounts": 10,
+      "monthly_churn_rate": 0.046,
+      "trust_score": 0.69
+    },
+    "growth": {
+      "activation_index": 0.39,
+      "active_channels": ["founder_led_sales", "design_partners", "pilots"]
+    },
+    "sales": {
+      "pipeline_count": 11,
+      "weighted_pipeline_usd": 134000,
+      "pricing": {
+        "current_price_index": 1.0
+      }
+    },
+    "team": {
+      "headcount": 6,
+      "morale": 0.61,
+      "bandwidth_load": 0.86
+    },
+    "market": {
+      "competitor_pressure_index": 0.35,
+      "demand_index": 0.75,
+      "latest_market_note": "Early buyers will still pay to test the product, but sticky usage remains less convincing than the revenue line suggests."
+    },
+    "governance": {
+      "board_update_count": 0
+    },
+    "policy": {
+      "max_auto_price_increase_pct": 0.05
+    },
+    "sim": {
+      "current_time": "2026-07-06T09:00:00Z"
+    }
+  },
+  "latent_state": {
+    "true_problem": "early_revenue_signal_is_outrunning_retention_quality",
+    "true_failure_mode": "initial_revenue_confidence_hides_a_real_usage_dropoff"
+  },
+  "observation_surfaces": [
+    {
+      "surface_id": "finance_dashboard",
+      "surface_type": "dashboard",
+      "refresh_policy": "daily",
+      "visible_fields": ["cash_usd", "monthly_burn_usd", "runway_weeks"]
+    },
+    {
+      "surface_id": "retention_board",
+      "surface_type": "dashboard",
+      "refresh_policy": "weekly",
+      "visible_fields": ["activation_index", "monthly_churn_rate", "onboarding_quality"]
+    }
+  ],
+  "tools": [
+    "metrics.query",
+    "metrics.report",
+    "product.roadmap.read",
+    "product.roadmap.write",
+    "growth.experiment.create",
+    "growth.experiment.review",
+    "sales.pipeline.read",
+    "sales.pipeline.update",
+    "finance.plan.read",
+    "finance.plan.write",
+    "board.read",
+    "board.update",
+    "research.market.read",
+    "notes.read",
+    "notes.write",
+    "sim.advance"
+  ],
+  "event_model": {
+    "kind": "seeded_schedule",
+    "primitive_catalog": {
+      "pilot_signal_bump": {
+        "operations": [
+          { "op": "increment", "path": "finance.monthly_revenue_usd", "value": 5000 },
+          { "op": "increment", "path": "sales.weighted_pipeline_usd", "value": 17000 }
+        ]
+      },
+      "usage_dropoff": {
+        "operations": [
+          { "op": "increment", "path": "customers.monthly_churn_rate", "value": 0.0095 },
+          { "op": "clamp", "path": "customers.monthly_churn_rate", "min": 0.0, "max": 1.0 },
+          { "op": "increment", "path": "growth.activation_index", "value": -0.055 },
+          { "op": "clamp", "path": "growth.activation_index", "min": 0.0, "max": 1.0 },
+          { "op": "increment", "path": "customers.trust_score", "value": -0.03 },
+          { "op": "clamp", "path": "customers.trust_score", "min": 0.0, "max": 1.0 }
+        ]
+      }
+    },
+    "scheduled_events": [
+      {
+        "event_id": "ev_hidden_0to1_retention_fresh_001",
+        "at_turn": 1,
+        "primitive_id": "pilot_signal_bump",
+        "event_type": "pilot_signal_bump",
+        "visible_message": "A handful of early paid pilots made the traction picture look cleaner than the real usage pattern."
+      },
+      {
+        "event_id": "ev_hidden_0to1_retention_fresh_002",
+        "at_turn": 4,
+        "primitive_id": "usage_dropoff",
+        "event_type": "usage_dropoff",
+        "visible_message": "Usage and retention weakened sharply after the initial onboarding moment passed."
+      }
+    ]
+  },
+  "policy_constraints": [
+    {
+      "constraint_id": "no_unapproved_hiring",
+      "kind": "approval_required"
+    }
+  ],
+  "terminal_conditions": [
+    {
+      "condition_id": "horizon_end_18_weeks",
+      "kind": "horizon_end"
+    },
+    {
+      "condition_id": "bankruptcy",
+      "kind": "hard_failure"
+    }
+  ],
+  "evaluation": {
+    "outcome_components": [
+      { "component_id": "cash_efficiency", "weight": 0.17, "direction": "maximize" },
+      { "component_id": "revenue_quality", "weight": 0.18, "direction": "maximize" },
+      { "component_id": "customer_health", "weight": 0.17, "direction": "maximize" },
+      { "component_id": "product_health", "weight": 0.18, "direction": "maximize" },
+      { "component_id": "team_health", "weight": 0.1, "direction": "maximize" },
+      { "component_id": "risk_management", "weight": 0.07, "direction": "maximize" },
+      { "component_id": "strategic_coherence", "weight": 0.13, "direction": "maximize" }
+    ],
+    "constraints": [
+      { "constraint_id": "bankruptcy" },
+      { "constraint_id": "severe_trust_breach" }
+    ]
+  }
+}
