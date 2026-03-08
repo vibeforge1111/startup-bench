@@ -1162,6 +1162,7 @@ def _heuristic_liquidity_actions(session: RuntimeSession, *, turn_index: int) ->
 
 
 def _heuristic_governance_actions(session: RuntimeSession, *, turn_index: int) -> list[dict]:
+    track = session.scenario["metadata"]["track"]
     finance = session.world_state.get("finance", {})
     product = session.world_state.get("product", {})
     customers = session.world_state.get("customers", {})
@@ -1303,15 +1304,31 @@ def _heuristic_governance_actions(session: RuntimeSession, *, turn_index: int) -
         action_index += 1
 
     if float(product.get("onboarding_quality", 0.0)) < 0.7 or int(product.get("roadmap_items", 0)) > 7:
+        roadmap_items_delta = -1
+        onboarding_quality_delta = 0.08
+        budget_change_monthly_burn_usd = 3500
+
+        if (
+            track == "board"
+            and (
+                int(product.get("major_incidents_open", 0)) > 0
+                or float(operations.get("support_backlog", 0.0)) > 42
+                or float(operations.get("support_sla_breach_risk", 0.0)) > 0.42
+            )
+        ):
+            roadmap_items_delta = -2
+            onboarding_quality_delta = 0.1
+            budget_change_monthly_burn_usd = 4500
+
         actions.append(
             {
                 "tool_name": "product.roadmap.write",
                 "request_id": _next_request_id(turn_index, action_index),
                 "arguments": {
-                    "roadmap_items_delta": -1,
-                    "onboarding_quality_delta": 0.08,
+                    "roadmap_items_delta": roadmap_items_delta,
+                    "onboarding_quality_delta": onboarding_quality_delta,
                     "major_incidents_delta": 0,
-                    "budget_change_monthly_burn_usd": 3500,
+                    "budget_change_monthly_burn_usd": budget_change_monthly_burn_usd,
                 },
             }
         )
