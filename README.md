@@ -177,6 +177,7 @@ thestartupbench/
 - [RFC](THE_STARTUP_BENCH_RFC.md)
 - [Benchmark status](docs/benchmark_status.md)
 - [Coverage expansion policy](docs/coverage_expansion_policy.md)
+- [Coverage build plan](docs/coverage_build_plan.md)
 - [Known issues](docs/benchmark_known_issues.md)
 - [SOTA audit](docs/sota_benchmark_audit.md) | [Re-audit](docs/sota_reaudit.md)
 
