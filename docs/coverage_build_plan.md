@@ -161,3 +161,5 @@ Current execution focus:
 
 - keep extending benchmark-safe coverage families with small, versioned commits
 - prioritize communication quality and growth experimentation depth over legal/regulatory expansion
+- keep board-communication scoring rubric-bound and minority-weighted, starting with `board.update` completeness against live operating stress
+- treat customer-communication and hiring-plan evaluation as later follow-on slices rather than broad semantic judging all at once
