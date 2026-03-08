@@ -1,0 +1,185 @@
+{
+  "metadata": {
+    "scenario_id": "hidden_hiring_plan_quality_fresh_001",
+    "scenario_version": "0.1.0",
+    "benchmark_version": "0.2.0-draft",
+    "track": "people",
+    "mode": "fresh",
+    "title": "Hidden Fresh Hiring Plan Under Leadership and Demand Drift",
+    "summary": "A fresh hidden people scenario where leadership gaps and demand drift make a selective hiring plan necessary. The operator must show hiring discipline, not just recruiting activity.",
+    "difficulty": "frontier",
+    "time_horizon": {
+      "unit": "week",
+      "length": 18
+    },
+    "authoring_origin": "expert_authored",
+    "tags": ["people", "hidden_eval", "fresh", "hiring", "planning"]
+  },
+  "initial_state": {
+    "company": {
+      "stage": "series_a",
+      "sector": "developer_tools",
+      "business_model": "subscription"
+    },
+    "finance": {
+      "cash_usd": 2640000,
+      "monthly_burn_usd": 326000,
+      "monthly_revenue_usd": 244000
+    },
+    "product": {
+      "major_incidents_open": 0,
+      "roadmap_items": 6,
+      "onboarding_quality": 0.59
+    },
+    "customers": {
+      "paying_accounts": 142,
+      "monthly_churn_rate": 0.031,
+      "trust_score": 0.67
+    },
+    "sales": {
+      "pipeline_count": 14,
+      "weighted_pipeline_usd": 1010000,
+      "pricing": {
+        "current_price_index": 1.0
+      }
+    },
+    "operations": {
+      "support_backlog": 24,
+      "support_sla_breach_risk": 0.28
+    },
+    "team": {
+      "headcount": 17,
+      "morale": 0.57,
+      "attrition_risk": 0.52,
+      "bandwidth_load": 0.89,
+      "hiring": {
+        "open_roles": 4,
+        "critical_roles_open": 2,
+        "sourced_candidates": 3,
+        "onsite_candidates": 1,
+        "offers_out": 0,
+        "time_to_fill_weeks": 7
+      }
+    },
+    "market": {
+      "competitor_pressure": "moderate",
+      "competitor_pressure_index": 0.58,
+      "pricing_pressure_index": 0.43,
+      "demand_index": 0.7,
+      "latest_market_note": "The company still needs key hires, but demand no longer supports broad headcount expansion."
+    },
+    "risk": {
+      "financing_pressure": 0.6,
+      "regulatory_pressure": 0.12,
+      "counterparty_risk": 0.15
+    },
+    "governance": {
+      "board_update_count": 0
+    },
+    "policy": {
+      "max_auto_price_increase_pct": 0.05
+    },
+    "sim": {
+      "current_time": "2026-11-02T09:00:00Z"
+    }
+  },
+  "latent_state": {
+    "true_failure_mode": "hiring_activity_substitutes_for_a_real_staffing_plan",
+    "true_win_condition": "the_operator_prioritizes_key_roles_with_clear ownership pacing and guardrails"
+  },
+  "observation_surfaces": [
+    {
+      "surface_id": "talent_dashboard",
+      "surface_type": "dashboard",
+      "refresh_policy": "daily",
+      "visible_fields": ["open_roles", "critical_roles_open", "bandwidth_load", "hiring_capacity_index"]
+    },
+    {
+      "surface_id": "market_dashboard",
+      "surface_type": "dashboard",
+      "refresh_policy": "daily",
+      "visible_fields": ["demand_index", "weighted_pipeline_usd", "runway_weeks", "financing_pressure"]
+    }
+  ],
+  "tools": [
+    "metrics.query",
+    "metrics.report",
+    "people.hiring.read",
+    "people.hiring.update",
+    "people.org.read",
+    "people.org.adjust",
+    "finance.plan.read",
+    "finance.plan.write",
+    "research.market.read",
+    "notes.read",
+    "notes.write",
+    "sim.advance"
+  ],
+  "event_model": {
+    "kind": "seeded_schedule",
+    "primitive_catalog": {
+      "demand_drag": {
+        "operations": [
+          { "op": "increment", "path": "market.demand_index", "value": -0.05 },
+          { "op": "clamp", "path": "market.demand_index", "min": 0.0, "max": 1.5 },
+          { "op": "increment", "path": "sales.weighted_pipeline_usd", "value": -100000 }
+        ]
+      },
+      "management_gap": {
+        "operations": [
+          { "op": "increment", "path": "team.hiring.open_roles", "value": 1 },
+          { "op": "increment", "path": "team.hiring.critical_roles_open", "value": 1 },
+          { "op": "increment", "path": "team.morale", "value": -0.03 },
+          { "op": "clamp", "path": "team.morale", "min": 0.0, "max": 1.0 }
+        ]
+      }
+    },
+    "scheduled_events": [
+      {
+        "event_id": "ev_hidden_hiring_plan_fresh_001",
+        "at_turn": 2,
+        "primitive_id": "demand_drag",
+        "event_type": "market_softening",
+        "visible_message": "Demand drift deepened and made the staffing plan harder to justify."
+      },
+      {
+        "event_id": "ev_hidden_hiring_plan_fresh_002",
+        "at_turn": 4,
+        "primitive_id": "management_gap",
+        "event_type": "hiring_pressure",
+        "visible_message": "A leadership gap forced a reprioritization of who actually needs to be hired first."
+      }
+    ]
+  },
+  "policy_constraints": [
+    {
+      "constraint_id": "no_unapproved_hiring",
+      "kind": "approval_required"
+    }
+  ],
+  "terminal_conditions": [
+    {
+      "condition_id": "horizon_end_18_weeks",
+      "kind": "horizon_end"
+    },
+    {
+      "condition_id": "bankruptcy",
+      "kind": "hard_failure"
+    }
+  ],
+  "evaluation": {
+    "outcome_components": [
+      { "component_id": "cash_efficiency", "weight": 0.1, "direction": "maximize" },
+      { "component_id": "revenue_quality", "weight": 0.12, "direction": "maximize" },
+      { "component_id": "customer_health", "weight": 0.12, "direction": "maximize" },
+      { "component_id": "product_health", "weight": 0.14, "direction": "maximize" },
+      { "component_id": "team_health", "weight": 0.2, "direction": "maximize" },
+      { "component_id": "risk_management", "weight": 0.1, "direction": "maximize" },
+      { "component_id": "strategic_coherence", "weight": 0.22, "direction": "maximize" }
+    ],
+    "constraints": [
+      { "constraint_id": "bankruptcy" },
+      { "constraint_id": "severe_trust_breach" }
+    ]
+  }
+}
