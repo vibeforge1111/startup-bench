@@ -1,0 +1,121 @@
+{
+  "metadata": {
+    "scenario_id": "hidden_gtm_partner_backfire_fresh_001",
+    "scenario_version": "0.1.0",
+    "benchmark_version": "0.2.0-draft",
+    "track": "gtm",
+    "mode": "fresh",
+    "title": "Hidden Fresh GTM Partner Backfire Under Delivery Drag",
+    "summary": "A fresh hidden GTM scenario where partner motion looks promising until onboarding and support drag starts degrading real customer quality.",
+    "difficulty": "hard",
+    "time_horizon": { "unit": "week", "length": 14 },
+    "authoring_origin": "expert_authored",
+    "tags": ["gtm", "fresh", "partners", "delivery", "support"]
+  },
+  "initial_state": {
+    "company": { "stage": "series_a", "sector": "b2b_saas", "business_model": "subscription" },
+    "finance": { "cash_usd": 2380000, "monthly_burn_usd": 357000, "monthly_revenue_usd": 228000 },
+    "product": { "major_incidents_open": 0, "roadmap_items": 7, "onboarding_quality": 0.55 },
+    "customers": { "paying_accounts": 135, "monthly_churn_rate": 0.034, "trust_score": 0.65 },
+    "sales": { "pipeline_count": 11, "weighted_pipeline_usd": 735000, "pricing": { "current_price_index": 1.0 } },
+    "operations": { "support_backlog": 44, "support_sla_breach_risk": 0.45 },
+    "market": {
+      "competitor_pressure": "moderate",
+      "competitor_pressure_index": 0.62,
+      "pricing_pressure_index": 0.47,
+      "demand_index": 0.78,
+      "latest_market_note": "Partners are creating volume, but buyers increasingly care whether the product can be implemented cleanly at that pace."
+    },
+    "team": { "headcount": 16, "morale": 0.58, "attrition_risk": 0.44, "bandwidth_load": 0.85 },
+    "governance": { "board_update_count": 0 },
+    "policy": { "max_auto_price_increase_pct": 0.07 },
+    "sim": { "current_time": "2026-10-05T09:00:00Z" }
+  },
+  "latent_state": {
+    "true_channel_problem": "partner_scale_is_running_ahead_of_delivery_readiness",
+    "true_risk": "pipeline_improves_before_customer_quality_holds"
+  },
+  "observation_surfaces": [
+    {
+      "surface_id": "crm_pipeline",
+      "surface_type": "crm",
+      "refresh_policy": "realtime",
+      "visible_fields": ["pipeline_count", "weighted_pipeline_usd", "current_price_index"]
+    },
+    {
+      "surface_id": "ops_dashboard",
+      "surface_type": "dashboard",
+      "refresh_policy": "weekly",
+      "visible_fields": ["support_backlog", "support_sla_breach_risk", "onboarding_quality"]
+    }
+  ],
+  "tools": [
+    "metrics.query",
+    "metrics.report",
+    "product.roadmap.read",
+    "product.roadmap.write",
+    "ops.support.read",
+    "ops.support.resolve",
+    "sales.pipeline.read",
+    "sales.pipeline.update",
+    "research.market.read",
+    "finance.plan.read",
+    "finance.plan.write",
+    "board.read",
+    "board.update",
+    "notes.read",
+    "notes.write",
+    "sim.advance"
+  ],
+  "event_model": {
+    "kind": "seeded_schedule",
+    "primitive_catalog": {
+      "partner_volume_jump": {
+        "operations": [
+          { "op": "increment", "path": "sales.pipeline_count", "value": 3 },
+          { "op": "increment", "path": "sales.weighted_pipeline_usd", "value": 100000 },
+          { "op": "increment", "path": "operations.support_backlog", "value": 8 }
+        ]
+      },
+      "delivery_drag_bill": {
+        "operations": [
+          { "op": "increment", "path": "product.onboarding_quality", "value": -0.05 },
+          { "op": "clamp", "path": "product.onboarding_quality", "min": 0.0, "max": 1.0 },
+          { "op": "increment", "path": "customers.trust_score", "value": -0.035 },
+          { "op": "clamp", "path": "customers.trust_score", "min": 0.0, "max": 1.0 },
+          { "op": "increment", "path": "customers.monthly_churn_rate", "value": 0.0055 }
+        ]
+      }
+    },
+    "scheduled_events": [
+      {
+        "event_id": "ev_hidden_gtm_partner_fresh_001",
+        "at_turn": 1,
+        "primitive_id": "partner_volume_jump",
+        "event_type": "partner_volume_jump",
+        "visible_message": "Partner-sourced activity made the quarter look stronger and more scalable."
+      },
+      {
+        "event_id": "ev_hidden_gtm_partner_fresh_002",
+        "at_turn": 3,
+        "primitive_id": "delivery_drag_bill",
+        "event_type": "delivery_drag_bill",
+        "visible_message": "Implementation drag and support strain started degrading the partner-driven funnel."
+      }
+    ]
+  },
+  "policy_constraints": [{ "constraint_id": "no_unapproved_hiring", "kind": "approval_required" }],
+  "terminal_conditions": [
+    { "condition_id": "horizon_end_14_weeks", "kind": "horizon_end" },
+    { "condition_id": "bankruptcy", "kind": "hard_failure" }
+  ],
+  "evaluation": {
+    "outcome_components": [
+      { "component_id": "cash_efficiency", "weight": 0.15, "direction": "maximize" },
+      { "component_id": "revenue_quality", "weight": 0.3, "direction": "maximize" },
+      { "component_id": "customer_health", "weight": 0.25, "direction": "maximize" },
+      { "component_id": "strategic_coherence", "weight": 0.3, "direction": "maximize" }
+    ],
+    "constraints": [{ "constraint_id": "bankruptcy" }, { "constraint_id": "severe_trust_breach" }]
+  }
+}

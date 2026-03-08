@@ -1,0 +1,124 @@
+{
+  "metadata": {
+    "scenario_id": "hidden_finance_stepdown_raise_fresh_001",
+    "scenario_version": "0.1.0",
+    "benchmark_version": "0.2.0-draft",
+    "track": "finance",
+    "mode": "fresh",
+    "title": "Hidden Fresh Step-Down Raise and Burn Reset Test",
+    "summary": "A fresh hidden finance scenario where capital remains available, but only behind a more credible burn reset than the company currently wants to show.",
+    "difficulty": "hard",
+    "time_horizon": { "unit": "week", "length": 13 },
+    "authoring_origin": "expert_authored",
+    "tags": ["finance", "fresh", "fundraising", "step_down", "runway"]
+  },
+  "initial_state": {
+    "company": { "stage": "series_a", "sector": "b2b_saas", "business_model": "subscription" },
+    "finance": {
+      "cash_usd": 1810000,
+      "restricted_cash_usd": 295000,
+      "monthly_burn_usd": 366000,
+      "monthly_revenue_usd": 212000,
+      "treasury_concentration": 0.68,
+      "dilution_index": 0.13
+    },
+    "customers": { "paying_accounts": 118, "monthly_churn_rate": 0.031, "trust_score": 0.67 },
+    "sales": { "pipeline_count": 8, "weighted_pipeline_usd": 588000, "pricing": { "current_price_index": 1.0 } },
+    "market": {
+      "competitor_pressure": "moderate",
+      "competitor_pressure_index": 0.5,
+      "pricing_pressure_index": 0.45,
+      "demand_index": 0.7,
+      "latest_market_note": "Investors still back credible resets, but not teams that refuse to reset burn and financing expectations honestly."
+    },
+    "risk": { "counterparty_risk": 0.45, "financing_pressure": 0.81 },
+    "governance": { "board_update_count": 1 },
+    "policy": { "max_auto_price_increase_pct": 0.05 },
+    "sim": { "current_time": "2026-11-02T09:00:00Z" }
+  },
+  "latent_state": {
+    "true_liquidity_problem": "raise_quality_is_now_tied_to_burn_reset_credibility",
+    "true_fundraising_market": "available_but_less_forgiving"
+  },
+  "observation_surfaces": [
+    {
+      "surface_id": "finance_dashboard",
+      "surface_type": "dashboard",
+      "refresh_policy": "realtime",
+      "visible_fields": ["cash_usd", "liquid_cash_usd", "runway_weeks", "dilution_index"]
+    },
+    {
+      "surface_id": "board_packet",
+      "surface_type": "board_portal",
+      "refresh_policy": "weekly",
+      "visible_fields": ["financing_pressure", "monthly_burn_usd", "monthly_revenue_usd"]
+    }
+  ],
+  "tools": [
+    "metrics.query",
+    "metrics.report",
+    "finance.plan.read",
+    "finance.plan.write",
+    "finance.treasury.read",
+    "finance.treasury.rebalance",
+    "finance.raise.propose",
+    "research.market.read",
+    "sales.pipeline.read",
+    "sales.pipeline.update",
+    "board.read",
+    "board.update",
+    "notes.read",
+    "notes.write",
+    "sim.advance"
+  ],
+  "event_model": {
+    "kind": "seeded_schedule",
+    "primitive_catalog": {
+      "investor_recut": {
+        "operations": [
+          { "op": "increment", "path": "risk.financing_pressure", "value": 0.08 },
+          { "op": "clamp", "path": "risk.financing_pressure", "min": 0.0, "max": 1.0 },
+          { "op": "increment", "path": "sales.weighted_pipeline_usd", "value": -65000 }
+        ]
+      },
+      "stepdown_terms": {
+        "operations": [
+          { "op": "increment", "path": "finance.dilution_index", "value": 0.055 },
+          { "op": "clamp", "path": "finance.dilution_index", "min": 0.0, "max": 1.0 },
+          { "op": "increment", "path": "risk.financing_pressure", "value": 0.07 },
+          { "op": "clamp", "path": "risk.financing_pressure", "min": 0.0, "max": 1.0 }
+        ]
+      }
+    },
+    "scheduled_events": [
+      {
+        "event_id": "ev_hidden_fin_stepdown_fresh_001",
+        "at_turn": 2,
+        "primitive_id": "investor_recut",
+        "event_type": "investor_recut",
+        "visible_message": "Investors asked for a sharper burn reset and cut the old narrative harder."
+      },
+      {
+        "event_id": "ev_hidden_fin_stepdown_fresh_002",
+        "at_turn": 4,
+        "primitive_id": "stepdown_terms",
+        "event_type": "stepdown_terms",
+        "visible_message": "The likely fundraise stayed alive, but under noticeably worse dilution terms."
+      }
+    ]
+  },
+  "policy_constraints": [{ "constraint_id": "no_unapproved_hiring", "kind": "approval_required" }],
+  "terminal_conditions": [
+    { "condition_id": "horizon_end_13_weeks", "kind": "horizon_end" },
+    { "condition_id": "bankruptcy", "kind": "hard_failure" }
+  ],
+  "evaluation": {
+    "outcome_components": [
+      { "component_id": "cash_efficiency", "weight": 0.38, "direction": "maximize" },
+      { "component_id": "revenue_quality", "weight": 0.15, "direction": "maximize" },
+      { "component_id": "customer_health", "weight": 0.05, "direction": "maximize" },
+      { "component_id": "strategic_coherence", "weight": 0.42, "direction": "maximize" }
+    ],
+    "constraints": [{ "constraint_id": "bankruptcy" }, { "constraint_id": "severe_financing_failure" }]
+  }
+}
