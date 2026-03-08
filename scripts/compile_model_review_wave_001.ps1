@@ -34,15 +34,23 @@ if (-not $reviewJsonPaths -or $reviewJsonPaths.Count -eq 0) {
     throw "No imported operator-review JSON files found in $ImportDir"
 }
 
-$compileArgs = @(
-    "-m", "thestartupbench", "compile-calibration-study",
-    $StudyManifestPath,
-    "--study-run-dir", $StudyRunDir,
-    "--output-dir", $ReportDir,
-    "--review-paths", ($reviewJsonPaths -join ",")
-)
+$reviewPathBlock = ($reviewJsonPaths | ForEach-Object { $_ }) -join "`n"
+$pythonScript = @"
+import json
+from pathlib import Path
+from thestartupbench.study_runner import compile_calibration_study
 
-python @compileArgs
+review_paths = [Path(path) for path in r'''$reviewPathBlock'''.splitlines() if path.strip()]
+result = compile_calibration_study(
+    study_manifest_path=Path(r'''$StudyManifestPath'''),
+    study_run_dir=Path(r'''$StudyRunDir'''),
+    review_paths=review_paths,
+    output_dir=Path(r'''$ReportDir'''),
+)
+print(json.dumps(result, indent=2))
+"@
+
+python -c $pythonScript
 
 Write-Host ""
 Write-Host "Completed model review wave 001 compilation."
