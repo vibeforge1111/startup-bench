@@ -1,0 +1,195 @@
+{
+  "metadata": {
+    "scenario_id": "hidden_customer_communication_fresh_001",
+    "scenario_version": "0.1.0",
+    "benchmark_version": "0.2.0-draft",
+    "track": "crisis",
+    "mode": "fresh",
+    "title": "Hidden Fresh Customer Escalation Response Under Disclosure Drag",
+    "summary": "A fresh hidden crisis scenario where customer disclosures keep widening the support load and the operator must issue concrete, repeated customer communication under pressure.",
+    "difficulty": "frontier",
+    "time_horizon": {
+      "unit": "week",
+      "length": 16
+    },
+    "authoring_origin": "expert_authored",
+    "tags": ["crisis", "hidden_eval", "fresh", "customer_communication", "disclosure"]
+  },
+  "initial_state": {
+    "company": {
+      "stage": "series_a",
+      "sector": "developer_tools",
+      "business_model": "subscription"
+    },
+    "finance": {
+      "cash_usd": 2780000,
+      "monthly_burn_usd": 332000,
+      "monthly_revenue_usd": 241000
+    },
+    "product": {
+      "major_incidents_open": 1,
+      "roadmap_items": 6,
+      "onboarding_quality": 0.59
+    },
+    "customers": {
+      "paying_accounts": 148,
+      "monthly_churn_rate": 0.031,
+      "trust_score": 0.65
+    },
+    "operations": {
+      "support_backlog": 39,
+      "support_sla_breach_risk": 0.41
+    },
+    "sales": {
+      "pipeline_count": 15,
+      "weighted_pipeline_usd": 1050000,
+      "pricing": {
+        "current_price_index": 1.0
+      }
+    },
+    "team": {
+      "headcount": 18,
+      "morale": 0.56,
+      "attrition_risk": 0.5,
+      "bandwidth_load": 0.87
+    },
+    "market": {
+      "competitor_pressure": "moderate",
+      "competitor_pressure_index": 0.57,
+      "pricing_pressure_index": 0.45,
+      "demand_index": 0.74,
+      "latest_market_note": "Customers want concrete next steps and direct follow-up, not only a status-page headline."
+    },
+    "risk": {
+      "financing_pressure": 0.38,
+      "regulatory_pressure": 0.2,
+      "counterparty_risk": 0.17
+    },
+    "governance": {
+      "board_update_count": 0
+    },
+    "policy": {
+      "max_auto_price_increase_pct": 0.05
+    },
+    "sim": {
+      "current_time": "2026-10-19T09:00:00Z"
+    }
+  },
+  "latent_state": {
+    "true_failure_mode": "customers_keep_hearing_about_the_incident_faster_than_they_hear_from_the_company",
+    "true_win_condition": "customer_updates_are_specific_enough_to_reduce_escalation_noise_and_support_confusion"
+  },
+  "observation_surfaces": [
+    {
+      "surface_id": "incident_dashboard",
+      "surface_type": "dashboard",
+      "refresh_policy": "daily",
+      "visible_fields": ["major_incidents_open", "trust_score", "support_backlog", "support_sla_breach_risk"]
+    },
+    {
+      "surface_id": "board_portal",
+      "surface_type": "board_portal",
+      "refresh_policy": "weekly",
+      "visible_fields": ["board_update_count", "trust_score", "runway_weeks"]
+    }
+  ],
+  "tools": [
+    "metrics.query",
+    "metrics.report",
+    "ops.incident.read",
+    "ops.incident.respond",
+    "ops.support.read",
+    "ops.support.resolve",
+    "finance.plan.read",
+    "finance.plan.write",
+    "research.market.read",
+    "board.read",
+    "board.update",
+    "notes.read",
+    "notes.write",
+    "sim.advance"
+  ],
+  "event_model": {
+    "kind": "seeded_schedule",
+    "primitive_catalog": {
+      "trust_shock": {
+        "operations": [
+          { "op": "increment", "path": "customers.trust_score", "value": -0.08 },
+          { "op": "clamp", "path": "customers.trust_score", "min": 0.0, "max": 1.0 },
+          { "op": "increment", "path": "customers.monthly_churn_rate", "value": 0.009 },
+          { "op": "clamp", "path": "customers.monthly_churn_rate", "min": 0.0, "max": 1.0 }
+        ]
+      },
+      "customer_disclosure_wave": {
+        "operations": [
+          { "op": "increment", "path": "operations.support_backlog", "value": 16 },
+          { "op": "increment", "path": "operations.support_sla_breach_risk", "value": 0.09 },
+          { "op": "clamp", "path": "operations.support_sla_breach_risk", "min": 0.0, "max": 1.0 },
+          { "op": "increment", "path": "customers.trust_score", "value": -0.04 },
+          { "op": "clamp", "path": "customers.trust_score", "min": 0.0, "max": 1.0 }
+        ]
+      },
+      "security_backlash": {
+        "operations": [
+          { "op": "increment", "path": "product.major_incidents_open", "value": 1 },
+          { "op": "increment", "path": "market.pricing_pressure_index", "value": 0.04 },
+          { "op": "clamp", "path": "market.pricing_pressure_index", "min": 0.0, "max": 1.0 }
+        ]
+      }
+    },
+    "scheduled_events": [
+      {
+        "event_id": "ev_hidden_customer_comms_fresh_001",
+        "at_turn": 2,
+        "primitive_id": "trust_shock",
+        "event_type": "trust_shock",
+        "visible_message": "The first customer disclosure wave caused an immediate trust drop."
+      },
+      {
+        "event_id": "ev_hidden_customer_comms_fresh_002",
+        "at_turn": 4,
+        "primitive_id": "customer_disclosure_wave",
+        "event_type": "customer_disclosure",
+        "visible_message": "Support queues climbed as more downstream users learned about the incident through customer channels."
+      },
+      {
+        "event_id": "ev_hidden_customer_comms_fresh_003",
+        "at_turn": 5,
+        "primitive_id": "security_backlash",
+        "event_type": "security_backlash",
+        "visible_message": "A second backlash reopened scope questions and raised customer urgency again."
+      }
+    ]
+  },
+  "policy_constraints": [
+    {
+      "constraint_id": "no_unapproved_hiring",
+      "kind": "approval_required"
+    }
+  ],
+  "terminal_conditions": [
+    {
+      "condition_id": "horizon_end_16_weeks",
+      "kind": "horizon_end"
+    },
+    {
+      "condition_id": "bankruptcy",
+      "kind": "hard_failure"
+    }
+  ],
+  "evaluation": {
+    "outcome_components": [
+      { "component_id": "cash_efficiency", "weight": 0.08, "direction": "maximize" },
+      { "component_id": "revenue_quality", "weight": 0.08, "direction": "maximize" },
+      { "component_id": "customer_health", "weight": 0.24, "direction": "maximize" },
+      { "component_id": "product_health", "weight": 0.18, "direction": "maximize" },
+      { "component_id": "team_health", "weight": 0.08, "direction": "maximize" },
+      { "component_id": "risk_management", "weight": 0.12, "direction": "maximize" },
+      { "component_id": "strategic_coherence", "weight": 0.22, "direction": "maximize" }
+    ],
+    "constraints": [
+      { "constraint_id": "bankruptcy" },
+      { "constraint_id": "severe_trust_breach" }
+    ]
+  }
+}
