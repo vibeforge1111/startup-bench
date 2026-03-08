@@ -28,6 +28,7 @@ SCALE_SEQUENCING_SCENARIO_PATH = REPO_ROOT / "examples" / "minimal_scale_sequenc
 PRODUCT_MIGRATION_SEQUENCE_SCENARIO_PATH = REPO_ROOT / "examples" / "minimal_product_migration_sequence_scenario.json"
 BOARD_PRODUCT_TRUTH_SCENARIO_PATH = REPO_ROOT / "examples" / "hidden_board_product_truth_test_scenario.json"
 GTM_SEQUENCING_SCENARIO_PATH = REPO_ROOT / "examples" / "minimal_gtm_sequencing_scenario.json"
+SCALE_FINANCE_TRADEOFF_SCENARIO_PATH = REPO_ROOT / "examples" / "minimal_scale_finance_tradeoff_scenario.json"
 BOARD_STRATEGY_SCENARIO_PATH = REPO_ROOT / "examples" / "hidden_board_stakeholder_conflict_test_scenario.json"
 BREX_TREASURY_SCENARIO_PATH = REPO_ROOT / "examples" / "real_world_brex_svb_treasury_shock_test_scenario.json"
 
@@ -428,6 +429,52 @@ class BaselineRunnerTests(unittest.TestCase):
         self.assertGreaterEqual(len(pipeline_updates), 1)
         self.assertGreaterEqual(len(support_actions), 1)
         self.assertGreaterEqual(len(board_updates), 2)
+
+    def test_long_horizon_baseline_sequences_scale_finance_tradeoffs(self) -> None:
+        dry_result = run_dry_scenario(SCALE_FINANCE_TRADEOFF_SCENARIO_PATH, seed=43)
+        long_horizon = run_baseline(
+            scenario_path=SCALE_FINANCE_TRADEOFF_SCENARIO_PATH,
+            baseline_id="heuristic_long_horizon_operator",
+            seed=43,
+            max_turns=6,
+        )
+
+        self.assertGreater(
+            long_horizon["score_report"]["scenario_score"],
+            dry_result["score_report"]["scenario_score"],
+        )
+
+        raise_actions = [
+            action
+            for turn in long_horizon["trace"]["turns"]
+            for action in turn["actions"]
+            if action["tool_name"] == "finance.raise.propose"
+        ]
+        treasury_actions = [
+            action
+            for turn in long_horizon["trace"]["turns"]
+            for action in turn["actions"]
+            if action["tool_name"] == "finance.treasury.rebalance"
+        ]
+        hiring_actions = [
+            action
+            for turn in long_horizon["trace"]["turns"]
+            for action in turn["actions"]
+            if action["tool_name"] == "people.hiring.update"
+        ]
+        board_updates = [
+            action
+            for turn in long_horizon["trace"]["turns"]
+            for action in turn["actions"]
+            if action["tool_name"] == "board.update"
+        ]
+
+        self.assertGreaterEqual(len(raise_actions), 1)
+        self.assertGreaterEqual(len(treasury_actions), 1)
+        self.assertGreaterEqual(len(hiring_actions), 1)
+        self.assertGreaterEqual(len(board_updates), 2)
+        final_state = long_horizon["trace"]["state_snapshots"][-1]["state"]
+        self.assertIn("last_raise_plan", final_state.get("finance", {}))
 
     def test_market_aware_baseline_improves_on_dry_run_for_launch_distribution_scenario(self) -> None:
         dry_result = run_dry_scenario(LAUNCH_DISTRIBUTION_SCENARIO_PATH, seed=19)
