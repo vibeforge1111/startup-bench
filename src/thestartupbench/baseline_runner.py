@@ -272,6 +272,52 @@ def _market_growth_experiment_payload(session: RuntimeSession) -> dict:
     }
 
 
+def _liquidity_raise_payload(session: RuntimeSession) -> dict:
+    finance = session.world_state.get("finance", {})
+    risk = session.world_state.get("risk", {})
+    customers = session.world_state.get("customers", {})
+
+    monthly_burn = float(finance.get("monthly_burn_usd", 0.0))
+    liquid_cash = float(finance.get("liquid_cash_usd", finance.get("cash_usd", 0.0)))
+    restricted_cash = float(finance.get("restricted_cash_usd", 0.0))
+    financing_pressure = float(risk.get("financing_pressure", 0.0))
+    counterparty_risk = float(risk.get("counterparty_risk", 0.0))
+    dilution_index = float(finance.get("dilution_index", 0.0))
+    trust_score = float(customers.get("trust_score", 0.7))
+
+    raise_amount_usd = max(900000.0, monthly_burn * 7.0)
+    dilution_pct = 0.13
+    financing_risk_reduction = 0.34
+    transaction_cost_usd = 28000.0
+    trust_delta = 0.0
+
+    if dilution_index >= 0.16 and financing_pressure < 0.9:
+        raise_amount_usd = max(780000.0, monthly_burn * 5.8)
+        dilution_pct = 0.09
+        financing_risk_reduction = 0.26
+        transaction_cost_usd = 24000.0
+    elif restricted_cash > max(liquid_cash, 1.0) * 0.5 or counterparty_risk > 0.78:
+        raise_amount_usd = max(950000.0, monthly_burn * 7.4)
+        dilution_pct = 0.12
+        financing_risk_reduction = 0.36
+        transaction_cost_usd = 30000.0
+    elif trust_score >= 0.72 and dilution_index <= 0.12:
+        raise_amount_usd = max(840000.0, monthly_burn * 6.2)
+        dilution_pct = 0.1
+        financing_risk_reduction = 0.3
+        transaction_cost_usd = 25000.0
+        trust_delta = 0.01
+
+    return {
+        "raise_amount_usd": raise_amount_usd,
+        "dilution_pct": dilution_pct,
+        "monthly_burn_change_usd": 0,
+        "financing_risk_reduction": financing_risk_reduction,
+        "transaction_cost_usd": transaction_cost_usd,
+        "trust_delta": trust_delta,
+    }
+
+
 def _heuristic_b2b_actions(session: RuntimeSession, *, turn_index: int) -> list[dict]:
     finance = session.world_state.get("finance", {})
     product = session.world_state.get("product", {})
@@ -921,13 +967,7 @@ def _heuristic_liquidity_actions(session: RuntimeSession, *, turn_index: int) ->
             {
                 "tool_name": "finance.raise.propose",
                 "request_id": _next_request_id(turn_index, action_index),
-                "arguments": {
-                    "raise_amount_usd": max(900000.0, monthly_burn * 7.0),
-                    "dilution_pct": 0.13,
-                    "monthly_burn_change_usd": 0,
-                    "financing_risk_reduction": 0.34,
-                    "transaction_cost_usd": 28000,
-                },
+                "arguments": _liquidity_raise_payload(session),
             }
         )
         action_index += 1
