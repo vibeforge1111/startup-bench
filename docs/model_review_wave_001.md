@@ -116,6 +116,34 @@ This emits:
 
 Each generated `*.txt` file is intended to be pasted into the target model as a single message.
 
+## Observed outcome
+
+The synthetic shadow wave is now compiled.
+
+Current result:
+
+- `21` imported synthetic reviews
+- `3` reviewers:
+  - `codex_reviewer_001`
+  - `claude_reviewer_001`
+  - `gemini_reviewer_001`
+- `7` matched promoted-strategy scenarios
+- study-level mean absolute rubric gap: `0.2998`
+- recommendation agreement rate: `1.0`
+- synthetic-lane promotion gate status: `ready_for_promotion: true`
+
+Primary disagreement clusters:
+
+- `hidden_board_financing_truth_test_001`
+- `hidden_gtm_multi_quarter_sequence_test_001`
+- `hidden_product_migration_sequence_test_001`
+- `hidden_scale_platform_sequence_test_001`
+
+Stored report artifacts:
+
+- `tmp_model_review_wave_001_results/report/calibration_study_report.json`
+- `tmp_model_review_wave_001_results/report/targets/model-strategy-shadow-wave-001/calibration_report.json`
+
 ## After model outputs come back
 
 Save each raw response under a directory like:

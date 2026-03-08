@@ -1,6 +1,6 @@
 # TheStartupBench Benchmark Maturity Plan
 
-Last updated: 2026-03-08
+Last updated: 2026-03-09
 
 ## Purpose
 
@@ -287,6 +287,15 @@ Current execution artifact set:
 - [operator_model_review_wave_001_manifest.json](/C:/Users/USER/Desktop/startup-bench/examples/operator_model_review_wave_001_manifest.json)
 - [model_review_wave_001.md](/C:/Users/USER/Desktop/startup-bench/docs/model_review_wave_001.md)
 
+Current synthetic-panel outcome:
+
+- model review wave `001` is complete
+- `21` imported reviews across `3` reviewers and `7` promoted strategy scenarios
+- study-level mean absolute rubric gap: `0.2998`
+- recommendation agreement rate: `1.0`
+- synthetic-lane promotion gate status: `ready_for_promotion: true`
+- this is triage support only and does not close the human/operator calibration requirement
+
 ### Workstream 3. Official benchmark operations
 
 Priority: high
@@ -330,8 +339,8 @@ Implementation focus:
 
 ## Highest-value next implementations
 
-1. compile model review wave `001` returns from Codex, Claude, and Gemini and log synthetic-panel disagreement clusters
-2. complete operator calibration wave `002` by importing returned reviews and publishing disagreement logs
+1. complete operator calibration wave `002` by importing returned reviews and publishing disagreement logs
+2. compare human wave `002` against the completed synthetic panel and publish a model-vs-human gap report
 3. keep hidden inventory above the `75`-scenario v0.10.0 target while calibration catches up
 4. add the next strategy and operator depth batches only where calibration coverage will not lag promotion
 5. keep canary and real-world pack rotation tied to the official evaluation window

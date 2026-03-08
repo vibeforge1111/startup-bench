@@ -5,7 +5,7 @@
   "milestones": [
     {
       "milestone_id": "v0.9.5",
-      "status": "in_progress",
+      "status": "completed",
       "objective": "Stabilize TheStartupBench as a serious internal benchmark candidate.",
       "success_targets": [
         "hidden test inventory >= 50",
@@ -16,7 +16,7 @@
     },
     {
       "milestone_id": "v0.10.0",
-      "status": "pending",
+      "status": "in_progress",
       "objective": "Become a community-credible benchmark candidate.",
       "success_targets": [
         "hidden test inventory >= 75",
@@ -44,7 +44,7 @@
       "workstream": "benchmark-operations",
       "milestone_id": "v0.9.5",
       "priority": "high",
-      "status": "in_progress",
+      "status": "completed",
       "benchmark_risk": "low",
       "owner": "core-benchmark",
       "completion_criteria": [
@@ -549,7 +549,7 @@
       "workstream": "calibration",
       "milestone_id": "v0.10.0",
       "priority": "high",
-      "status": "in_progress",
+      "status": "completed",
       "benchmark_risk": "medium",
       "owner": "core-benchmark",
       "completion_criteria": [
@@ -557,7 +557,28 @@
         "synthetic-panel study report is compiled",
         "benchmark-vs-model disagreement clusters are logged"
       ],
-      "progress_notes": "Waiting on raw model-review outputs from Codex, Claude, and Gemini so the synthetic shadow wave can be compiled into a calibration study report."
+      "progress_notes": "Model review wave 001 is now compiled with 21 imported synthetic reviews across Codex, Claude, and Gemini. The study report shows reviewer_count=3, matched_scenario_count=7, mean_absolute_rubric_gap=0.2998, recommendation_agreement_rate=1.0, and ready_for_promotion=true for the synthetic lane. Disagreement clusters are logged for board financing truth, GTM multi-quarter sequencing, product migration sequencing, and scale platform sequencing.",
+      "artifacts": [
+        "docs/model_review_wave_001.md",
+        "tmp_model_review_wave_001_results/report/calibration_study_report.json",
+        "tmp_model_review_wave_001_results/report/targets/model-strategy-shadow-wave-001/calibration_report.json"
+      ]
+    },
+    {
+      "task_id": "BT-024",
+      "title": "Publish model-vs-human gap report for promoted strategy families",
+      "workstream": "calibration",
+      "milestone_id": "v0.10.0",
+      "priority": "high",
+      "status": "blocked",
+      "benchmark_risk": "medium",
+      "owner": "calibration-taskforce",
+      "completion_criteria": [
+        "human wave 002 returns are compiled",
+        "synthetic and human judgments are compared family by family",
+        "material benchmark-vs-model-vs-human disagreements are documented"
+      ],
+      "progress_notes": "Blocked on returned operator reviews from human wave 002. The synthetic panel side is complete and ready to compare once the human compilation artifacts exist."
     }
   ]
 }

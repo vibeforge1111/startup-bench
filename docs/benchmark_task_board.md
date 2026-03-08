@@ -42,10 +42,6 @@ Success targets:
   - milestone: `v0.10.0`
   - focus: wave launched and reviewer packets exported for founder, ops, and product reviewers; next step is collecting returns and logging score-vs-operator disagreements
 
-- `BT-023` model review wave 001 compilation
-  - milestone: `v0.10.0`
-  - focus: synthetic shadow review for Codex, Claude, and Gemini is launched; next step is importing raw model reviews and compiling disagreement signals
-
 ## Completed
 
 - `BT-001` benchmark maturity plan
@@ -128,6 +124,10 @@ Success targets:
   - milestone: `v0.10.0`
   - focus: added the Codex, Claude, and Gemini synthetic-panel wave with manifest, launcher, compile helper, and prompt-bundle export path over the promoted strategy family
 
+- `BT-023` model review wave 001 compilation
+  - milestone: `v0.10.0`
+  - focus: imported `21` synthetic reviews across `3` reviewers, compiled the promoted-strategy shadow panel, and logged disagreement clusters while keeping the human lane as the stronger calibration bar
+
 ## Ready
 
 - `BT-016` operator calibration wave 002 compilation
@@ -135,10 +135,15 @@ Success targets:
   - focus: import returned reviews and compile disagreement reports once reviewer forms come back
   - status note: blocked on external reviewer returns
 
+- `BT-024` model-vs-human gap report for promoted strategy families
+  - milestone: `v0.10.0`
+  - focus: compare the completed synthetic panel against human wave 002 once operator returns land
+  - status note: blocked on external reviewer returns
+
 ## Next up by priority
 
-1. synthetic model review return collection for Codex, Claude, and Gemini
-2. calibration execution and operator review collection
+1. operator calibration wave 002 return collection and compilation
+2. model-vs-human comparison for the promoted strategy families
 3. pack rotation and leaderboard-window operations
 4. next strategy and operator depth where calibration will not lag
 5. external adoption pack usage and release-note follow-through

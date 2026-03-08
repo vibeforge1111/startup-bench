@@ -1,6 +1,6 @@
 # TheStartupBench Status Map
 
-Last updated: 2026-03-08
+Last updated: 2026-03-09
 
 ## Current Snapshot
 
@@ -62,17 +62,20 @@ Synthetic calibration status:
   - strategy scale multi-quarter
 - healthy but on governance watchlist:
   - strategy board stakeholder conflict
-- added during pre-human hardening and not yet calibration-reviewed:
-  - canary treasury shuffle trap
-  - canary renewal nudge trap
-  - real-world Airbnb demand shock hidden variants
-  - real-world Robinhood volatility outage hidden variants
+- completed synthetic shadow wave 001:
+  - Codex, Claude, and Gemini all imported successfully
+  - `21` synthetic reviews across `7` scenarios and `3` reviewers
+  - study-level mean absolute rubric gap: `0.2998`
+  - study-level recommendation agreement rate: `1.0`
+  - synthetic-lane promotion gate status: `ready_for_promotion: true`
+  - disagreement clusters logged for:
+    - strategy board financing truth
+    - strategy GTM multi-quarter sequencing
+    - strategy product migration sequencing
+    - strategy platform sequencing
+- queued for human review wave 002:
   - strategy board financing truth
   - strategy board incident truth
-  - strategy board hiring truth
-  - strategy product platform tax
-  - strategy GTM efficiency sequencing
-- queued for human review wave 002:
   - strategy platform sequencing
   - strategy product migration sequencing
   - strategy board product truth
@@ -493,6 +496,7 @@ Partially done:
 - the repo now includes reviewer-facing CSV and Markdown form workflows for external operators
 - the repo now includes a clear synthetic-reviewer lane for Codex, Claude, Gemini, and other model panels
 - an explicit Codex, Claude, and Gemini model-review wave now exists for the promoted strategy family before further human escalation
+- model review wave 001 is now compiled with `21` imported synthetic reviews, `3` reviewers, and logged disagreement clusters over the promoted strategy family
 
 What remains inside this category:
 
