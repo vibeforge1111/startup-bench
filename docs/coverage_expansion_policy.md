@@ -107,6 +107,8 @@ Semantic judging MAY be added for artifacts such as:
 
 For example, a bounded board-update rubric MAY score whether an update includes a concrete forecast and asks that reflect the active business stressors already visible in state, such as runway pressure, trust loss, support backlog, or open incidents.
 
+Similarly, a bounded customer-communication rubric MAY score whether an incident response includes a specific `customer_comms_plan` with delivery channels, affected segments, support routing, and the next promised update window.
+
 But only if all of the following hold:
 
 - it is rubric-bound
