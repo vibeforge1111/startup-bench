@@ -72,11 +72,11 @@ Success targets:
   - milestone: `v0.10.0`
   - focus: froze the first official reporting window, documented hosted vs self-reported rules, and linked the frozen active pack set
 
-## Ready
-
 - `BT-007` leaderboard governance pack
   - milestone: `v0.10.0`
-  - focus: entry types, contamination handling, release notes, and retirement rules
+  - focus: defined leaderboard entry types, contamination response, release-note rules, and retirement rules in a versioned governance pack
+
+## Ready
 
 - `BT-008` hidden pack rotation policy
   - milestone: `v0.10.0`
@@ -86,8 +86,8 @@ Success targets:
 
 1. strategy pack depth in product, board, scale, and gtm
 2. calibration execution and operator review collection
-3. leaderboard operations and contamination workflow
-4. hidden pack rotation policy
+3. hidden pack rotation policy
+4. calibration execution and operator review collection
 5. external benchmark adoption materials
 
 ## Operating rules

@@ -172,13 +172,19 @@
       "workstream": "benchmark-operations",
       "milestone_id": "v0.10.0",
       "priority": "high",
-      "status": "ready",
+      "status": "completed",
       "benchmark_risk": "high",
       "owner": "core-benchmark",
       "completion_criteria": [
         "leaderboard entry types defined",
         "contamination response path documented",
         "release note and retirement rules documented"
+      ],
+      "progress_notes": "A versioned governance pack now defines hosted, self-reported, and reference-baseline entry types, contamination response handling, release-note triggers, and retirement rules tied to the current official evaluation window.",
+      "artifacts": [
+        "examples/leaderboard_governance_pack_v0_9_0.json",
+        "docs/leaderboard_governance_pack_v0_9_0.md",
+        "spec/leaderboard_protocol.md"
       ]
     },
     {

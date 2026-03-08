@@ -98,3 +98,15 @@ Maintainers SHOULD publish:
 - strong scripted baseline
 - human baseline summaries
 
+## 11. Governance pack
+
+Operational leaderboard handling SHOULD be frozen in a versioned governance pack that defines:
+
+- entry types
+- contamination response paths
+- release-note requirements
+- retirement rules
+
+Current reference:
+
+- [leaderboard_governance_pack_v0_9_0.json](/C:/Users/USER/Desktop/startup-bench/examples/leaderboard_governance_pack_v0_9_0.json)

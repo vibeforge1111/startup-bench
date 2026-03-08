@@ -1,0 +1,121 @@
+{
+  "governance_pack_version": "0.1.0",
+  "governance_pack_id": "leaderboard-governance-v0.9.0-precalibration",
+  "benchmark_version": "0.9.0-precalibration",
+  "official_window_path": "examples/official_eval_window_v0_9_0.json",
+  "entry_types": [
+    {
+      "entry_type": "hosted",
+      "description": "Benchmark-operated runs executed under the frozen official profile and official reporting window.",
+      "eligible_sources": [
+        "benchmark-hosted runs",
+        "benchmark-maintained baselines"
+      ],
+      "publication_surface": "hosted leaderboard table",
+      "requirements": [
+        "must use the frozen official evaluation profile",
+        "must remain inside the frozen reporting window",
+        "must publish repeat count, contamination flag, cost, and runtime summary",
+        "may keep full hidden traces private while publishing redacted summaries"
+      ]
+    },
+    {
+      "entry_type": "self_reported",
+      "description": "Externally produced runs that follow the frozen window rules but are not benchmark-operated.",
+      "eligible_sources": [
+        "external research teams",
+        "model providers",
+        "independent community submissions"
+      ],
+      "publication_surface": "separate self-reported table",
+      "requirements": [
+        "must include a run manifest",
+        "must include a submission artifact",
+        "must include a contamination declaration",
+        "must publish repeat count, cost, and runtime summary",
+        "must never be merged into the hosted leaderboard table for the same window"
+      ]
+    },
+    {
+      "entry_type": "reference_baseline",
+      "description": "Maintainer-published benchmark reference systems used to anchor interpretation rather than crowd rankings.",
+      "eligible_sources": [
+        "benchmark-maintained baselines"
+      ],
+      "publication_surface": "baseline reference section",
+      "requirements": [
+        "must identify runner family and benchmark version explicitly",
+        "must be rerun when the official window changes",
+        "must be labeled as reference rather than open submission"
+      ]
+    }
+  ],
+  "contamination_policy": {
+    "flags": [
+      "clean",
+      "possible_contamination",
+      "known_contamination"
+    ],
+    "response_actions": [
+      "do not clear a contaminated entry silently; attach or update the public contamination flag",
+      "invalidate entries that rely on evaluator bugs, hidden-scenario leakage, or benchmark-specific exploit loops",
+      "re-score or retire prior entries when an adjudicated evaluator bug materially changes leaderboard meaning"
+    ],
+    "review_steps": [
+      "record the contamination or exploit signal in the governance log",
+      "compare the signal against the relevant hidden pack, evaluator, and run-manifest evidence",
+      "decide whether the entry remains reportable, moves to a flagged table, or is retired",
+      "publish the resolution in the public changelog or release note"
+    ],
+    "public_disclosure_rules": [
+      "all public tables must show the active contamination flag",
+      "retired or invalidated entries should remain visible in history with a reason",
+      "contamination notes must distinguish suspected exposure from confirmed leakage"
+    ]
+  },
+  "release_note_policy": {
+    "required_sections": [
+      "window id and freeze label",
+      "active pack set",
+      "profile and run-setting boundaries",
+      "known evaluator caveats",
+      "contamination or retirement actions",
+      "new hosted and self-reported entries"
+    ],
+    "publication_triggers": [
+      "opening a new official evaluation window",
+      "publishing a new hosted result set",
+      "changing the contamination state of an entry",
+      "retiring a pack, window, or leaderboard entry"
+    ],
+    "minimum_fields": [
+      "benchmark version",
+      "official window id",
+      "entry type",
+      "contamination flag",
+      "reason for any retirement or invalidation"
+    ]
+  },
+  "retirement_policy": {
+    "entry_retirement_triggers": [
+      "confirmed hidden-content leakage",
+      "confirmed exploit use or benchmark-policy violation",
+      "material evaluator bug that invalidates the published ranking meaning",
+      "window closure followed by incompatible benchmark-version migration"
+    ],
+    "pack_retirement_rules": [
+      "retire hidden packs when contamination risk becomes material or when a fresh successor is promoted",
+      "record the retirement in the public pack changelog with contamination status and notes",
+      "do not accept new leaderboard entries against a retired official pack without an explicit legacy table boundary"
+    ],
+    "benchmark_version_boundaries": [
+      "do not merge leaderboard tables across incompatible major benchmark versions",
+      "treat each official evaluation window as its own reporting boundary",
+      "carry forward historical entries only with clear legacy labeling"
+    ]
+  },
+  "notes": [
+    "This governance pack is intentionally pre-human-calibration and should not be mistaken for a final public leaderboard constitution.",
+    "The window and governance pack should evolve together rather than drifting independently."
+  ]
+}

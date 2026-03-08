@@ -1,0 +1,141 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://thestartupbench.org/schemas/tsb_leaderboard_governance_pack.schema.json",
+  "title": "TheStartupBench Leaderboard Governance Pack",
+  "type": "object",
+  "required": [
+    "governance_pack_version",
+    "governance_pack_id",
+    "benchmark_version",
+    "official_window_path",
+    "entry_types",
+    "contamination_policy",
+    "release_note_policy",
+    "retirement_policy"
+  ],
+  "properties": {
+    "governance_pack_version": { "type": "string" },
+    "governance_pack_id": { "type": "string" },
+    "benchmark_version": { "type": "string" },
+    "official_window_path": { "type": "string" },
+    "entry_types": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "entry_type",
+          "description",
+          "eligible_sources",
+          "publication_surface",
+          "requirements"
+        ],
+        "properties": {
+          "entry_type": { "type": "string" },
+          "description": { "type": "string" },
+          "eligible_sources": {
+            "type": "array",
+            "minItems": 1,
+            "items": { "type": "string" }
+          },
+          "publication_surface": { "type": "string" },
+          "requirements": {
+            "type": "array",
+            "minItems": 1,
+            "items": { "type": "string" }
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "contamination_policy": {
+      "type": "object",
+      "required": [
+        "flags",
+        "response_actions",
+        "review_steps",
+        "public_disclosure_rules"
+      ],
+      "properties": {
+        "flags": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string" }
+        },
+        "response_actions": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string" }
+        },
+        "review_steps": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string" }
+        },
+        "public_disclosure_rules": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string" }
+        }
+      },
+      "additionalProperties": false
+    },
+    "release_note_policy": {
+      "type": "object",
+      "required": [
+        "required_sections",
+        "publication_triggers",
+        "minimum_fields"
+      ],
+      "properties": {
+        "required_sections": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string" }
+        },
+        "publication_triggers": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string" }
+        },
+        "minimum_fields": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string" }
+        }
+      },
+      "additionalProperties": false
+    },
+    "retirement_policy": {
+      "type": "object",
+      "required": [
+        "entry_retirement_triggers",
+        "pack_retirement_rules",
+        "benchmark_version_boundaries"
+      ],
+      "properties": {
+        "entry_retirement_triggers": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string" }
+        },
+        "pack_retirement_rules": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string" }
+        },
+        "benchmark_version_boundaries": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string" }
+        }
+      },
+      "additionalProperties": false
+    },
+    "notes": {
+      "type": "array",
+      "items": { "type": "string" }
+    }
+  },
+  "additionalProperties": false
+}
