@@ -126,7 +126,7 @@
       "workstream": "calibration",
       "milestone_id": "v0.10.0",
       "priority": "highest",
-      "status": "completed",
+      "status": "in_progress",
       "benchmark_risk": "high",
       "owner": "calibration-taskforce",
       "completion_criteria": [
