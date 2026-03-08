@@ -63,6 +63,8 @@ Synthetic calibration status:
 - added during pre-human hardening and not yet calibration-reviewed:
   - canary treasury shuffle trap
   - canary renewal nudge trap
+  - real-world Airbnb demand shock hidden variants
+  - real-world Robinhood volatility outage hidden variants
   - strategy board financing truth
   - strategy board incident truth
   - strategy board hiring truth
@@ -240,7 +242,7 @@ Completed real-world-derived scenario pack:
 
 Completed hidden real-world test pack:
 
-- `8` hidden test scenarios with non-dev ids and altered operating conditions
+- `10` hidden test scenarios with non-dev ids and altered operating conditions
 - public redacted manifest in [real_world_public_test_manifest.json](/C:/Users/USER/Desktop/startup-bench/examples/real_world_public_test_manifest.json)
 - current hidden pack coverage:
   - emergency financing
@@ -251,10 +253,12 @@ Completed hidden real-world test pack:
   - security backlash
   - restoration backlog
   - peak readiness under lower headroom
+  - demand shock under board-facing burn reset
+  - volatility outage under trust recovery pressure
 
 Completed hidden real-world fresh pack:
 
-- `8` fresh hidden scenarios with distinct scenario ids and distinct scenario files from the hidden `test` pack
+- `10` fresh hidden scenarios with distinct scenario ids and distinct scenario files from the hidden `test` pack
 - public redacted manifest in [real_world_public_fresh_manifest.json](/C:/Users/USER/Desktop/startup-bench/examples/real_world_public_fresh_manifest.json)
 - current hidden fresh pack coverage:
   - bridge financing with harsher board terms
@@ -265,6 +269,8 @@ Completed hidden real-world fresh pack:
   - security backlash with enterprise procurement freeze
   - restoration collapse with repeated tooling slippage
   - peak readiness with support spike and fatigue
+  - demand freeze with refund-heavy revenue drag
+  - volatility outage with renewed customer trust collapse
 
 Completed hidden operator breadth packs:
 

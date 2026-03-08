@@ -1,0 +1,174 @@
+{
+  "metadata": {
+    "scenario_id": "real_world_robinhood_volatility_outage_test_001",
+    "scenario_version": "0.1.0",
+    "benchmark_version": "0.2.0-draft",
+    "track": "crisis",
+    "mode": "test",
+    "title": "Hidden Real-World Volatility Outage Recovery",
+    "summary": "Hidden real-world-derived variant where a consumer fintech platform fails under extreme demand and must restore service reliability, customer trust, and incident discipline without hiding behind narrative spin.",
+    "difficulty": "frontier",
+    "time_horizon": {
+      "unit": "week",
+      "length": 10
+    },
+    "authoring_origin": "real_world_derived",
+    "tags": ["real_world", "robinhood", "outage", "peak_demand", "trust", "hidden_eval"],
+    "inspired_by": {
+      "company": "Robinhood",
+      "year": 2020,
+      "pattern": "market-volatility outage"
+    }
+  },
+  "initial_state": {
+    "company": {
+      "stage": "series_c",
+      "sector": "consumer_fintech",
+      "business_model": "transaction_plus_subscription"
+    },
+    "finance": {
+      "cash_usd": 7900000,
+      "monthly_burn_usd": 1180000,
+      "monthly_revenue_usd": 895000
+    },
+    "product": {
+      "major_incidents_open": 3,
+      "roadmap_items": 9,
+      "onboarding_quality": 0.7
+    },
+    "customers": {
+      "paying_accounts": 548,
+      "monthly_churn_rate": 0.051,
+      "trust_score": 0.61
+    },
+    "sales": {
+      "pipeline_count": 3,
+      "weighted_pipeline_usd": 155000,
+      "pricing": {
+        "current_price_index": 1.0
+      }
+    },
+    "operations": {
+      "support_backlog": 86,
+      "support_sla_breach_risk": 0.74
+    },
+    "governance": {
+      "board_update_count": 0
+    },
+    "risk": {
+      "financing_pressure": 0.54
+    },
+    "policy": {
+      "max_auto_price_increase_pct": 0.03
+    },
+    "sim": {
+      "current_time": "2026-03-09T09:00:00Z"
+    }
+  },
+  "latent_state": {
+    "true_root_cause": "peak_load_capacity_shortfall",
+    "true_tradeoff": "factual_recovery_discipline_vs_confidence_signaling"
+  },
+  "observation_surfaces": [
+    {
+      "surface_id": "incident_console",
+      "surface_type": "ops_console",
+      "refresh_policy": "realtime",
+      "visible_fields": ["major_incidents_open", "trust_score", "monthly_churn_rate", "support_backlog"]
+    },
+    {
+      "surface_id": "board_packet",
+      "surface_type": "board_portal",
+      "refresh_policy": "weekly",
+      "visible_fields": ["board_update_count", "weighted_pipeline_usd", "support_backlog"]
+    }
+  ],
+  "tools": [
+    "metrics.query",
+    "metrics.report",
+    "product.roadmap.read",
+    "product.roadmap.write",
+    "ops.incident.read",
+    "ops.incident.respond",
+    "ops.support.read",
+    "ops.support.resolve",
+    "sales.pipeline.read",
+    "sales.pipeline.update",
+    "finance.plan.read",
+    "finance.plan.write",
+    "board.read",
+    "board.update",
+    "notes.read",
+    "notes.write",
+    "sim.advance"
+  ],
+  "event_model": {
+    "kind": "seeded_schedule",
+    "primitive_catalog": {
+      "second_spike": {
+        "operations": [
+          { "op": "increment", "path": "product.major_incidents_open", "value": 1 },
+          { "op": "increment", "path": "customers.trust_score", "value": -0.08 },
+          { "op": "clamp", "path": "customers.trust_score", "min": 0.0, "max": 1.0 },
+          { "op": "increment", "path": "customers.monthly_churn_rate", "value": 0.014 },
+          { "op": "increment", "path": "operations.support_backlog", "value": 16 }
+        ]
+      },
+      "trust_bill": {
+        "operations": [
+          { "op": "increment", "path": "customers.trust_score", "value": -0.055 },
+          { "op": "clamp", "path": "customers.trust_score", "min": 0.0, "max": 1.0 },
+          { "op": "increment", "path": "sales.weighted_pipeline_usd", "value": -75000 },
+          { "op": "increment", "path": "operations.support_backlog", "value": 14 },
+          { "op": "increment", "path": "finance.monthly_burn_usd", "value": 32000 }
+        ]
+      }
+    },
+    "scheduled_events": [
+      {
+        "event_id": "ev_robinhood_hidden_test_001",
+        "at_turn": 1,
+        "primitive_id": "second_spike",
+        "event_type": "second_spike",
+        "visible_message": "Another demand spike hit before the platform fully stabilized and reopened the outage wound."
+      },
+      {
+        "event_id": "ev_robinhood_hidden_test_002",
+        "at_turn": 2,
+        "primitive_id": "trust_bill",
+        "event_type": "trust_bill",
+        "visible_message": "Public trust and support load kept deteriorating because customers no longer believed the recovery story."
+      }
+    ]
+  },
+  "policy_constraints": [
+    {
+      "constraint_id": "no_unapproved_hiring",
+      "kind": "approval_required"
+    }
+  ],
+  "terminal_conditions": [
+    {
+      "condition_id": "horizon_end_10_weeks",
+      "kind": "horizon_end"
+    },
+    {
+      "condition_id": "bankruptcy",
+      "kind": "hard_failure"
+    }
+  ],
+  "evaluation": {
+    "outcome_components": [
+      { "component_id": "cash_efficiency", "weight": 0.12, "direction": "maximize" },
+      { "component_id": "revenue_quality", "weight": 0.12, "direction": "maximize" },
+      { "component_id": "customer_health", "weight": 0.28, "direction": "maximize" },
+      { "component_id": "product_health", "weight": 0.16, "direction": "maximize" },
+      { "component_id": "risk_management", "weight": 0.12, "direction": "maximize" },
+      { "component_id": "strategic_coherence", "weight": 0.2, "direction": "maximize" }
+    ],
+    "constraints": [
+      { "constraint_id": "bankruptcy" },
+      { "constraint_id": "severe_trust_breach" }
+    ]
+  }
+}

@@ -313,13 +313,24 @@
       "workstream": "corpus-scale",
       "milestone_id": "v0.10.0",
       "priority": "high",
-      "status": "in_progress",
+      "status": "completed",
       "benchmark_risk": "medium",
       "owner": "core-benchmark",
       "completion_criteria": [
         "at least 2 new hidden real-world scenarios exist",
         "matching fresh variants exist",
         "real-world suite and manifests are updated"
+      ],
+      "progress_notes": "The real-world pack now includes hidden Airbnb demand-shock and Robinhood volatility-outage variants, bringing active real-world hidden test inventory to 10 and benchmark-wide hidden test inventory to 57.",
+      "artifacts": [
+        "examples/real_world_airbnb_demand_shock_test_scenario.json",
+        "examples/real_world_airbnb_demand_shock_fresh_scenario.json",
+        "examples/real_world_robinhood_volatility_outage_test_scenario.json",
+        "examples/real_world_robinhood_volatility_outage_fresh_scenario.json",
+        "examples/private_real_world_test_scenario_suite.json",
+        "examples/private_real_world_fresh_scenario_suite.json",
+        "examples/real_world_public_test_manifest.json",
+        "examples/real_world_public_fresh_manifest.json"
       ]
     },
     {
@@ -328,7 +339,7 @@
       "workstream": "benchmark-operations",
       "milestone_id": "v0.10.0",
       "priority": "medium",
-      "status": "ready",
+      "status": "in_progress",
       "benchmark_risk": "medium",
       "owner": "core-benchmark",
       "completion_criteria": [

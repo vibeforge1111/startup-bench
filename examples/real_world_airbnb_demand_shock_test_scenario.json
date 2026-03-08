@@ -1,0 +1,184 @@
+{
+  "metadata": {
+    "scenario_id": "real_world_airbnb_demand_shock_test_001",
+    "scenario_version": "0.1.0",
+    "benchmark_version": "0.2.0-draft",
+    "track": "board",
+    "mode": "test",
+    "title": "Hidden Real-World Marketplace Demand Collapse",
+    "summary": "Hidden real-world-derived variant where marketplace demand freezes abruptly, refund pressure widens, and leadership must reset burn and board expectations without pretending the recovery curve is linear.",
+    "difficulty": "frontier",
+    "time_horizon": {
+      "unit": "week",
+      "length": 14
+    },
+    "authoring_origin": "real_world_derived",
+    "tags": ["real_world", "airbnb", "demand_shock", "burn_reset", "board", "hidden_eval"],
+    "inspired_by": {
+      "company": "Airbnb",
+      "year": 2020,
+      "pattern": "pandemic demand collapse"
+    }
+  },
+  "initial_state": {
+    "company": {
+      "stage": "series_c",
+      "sector": "marketplace",
+      "business_model": "transaction_fee"
+    },
+    "finance": {
+      "cash_usd": 7800000,
+      "monthly_burn_usd": 1520000,
+      "monthly_revenue_usd": 1040000
+    },
+    "product": {
+      "major_incidents_open": 0,
+      "roadmap_items": 8,
+      "onboarding_quality": 0.62
+    },
+    "customers": {
+      "paying_accounts": 396,
+      "monthly_churn_rate": 0.041,
+      "trust_score": 0.71
+    },
+    "sales": {
+      "pipeline_count": 16,
+      "weighted_pipeline_usd": 1710000,
+      "pricing": {
+        "current_price_index": 1.0
+      }
+    },
+    "operations": {
+      "support_backlog": 26,
+      "support_sla_breach_risk": 0.32
+    },
+    "team": {
+      "morale": 0.57,
+      "attrition_risk": 0.48,
+      "bandwidth_load": 0.82,
+      "headcount": 44
+    },
+    "governance": {
+      "board_update_count": 0
+    },
+    "risk": {
+      "financing_pressure": 0.61
+    },
+    "policy": {
+      "max_auto_price_increase_pct": 0.05
+    },
+    "sim": {
+      "current_time": "2026-02-02T09:00:00Z"
+    }
+  },
+  "latent_state": {
+    "true_root_cause": "category_level_demand_freeze",
+    "true_recovery_curve": "nonlinear_and_board_patience_short"
+  },
+  "observation_surfaces": [
+    {
+      "surface_id": "finance_dashboard",
+      "surface_type": "dashboard",
+      "refresh_policy": "daily",
+      "visible_fields": ["cash_usd", "monthly_burn_usd", "monthly_revenue_usd", "runway_weeks"]
+    },
+    {
+      "surface_id": "board_packet",
+      "surface_type": "board_portal",
+      "refresh_policy": "weekly",
+      "visible_fields": ["pipeline_count", "weighted_pipeline_usd", "trust_score", "board_update_count", "financing_pressure"]
+    }
+  ],
+  "tools": [
+    "metrics.query",
+    "metrics.report",
+    "product.roadmap.read",
+    "product.roadmap.write",
+    "sales.pipeline.read",
+    "sales.pipeline.update",
+    "sales.pricing.propose",
+    "finance.plan.read",
+    "finance.plan.write",
+    "board.read",
+    "board.update",
+    "people.org.read",
+    "people.org.adjust",
+    "notes.read",
+    "notes.write",
+    "sim.advance"
+  ],
+  "event_model": {
+    "kind": "seeded_schedule",
+    "primitive_catalog": {
+      "market_freeze": {
+        "operations": [
+          { "op": "increment", "path": "finance.monthly_revenue_usd", "value": -560000 },
+          { "op": "increment", "path": "sales.pipeline_count", "value": -5 },
+          { "op": "clamp", "path": "sales.pipeline_count", "min": 0 },
+          { "op": "increment", "path": "sales.weighted_pipeline_usd", "value": -520000 },
+          { "op": "increment", "path": "customers.monthly_churn_rate", "value": 0.014 },
+          { "op": "increment", "path": "customers.trust_score", "value": -0.065 },
+          { "op": "clamp", "path": "customers.trust_score", "min": 0.0, "max": 1.0 },
+          { "op": "increment", "path": "risk.financing_pressure", "value": 0.08 },
+          { "op": "clamp", "path": "risk.financing_pressure", "min": 0.0, "max": 1.0 }
+        ]
+      },
+      "refund_wave": {
+        "operations": [
+          { "op": "increment", "path": "finance.monthly_revenue_usd", "value": -260000 },
+          { "op": "increment", "path": "customers.monthly_churn_rate", "value": 0.009 },
+          { "op": "increment", "path": "customers.trust_score", "value": -0.055 },
+          { "op": "clamp", "path": "customers.trust_score", "min": 0.0, "max": 1.0 },
+          { "op": "increment", "path": "operations.support_backlog", "value": 11 }
+        ]
+      }
+    },
+    "scheduled_events": [
+      {
+        "event_id": "ev_airbnb_hidden_test_001",
+        "at_turn": 1,
+        "primitive_id": "market_freeze",
+        "event_type": "market_freeze",
+        "visible_message": "Marketplace demand froze faster than expected and the existing burn profile no longer fit reality."
+      },
+      {
+        "event_id": "ev_airbnb_hidden_test_002",
+        "at_turn": 2,
+        "primitive_id": "refund_wave",
+        "event_type": "refund_wave",
+        "visible_message": "Refund pressure widened and made the near-term revenue picture materially weaker."
+      }
+    ]
+  },
+  "policy_constraints": [
+    {
+      "constraint_id": "no_unapproved_hiring",
+      "kind": "approval_required"
+    }
+  ],
+  "terminal_conditions": [
+    {
+      "condition_id": "horizon_end_14_weeks",
+      "kind": "horizon_end"
+    },
+    {
+      "condition_id": "bankruptcy",
+      "kind": "hard_failure"
+    }
+  ],
+  "evaluation": {
+    "outcome_components": [
+      { "component_id": "cash_efficiency", "weight": 0.34, "direction": "maximize" },
+      { "component_id": "revenue_quality", "weight": 0.14, "direction": "maximize" },
+      { "component_id": "customer_health", "weight": 0.12, "direction": "maximize" },
+      { "component_id": "team_health", "weight": 0.08, "direction": "maximize" },
+      { "component_id": "risk_management", "weight": 0.1, "direction": "maximize" },
+      { "component_id": "strategic_coherence", "weight": 0.22, "direction": "maximize" }
+    ],
+    "constraints": [
+      { "constraint_id": "bankruptcy" },
+      { "constraint_id": "severe_trust_breach" },
+      { "constraint_id": "severe_financing_failure" }
+    ]
+  }
+}

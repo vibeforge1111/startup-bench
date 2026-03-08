@@ -1,9 +1,9 @@
 {
   "manifest_version": "0.1.0",
   "benchmark_version": "0.2.0-draft",
-  "scenario_pack_version": "real-world-fresh-pack-0.3.0",
+  "scenario_pack_version": "real-world-fresh-pack-0.4.0",
   "split": "fresh",
-  "scenario_count": 8,
+  "scenario_count": 10,
   "scenarios": [
     {
       "scenario_id": "real_world_airbnb_emergency_financing_fresh_001",
@@ -52,6 +52,18 @@
       "track": "scale",
       "mode": "fresh",
       "hidden_ref": "fresh_007"
+    },
+    {
+      "scenario_id": "real_world_airbnb_demand_shock_fresh_001",
+      "track": "board",
+      "mode": "fresh",
+      "hidden_ref": "fresh_008"
+    },
+    {
+      "scenario_id": "real_world_robinhood_volatility_outage_fresh_001",
+      "track": "crisis",
+      "mode": "fresh",
+      "hidden_ref": "fresh_009"
     }
   ]
 }

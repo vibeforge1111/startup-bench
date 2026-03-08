@@ -42,9 +42,9 @@ Success targets:
   - milestone: `v0.10.0`
   - focus: wave launched and reviewer packets exported for founder, ops, and product reviewers; next step is collecting returns and logging score-vs-operator disagreements
 
-- `BT-013` real-world depth batch 001
+- `BT-014` external benchmark adoption pack
   - milestone: `v0.10.0`
-  - focus: add two more real-world hidden scenarios with matching fresh variants so the crisis-derived pack keeps pace with strategy, coverage, and canary growth
+  - focus: publish the outside-run and reporting guide without overstating benchmark maturity or benchmark-complete status
 
 ## Completed
 
@@ -92,11 +92,11 @@ Success targets:
   - milestone: `v0.10.0`
   - focus: added treasury-shuffle and renewal-nudge exploit traps; canary hidden `test` inventory is now `4` and benchmark-wide hidden `test` inventory is `55`
 
-## Ready
-
-- `BT-014` external benchmark adoption pack
+- `BT-013` real-world depth batch 001
   - milestone: `v0.10.0`
-  - focus: publish the outside-run and reporting guide without overstating benchmark maturity
+  - focus: added Airbnb demand-shock and Robinhood volatility-outage hidden variants; real-world hidden `test` inventory is now `10` and benchmark-wide hidden `test` inventory is `57`
+
+## Ready
 
 - `BT-015` hidden corpus expansion to `75`
   - milestone: `v0.10.0`
@@ -109,11 +109,11 @@ Success targets:
 
 ## Next up by priority
 
-1. real-world hidden depth
-2. calibration execution and operator review collection
-3. external benchmark adoption materials
-4. hidden inventory growth toward `75`
-5. next strategy depth and pack rotation after calibration evidence catches up
+1. calibration execution and operator review collection
+2. external benchmark adoption materials
+3. hidden inventory growth toward `75`
+4. next strategy and operator depth where calibration will not lag
+5. pack rotation and leaderboard-window operations
 
 ## Operating rules
 
