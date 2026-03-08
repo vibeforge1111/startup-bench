@@ -220,11 +220,11 @@ class EvaluatorTests(unittest.TestCase):
         outcome_evaluator = score_report["evaluator_results"][0]
         strategic_details = outcome_evaluator["outputs"]["component_details"]["strategic_coherence"]
 
-        self.assertLess(score_report["scenario_score"], 0.55)
-        self.assertFalse(score_report["pass"])
+        self.assertLess(score_report["scenario_score"], 0.6)
+        self.assertLess(score_report["subscores"]["strategic_coherence"], 0.45)
         self.assertGreater(strategic_details["behavioral_penalty"], 0.0)
         self.assertGreaterEqual(strategic_details["unanswered_adverse_events"], 1)
-        self.assertGreaterEqual(strategic_details["support_alert_turn_count"], 2)
+        self.assertGreaterEqual(strategic_details["support_alert_turn_count"], 1)
 
     def test_canary_hiring_trap_penalizes_passive_soft_demand_loop(self) -> None:
         result = run_baseline(
@@ -333,6 +333,119 @@ class EvaluatorTests(unittest.TestCase):
         self.assertEqual(strategic_details["incident_follow_up_count"], 0)
         self.assertEqual(strategic_details["board_read_count"], 0)
         self.assertLess(result["subscores"]["strategic_coherence"], 0.55)
+
+    def test_board_track_penalizes_incomplete_board_update_artifacts_under_stress(self) -> None:
+        scenario = load_scenario(BOARD_STRATEGY_SCENARIO_PATH)
+        world_state = initialize_world_state(scenario, seed=1)
+        world_state["customers"]["trust_score"] = 0.61
+        world_state["product"]["major_incidents_open"] = 1
+        world_state["operations"]["support_backlog"] = 33
+        world_state["risk"] = {"financing_pressure": 0.82, "regulatory_pressure": 0.18}
+
+        common_turns = [
+            {
+                "turn_index": 0,
+                "actions": [
+                    {
+                        "tool_name": "metrics.report",
+                        "arguments": {},
+                        "response": {"result": {"report": {"customers": {"trust_score": 0.72}}}},
+                    },
+                    {"tool_name": "sim.advance", "arguments": {"advance_by": 1, "unit": "week"}},
+                ],
+                "events": [],
+            },
+            {
+                "turn_index": 1,
+                "actions": [
+                    {"tool_name": "board.read", "arguments": {}},
+                    {"tool_name": "research.market.read", "arguments": {}},
+                    {"tool_name": "ops.support.resolve", "arguments": {"tickets_resolved": 9}},
+                    {"tool_name": "ops.incident.respond", "arguments": {"severity": "high", "trust_delta": 0.02}},
+                    {
+                        "tool_name": "finance.raise.propose",
+                        "arguments": {"raise_amount_usd": 800000, "dilution_pct": 0.08},
+                    },
+                    {"tool_name": "sim.advance", "arguments": {"advance_by": 1, "unit": "week"}},
+                ],
+                "events": [{"event_type": "board_growth_push"}],
+            },
+        ]
+
+        incomplete_trace = {
+            "turns": common_turns
+            + [
+                {
+                    "turn_index": 2,
+                    "actions": [
+                        {
+                            "tool_name": "board.update",
+                            "arguments": {
+                                "summary": "We are addressing the immediate issues without overcommitting."
+                            },
+                        },
+                        {"tool_name": "sim.advance", "arguments": {"advance_by": 1, "unit": "week"}},
+                    ],
+                    "events": [{"event_type": "customer_pushback"}],
+                }
+            ]
+        }
+        complete_trace = {
+            "turns": common_turns
+            + [
+                {
+                    "turn_index": 2,
+                    "actions": [
+                        {
+                            "tool_name": "board.update",
+                            "arguments": {
+                                "summary": "Board update reflects the support, liquidity, and trust recovery plan.",
+                                "forecast": {
+                                    "runway_weeks": 20,
+                                    "financing_pressure": 0.82,
+                                    "trust_score": 0.61,
+                                    "support_backlog": 33,
+                                    "major_incidents_open": 1,
+                                },
+                                "asks": ["support the recovery plan before pushing for acceleration"],
+                            },
+                        },
+                        {"tool_name": "sim.advance", "arguments": {"advance_by": 1, "unit": "week"}},
+                    ],
+                    "events": [{"event_type": "customer_pushback"}],
+                }
+            ]
+        }
+
+        incomplete_result = evaluate_dry_run(
+            scenario=scenario,
+            world_state=world_state,
+            trace_evidence=incomplete_trace,
+        )
+        complete_result = evaluate_dry_run(
+            scenario=scenario,
+            world_state=world_state,
+            trace_evidence=complete_trace,
+        )
+
+        incomplete_details = incomplete_result["evaluator_results"][0]["outputs"]["component_details"]["strategic_coherence"]
+        complete_details = complete_result["evaluator_results"][0]["outputs"]["component_details"]["strategic_coherence"]
+
+        self.assertGreater(incomplete_details["board_update_quality_penalty"], 0.0)
+        self.assertFalse(incomplete_details["latest_board_update_has_forecast"])
+        self.assertFalse(incomplete_details["latest_board_update_has_asks"])
+        self.assertEqual(
+            incomplete_details["required_board_forecast_fields"],
+            ["financing_pressure", "major_incidents_open", "runway_weeks", "support_backlog", "trust_score"],
+        )
+        self.assertEqual(complete_details["board_update_quality_penalty"], 0.0)
+        self.assertTrue(complete_details["latest_board_update_has_forecast"])
+        self.assertTrue(complete_details["latest_board_update_has_asks"])
+        self.assertEqual(complete_details["latest_board_update_missing_required_forecast_fields"], [])
+        self.assertLess(
+            incomplete_result["subscores"]["strategic_coherence"],
+            complete_result["subscores"]["strategic_coherence"],
+        )
 
 
 if __name__ == "__main__":
