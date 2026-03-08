@@ -23,6 +23,7 @@ LAUNCH_DISTRIBUTION_SCENARIO_PATH = REPO_ROOT / "examples" / "minimal_launch_dis
 GROWTH_EXPERIMENT_SCENARIO_PATH = REPO_ROOT / "examples" / "minimal_growth_experiment_scenario.json"
 BOARD_COMMUNICATION_SCENARIO_PATH = REPO_ROOT / "examples" / "minimal_board_communication_scenario.json"
 CUSTOMER_COMMUNICATION_SCENARIO_PATH = REPO_ROOT / "examples" / "minimal_customer_communication_scenario.json"
+HIRING_PLAN_SCENARIO_PATH = REPO_ROOT / "examples" / "minimal_hiring_plan_scenario.json"
 BOARD_STRATEGY_SCENARIO_PATH = REPO_ROOT / "examples" / "hidden_board_stakeholder_conflict_test_scenario.json"
 BREX_TREASURY_SCENARIO_PATH = REPO_ROOT / "examples" / "real_world_brex_svb_treasury_shock_test_scenario.json"
 
@@ -394,6 +395,26 @@ class BaselineRunnerTests(unittest.TestCase):
         self.assertGreaterEqual(len(incident_responses), 1)
         self.assertTrue(all("customer_comms_plan" in action["arguments"] for action in incident_responses))
         self.assertEqual(strategic_details["customer_comms_quality_penalty"], 0.0)
+
+    def test_long_horizon_baseline_uses_hiring_plan_on_hiring_plan_scenario(self) -> None:
+        result = run_baseline(
+            scenario_path=HIRING_PLAN_SCENARIO_PATH,
+            baseline_id="heuristic_long_horizon_operator",
+            seed=23,
+            max_turns=6,
+        )
+
+        hiring_updates = [
+            action
+            for turn in result["trace"]["turns"]
+            for action in turn["actions"]
+            if action["tool_name"] == "people.hiring.update"
+        ]
+        strategic_details = result["score_report"]["evaluator_results"][0]["outputs"]["component_details"]["strategic_coherence"]
+
+        self.assertGreaterEqual(len(hiring_updates), 1)
+        self.assertTrue(all("hiring_plan" in action["arguments"] for action in hiring_updates))
+        self.assertEqual(strategic_details["hiring_plan_quality_penalty"], 0.0)
 
     def test_long_horizon_baseline_uses_org_proposal_on_people_leadership_scenario(self) -> None:
         result = run_baseline(

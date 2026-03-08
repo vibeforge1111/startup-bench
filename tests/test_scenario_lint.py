@@ -21,6 +21,7 @@ LAUNCH_DISTRIBUTION_SCENARIO_PATH = REPO_ROOT / "examples" / "minimal_launch_dis
 GROWTH_EXPERIMENT_SCENARIO_PATH = REPO_ROOT / "examples" / "minimal_growth_experiment_scenario.json"
 BOARD_COMMUNICATION_SCENARIO_PATH = REPO_ROOT / "examples" / "minimal_board_communication_scenario.json"
 CUSTOMER_COMMUNICATION_SCENARIO_PATH = REPO_ROOT / "examples" / "minimal_customer_communication_scenario.json"
+HIRING_PLAN_SCENARIO_PATH = REPO_ROOT / "examples" / "minimal_hiring_plan_scenario.json"
 
 
 class ScenarioLintTests(unittest.TestCase):
@@ -89,6 +90,13 @@ class ScenarioLintTests(unittest.TestCase):
 
     def test_customer_communication_scenario_passes_lint(self) -> None:
         scenario = load_scenario(CUSTOMER_COMMUNICATION_SCENARIO_PATH)
+        result = lint_scenario_instance(scenario)
+
+        self.assertTrue(result.ok)
+        self.assertEqual(result.issues, [])
+
+    def test_hiring_plan_scenario_passes_lint(self) -> None:
+        scenario = load_scenario(HIRING_PLAN_SCENARIO_PATH)
         result = lint_scenario_instance(scenario)
 
         self.assertTrue(result.ok)
