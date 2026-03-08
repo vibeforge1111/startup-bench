@@ -307,12 +307,25 @@
       "pack_version": "strategy-test-pack-0.8.0",
       "split": "test",
       "visibility": "hidden",
-      "action": "created",
-      "lifecycle_state": "active",
+      "action": "retired",
+      "lifecycle_state": "retired",
       "contamination_status": "clean",
       "predecessor_pack_version": "strategy-test-pack-0.7.0",
       "manifest_path": "examples/strategy_public_test_manifest.json",
-      "notes": "Supplemental hidden strategy test pack covering four board scenarios, two delayed-consequence product slices, three multi-quarter scale and scale-finance sequencing slices, and a long-horizon GTM sequencing slice."
+      "successor_pack_version": "strategy-test-pack-0.9.0",
+      "notes": "Supplemental hidden strategy test pack retired after adding a board hiring-truth slice, a product platform-tax slice, and a second long-horizon GTM sequencing slice."
+    },
+    {
+      "effective_date": "2026-03-08",
+      "pack_version": "strategy-test-pack-0.9.0",
+      "split": "test",
+      "visibility": "hidden",
+      "action": "created",
+      "lifecycle_state": "active",
+      "contamination_status": "clean",
+      "predecessor_pack_version": "strategy-test-pack-0.8.0",
+      "manifest_path": "examples/strategy_public_test_manifest.json",
+      "notes": "Supplemental hidden strategy test pack covering five board scenarios, three delayed-consequence product slices, three multi-quarter scale and scale-finance sequencing slices, and two long-horizon GTM sequencing slices."
     },
     {
       "effective_date": "2026-03-07",
@@ -409,12 +422,25 @@
       "pack_version": "strategy-fresh-pack-0.8.0",
       "split": "fresh",
       "visibility": "hidden",
-      "action": "created",
-      "lifecycle_state": "active",
+      "action": "retired",
+      "lifecycle_state": "retired",
       "contamination_status": "clean",
       "predecessor_pack_version": "strategy-test-pack-0.8.0",
       "manifest_path": "examples/strategy_public_fresh_manifest.json",
-      "notes": "Supplemental hidden strategy fresh pack for contamination-resistant long-horizon startup evaluation with broader board, delayed-consequence product, GTM sequencing, and multi-quarter scale plus scale-finance coverage."
+      "successor_pack_version": "strategy-fresh-pack-0.9.0",
+      "notes": "Supplemental hidden strategy fresh pack retired after adding distinct board hiring-truth, product platform-tax, and GTM efficiency sequencing variants."
+    },
+    {
+      "effective_date": "2026-03-08",
+      "pack_version": "strategy-fresh-pack-0.9.0",
+      "split": "fresh",
+      "visibility": "hidden",
+      "action": "created",
+      "lifecycle_state": "active",
+      "contamination_status": "clean",
+      "predecessor_pack_version": "strategy-test-pack-0.9.0",
+      "manifest_path": "examples/strategy_public_fresh_manifest.json",
+      "notes": "Supplemental hidden strategy fresh pack for contamination-resistant long-horizon startup evaluation with deeper board bench-truth, product platform-tax, and GTM efficiency sequencing coverage."
     },
     {
       "effective_date": "2026-03-08",

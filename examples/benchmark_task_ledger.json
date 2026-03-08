@@ -252,6 +252,109 @@
         "examples/private_strategy_test_scenario_suite.json",
         "examples/private_strategy_fresh_scenario_suite.json"
       ]
+    },
+    {
+      "task_id": "BT-011",
+      "title": "Add strategy depth batch 001 toward hidden test 60",
+      "workstream": "corpus-scale",
+      "milestone_id": "v0.10.0",
+      "priority": "highest",
+      "status": "completed",
+      "benchmark_risk": "medium",
+      "owner": "core-benchmark",
+      "completion_criteria": [
+        "at least 3 new hidden strategy test scenarios exist",
+        "matching fresh variants exist",
+        "strategy pack metadata and tests are updated"
+      ],
+      "progress_notes": "Strategy hidden coverage now includes board hiring truth, delayed-consequence product platform tax, and GTM efficiency sequencing. Active strategy hidden test inventory is 13 and benchmark-wide hidden test inventory is 53.",
+      "artifacts": [
+        "examples/hidden_board_hiring_truth_test_scenario.json",
+        "examples/hidden_board_hiring_truth_fresh_scenario.json",
+        "examples/hidden_product_platform_tax_test_scenario.json",
+        "examples/hidden_product_platform_tax_fresh_scenario.json",
+        "examples/hidden_gtm_efficiency_sequence_test_scenario.json",
+        "examples/hidden_gtm_efficiency_sequence_fresh_scenario.json",
+        "examples/private_strategy_test_scenario_suite.json",
+        "examples/private_strategy_fresh_scenario_suite.json",
+        "examples/strategy_public_test_manifest.json",
+        "examples/strategy_public_fresh_manifest.json"
+      ]
+    },
+    {
+      "task_id": "BT-012",
+      "title": "Add canary depth batch 001",
+      "workstream": "hidden-eval-integrity",
+      "milestone_id": "v0.10.0",
+      "priority": "high",
+      "status": "ready",
+      "benchmark_risk": "high",
+      "owner": "core-benchmark",
+      "completion_criteria": [
+        "at least 2 new hidden canary scenarios exist",
+        "matching fresh variants exist",
+        "canary suite and manifests are updated"
+      ]
+    },
+    {
+      "task_id": "BT-013",
+      "title": "Add real-world depth batch 001",
+      "workstream": "corpus-scale",
+      "milestone_id": "v0.10.0",
+      "priority": "high",
+      "status": "ready",
+      "benchmark_risk": "medium",
+      "owner": "core-benchmark",
+      "completion_criteria": [
+        "at least 2 new hidden real-world scenarios exist",
+        "matching fresh variants exist",
+        "real-world suite and manifests are updated"
+      ]
+    },
+    {
+      "task_id": "BT-014",
+      "title": "Publish external benchmark adoption pack",
+      "workstream": "benchmark-operations",
+      "milestone_id": "v0.10.0",
+      "priority": "medium",
+      "status": "ready",
+      "benchmark_risk": "medium",
+      "owner": "core-benchmark",
+      "completion_criteria": [
+        "outside-run guide exists",
+        "hosted vs self-reported path is documented for external users",
+        "benchmark caveats remain explicit"
+      ]
+    },
+    {
+      "task_id": "BT-015",
+      "title": "Expand hidden test corpus to at least 75 scenarios",
+      "workstream": "corpus-scale",
+      "milestone_id": "v0.10.0",
+      "priority": "highest",
+      "status": "ready",
+      "benchmark_risk": "high",
+      "owner": "core-benchmark",
+      "completion_criteria": [
+        "hidden test inventory >= 75",
+        "growth is balanced across thin tracks",
+        "promotion metadata and governance docs are updated"
+      ]
+    },
+    {
+      "task_id": "BT-016",
+      "title": "Compile operator calibration wave 002 returns",
+      "workstream": "calibration",
+      "milestone_id": "v0.10.0",
+      "priority": "highest",
+      "status": "blocked",
+      "benchmark_risk": "high",
+      "owner": "calibration-taskforce",
+      "completion_criteria": [
+        "returned review CSV files are imported",
+        "calibration study report is compiled",
+        "score-vs-operator disagreements are logged"
+      ]
     }
   ]
 }

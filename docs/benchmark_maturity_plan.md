@@ -41,12 +41,12 @@ Current status: early but real
 
 Current hidden `test` inventory across active packs:
 
-- strategy: `10`
+- strategy: `13`
 - coverage: `14`
 - operator: `16`
 - real-world: `8`
 - canary: `2`
-- total hidden `test`: `50`
+- total hidden `test`: `53`
 
 Assessment:
 
@@ -326,11 +326,11 @@ Implementation focus:
 
 ## Highest-value next implementations
 
-1. add another `11-15` hidden scenarios across `0to1`, `product`, `scale`, `gtm`, and `finance`
-2. create the first formal benchmark task board and milestone tracker
-3. define official pack-growth targets per milestone
-4. run operator calibration wave against the promoted strategy pack
-5. freeze a first stable evaluation window with current official profile
+1. add canary depth batch `001` so exploit pressure grows with the broader hidden corpus
+2. add real-world depth batch `001` to keep crisis-derived hidden coverage from lagging the strategy and coverage packs
+3. complete operator calibration wave `002` by importing returned reviews and publishing disagreement logs
+4. publish an external benchmark adoption pack that explains hosted vs self-reported usage without overstating maturity
+5. push balanced hidden-corpus growth from `53` toward the `75`-scenario v0.10.0 target
 
 ## Task system policy
 

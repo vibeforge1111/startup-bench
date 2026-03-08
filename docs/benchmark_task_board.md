@@ -42,6 +42,10 @@ Success targets:
   - milestone: `v0.10.0`
   - focus: wave launched and reviewer packets exported for founder, ops, and product reviewers; next step is collecting returns and logging score-vs-operator disagreements
 
+- `BT-012` canary depth batch 001
+  - milestone: `v0.10.0`
+  - focus: add two more exploit-pressure canary families with fresh variants and keep the hidden-eval integrity lane growing alongside corpus scale
+
 ## Completed
 
 - `BT-001` benchmark maturity plan
@@ -80,15 +84,36 @@ Success targets:
   - milestone: `v0.10.0`
   - focus: defined rotation cadence, retirement triggers, fresh-to-test promotion rules, and metadata update requirements in a versioned policy artifact
 
+- `BT-011` strategy depth batch 001
+  - milestone: `v0.10.0`
+  - focus: added board hiring truth, delayed-consequence product platform tax, and GTM efficiency sequencing families; strategy hidden `test` inventory is now `13` and benchmark-wide hidden `test` inventory is `53`
+
 ## Ready
+
+- `BT-013` real-world depth batch 001
+  - milestone: `v0.10.0`
+  - focus: add two more real-world hidden scenarios with matching fresh variants
+
+- `BT-014` external benchmark adoption pack
+  - milestone: `v0.10.0`
+  - focus: publish the outside-run and reporting guide without overstating benchmark maturity
+
+- `BT-015` hidden corpus expansion to `75`
+  - milestone: `v0.10.0`
+  - focus: finish the remaining balanced corpus growth needed for the v0.10.0 target
+
+- `BT-016` operator calibration wave 002 compilation
+  - milestone: `v0.10.0`
+  - focus: import returned reviews and compile disagreement reports once reviewer forms come back
+  - status note: blocked on external reviewer returns
 
 ## Next up by priority
 
-1. strategy pack depth in product, board, scale, and gtm
+1. canary and real-world hidden depth
 2. calibration execution and operator review collection
-3. calibration execution and operator review collection
-4. external benchmark adoption materials
-5. hidden inventory growth toward `75`
+3. external benchmark adoption materials
+4. hidden inventory growth toward `75`
+5. next strategy depth and pack rotation after calibration evidence catches up
 
 ## Operating rules
 

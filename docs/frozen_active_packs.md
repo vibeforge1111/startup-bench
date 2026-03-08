@@ -15,7 +15,7 @@ This document records the active pack set for the `v0.9-precalibration` freeze.
 - `coverage-test-pack-0.9.0`
   - public manifest: [coverage_public_test_manifest.json](/C:/Users/USER/Desktop/startup-bench/examples/coverage_public_test_manifest.json)
   - focus: 0to1, launch, growth, communication, and safe expansion slices
-- `strategy-test-pack-0.8.0`
+- `strategy-test-pack-0.9.0`
   - public manifest: [strategy_public_test_manifest.json](/C:/Users/USER/Desktop/startup-bench/examples/strategy_public_test_manifest.json)
   - focus: board, product, scale, GTM, and finance-interaction long-horizon judgment
 - `real-world-test-pack-0.3.0`
@@ -27,7 +27,7 @@ This document records the active pack set for the `v0.9-precalibration` freeze.
 - `canary-fresh-pack-0.1.0`
 - `operator-fresh-pack-0.5.0`
 - `coverage-fresh-pack-0.9.0`
-- `strategy-fresh-pack-0.8.0`
+- `strategy-fresh-pack-0.9.0`
 - `real-world-fresh-pack-0.3.0`
 
 Fresh pack details and retirements are tracked in [pack_lifecycle_changelog.md](/C:/Users/USER/Desktop/startup-bench/docs/pack_lifecycle_changelog.md).

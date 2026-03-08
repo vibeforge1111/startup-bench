@@ -1,7 +1,7 @@
 {
   "suite_version": "0.1.0",
   "benchmark_version": "0.2.0-draft",
-  "scenario_pack_version": "strategy-test-pack-0.8.0",
+  "scenario_pack_version": "strategy-test-pack-0.9.0",
   "split": "test",
   "scenarios": [
     {
@@ -62,6 +62,24 @@
       "scenario_id": "hidden_scale_finance_tradeoff_test_001",
       "path": "hidden_scale_finance_tradeoff_test_scenario.json",
       "track": "scale",
+      "mode": "test"
+    },
+    {
+      "scenario_id": "hidden_board_hiring_truth_test_001",
+      "path": "hidden_board_hiring_truth_test_scenario.json",
+      "track": "board",
+      "mode": "test"
+    },
+    {
+      "scenario_id": "hidden_product_platform_tax_test_001",
+      "path": "hidden_product_platform_tax_test_scenario.json",
+      "track": "product",
+      "mode": "test"
+    },
+    {
+      "scenario_id": "hidden_gtm_efficiency_sequence_test_001",
+      "path": "hidden_gtm_efficiency_sequence_test_scenario.json",
+      "track": "gtm",
       "mode": "test"
     }
   ]

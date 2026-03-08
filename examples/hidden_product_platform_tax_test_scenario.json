@@ -1,0 +1,124 @@
+{
+  "metadata": {
+    "scenario_id": "hidden_product_platform_tax_test_001",
+    "scenario_version": "0.1.0",
+    "benchmark_version": "0.2.0-draft",
+    "track": "product",
+    "mode": "test",
+    "title": "Hidden Product Platform Tax Under Expansion Demand",
+    "summary": "A hidden product scenario where new product demand looks attractive, but shared platform tax and implementation complexity are compounding underneath. The agent must sequence platform work before the quality bill arrives in renewals and support load.",
+    "difficulty": "frontier",
+    "time_horizon": { "unit": "week", "length": 22 },
+    "authoring_origin": "expert_authored",
+    "tags": ["product", "hidden_eval", "platform_tax", "delayed_consequences", "sequencing"]
+  },
+  "initial_state": {
+    "company": { "stage": "growth", "sector": "developer_platform", "business_model": "subscription" },
+    "finance": { "cash_usd": 5120000, "monthly_burn_usd": 602000, "monthly_revenue_usd": 534000 },
+    "product": { "major_incidents_open": 1, "roadmap_items": 13, "onboarding_quality": 0.64 },
+    "customers": {
+      "paying_accounts": 278,
+      "monthly_churn_rate": 0.024,
+      "trust_score": 0.72,
+      "segments": [
+        { "segment_id": "enterprise", "accounts": 63, "revenue_share": 0.6, "monthly_churn_rate": 0.017, "trust_score": 0.74, "support_load_index": 0.46, "expansion_potential": 0.8, "competitor_pressure_index": 0.39 },
+        { "segment_id": "mid_market", "accounts": 215, "revenue_share": 0.4, "monthly_churn_rate": 0.031, "trust_score": 0.7, "support_load_index": 0.55, "expansion_potential": 0.53, "competitor_pressure_index": 0.45 }
+      ]
+    },
+    "sales": { "pipeline_count": 24, "weighted_pipeline_usd": 1980000, "pricing": { "current_price_index": 1.0 } },
+    "operations": { "support_backlog": 49, "support_sla_breach_risk": 0.39 },
+    "team": {
+      "morale": 0.58,
+      "attrition_risk": 0.45,
+      "bandwidth_load": 0.86,
+      "headcount": 34,
+      "delivery_capacity_index": 0.62,
+      "hiring": { "open_roles": 5, "critical_roles_open": 2, "sourced_candidates": 6, "onsite_candidates": 2, "offers_out": 0, "time_to_fill_weeks": 9 }
+    },
+    "market": {
+      "competitor_pressure": "moderate",
+      "competitor_pressure_index": 0.46,
+      "pricing_pressure_index": 0.33,
+      "demand_index": 0.9,
+      "segment_signals": [
+        { "segment_id": "enterprise", "signal": "platform_reliability_scrutiny" },
+        { "segment_id": "mid_market", "signal": "implementation_friction_visibility" }
+      ],
+      "latest_market_note": "Demand is real, but buyers increasingly want confidence that the new package is not sitting on thin shared-platform foundations."
+    },
+    "risk": { "financing_pressure": 0.4, "regulatory_pressure": 0.1, "counterparty_risk": 0.09, "active_legal_matters": 0 },
+    "governance": { "board_update_count": 1 },
+    "policy": { "max_auto_price_increase_pct": 0.04 },
+    "sim": { "current_time": "2026-10-05T09:00:00Z" }
+  },
+  "latent_state": {
+    "true_core_problem": "new_demand_is_outpacing_shared_platform_quality",
+    "true_failure_mode": "renewal_and_support_bills_arrive_after_expansion_is_committed"
+  },
+  "observation_surfaces": [
+    { "surface_id": "product_dashboard", "surface_type": "dashboard", "refresh_policy": "daily", "visible_fields": ["onboarding_quality", "roadmap_items", "major_incidents_open", "support_backlog"] },
+    { "surface_id": "renewal_dashboard", "surface_type": "dashboard", "refresh_policy": "weekly", "visible_fields": ["trust_score", "monthly_churn_rate", "weighted_pipeline_usd", "runway_weeks"] }
+  ],
+  "tools": [
+    "metrics.query", "metrics.report", "product.roadmap.read", "product.roadmap.write", "ops.incident.read", "ops.incident.respond",
+    "ops.support.read", "ops.support.resolve", "finance.plan.read", "finance.plan.write", "people.hiring.read", "people.hiring.update",
+    "people.org.read", "people.org.adjust", "research.market.read", "board.read", "board.update", "notes.read", "notes.write", "sim.advance"
+  ],
+  "event_model": {
+    "kind": "seeded_schedule",
+    "primitive_catalog": {
+      "commercial_pull_forward": {
+        "operations": [
+          { "op": "increment", "path": "finance.monthly_revenue_usd", "value": 36000 },
+          { "op": "increment", "path": "sales.weighted_pipeline_usd", "value": 180000 },
+          { "op": "increment", "path": "operations.support_backlog", "value": 10 },
+          { "op": "increment", "path": "market.demand_index", "value": 0.03 },
+          { "op": "clamp", "path": "market.demand_index", "min": 0.0, "max": 1.5 }
+        ]
+      },
+      "platform_drag": {
+        "operations": [
+          { "op": "increment", "path": "product.onboarding_quality", "value": -0.075 },
+          { "op": "clamp", "path": "product.onboarding_quality", "min": 0.0, "max": 1.0 },
+          { "op": "increment", "path": "product.major_incidents_open", "value": 1 },
+          { "op": "increment", "path": "operations.support_backlog", "value": 20 },
+          { "op": "increment", "path": "team.morale", "value": -0.045 },
+          { "op": "clamp", "path": "team.morale", "min": 0.0, "max": 1.0 },
+          { "op": "increment", "path": "team.bandwidth_load", "value": 0.06 },
+          { "op": "clamp", "path": "team.bandwidth_load", "min": 0.0, "max": 1.5 }
+        ]
+      },
+      "renewal_confidence_loss": {
+        "operations": [
+          { "op": "increment", "path": "customers.trust_score", "value": -0.055 },
+          { "op": "clamp", "path": "customers.trust_score", "min": 0.0, "max": 1.0 },
+          { "op": "increment", "path": "customers.monthly_churn_rate", "value": 0.0075 },
+          { "op": "increment", "path": "sales.weighted_pipeline_usd", "value": -105000 },
+          { "op": "increment", "path": "operations.support_sla_breach_risk", "value": 0.11 },
+          { "op": "clamp", "path": "operations.support_sla_breach_risk", "min": 0.0, "max": 1.0 },
+          { "op": "increment", "path": "risk.financing_pressure", "value": 0.06 },
+          { "op": "clamp", "path": "risk.financing_pressure", "min": 0.0, "max": 1.0 }
+        ]
+      }
+    },
+    "scheduled_events": [
+      { "event_id": "ev_hidden_product_platform_001", "at_turn": 2, "primitive_id": "commercial_pull_forward", "event_type": "commercial_pull_forward", "visible_message": "The new package pulled forward demand and expansion interest faster than expected." },
+      { "event_id": "ev_hidden_product_platform_002", "at_turn": 4, "primitive_id": "platform_drag", "event_type": "platform_drag", "visible_message": "Shared platform and implementation debt started surfacing in onboarding, support, and delivery load." },
+      { "event_id": "ev_hidden_product_platform_003", "at_turn": 6, "primitive_id": "renewal_confidence_loss", "event_type": "renewal_confidence_loss", "visible_message": "Renewal confidence started reflecting the platform tax instead of the broader roadmap narrative." }
+    ]
+  },
+  "policy_constraints": [{ "constraint_id": "no_unapproved_hiring", "kind": "approval_required" }],
+  "terminal_conditions": [{ "condition_id": "horizon_end_22_weeks", "kind": "horizon_end" }, { "condition_id": "bankruptcy", "kind": "hard_failure" }],
+  "evaluation": {
+    "outcome_components": [
+      { "component_id": "cash_efficiency", "weight": 0.08, "direction": "maximize" },
+      { "component_id": "revenue_quality", "weight": 0.12, "direction": "maximize" },
+      { "component_id": "customer_health", "weight": 0.18, "direction": "maximize" },
+      { "component_id": "product_health", "weight": 0.22, "direction": "maximize" },
+      { "component_id": "team_health", "weight": 0.14, "direction": "maximize" },
+      { "component_id": "risk_management", "weight": 0.1, "direction": "maximize" },
+      { "component_id": "strategic_coherence", "weight": 0.16, "direction": "maximize" }
+    ],
+    "constraints": [{ "constraint_id": "bankruptcy" }, { "constraint_id": "severe_trust_breach" }]
+  }
+}

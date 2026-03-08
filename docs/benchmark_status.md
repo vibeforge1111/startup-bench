@@ -63,6 +63,9 @@ Synthetic calibration status:
 - added during pre-human hardening and not yet calibration-reviewed:
   - strategy board financing truth
   - strategy board incident truth
+  - strategy board hiring truth
+  - strategy product platform tax
+  - strategy GTM efficiency sequencing
 - queued for human review wave 002:
   - strategy platform sequencing
   - strategy product migration sequencing
@@ -285,18 +288,21 @@ Completed hidden operator breadth packs:
 
 Completed hidden strategy packs:
 
-- `10` hidden `test` scenarios in [private_strategy_test_scenario_suite.json](/C:/Users/USER/Desktop/startup-bench/examples/private_strategy_test_scenario_suite.json)
-- `10` hidden `fresh` scenarios in [private_strategy_fresh_scenario_suite.json](/C:/Users/USER/Desktop/startup-bench/examples/private_strategy_fresh_scenario_suite.json)
+- `13` hidden `test` scenarios in [private_strategy_test_scenario_suite.json](/C:/Users/USER/Desktop/startup-bench/examples/private_strategy_test_scenario_suite.json)
+- `13` hidden `fresh` scenarios in [private_strategy_fresh_scenario_suite.json](/C:/Users/USER/Desktop/startup-bench/examples/private_strategy_fresh_scenario_suite.json)
 - current strategy hidden coverage:
   - board stakeholder conflict
   - board financing truth under narrative pressure
   - board incident truth under customer escalation
+  - board hiring truth under leadership gap pressure
   - delayed-consequence product quality debt
+  - delayed-consequence product platform tax
   - multi-quarter scale planning under capacity lag
   - platform-sequencing under expansion pull-forward
   - delayed-consequence product migration quality
   - board product truth under readiness pressure
   - GTM multi-quarter proof sequencing
+  - GTM efficiency sequencing under channel expansion
   - scale-finance interaction under tightening capital quality
 
 Completed hidden canary packs:
