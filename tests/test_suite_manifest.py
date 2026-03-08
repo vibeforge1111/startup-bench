@@ -43,8 +43,8 @@ class SuiteManifestTests(unittest.TestCase):
         self.assertTrue(result["validation"]["ok"])
         manifest = result["manifest"]
         self.assertEqual(manifest["split"], "test")
-        self.assertEqual(manifest["scenario_count"], 4)
-        self.assertEqual(manifest["scenario_pack_version"], "coverage-test-pack-0.1.0")
+        self.assertEqual(manifest["scenario_count"], 5)
+        self.assertEqual(manifest["scenario_pack_version"], "coverage-test-pack-0.2.0")
         self.assertNotIn("path", manifest["scenarios"][0])
         self.assertEqual(manifest["scenarios"][0]["hidden_ref"], "test_000")
 

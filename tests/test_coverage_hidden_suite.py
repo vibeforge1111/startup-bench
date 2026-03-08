@@ -37,9 +37,9 @@ class CoverageHiddenSuiteTests(unittest.TestCase):
 
         self.assertTrue(result["validation"]["ok"])
         report = result["suite_report"]
-        self.assertEqual(report["overall"]["scenario_count"], 4)
+        self.assertEqual(report["overall"]["scenario_count"], 5)
         tracks = {item["track"] for item in report["track_summaries"]}
-        self.assertEqual(tracks, {"0to1", "finance"})
+        self.assertEqual(tracks, {"0to1", "finance", "people"})
 
     def test_coverage_hidden_fresh_suite_validates_and_runs(self) -> None:
         validation = validate_artifact_file(
@@ -59,9 +59,9 @@ class CoverageHiddenSuiteTests(unittest.TestCase):
 
         self.assertTrue(result["validation"]["ok"])
         report = result["suite_report"]
-        self.assertEqual(report["overall"]["scenario_count"], 4)
+        self.assertEqual(report["overall"]["scenario_count"], 5)
         tracks = {item["track"] for item in report["track_summaries"]}
-        self.assertEqual(tracks, {"0to1", "finance"})
+        self.assertEqual(tracks, {"0to1", "finance", "people"})
 
     def test_coverage_hidden_test_and_fresh_suites_are_distinct(self) -> None:
         result = validate_suite_family([TEST_SUITE_PATH, FRESH_SUITE_PATH])

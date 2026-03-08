@@ -17,6 +17,7 @@ GTM_SCENARIO_PATH = REPO_ROOT / "examples" / "minimal_gtm_scenario.json"
 PRODUCT_SCENARIO_PATH = REPO_ROOT / "examples" / "minimal_product_scenario.json"
 PMF_SCENARIO_PATH = REPO_ROOT / "examples" / "minimal_0to1_false_signal_scenario.json"
 FINANCE_BRIDGE_SCENARIO_PATH = REPO_ROOT / "examples" / "minimal_finance_bridge_terms_scenario.json"
+PEOPLE_LEADERSHIP_SCENARIO_PATH = REPO_ROOT / "examples" / "minimal_people_leadership_scenario.json"
 BOARD_STRATEGY_SCENARIO_PATH = REPO_ROOT / "examples" / "hidden_board_stakeholder_conflict_test_scenario.json"
 BREX_TREASURY_SCENARIO_PATH = REPO_ROOT / "examples" / "real_world_brex_svb_treasury_shock_test_scenario.json"
 
@@ -204,6 +205,22 @@ class BaselineRunnerTests(unittest.TestCase):
         b2b_finance = b2b_style["trace"]["state_snapshots"][-1]["state"].get("finance", {})
         self.assertIn("last_plan_update", liquidity_finance)
         self.assertGreater(liquidity_finance.get("runway_weeks", 0), b2b_finance.get("runway_weeks", 0))
+
+    def test_long_horizon_baseline_improves_on_dry_run_for_people_leadership_scenario(self) -> None:
+        dry_result = run_dry_scenario(PEOPLE_LEADERSHIP_SCENARIO_PATH, seed=11)
+        long_horizon = run_baseline(
+            scenario_path=PEOPLE_LEADERSHIP_SCENARIO_PATH,
+            baseline_id="heuristic_long_horizon_operator",
+            seed=11,
+            max_turns=6,
+        )
+
+        self.assertGreater(
+            long_horizon["score_report"]["scenario_score"],
+            dry_result["score_report"]["scenario_score"],
+        )
+        final_state = long_horizon["trace"]["state_snapshots"][-1]["state"]
+        self.assertGreaterEqual(final_state.get("team", {}).get("org_changes_count", 0), 1)
 
     def test_liquidity_baseline_outperforms_resilient_on_treasury_shock(self) -> None:
         resilient = run_baseline(
