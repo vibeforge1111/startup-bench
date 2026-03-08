@@ -295,6 +295,11 @@ Implementation focus:
 - add pack-rotation and contamination-response procedures
 - define leaderboard entry types and release notes
 
+Current execution artifact set:
+
+- [official_eval_window_v0_9_0.json](/C:/Users/USER/Desktop/startup-bench/examples/official_eval_window_v0_9_0.json)
+- [official_evaluation_window_v0_9_0.md](/C:/Users/USER/Desktop/startup-bench/docs/official_evaluation_window_v0_9_0.md)
+
 ### Workstream 4. Evaluator hardening
 
 Priority: high

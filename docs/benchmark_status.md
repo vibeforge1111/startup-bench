@@ -40,7 +40,9 @@ Freeze status:
 - package/scaffold version: `0.9.0`
 - benchmark freeze label: `v0.9-precalibration`
 - official profile id: `official-hosted-v0.9.0`
+- official window id: `official-window-v0.9.0-precalibration-2026-03-15-to-2026-04-12`
 - frozen active packs are listed in [frozen_active_packs.md](/C:/Users/USER/Desktop/startup-bench/docs/frozen_active_packs.md)
+- official reporting window rules are in [official_evaluation_window_v0_9_0.md](/C:/Users/USER/Desktop/startup-bench/docs/official_evaluation_window_v0_9_0.md)
 
 Synthetic calibration status:
 

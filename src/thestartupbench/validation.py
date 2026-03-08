@@ -16,6 +16,7 @@ SCHEMA_BY_ARTIFACT_TYPE = {
     "public-suite-manifest": "tsb_public_suite_manifest.schema.json",
     "pack-changelog": "tsb_pack_changelog.schema.json",
     "official-eval-profile": "tsb_official_eval_profile.schema.json",
+    "official-eval-window": "tsb_official_eval_window.schema.json",
     "run-manifest": "tsb_run_manifest.schema.json",
     "trace": "tsb_trace.schema.json",
     "submission": "tsb_submission.schema.json",

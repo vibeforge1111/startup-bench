@@ -150,13 +150,20 @@
       "workstream": "official-eval",
       "milestone_id": "v0.10.0",
       "priority": "high",
-      "status": "ready",
+      "status": "completed",
       "benchmark_risk": "high",
       "owner": "core-benchmark",
       "completion_criteria": [
         "official run settings frozen",
         "window start and end dates documented",
         "hosted vs self-reported distinction documented"
+      ],
+      "progress_notes": "The first official reporting window is frozen for 2026-03-15 through 2026-04-12 with a validated official-eval-window artifact, hosted vs self-reported reporting rules, and the active frozen pack set synced to current versions.",
+      "artifacts": [
+        "examples/official_eval_profile.json",
+        "examples/official_eval_window_v0_9_0.json",
+        "docs/official_evaluation_window_v0_9_0.md",
+        "docs/frozen_active_packs.md"
       ]
     },
     {

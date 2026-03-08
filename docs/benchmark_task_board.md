@@ -68,11 +68,11 @@ Success targets:
   - milestone: `v0.9.5`
   - focus: added three new hidden `0to1` scenario families plus a new public dev slice, and promoted the coverage pack metadata
 
-## Ready
-
 - `BT-006` official evaluation window freeze
   - milestone: `v0.10.0`
-  - focus: lock one hosted-eval reporting window and publish run rules
+  - focus: froze the first official reporting window, documented hosted vs self-reported rules, and linked the frozen active pack set
+
+## Ready
 
 - `BT-007` leaderboard governance pack
   - milestone: `v0.10.0`
@@ -86,8 +86,8 @@ Success targets:
 
 1. strategy pack depth in product, board, scale, and gtm
 2. calibration execution and operator review collection
-3. official evaluation freeze rules
-4. leaderboard operations and contamination workflow
+3. leaderboard operations and contamination workflow
+4. hidden pack rotation policy
 5. external benchmark adoption materials
 
 ## Operating rules

@@ -1,0 +1,127 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://thestartupbench.org/schemas/tsb_official_eval_window.schema.json",
+  "title": "TheStartupBench Official Evaluation Window",
+  "type": "object",
+  "required": [
+    "window_version",
+    "window_id",
+    "benchmark_version",
+    "freeze_label",
+    "official_profile_path",
+    "reporting_window",
+    "hosted_reporting",
+    "self_reported_reporting",
+    "reporting_requirements",
+    "frozen_artifacts"
+  ],
+  "properties": {
+    "window_version": { "type": "string" },
+    "window_id": { "type": "string" },
+    "benchmark_version": { "type": "string" },
+    "freeze_label": { "type": "string" },
+    "official_profile_path": { "type": "string" },
+    "reporting_window": {
+      "type": "object",
+      "required": ["start_date", "end_date"],
+      "properties": {
+        "start_date": { "type": "string", "format": "date" },
+        "end_date": { "type": "string", "format": "date" }
+      },
+      "additionalProperties": false
+    },
+    "hosted_reporting": {
+      "type": "object",
+      "required": [
+        "entry_type",
+        "publication_policy",
+        "require_benchmark_operator",
+        "allow_private_hidden_traces",
+        "allowed_runner_types"
+      ],
+      "properties": {
+        "entry_type": { "type": "string", "const": "hosted" },
+        "publication_policy": { "type": "string" },
+        "require_benchmark_operator": { "type": "boolean" },
+        "allow_private_hidden_traces": { "type": "boolean" },
+        "allowed_runner_types": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string", "enum": ["dry", "script", "baseline"] }
+        }
+      },
+      "additionalProperties": false
+    },
+    "self_reported_reporting": {
+      "type": "object",
+      "required": [
+        "entry_type",
+        "separate_leaderboard",
+        "require_run_manifest",
+        "require_submission_artifact",
+        "contamination_declaration_required",
+        "require_cost_and_runtime",
+        "allowed_runner_types"
+      ],
+      "properties": {
+        "entry_type": { "type": "string", "const": "self_reported" },
+        "separate_leaderboard": { "type": "boolean" },
+        "require_run_manifest": { "type": "boolean" },
+        "require_submission_artifact": { "type": "boolean" },
+        "contamination_declaration_required": { "type": "boolean" },
+        "require_cost_and_runtime": { "type": "boolean" },
+        "allowed_runner_types": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string", "enum": ["dry", "script", "baseline"] }
+        }
+      },
+      "additionalProperties": false
+    },
+    "reporting_requirements": {
+      "type": "object",
+      "required": [
+        "minimum_repeated_runs",
+        "require_declared_seeds",
+        "report_test_and_fresh_separately",
+        "require_confidence_intervals_or_sem"
+      ],
+      "properties": {
+        "minimum_repeated_runs": { "type": "integer", "minimum": 1 },
+        "require_declared_seeds": { "type": "boolean" },
+        "report_test_and_fresh_separately": { "type": "boolean" },
+        "require_confidence_intervals_or_sem": { "type": "boolean" }
+      },
+      "additionalProperties": false
+    },
+    "frozen_artifacts": {
+      "type": "object",
+      "required": [
+        "official_profile_path",
+        "frozen_active_packs_path",
+        "public_test_manifests",
+        "public_fresh_manifests"
+      ],
+      "properties": {
+        "official_profile_path": { "type": "string" },
+        "frozen_active_packs_path": { "type": "string" },
+        "public_test_manifests": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string" }
+        },
+        "public_fresh_manifests": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string" }
+        }
+      },
+      "additionalProperties": false
+    },
+    "notes": {
+      "type": "array",
+      "items": { "type": "string" }
+    }
+  },
+  "additionalProperties": false
+}

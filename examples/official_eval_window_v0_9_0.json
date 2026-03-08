@@ -1,0 +1,56 @@
+{
+  "window_version": "0.1.0",
+  "window_id": "official-window-v0.9.0-precalibration-2026-03-15-to-2026-04-12",
+  "benchmark_version": "0.9.0-precalibration",
+  "freeze_label": "v0.9-precalibration-window-001",
+  "official_profile_path": "examples/official_eval_profile.json",
+  "reporting_window": {
+    "start_date": "2026-03-15",
+    "end_date": "2026-04-12"
+  },
+  "hosted_reporting": {
+    "entry_type": "hosted",
+    "publication_policy": "benchmark-operated-only",
+    "require_benchmark_operator": true,
+    "allow_private_hidden_traces": true,
+    "allowed_runner_types": ["baseline", "script"]
+  },
+  "self_reported_reporting": {
+    "entry_type": "self_reported",
+    "separate_leaderboard": true,
+    "require_run_manifest": true,
+    "require_submission_artifact": true,
+    "contamination_declaration_required": true,
+    "require_cost_and_runtime": true,
+    "allowed_runner_types": ["baseline", "script"]
+  },
+  "reporting_requirements": {
+    "minimum_repeated_runs": 5,
+    "require_declared_seeds": true,
+    "report_test_and_fresh_separately": true,
+    "require_confidence_intervals_or_sem": true
+  },
+  "frozen_artifacts": {
+    "official_profile_path": "examples/official_eval_profile.json",
+    "frozen_active_packs_path": "docs/frozen_active_packs.md",
+    "public_test_manifests": [
+      "examples/canary_public_test_manifest.json",
+      "examples/operator_public_test_manifest.json",
+      "examples/coverage_public_test_manifest.json",
+      "examples/strategy_public_test_manifest.json",
+      "examples/real_world_public_test_manifest.json"
+    ],
+    "public_fresh_manifests": [
+      "examples/canary_public_fresh_manifest.json",
+      "examples/operator_public_fresh_manifest.json",
+      "examples/coverage_public_fresh_manifest.json",
+      "examples/strategy_public_fresh_manifest.json",
+      "examples/real_world_public_fresh_manifest.json"
+    ]
+  },
+  "notes": [
+    "This is the first frozen official reporting window for TheStartupBench.",
+    "Hosted and self-reported entries must not be merged into one ranking table during this window.",
+    "Results published after 2026-04-12 require a new official evaluation window artifact."
+  ]
+}
