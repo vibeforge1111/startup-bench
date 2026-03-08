@@ -37,7 +37,7 @@ class StrategyHiddenSuiteTests(unittest.TestCase):
 
         self.assertTrue(result["validation"]["ok"])
         report = result["suite_report"]
-        self.assertEqual(report["overall"]["scenario_count"], 6)
+        self.assertEqual(report["overall"]["scenario_count"], 7)
         tracks = {item["track"] for item in report["track_summaries"]}
         self.assertEqual(tracks, {"board", "product", "scale"})
 
@@ -59,7 +59,7 @@ class StrategyHiddenSuiteTests(unittest.TestCase):
 
         self.assertTrue(result["validation"]["ok"])
         report = result["suite_report"]
-        self.assertEqual(report["overall"]["scenario_count"], 6)
+        self.assertEqual(report["overall"]["scenario_count"], 7)
         tracks = {item["track"] for item in report["track_summaries"]}
         self.assertEqual(tracks, {"board", "product", "scale"})
 
