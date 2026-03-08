@@ -312,6 +312,13 @@ class RuntimeTests(unittest.TestCase):
                     "trust_recovery": 0.04,
                     "churn_reduction": 0.006,
                     "monthly_burn_increase_usd": 10000,
+                    "customer_comms_plan": {
+                        "summary": "We identified the incident and will share the next update within six hours.",
+                        "delivery_channels": ["status_page", "email"],
+                        "affected_segments": ["enterprise"],
+                        "support_path": "route affected accounts to the incident queue",
+                        "next_update_hours": 6,
+                    },
                 },
             },
         )
@@ -320,6 +327,11 @@ class RuntimeTests(unittest.TestCase):
         self.assertEqual(self.session.world_state["customers"]["trust_score"], 0.78)
         self.assertEqual(self.session.world_state["customers"]["monthly_churn_rate"], 0.026)
         self.assertEqual(self.session.world_state["finance"]["monthly_burn_usd"], 215000.0)
+        self.assertIn("customer_comms_plan", self.session.world_state["operations"]["last_incident_response"])
+        self.assertEqual(
+            self.session.world_state["operations"]["last_incident_response"]["customer_comms_plan"]["next_update_hours"],
+            6,
+        )
 
     def test_support_tools_reduce_backlog_and_improve_customer_state(self) -> None:
         self.session.world_state["operations"]["support_backlog"] = 72

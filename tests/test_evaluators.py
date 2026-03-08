@@ -447,6 +447,124 @@ class EvaluatorTests(unittest.TestCase):
             complete_result["subscores"]["strategic_coherence"],
         )
 
+    def test_crisis_track_penalizes_incomplete_customer_comms_plan_under_security_stress(self) -> None:
+        scenario = load_scenario(ZOOM_CRISIS_SCENARIO_PATH)
+        world_state = initialize_world_state(scenario, seed=1)
+        world_state["customers"]["trust_score"] = 0.58
+        world_state["operations"]["support_backlog"] = 46
+        world_state["product"]["major_incidents_open"] = 1
+
+        common_turns = [
+            {
+                "turn_index": 0,
+                "actions": [
+                    {
+                        "tool_name": "metrics.report",
+                        "arguments": {},
+                        "response": {"result": {"report": {"customers": {"trust_score": 0.68}, "risk": {"financing_pressure": 0.24}}}},
+                    },
+                    {"tool_name": "sim.advance", "arguments": {"advance_by": 1, "unit": "week"}},
+                ],
+                "events": [],
+            },
+            {
+                "turn_index": 1,
+                "actions": [
+                    {"tool_name": "research.market.read", "arguments": {}},
+                    {
+                        "tool_name": "board.update",
+                        "arguments": {
+                            "summary": "We are treating trust repair as the primary operating constraint.",
+                            "forecast": {"trust_score": 0.58, "major_incidents_open": 1},
+                            "asks": ["support the recovery plan before restarting growth pushes"],
+                        },
+                    },
+                    {"tool_name": "sim.advance", "arguments": {"advance_by": 1, "unit": "week"}},
+                ],
+                "events": [{"event_type": "trust_shock"}],
+            },
+        ]
+
+        incomplete_trace = {
+            "turns": common_turns
+            + [
+                {
+                    "turn_index": 2,
+                    "actions": [
+                        {
+                            "tool_name": "ops.incident.respond",
+                            "arguments": {
+                                "incident_reduction": 1,
+                                "trust_recovery": 0.05,
+                                "churn_reduction": 0.007,
+                                "monthly_burn_increase_usd": 9000,
+                                "customer_comms_plan": {
+                                    "summary": "We will keep customers posted.",
+                                },
+                            },
+                        },
+                        {"tool_name": "sim.advance", "arguments": {"advance_by": 1, "unit": "week"}},
+                    ],
+                    "events": [{"event_type": "security_backlash"}],
+                }
+            ]
+        }
+        complete_trace = {
+            "turns": common_turns
+            + [
+                {
+                    "turn_index": 2,
+                    "actions": [
+                        {
+                            "tool_name": "ops.incident.respond",
+                            "arguments": {
+                                "incident_reduction": 1,
+                                "trust_recovery": 0.05,
+                                "churn_reduction": 0.007,
+                                "monthly_burn_increase_usd": 9000,
+                                "customer_comms_plan": {
+                                    "summary": "We identified the affected systems, are contacting impacted customers directly, and will post the next update within four hours.",
+                                    "delivery_channels": ["status_page", "email"],
+                                    "affected_segments": ["enterprise", "mid_market"],
+                                    "support_path": "route affected accounts to the incident queue and customer success follow-up",
+                                    "next_update_hours": 4,
+                                },
+                            },
+                        },
+                        {"tool_name": "sim.advance", "arguments": {"advance_by": 1, "unit": "week"}},
+                    ],
+                    "events": [{"event_type": "security_backlash"}],
+                }
+            ]
+        }
+
+        incomplete_result = evaluate_dry_run(
+            scenario=scenario,
+            world_state=world_state,
+            trace_evidence=incomplete_trace,
+        )
+        complete_result = evaluate_dry_run(
+            scenario=scenario,
+            world_state=world_state,
+            trace_evidence=complete_trace,
+        )
+
+        incomplete_details = incomplete_result["evaluator_results"][0]["outputs"]["component_details"]["strategic_coherence"]
+        complete_details = complete_result["evaluator_results"][0]["outputs"]["component_details"]["strategic_coherence"]
+
+        self.assertGreater(incomplete_details["customer_comms_quality_penalty"], 0.0)
+        self.assertTrue(incomplete_details["latest_customer_comms_has_plan"])
+        self.assertEqual(
+            incomplete_details["required_customer_comms_fields"],
+            ["affected_segments", "delivery_channels", "next_update_hours", "summary", "support_path"],
+        )
+        self.assertEqual(complete_details["customer_comms_quality_penalty"], 0.0)
+        self.assertEqual(complete_details["latest_customer_comms_missing_required_fields"], [])
+        self.assertGreater(
+            incomplete_details["behavioral_penalty"],
+            complete_details["behavioral_penalty"],
+        )
+
 
 if __name__ == "__main__":
     unittest.main()
