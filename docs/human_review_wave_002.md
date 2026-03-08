@@ -81,6 +81,14 @@ Preferred:
 
 ## Suggested execution
 
+One-command launcher:
+
+```powershell
+powershell -File scripts/launch_human_review_wave_002.ps1
+```
+
+Equivalent manual commands:
+
 ```bash
 python -m thestartupbench run-calibration-study examples/operator_human_review_wave_002_manifest.json --output-dir tmp_human_wave_002
 python -m thestartupbench assign-reviewers examples/operator_human_review_wave_002_manifest.json --study-run-dir tmp_human_wave_002 --roster-path examples/reviewer_roster_template.csv --output-dir tmp_human_wave_002
@@ -99,6 +107,16 @@ PowerShell helper:
 ```powershell
 powershell -File scripts/compile_human_review_wave_002.ps1 -CompletedFormsDir <folder-with-returned-csvs>
 ```
+
+Current live wave-002 run directory:
+
+- `tmp_human_wave_002`
+
+Current exported reviewer packets:
+
+- `founder_001`
+- `ops_001`
+- `product_001`
 
 ## Decision rule after the wave
 

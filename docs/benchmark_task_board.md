@@ -40,7 +40,7 @@ Success targets:
 
 - `BT-005` operator calibration wave 002
   - milestone: `v0.10.0`
-  - focus: execute human review against promoted strategy families added after wave 001, then log score-vs-operator disagreements
+  - focus: wave launched and reviewer packets exported for founder, ops, and product reviewers; next step is collecting returns and logging score-vs-operator disagreements
 
 ## Completed
 

@@ -134,12 +134,13 @@
         "promoted strategy scenarios reviewed by operators",
         "score-vs-operator disagreements logged"
       ],
-      "progress_notes": "Wave-002 strategy suite, study manifest, reviewer outreach, and compilation helper now exist; task stays in progress until real operator reviews are collected and disagreements are logged.",
+      "progress_notes": "Wave-002 strategy suite, study manifest, launcher, reviewer outreach, compilation helper, live study run, reviewer assignments, and exported founder/product/ops packets now exist. Task stays in progress until real operator reviews are collected and disagreements are logged.",
       "artifacts": [
         "examples/human_review_wave_002_strategy_suite.json",
         "examples/operator_human_review_wave_002_manifest.json",
         "docs/human_review_wave_002.md",
         "docs/reviewer_outreach_wave_002.md",
+        "scripts/launch_human_review_wave_002.ps1",
         "scripts/compile_human_review_wave_002.ps1"
       ]
     },

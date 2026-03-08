@@ -72,6 +72,12 @@ Human handoff artifacts now exist:
 - [human_review_wave_002.md](/C:/Users/USER/Desktop/startup-bench/docs/human_review_wave_002.md)
 - [operator_human_review_wave_002_manifest.json](/C:/Users/USER/Desktop/startup-bench/examples/operator_human_review_wave_002_manifest.json)
 
+Wave 002 is now launched locally with reviewer packets exported under `tmp_human_wave_002` for:
+
+- `founder_001`
+- `ops_001`
+- `product_001`
+
 ## What Is Done
 
 ### 1. Benchmark framing and methodology
