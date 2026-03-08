@@ -12,6 +12,26 @@ This document is intentionally narrower than [sota_task_roadmap.md](/C:/Users/US
 - keep each slice benchmark-auditable
 - prefer runtime plus tests plus docs together
 - promote new coverage from `dev` to hidden only after calibration gates
+- keep near-term expansion away from jurisdiction-specific legal or regulatory interpretation
+
+## Near-term scope boundary
+
+For the current build phase, prioritize coverage that remains benchmark-safe and operationally auditable.
+
+Preferred expansion areas:
+
+- PMF and `0to1` depth
+- fundraising and financing quality
+- growth experimentation and launch quality
+- people leadership and executive management quality
+- communication quality under board, customer, and hiring pressure
+- multi-quarter strategy and sequencing
+
+De-prioritized for now:
+
+- deep legal progression
+- jurisdiction-specific regulatory interpretation
+- scenario families that require scoring legal correctness rather than startup operator judgment
 
 ## Phase 1. Tool-surface closure
 
@@ -139,5 +159,5 @@ Recommended sequence:
 
 Current execution focus:
 
-- finish Phase 1 cleanly
-- start Phase 2 with PMF and experiment-loop scenario design
+- keep extending benchmark-safe coverage families with small, versioned commits
+- prioritize communication quality and growth experimentation depth over legal/regulatory expansion

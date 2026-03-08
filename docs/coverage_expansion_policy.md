@@ -65,8 +65,8 @@ Examples of high-value expansion areas:
 - fundraising, debt, and cap-table mechanics
 - growth experimentation and launch quality
 - people leadership and executive management quality
-- legal and regulatory progression
 - long-horizon strategy and delayed consequences
+- communication quality under operational pressure
 
 ## 4. What does not count
 
@@ -166,7 +166,7 @@ Maintainers SHOULD intentionally add underrepresented areas such as:
 - product strategy
 - people leadership
 - board truth-telling
-- legal and regulatory drag
+- communication quality
 
 ## 10. Runtime and tool-surface policy
 
@@ -211,7 +211,7 @@ Recommended sequence:
 
 ## 13. Current implication for TheStartupBench
 
-For the current repository state, the right next move is to expand coverage in areas such as PMF search, fundraising, growth experimentation, people leadership, and legal progression while keeping the current benchmark philosophy unchanged.
+For the current repository state, the right next move is to expand coverage in areas such as PMF search, fundraising, growth experimentation, people leadership, communication quality, and multi-quarter strategy while keeping the current benchmark philosophy unchanged.
 
 The standard is:
 
@@ -222,3 +222,5 @@ The standard is:
 Not:
 
 - broader coverage at the cost of rigor
+
+For the near-term roadmap, maintainers SHOULD explicitly avoid treating legal or regulatory interpretation as a benchmark expansion priority unless that work can remain jurisdiction-agnostic, operationally bounded, and clearly separable from legal advice.
