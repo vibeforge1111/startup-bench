@@ -15,6 +15,7 @@ SCENARIO_PATH = REPO_ROOT / "examples" / "minimal_b2b_saas_scenario.json"
 PMF_SCENARIO_PATH = REPO_ROOT / "examples" / "minimal_0to1_pmf_search_scenario.json"
 FALSE_SIGNAL_SCENARIO_PATH = REPO_ROOT / "examples" / "minimal_0to1_false_signal_scenario.json"
 FINANCE_BRIDGE_SCENARIO_PATH = REPO_ROOT / "examples" / "minimal_finance_bridge_terms_scenario.json"
+FINANCE_FUNDRAISE_RESET_SCENARIO_PATH = REPO_ROOT / "examples" / "minimal_finance_fundraise_reset_scenario.json"
 PEOPLE_LEADERSHIP_SCENARIO_PATH = REPO_ROOT / "examples" / "minimal_people_leadership_scenario.json"
 LAUNCH_DISTRIBUTION_SCENARIO_PATH = REPO_ROOT / "examples" / "minimal_launch_distribution_scenario.json"
 
@@ -43,6 +44,13 @@ class ScenarioLintTests(unittest.TestCase):
 
     def test_finance_bridge_scenario_passes_lint(self) -> None:
         scenario = load_scenario(FINANCE_BRIDGE_SCENARIO_PATH)
+        result = lint_scenario_instance(scenario)
+
+        self.assertTrue(result.ok)
+        self.assertEqual(result.issues, [])
+
+    def test_finance_fundraise_reset_scenario_passes_lint(self) -> None:
+        scenario = load_scenario(FINANCE_FUNDRAISE_RESET_SCENARIO_PATH)
         result = lint_scenario_instance(scenario)
 
         self.assertTrue(result.ok)

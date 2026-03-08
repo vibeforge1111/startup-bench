@@ -17,6 +17,7 @@ GTM_SCENARIO_PATH = REPO_ROOT / "examples" / "minimal_gtm_scenario.json"
 PRODUCT_SCENARIO_PATH = REPO_ROOT / "examples" / "minimal_product_scenario.json"
 PMF_SCENARIO_PATH = REPO_ROOT / "examples" / "minimal_0to1_false_signal_scenario.json"
 FINANCE_BRIDGE_SCENARIO_PATH = REPO_ROOT / "examples" / "minimal_finance_bridge_terms_scenario.json"
+FINANCE_FUNDRAISE_RESET_SCENARIO_PATH = REPO_ROOT / "examples" / "minimal_finance_fundraise_reset_scenario.json"
 PEOPLE_LEADERSHIP_SCENARIO_PATH = REPO_ROOT / "examples" / "minimal_people_leadership_scenario.json"
 LAUNCH_DISTRIBUTION_SCENARIO_PATH = REPO_ROOT / "examples" / "minimal_launch_distribution_scenario.json"
 BOARD_STRATEGY_SCENARIO_PATH = REPO_ROOT / "examples" / "hidden_board_stakeholder_conflict_test_scenario.json"
@@ -206,6 +207,48 @@ class BaselineRunnerTests(unittest.TestCase):
         b2b_finance = b2b_style["trace"]["state_snapshots"][-1]["state"].get("finance", {})
         self.assertIn("last_plan_update", liquidity_finance)
         self.assertGreater(liquidity_finance.get("runway_weeks", 0), b2b_finance.get("runway_weeks", 0))
+
+    def test_liquidity_baseline_improves_on_dry_run_for_fundraise_reset_scenario(self) -> None:
+        dry_result = run_dry_scenario(FINANCE_FUNDRAISE_RESET_SCENARIO_PATH, seed=29)
+        liquidity = run_baseline(
+            scenario_path=FINANCE_FUNDRAISE_RESET_SCENARIO_PATH,
+            baseline_id="heuristic_liquidity_operator",
+            seed=29,
+            max_turns=6,
+        )
+
+        self.assertGreater(
+            liquidity["score_report"]["scenario_score"],
+            dry_result["score_report"]["scenario_score"],
+        )
+        final_state = liquidity["trace"]["state_snapshots"][-1]["state"]
+        self.assertIn("last_raise_plan", final_state.get("finance", {}))
+        self.assertGreaterEqual(final_state.get("governance", {}).get("board_update_count", 0), 2)
+
+    def test_liquidity_baseline_uses_raise_and_board_tools_on_fundraise_reset_scenario(self) -> None:
+        result = run_baseline(
+            scenario_path=FINANCE_FUNDRAISE_RESET_SCENARIO_PATH,
+            baseline_id="heuristic_liquidity_operator",
+            seed=29,
+            max_turns=6,
+        )
+
+        financing_actions = [
+            action
+            for turn in result["trace"]["turns"]
+            for action in turn["actions"]
+            if action["tool_name"] == "finance.raise.propose"
+        ]
+        board_updates = [
+            action
+            for turn in result["trace"]["turns"]
+            for action in turn["actions"]
+            if action["tool_name"] == "board.update"
+        ]
+
+        self.assertGreaterEqual(len(financing_actions), 1)
+        self.assertGreaterEqual(len(board_updates), 2)
+        self.assertIn("dilution_pct", financing_actions[0]["arguments"])
 
     def test_long_horizon_baseline_improves_on_dry_run_for_people_leadership_scenario(self) -> None:
         dry_result = run_dry_scenario(PEOPLE_LEADERSHIP_SCENARIO_PATH, seed=11)
