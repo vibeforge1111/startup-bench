@@ -25,6 +25,7 @@ HIRING_PLAN_SCENARIO_PATH = REPO_ROOT / "examples" / "minimal_hiring_plan_scenar
 SCALE_SEQUENCING_SCENARIO_PATH = REPO_ROOT / "examples" / "minimal_scale_sequencing_scenario.json"
 PRODUCT_MIGRATION_SEQUENCE_SCENARIO_PATH = REPO_ROOT / "examples" / "minimal_product_migration_sequence_scenario.json"
 BOARD_PRODUCT_TRUTH_SCENARIO_PATH = REPO_ROOT / "examples" / "minimal_board_product_truth_scenario.json"
+GTM_SEQUENCING_SCENARIO_PATH = REPO_ROOT / "examples" / "minimal_gtm_sequencing_scenario.json"
 
 
 class ScenarioLintTests(unittest.TestCase):
@@ -121,6 +122,13 @@ class ScenarioLintTests(unittest.TestCase):
 
     def test_board_product_truth_scenario_passes_lint(self) -> None:
         scenario = load_scenario(BOARD_PRODUCT_TRUTH_SCENARIO_PATH)
+        result = lint_scenario_instance(scenario)
+
+        self.assertTrue(result.ok)
+        self.assertEqual(result.issues, [])
+
+    def test_gtm_sequencing_scenario_passes_lint(self) -> None:
+        scenario = load_scenario(GTM_SEQUENCING_SCENARIO_PATH)
         result = lint_scenario_instance(scenario)
 
         self.assertTrue(result.ok)

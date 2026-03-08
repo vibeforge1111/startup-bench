@@ -37,9 +37,9 @@ class StrategyHiddenSuiteTests(unittest.TestCase):
 
         self.assertTrue(result["validation"]["ok"])
         report = result["suite_report"]
-        self.assertEqual(report["overall"]["scenario_count"], 8)
+        self.assertEqual(report["overall"]["scenario_count"], 9)
         tracks = {item["track"] for item in report["track_summaries"]}
-        self.assertEqual(tracks, {"board", "product", "scale"})
+        self.assertEqual(tracks, {"board", "gtm", "product", "scale"})
 
     def test_strategy_hidden_fresh_suite_validates_and_runs(self) -> None:
         validation = validate_artifact_file(
@@ -59,9 +59,9 @@ class StrategyHiddenSuiteTests(unittest.TestCase):
 
         self.assertTrue(result["validation"]["ok"])
         report = result["suite_report"]
-        self.assertEqual(report["overall"]["scenario_count"], 8)
+        self.assertEqual(report["overall"]["scenario_count"], 9)
         tracks = {item["track"] for item in report["track_summaries"]}
-        self.assertEqual(tracks, {"board", "product", "scale"})
+        self.assertEqual(tracks, {"board", "gtm", "product", "scale"})
 
     def test_strategy_hidden_test_and_fresh_suites_are_distinct(self) -> None:
         result = validate_suite_family([TEST_SUITE_PATH, FRESH_SUITE_PATH])
