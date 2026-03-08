@@ -26,6 +26,7 @@ CUSTOMER_COMMUNICATION_SCENARIO_PATH = REPO_ROOT / "examples" / "minimal_custome
 HIRING_PLAN_SCENARIO_PATH = REPO_ROOT / "examples" / "minimal_hiring_plan_scenario.json"
 SCALE_SEQUENCING_SCENARIO_PATH = REPO_ROOT / "examples" / "minimal_scale_sequencing_scenario.json"
 PRODUCT_MIGRATION_SEQUENCE_SCENARIO_PATH = REPO_ROOT / "examples" / "minimal_product_migration_sequence_scenario.json"
+BOARD_PRODUCT_TRUTH_SCENARIO_PATH = REPO_ROOT / "examples" / "hidden_board_product_truth_test_scenario.json"
 BOARD_STRATEGY_SCENARIO_PATH = REPO_ROOT / "examples" / "hidden_board_stakeholder_conflict_test_scenario.json"
 BREX_TREASURY_SCENARIO_PATH = REPO_ROOT / "examples" / "real_world_brex_svb_treasury_shock_test_scenario.json"
 
@@ -190,6 +191,41 @@ class BaselineRunnerTests(unittest.TestCase):
             if action["tool_name"] == "board.read"
         ]
         self.assertGreaterEqual(len(governance_reads), 2)
+
+    def test_governance_baseline_uses_truthful_board_and_product_actions_on_board_product_truth(self) -> None:
+        governance = run_baseline(
+            scenario_path=BOARD_PRODUCT_TRUTH_SCENARIO_PATH,
+            baseline_id="heuristic_governance_operator",
+            seed=1,
+            max_turns=6,
+        )
+
+        governance_reads = [
+            action
+            for turn in governance["trace"]["turns"]
+            for action in turn["actions"]
+            if action["tool_name"] == "board.read"
+        ]
+        roadmap_updates = [
+            action
+            for turn in governance["trace"]["turns"]
+            for action in turn["actions"]
+            if action["tool_name"] == "product.roadmap.write"
+        ]
+        board_updates = [
+            action
+            for turn in governance["trace"]["turns"]
+            for action in turn["actions"]
+            if action["tool_name"] == "board.update"
+        ]
+        strategic_details = governance["score_report"]["evaluator_results"][0]["outputs"]["component_details"][
+            "strategic_coherence"
+        ]
+
+        self.assertGreaterEqual(len(governance_reads), 2)
+        self.assertGreaterEqual(len(roadmap_updates), 1)
+        self.assertGreaterEqual(len(board_updates), 2)
+        self.assertEqual(strategic_details["board_update_quality_penalty"], 0.0)
 
     def test_liquidity_baseline_outperforms_b2b_on_bridge_terms_finance_scenario(self) -> None:
         b2b_style = run_baseline(
