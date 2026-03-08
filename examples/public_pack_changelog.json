@@ -593,12 +593,25 @@
       "pack_version": "coverage-test-pack-0.8.0",
       "split": "test",
       "visibility": "hidden",
-      "action": "created",
-      "lifecycle_state": "active",
+      "action": "retired",
+      "lifecycle_state": "retired",
       "contamination_status": "clean",
       "predecessor_pack_version": "coverage-test-pack-0.7.0",
       "manifest_path": "examples/coverage_public_test_manifest.json",
-      "notes": "Expanded hidden coverage test pack spanning PMF, finance, people leadership, launch-distribution, growth-experimentation, board communication, customer communication, and dedicated hiring-plan quality coverage."
+      "successor_pack_version": "coverage-test-pack-0.9.0",
+      "notes": "Expanded hidden coverage test pack retired after adding a second 0to1 ambiguity batch with repositioning, founder-channel mirage, and retention-cliff slices."
+    },
+    {
+      "effective_date": "2026-03-08",
+      "pack_version": "coverage-test-pack-0.9.0",
+      "split": "test",
+      "visibility": "hidden",
+      "action": "created",
+      "lifecycle_state": "active",
+      "contamination_status": "clean",
+      "predecessor_pack_version": "coverage-test-pack-0.8.0",
+      "manifest_path": "examples/coverage_public_test_manifest.json",
+      "notes": "Expanded hidden coverage test pack spanning PMF, finance, people leadership, launch-distribution, growth-experimentation, board communication, customer communication, hiring-plan quality, and a second 0to1 ambiguity batch."
     },
     {
       "effective_date": "2026-03-08",
@@ -657,12 +670,25 @@
       "pack_version": "coverage-fresh-pack-0.8.0",
       "split": "fresh",
       "visibility": "hidden",
-      "action": "created",
-      "lifecycle_state": "active",
+      "action": "retired",
+      "lifecycle_state": "retired",
       "contamination_status": "clean",
       "predecessor_pack_version": "coverage-test-pack-0.8.0",
       "manifest_path": "examples/coverage_public_fresh_manifest.json",
-      "notes": "Expanded hidden coverage fresh pack for contamination-resistant evaluation across PMF, finance, people leadership, launch-distribution, growth-experimentation, board communication, customer communication, and dedicated hiring-plan quality coverage."
+      "successor_pack_version": "coverage-fresh-pack-0.9.0",
+      "notes": "Expanded hidden coverage fresh pack retired after adding distinct 0to1 ambiguity variants for repositioning, founder-channel mirage, and retention-cliff coverage."
+    },
+    {
+      "effective_date": "2026-03-08",
+      "pack_version": "coverage-fresh-pack-0.9.0",
+      "split": "fresh",
+      "visibility": "hidden",
+      "action": "created",
+      "lifecycle_state": "active",
+      "contamination_status": "clean",
+      "predecessor_pack_version": "coverage-test-pack-0.9.0",
+      "manifest_path": "examples/coverage_public_fresh_manifest.json",
+      "notes": "Expanded hidden coverage fresh pack for contamination-resistant evaluation across PMF, finance, people leadership, launch-distribution, growth-experimentation, board communication, customer communication, hiring-plan quality, and a second 0to1 ambiguity batch."
     },
     {
       "effective_date": "2026-03-07",

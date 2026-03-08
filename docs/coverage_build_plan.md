@@ -167,3 +167,4 @@ Current execution focus:
 - extend board/product interaction coverage through truth-telling and launch-sequencing scenarios, not generic “board memo” judging
 - extend GTM sequencing in the strategy pack through multi-quarter proof, reference, and channel-timing tradeoffs rather than short-window pipeline-only pressure
 - extend scale strategy coverage through capacity-plus-financing interaction slices where delivery confidence and capital quality degrade together over multiple turns
+- keep expanding `0to1` ambiguity through distinct hidden families that separate wedge clarity, founder-channel mirage, and retention quality rather than treating PMF search as a single pattern

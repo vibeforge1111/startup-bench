@@ -89,7 +89,7 @@
         "growth is balanced across thin tracks",
         "promotion metadata updated"
       ],
-      "progress_notes": "Current hidden test inventory is 40 active scenarios across strategy, coverage, operator, real-world, and canary packs."
+      "progress_notes": "Current hidden test inventory is 43 active scenarios across strategy, coverage, operator, real-world, and canary packs."
     },
     {
       "task_id": "BT-004",
@@ -173,13 +173,21 @@
       "workstream": "corpus-scale",
       "milestone_id": "v0.9.5",
       "priority": "highest",
-      "status": "ready",
+      "status": "completed",
       "benchmark_risk": "medium",
       "owner": "core-benchmark",
       "completion_criteria": [
         "at least 3 new hidden 0to1 scenarios exist",
         "test and fresh coverage both expand",
         "evaluation remains programmatic-first"
+      ],
+      "artifacts": [
+        "examples/minimal_0to1_repositioning_scenario.json",
+        "examples/hidden_0to1_repositioning_test_scenario.json",
+        "examples/hidden_0to1_founder_channel_test_scenario.json",
+        "examples/hidden_0to1_retention_cliff_test_scenario.json",
+        "examples/private_coverage_test_scenario_suite.json",
+        "examples/private_coverage_fresh_scenario_suite.json"
       ]
     },
     {

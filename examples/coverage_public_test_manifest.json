@@ -1,9 +1,9 @@
 {
   "manifest_version": "0.1.0",
   "benchmark_version": "0.2.0-draft",
-  "scenario_pack_version": "coverage-test-pack-0.8.0",
+  "scenario_pack_version": "coverage-test-pack-0.9.0",
   "split": "test",
-  "scenario_count": 11,
+  "scenario_count": 14,
   "scenarios": [
     {
       "scenario_id": "hidden_0to1_activation_loop_test_001",
@@ -70,6 +70,24 @@
       "track": "people",
       "mode": "test",
       "hidden_ref": "test_010"
+    },
+    {
+      "scenario_id": "hidden_0to1_repositioning_test_001",
+      "track": "0to1",
+      "mode": "test",
+      "hidden_ref": "test_011"
+    },
+    {
+      "scenario_id": "hidden_0to1_founder_channel_test_001",
+      "track": "0to1",
+      "mode": "test",
+      "hidden_ref": "test_012"
+    },
+    {
+      "scenario_id": "hidden_0to1_retention_cliff_test_001",
+      "track": "0to1",
+      "mode": "test",
+      "hidden_ref": "test_013"
     }
   ]
 }
