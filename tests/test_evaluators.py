@@ -17,6 +17,8 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 GTM_SCENARIO_PATH = REPO_ROOT / "examples" / "minimal_gtm_scenario.json"
 PEOPLE_SCENARIO_PATH = REPO_ROOT / "examples" / "minimal_people_scenario.json"
 FINANCE_SCENARIO_PATH = REPO_ROOT / "examples" / "minimal_finance_scenario.json"
+PMF_SCENARIO_PATH = REPO_ROOT / "examples" / "minimal_0to1_pmf_search_scenario.json"
+FINANCE_BRIDGE_SCENARIO_PATH = REPO_ROOT / "examples" / "minimal_finance_bridge_terms_scenario.json"
 CANARY_GTM_SCENARIO_PATH = REPO_ROOT / "examples" / "hidden_canary_pricing_trap_test_scenario.json"
 CANARY_PEOPLE_SCENARIO_PATH = REPO_ROOT / "examples" / "hidden_canary_hiring_trap_test_scenario.json"
 ZOOM_CRISIS_SCENARIO_PATH = REPO_ROOT / "examples" / "real_world_zoom_security_freeze_test_scenario.json"
@@ -25,6 +27,29 @@ BOARD_STRATEGY_SCENARIO_PATH = REPO_ROOT / "examples" / "hidden_board_stakeholde
 
 
 class EvaluatorTests(unittest.TestCase):
+    def test_pmf_scenario_weights_product_and_team_health(self) -> None:
+        scenario = load_scenario(PMF_SCENARIO_PATH)
+        weighted_components = {component["component_id"] for component in scenario["evaluation"]["outcome_components"]}
+
+        self.assertTrue({"product_health", "team_health", "risk_management"}.issubset(weighted_components))
+
+        healthy_world = initialize_world_state(scenario, seed=3)
+        stressed_world = initialize_world_state(scenario, seed=3)
+        stressed_world["product"]["onboarding_quality"] = 0.29
+        stressed_world["growth"]["activation_index"] = 0.21
+        stressed_world["team"]["morale"] = 0.43
+        stressed_world["team"]["attrition_risk"] = 0.68
+        stressed_world["team"]["bandwidth_load"] = 1.01
+        stressed_world["team"]["hiring"] = {"open_roles": 5, "hiring_capacity_index": 0.1}
+        stressed_world["risk"]["financing_pressure"] = 0.61
+
+        healthy = evaluate_dry_run(scenario=scenario, world_state=healthy_world)
+        stressed = evaluate_dry_run(scenario=scenario, world_state=stressed_world)
+
+        self.assertLess(stressed["subscores"]["product_health"], healthy["subscores"]["product_health"])
+        self.assertLess(stressed["subscores"]["team_health"], healthy["subscores"]["team_health"])
+        self.assertLess(stressed["scenario_score"], healthy["scenario_score"])
+
     def test_product_team_and_risk_subscores_drop_under_operational_stress(self) -> None:
         scenario = load_scenario(FINANCE_SCENARIO_PATH)
         healthy_world = initialize_world_state(scenario, seed=5)
@@ -158,6 +183,29 @@ class EvaluatorTests(unittest.TestCase):
         self.assertIn("team_health", healthy["subscores"])
         self.assertIn("risk_management", healthy["subscores"])
         self.assertLess(stressed["outcome_score"], healthy["outcome_score"])
+        self.assertLess(stressed["scenario_score"], healthy["scenario_score"])
+
+    def test_finance_bridge_scenario_weights_risk_management(self) -> None:
+        scenario = load_scenario(FINANCE_BRIDGE_SCENARIO_PATH)
+        weighted_components = {component["component_id"] for component in scenario["evaluation"]["outcome_components"]}
+
+        self.assertTrue({"product_health", "team_health", "risk_management"}.issubset(weighted_components))
+
+        healthy_world = initialize_world_state(scenario, seed=15)
+        stressed_world = initialize_world_state(scenario, seed=15)
+        stressed_world["risk"]["financing_pressure"] = 0.95
+        stressed_world["risk"]["regulatory_pressure"] = 0.74
+        stressed_world["risk"]["counterparty_risk"] = 0.87
+        stressed_world["risk"]["active_legal_matters"] = 2
+        stressed_world["finance"]["treasury_concentration"] = 0.94
+        stressed_world["team"]["morale"] = 0.47
+        stressed_world["product"]["major_incidents_open"] = 1
+
+        healthy = evaluate_dry_run(scenario=scenario, world_state=healthy_world)
+        stressed = evaluate_dry_run(scenario=scenario, world_state=stressed_world)
+
+        self.assertLess(stressed["subscores"]["risk_management"], healthy["subscores"]["risk_management"])
+        self.assertLess(stressed["subscores"]["team_health"], healthy["subscores"]["team_health"])
         self.assertLess(stressed["scenario_score"], healthy["scenario_score"])
 
     def test_canary_pricing_trap_penalizes_unanswered_backlash_loop(self) -> None:
