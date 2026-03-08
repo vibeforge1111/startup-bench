@@ -109,6 +109,8 @@ For example, a bounded board-update rubric MAY score whether an update includes 
 
 Similarly, a bounded customer-communication rubric MAY score whether an incident response includes a specific `customer_comms_plan` with delivery channels, affected segments, support routing, and the next promised update window.
 
+Likewise, a bounded hiring rubric MAY score whether `people.hiring.update` includes a specific `hiring_plan` with role priority, ownership, hiring pace, success metrics, and explicit risk guardrails.
+
 But only if all of the following hold:
 
 - it is rubric-bound

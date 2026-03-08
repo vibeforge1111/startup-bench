@@ -164,3 +164,4 @@ Current execution focus:
 - keep board-communication scoring rubric-bound and minority-weighted, starting with `board.update` completeness against live operating stress
 - treat customer-communication and hiring-plan evaluation as later follow-on slices rather than broad semantic judging all at once
 - extend customer-communication scoring through bounded incident-response artifacts such as `customer_comms_plan` before considering any broader semantic communication layer
+- extend hiring-plan scoring through bounded `people.hiring.update` artifacts such as `hiring_plan` before considering any broader people-communication layer
