@@ -242,12 +242,25 @@
       "pack_version": "strategy-test-pack-0.5.0",
       "split": "test",
       "visibility": "hidden",
-      "action": "created",
-      "lifecycle_state": "active",
+      "action": "retired",
+      "lifecycle_state": "retired",
       "contamination_status": "clean",
       "predecessor_pack_version": "strategy-test-pack-0.4.0",
       "manifest_path": "examples/strategy_public_test_manifest.json",
-      "notes": "Supplemental hidden strategy test pack covering three board scenarios, two delayed-consequence product slices, and two multi-quarter scale sequencing slices."
+      "successor_pack_version": "strategy-test-pack-0.6.0",
+      "notes": "Supplemental hidden strategy test pack retired after adding a board-product truth slice around launch pressure and readiness sequencing."
+    },
+    {
+      "effective_date": "2026-03-08",
+      "pack_version": "strategy-test-pack-0.6.0",
+      "split": "test",
+      "visibility": "hidden",
+      "action": "created",
+      "lifecycle_state": "active",
+      "contamination_status": "clean",
+      "predecessor_pack_version": "strategy-test-pack-0.5.0",
+      "manifest_path": "examples/strategy_public_test_manifest.json",
+      "notes": "Supplemental hidden strategy test pack covering four board scenarios, two delayed-consequence product slices, and two multi-quarter scale sequencing slices."
     },
     {
       "effective_date": "2026-03-07",
@@ -305,10 +318,23 @@
       "pack_version": "strategy-fresh-pack-0.5.0",
       "split": "fresh",
       "visibility": "hidden",
+      "action": "retired",
+      "lifecycle_state": "retired",
+      "contamination_status": "clean",
+      "predecessor_pack_version": "strategy-test-pack-0.5.0",
+      "manifest_path": "examples/strategy_public_fresh_manifest.json",
+      "successor_pack_version": "strategy-fresh-pack-0.6.0",
+      "notes": "Supplemental hidden strategy fresh pack retired after adding a distinct board-product truth variant for contamination-resistant governance coverage."
+    },
+    {
+      "effective_date": "2026-03-08",
+      "pack_version": "strategy-fresh-pack-0.6.0",
+      "split": "fresh",
+      "visibility": "hidden",
       "action": "created",
       "lifecycle_state": "active",
       "contamination_status": "clean",
-      "predecessor_pack_version": "strategy-test-pack-0.5.0",
+      "predecessor_pack_version": "strategy-test-pack-0.6.0",
       "manifest_path": "examples/strategy_public_fresh_manifest.json",
       "notes": "Supplemental hidden strategy fresh pack for contamination-resistant long-horizon startup evaluation with broader board, delayed-consequence product, and multi-quarter sequencing coverage."
     },
