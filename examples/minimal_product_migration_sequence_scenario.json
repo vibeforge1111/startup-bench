@@ -1,0 +1,246 @@
+{
+  "metadata": {
+    "scenario_id": "product_migration_sequence_001",
+    "scenario_version": "0.1.0",
+    "benchmark_version": "0.2.0-draft",
+    "track": "product",
+    "mode": "dev",
+    "title": "Sequencing Migration Quality Before Renewal Season",
+    "summary": "A startup has a credible product expansion motion, but migration and implementation quality are not ready for a broad push. The agent must sequence product, staffing, and support investment before renewal season turns technical debt into customer and financing damage.",
+    "difficulty": "hard",
+    "time_horizon": {
+      "unit": "week",
+      "length": 18
+    },
+    "authoring_origin": "expert_authored",
+    "tags": ["product", "delayed_consequences", "migration", "renewals", "sequencing"]
+  },
+  "initial_state": {
+    "company": {
+      "stage": "series_a",
+      "sector": "b2b_saas",
+      "business_model": "subscription"
+    },
+    "finance": {
+      "cash_usd": 3460000,
+      "monthly_burn_usd": 432000,
+      "monthly_revenue_usd": 318000
+    },
+    "product": {
+      "major_incidents_open": 0,
+      "roadmap_items": 11,
+      "onboarding_quality": 0.56
+    },
+    "customers": {
+      "paying_accounts": 176,
+      "monthly_churn_rate": 0.029,
+      "trust_score": 0.69,
+      "segments": [
+        {
+          "segment_id": "enterprise",
+          "accounts": 52,
+          "revenue_share": 0.54,
+          "monthly_churn_rate": 0.021,
+          "trust_score": 0.7,
+          "support_load_index": 0.49,
+          "expansion_potential": 0.76,
+          "competitor_pressure_index": 0.46
+        },
+        {
+          "segment_id": "mid_market",
+          "accounts": 124,
+          "revenue_share": 0.46,
+          "monthly_churn_rate": 0.035,
+          "trust_score": 0.68,
+          "support_load_index": 0.55,
+          "expansion_potential": 0.51,
+          "competitor_pressure_index": 0.49
+        }
+      ]
+    },
+    "sales": {
+      "pipeline_count": 14,
+      "weighted_pipeline_usd": 1150000,
+      "pricing": {
+        "current_price_index": 1.0
+      }
+    },
+    "operations": {
+      "support_backlog": 48,
+      "support_sla_breach_risk": 0.43
+    },
+    "team": {
+      "morale": 0.57,
+      "attrition_risk": 0.46,
+      "bandwidth_load": 0.85,
+      "headcount": 22,
+      "delivery_capacity_index": 0.6,
+      "hiring": {
+        "open_roles": 3,
+        "critical_roles_open": 2,
+        "sourced_candidates": 4,
+        "onsite_candidates": 1,
+        "offers_out": 0,
+        "time_to_fill_weeks": 8
+      }
+    },
+    "market": {
+      "competitor_pressure": "moderate",
+      "competitor_pressure_index": 0.53,
+      "pricing_pressure_index": 0.33,
+      "demand_index": 0.87,
+      "segment_signals": [
+        { "segment_id": "enterprise", "signal": "migration_readiness_scrutiny" },
+        { "segment_id": "mid_market", "signal": "implementation_reference_sensitivity" }
+      ],
+      "latest_market_note": "Buyers like the broader product story, but migration reliability and implementation references are increasingly shaping expansion decisions."
+    },
+    "risk": {
+      "financing_pressure": 0.41,
+      "regulatory_pressure": 0.1,
+      "counterparty_risk": 0.09,
+      "active_legal_matters": 0
+    },
+    "governance": {
+      "board_update_count": 0
+    },
+    "policy": {
+      "max_auto_price_increase_pct": 0.05
+    },
+    "sim": {
+      "current_time": "2026-06-01T09:00:00Z"
+    }
+  },
+  "latent_state": {
+    "true_core_problem": "product_breadth_is_ahead_of_migration_quality",
+    "true_failure_mode": "renewal_and_reference_damage_follow_delayed_delivery_work"
+  },
+  "observation_surfaces": [
+    {
+      "surface_id": "product_dashboard",
+      "surface_type": "dashboard",
+      "refresh_policy": "daily",
+      "visible_fields": ["onboarding_quality", "roadmap_items", "major_incidents_open", "support_backlog"]
+    },
+    {
+      "surface_id": "renewal_dashboard",
+      "surface_type": "dashboard",
+      "refresh_policy": "weekly",
+      "visible_fields": ["trust_score", "monthly_churn_rate", "weighted_pipeline_usd", "runway_weeks"]
+    }
+  ],
+  "tools": [
+    "metrics.query",
+    "metrics.report",
+    "product.roadmap.read",
+    "product.roadmap.write",
+    "ops.incident.read",
+    "ops.incident.respond",
+    "ops.support.read",
+    "ops.support.resolve",
+    "finance.plan.read",
+    "finance.plan.write",
+    "people.hiring.read",
+    "people.hiring.update",
+    "people.org.read",
+    "people.org.adjust",
+    "research.market.read",
+    "board.read",
+    "board.update",
+    "notes.read",
+    "notes.write",
+    "sim.advance"
+  ],
+  "event_model": {
+    "kind": "seeded_schedule",
+    "primitive_catalog": {
+      "bundle_pull_forward": {
+        "operations": [
+          { "op": "increment", "path": "finance.monthly_revenue_usd", "value": 28000 },
+          { "op": "increment", "path": "sales.weighted_pipeline_usd", "value": 150000 },
+          { "op": "increment", "path": "operations.support_backlog", "value": 9 },
+          { "op": "increment", "path": "market.demand_index", "value": 0.02 },
+          { "op": "clamp", "path": "market.demand_index", "min": 0.0, "max": 1.5 }
+        ]
+      },
+      "migration_complexity": {
+        "operations": [
+          { "op": "increment", "path": "product.onboarding_quality", "value": -0.07 },
+          { "op": "clamp", "path": "product.onboarding_quality", "min": 0.0, "max": 1.0 },
+          { "op": "increment", "path": "product.major_incidents_open", "value": 1 },
+          { "op": "increment", "path": "operations.support_backlog", "value": 19 },
+          { "op": "increment", "path": "team.morale", "value": -0.04 },
+          { "op": "clamp", "path": "team.morale", "min": 0.0, "max": 1.0 },
+          { "op": "increment", "path": "team.bandwidth_load", "value": 0.05 },
+          { "op": "clamp", "path": "team.bandwidth_load", "min": 0.0, "max": 1.5 }
+        ]
+      },
+      "renewal_reference_loss": {
+        "operations": [
+          { "op": "increment", "path": "customers.trust_score", "value": -0.055 },
+          { "op": "clamp", "path": "customers.trust_score", "min": 0.0, "max": 1.0 },
+          { "op": "increment", "path": "customers.monthly_churn_rate", "value": 0.008 },
+          { "op": "increment", "path": "sales.weighted_pipeline_usd", "value": -95000 },
+          { "op": "increment", "path": "operations.support_sla_breach_risk", "value": 0.11 },
+          { "op": "clamp", "path": "operations.support_sla_breach_risk", "min": 0.0, "max": 1.0 },
+          { "op": "increment", "path": "risk.financing_pressure", "value": 0.05 },
+          { "op": "clamp", "path": "risk.financing_pressure", "min": 0.0, "max": 1.0 }
+        ]
+      }
+    },
+    "scheduled_events": [
+      {
+        "event_id": "ev_product_migration_001",
+        "at_turn": 2,
+        "primitive_id": "bundle_pull_forward",
+        "event_type": "bundle_pull_forward",
+        "visible_message": "The broader product bundle created fresh expansion interest and demo momentum."
+      },
+      {
+        "event_id": "ev_product_migration_002",
+        "at_turn": 4,
+        "primitive_id": "migration_complexity",
+        "event_type": "migration_complexity",
+        "visible_message": "Migration and implementation complexity started showing up in support, delivery load, and onboarding quality."
+      },
+      {
+        "event_id": "ev_product_migration_003",
+        "at_turn": 6,
+        "primitive_id": "renewal_reference_loss",
+        "event_type": "renewal_reference_loss",
+        "visible_message": "Renewal and reference conversations started reflecting migration confidence rather than just product breadth."
+      }
+    ]
+  },
+  "policy_constraints": [
+    {
+      "constraint_id": "no_unapproved_hiring",
+      "kind": "approval_required"
+    }
+  ],
+  "terminal_conditions": [
+    {
+      "condition_id": "horizon_end_18_weeks",
+      "kind": "horizon_end"
+    },
+    {
+      "condition_id": "bankruptcy",
+      "kind": "hard_failure"
+    }
+  ],
+  "evaluation": {
+    "outcome_components": [
+      { "component_id": "cash_efficiency", "weight": 0.08, "direction": "maximize" },
+      { "component_id": "revenue_quality", "weight": 0.12, "direction": "maximize" },
+      { "component_id": "customer_health", "weight": 0.18, "direction": "maximize" },
+      { "component_id": "product_health", "weight": 0.22, "direction": "maximize" },
+      { "component_id": "team_health", "weight": 0.14, "direction": "maximize" },
+      { "component_id": "risk_management", "weight": 0.1, "direction": "maximize" },
+      { "component_id": "strategic_coherence", "weight": 0.16, "direction": "maximize" }
+    ],
+    "constraints": [
+      { "constraint_id": "bankruptcy" },
+      { "constraint_id": "severe_trust_breach" }
+    ]
+  }
+}

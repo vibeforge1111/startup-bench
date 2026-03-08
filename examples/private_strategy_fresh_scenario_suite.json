@@ -1,7 +1,7 @@
 {
   "suite_version": "0.1.0",
   "benchmark_version": "0.2.0-draft",
-  "scenario_pack_version": "strategy-fresh-pack-0.4.0",
+  "scenario_pack_version": "strategy-fresh-pack-0.5.0",
   "split": "fresh",
   "scenarios": [
     {
@@ -38,6 +38,12 @@
       "scenario_id": "hidden_scale_platform_sequence_fresh_001",
       "path": "hidden_scale_platform_sequence_fresh_scenario.json",
       "track": "scale",
+      "mode": "fresh"
+    },
+    {
+      "scenario_id": "hidden_product_migration_sequence_fresh_001",
+      "path": "hidden_product_migration_sequence_fresh_scenario.json",
+      "track": "product",
       "mode": "fresh"
     }
   ]

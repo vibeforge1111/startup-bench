@@ -163,4 +163,4 @@ Current execution focus:
 - prioritize communication quality and growth experimentation depth over legal/regulatory expansion
 - keep board-communication scoring rubric-bound and minority-weighted, starting with `board.update` completeness against live operating stress
 - extend multi-quarter strategy and sequencing through the dedicated hidden strategy pack rather than diluting it into generic coverage packs
-- keep scale/strategy additions focused on executable sequencing tradeoffs such as platform capacity, hiring lead time, and expansion timing rather than memo-only strategy prompts
+- keep strategy-pack additions focused on executable delayed-consequence and sequencing tradeoffs such as platform capacity, migration quality, hiring lead time, and renewal timing rather than memo-only strategy prompts

@@ -1,9 +1,9 @@
 {
   "manifest_version": "0.1.0",
   "benchmark_version": "0.2.0-draft",
-  "scenario_pack_version": "strategy-test-pack-0.4.0",
+  "scenario_pack_version": "strategy-test-pack-0.5.0",
   "split": "test",
-  "scenario_count": 6,
+  "scenario_count": 7,
   "scenarios": [
     {
       "scenario_id": "hidden_board_stakeholder_conflict_test_001",
@@ -40,6 +40,12 @@
       "track": "scale",
       "mode": "test",
       "hidden_ref": "test_005"
+    },
+    {
+      "scenario_id": "hidden_product_migration_sequence_test_001",
+      "track": "product",
+      "mode": "test",
+      "hidden_ref": "test_006"
     }
   ]
 }
