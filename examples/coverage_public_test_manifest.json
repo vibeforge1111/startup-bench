@@ -1,9 +1,9 @@
 {
   "manifest_version": "0.1.0",
   "benchmark_version": "0.2.0-draft",
-  "scenario_pack_version": "coverage-test-pack-0.7.0",
+  "scenario_pack_version": "coverage-test-pack-0.8.0",
   "split": "test",
-  "scenario_count": 10,
+  "scenario_count": 11,
   "scenarios": [
     {
       "scenario_id": "hidden_0to1_activation_loop_test_001",
@@ -64,6 +64,12 @@
       "track": "crisis",
       "mode": "test",
       "hidden_ref": "test_009"
+    },
+    {
+      "scenario_id": "hidden_hiring_plan_quality_test_001",
+      "track": "people",
+      "mode": "test",
+      "hidden_ref": "test_010"
     }
   ]
 }
