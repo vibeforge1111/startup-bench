@@ -1,0 +1,221 @@
+{
+  "metadata": {
+    "scenario_id": "zero_to_one_false_signal_003",
+    "scenario_version": "0.1.0",
+    "benchmark_version": "0.2.0-draft",
+    "track": "0to1",
+    "mode": "dev",
+    "title": "False Signal Demand Trap",
+    "summary": "A pre-seed startup sees noisy top-of-funnel interest that masks weak activation and low repeat engagement. The team must avoid mistaking curiosity for PMF.",
+    "difficulty": "medium",
+    "time_horizon": {
+      "unit": "week",
+      "length": 18
+    },
+    "authoring_origin": "expert_authored",
+    "tags": ["0to1", "pmf", "false_signal", "activation", "positioning"]
+  },
+  "initial_state": {
+    "company": {
+      "stage": "pre_seed",
+      "sector": "b2b_saas",
+      "business_model": "subscription"
+    },
+    "finance": {
+      "cash_usd": 470000,
+      "monthly_burn_usd": 88000,
+      "monthly_revenue_usd": 7000
+    },
+    "product": {
+      "major_incidents_open": 0,
+      "roadmap_items": 6,
+      "onboarding_quality": 0.4
+    },
+    "customers": {
+      "paying_accounts": 7,
+      "monthly_churn_rate": 0.046,
+      "trust_score": 0.71
+    },
+    "growth": {
+      "activation_index": 0.36,
+      "active_channels": ["community", "founder_led_sales", "waitlist"]
+    },
+    "sales": {
+      "pipeline_count": 13,
+      "weighted_pipeline_usd": 155000,
+      "pricing": {
+        "current_price_index": 1.0
+      }
+    },
+    "team": {
+      "headcount": 6,
+      "morale": 0.64,
+      "bandwidth_load": 0.87
+    },
+    "market": {
+      "competitor_pressure_index": 0.34,
+      "demand_index": 0.85,
+      "latest_market_note": "Discovery calls are easy to book, but buyers still struggle to explain the must-have use case."
+    },
+    "governance": {
+      "board_update_count": 0
+    },
+    "policy": {
+      "max_auto_price_increase_pct": 0.04
+    },
+    "sim": {
+      "current_time": "2026-02-23T09:00:00Z"
+    }
+  },
+  "latent_state": {
+    "true_core_problem": "top_of_funnel_interest_is_overstating_real_product_pull",
+    "true_failure_mode": "team_scales_story_before_activation_and_retention_are_real"
+  },
+  "observation_surfaces": [
+    {
+      "surface_id": "finance_dashboard",
+      "surface_type": "dashboard",
+      "refresh_policy": "daily",
+      "visible_fields": ["cash_usd", "monthly_burn_usd", "runway_weeks"]
+    },
+    {
+      "surface_id": "founder_pipeline_board",
+      "surface_type": "crm",
+      "refresh_policy": "weekly",
+      "visible_fields": ["pipeline_count", "weighted_pipeline_usd", "activation_index"]
+    }
+  ],
+  "tools": [
+    "metrics.query",
+    "metrics.report",
+    "product.roadmap.read",
+    "product.roadmap.write",
+    "product.launch",
+    "growth.experiment.create",
+    "growth.experiment.review",
+    "sales.pipeline.read",
+    "sales.pipeline.update",
+    "finance.plan.read",
+    "finance.plan.write",
+    "board.read",
+    "board.update",
+    "research.market.read",
+    "notes.read",
+    "notes.write",
+    "sim.advance"
+  ],
+  "event_model": {
+    "kind": "seeded_schedule",
+    "primitive_catalog": {
+      "top_of_funnel_bump": {
+        "operations": [
+          {
+            "op": "increment",
+            "path": "sales.pipeline_count",
+            "value": 3
+          },
+          {
+            "op": "increment",
+            "path": "sales.weighted_pipeline_usd",
+            "value": 35000
+          }
+        ]
+      },
+      "activation_reality_check": {
+        "operations": [
+          {
+            "op": "increment",
+            "path": "growth.activation_index",
+            "value": -0.06
+          },
+          {
+            "op": "clamp",
+            "path": "growth.activation_index",
+            "min": 0.0,
+            "max": 1.0
+          },
+          {
+            "op": "increment",
+            "path": "sales.weighted_pipeline_usd",
+            "value": -40000
+          },
+          {
+            "op": "increment",
+            "path": "customers.monthly_churn_rate",
+            "value": 0.006
+          },
+          {
+            "op": "clamp",
+            "path": "customers.monthly_churn_rate",
+            "min": 0.0,
+            "max": 1.0
+          }
+        ]
+      }
+    },
+    "scheduled_events": [
+      {
+        "event_id": "ev_false_signal_001",
+        "at_turn": 1,
+        "primitive_id": "top_of_funnel_bump",
+        "event_type": "top_of_funnel_bump",
+        "visible_message": "A burst of new inbound interest made the market look hotter than expected."
+      },
+      {
+        "event_id": "ev_false_signal_002",
+        "at_turn": 3,
+        "primitive_id": "activation_reality_check",
+        "event_type": "activation_reality_check",
+        "visible_message": "Early user excitement faded when activation and repeat usage did not improve."
+      }
+    ]
+  },
+  "policy_constraints": [
+    {
+      "constraint_id": "no_unapproved_hiring",
+      "kind": "approval_required"
+    }
+  ],
+  "terminal_conditions": [
+    {
+      "condition_id": "horizon_end_18_weeks",
+      "kind": "horizon_end"
+    },
+    {
+      "condition_id": "bankruptcy",
+      "kind": "hard_failure"
+    }
+  ],
+  "evaluation": {
+    "outcome_components": [
+      {
+        "component_id": "cash_efficiency",
+        "weight": 0.23,
+        "direction": "maximize"
+      },
+      {
+        "component_id": "revenue_quality",
+        "weight": 0.29,
+        "direction": "maximize"
+      },
+      {
+        "component_id": "customer_health",
+        "weight": 0.22,
+        "direction": "maximize"
+      },
+      {
+        "component_id": "strategic_coherence",
+        "weight": 0.26,
+        "direction": "maximize"
+      }
+    ],
+    "constraints": [
+      {
+        "constraint_id": "bankruptcy"
+      },
+      {
+        "constraint_id": "severe_trust_breach"
+      }
+    ]
+  }
+}

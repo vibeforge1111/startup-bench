@@ -13,6 +13,7 @@ from thestartupbench.scenario_loader import load_scenario
 REPO_ROOT = Path(__file__).resolve().parents[1]
 SCENARIO_PATH = REPO_ROOT / "examples" / "minimal_b2b_saas_scenario.json"
 PMF_SCENARIO_PATH = REPO_ROOT / "examples" / "minimal_0to1_pmf_search_scenario.json"
+FALSE_SIGNAL_SCENARIO_PATH = REPO_ROOT / "examples" / "minimal_0to1_false_signal_scenario.json"
 
 
 class ScenarioLintTests(unittest.TestCase):
@@ -25,6 +26,13 @@ class ScenarioLintTests(unittest.TestCase):
 
     def test_pmf_scenario_passes_lint(self) -> None:
         scenario = load_scenario(PMF_SCENARIO_PATH)
+        result = lint_scenario_instance(scenario)
+
+        self.assertTrue(result.ok)
+        self.assertEqual(result.issues, [])
+
+    def test_false_signal_scenario_passes_lint(self) -> None:
+        scenario = load_scenario(FALSE_SIGNAL_SCENARIO_PATH)
         result = lint_scenario_instance(scenario)
 
         self.assertTrue(result.ok)

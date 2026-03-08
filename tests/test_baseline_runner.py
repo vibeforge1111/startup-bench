@@ -15,6 +15,7 @@ SCENARIO_PATH = REPO_ROOT / "examples" / "minimal_b2b_saas_scenario.json"
 CRISIS_SCENARIO_PATH = REPO_ROOT / "examples" / "minimal_crisis_scenario.json"
 GTM_SCENARIO_PATH = REPO_ROOT / "examples" / "minimal_gtm_scenario.json"
 PRODUCT_SCENARIO_PATH = REPO_ROOT / "examples" / "minimal_product_scenario.json"
+PMF_SCENARIO_PATH = REPO_ROOT / "examples" / "minimal_0to1_false_signal_scenario.json"
 BOARD_STRATEGY_SCENARIO_PATH = REPO_ROOT / "examples" / "hidden_board_stakeholder_conflict_test_scenario.json"
 BREX_TREASURY_SCENARIO_PATH = REPO_ROOT / "examples" / "real_world_brex_svb_treasury_shock_test_scenario.json"
 
@@ -112,6 +113,22 @@ class BaselineRunnerTests(unittest.TestCase):
         )
         final_state = long_horizon["trace"]["state_snapshots"][-1]["state"]
         self.assertGreaterEqual(final_state.get("governance", {}).get("board_update_count", 0), 2)
+
+    def test_market_aware_baseline_improves_on_dry_run_for_false_signal_pmf_scenario(self) -> None:
+        dry_result = run_dry_scenario(PMF_SCENARIO_PATH, seed=13)
+        market_aware = run_baseline(
+            scenario_path=PMF_SCENARIO_PATH,
+            baseline_id="heuristic_market_aware_operator",
+            seed=13,
+            max_turns=5,
+        )
+
+        self.assertGreater(
+            market_aware["score_report"]["scenario_score"],
+            dry_result["score_report"]["scenario_score"],
+        )
+        final_state = market_aware["trace"]["state_snapshots"][-1]["state"]
+        self.assertGreaterEqual(final_state.get("market", {}).get("market_reads_count", 0), 1)
 
     def test_long_horizon_baseline_board_updates_are_state_aware_on_board_track(self) -> None:
         result = run_baseline(
