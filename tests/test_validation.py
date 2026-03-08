@@ -389,6 +389,14 @@ class ValidationTests(unittest.TestCase):
         self.assertTrue(result.ok)
         self.assertEqual(result.issues, [])
 
+    def test_hidden_pack_rotation_policy_example_validates(self) -> None:
+        result = validate_artifact_file(
+            artifact_type="hidden-pack-rotation-policy",
+            path=REPO_ROOT / "examples" / "hidden_pack_rotation_policy_v0_9_0.json",
+        )
+        self.assertTrue(result.ok)
+        self.assertEqual(result.issues, [])
+
     def test_run_manifest_example_validates(self) -> None:
         result = validate_artifact_file(
             artifact_type="run-manifest",
