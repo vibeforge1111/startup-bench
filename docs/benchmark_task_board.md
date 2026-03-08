@@ -137,7 +137,7 @@ Success targets:
 
 - `BT-024` model-vs-human gap report for promoted strategy families
   - milestone: `v0.10.0`
-  - focus: compare the completed synthetic panel against human wave 002 once operator returns land
+  - focus: comparison script is now ready; next step is to compare the completed synthetic panel against human wave 002 once operator returns land
   - status note: blocked on external reviewer returns
 
 ## Next up by priority

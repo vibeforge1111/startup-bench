@@ -578,7 +578,12 @@
         "synthetic and human judgments are compared family by family",
         "material benchmark-vs-model-vs-human disagreements are documented"
       ],
-      "progress_notes": "Blocked on returned operator reviews from human wave 002. The synthetic panel side is complete and ready to compare once the human compilation artifacts exist."
+      "progress_notes": "Blocked on returned operator reviews from human wave 002. The synthetic panel side is complete, the human compile wrapper is fixed, and the model-vs-human comparison script is ready to run once the human compilation artifacts exist.",
+      "artifacts": [
+        "scripts/compile_human_review_wave_002.ps1",
+        "scripts/compare_model_vs_human_wave_002.ps1",
+        "docs/human_review_wave_002.md"
+      ]
     }
   ]
 }

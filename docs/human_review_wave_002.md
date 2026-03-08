@@ -108,6 +108,12 @@ PowerShell helper:
 powershell -File scripts/compile_human_review_wave_002.ps1 -CompletedFormsDir <folder-with-returned-csvs>
 ```
 
+After the human study report exists, compare it against the completed synthetic panel:
+
+```powershell
+powershell -File scripts/compare_model_vs_human_wave_002.ps1
+```
+
 Current live wave-002 run directory:
 
 - `tmp_human_wave_002`
