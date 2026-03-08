@@ -162,6 +162,5 @@ Current execution focus:
 - keep extending benchmark-safe coverage families with small, versioned commits
 - prioritize communication quality and growth experimentation depth over legal/regulatory expansion
 - keep board-communication scoring rubric-bound and minority-weighted, starting with `board.update` completeness against live operating stress
-- treat customer-communication and hiring-plan evaluation as later follow-on slices rather than broad semantic judging all at once
-- extend customer-communication scoring through bounded incident-response artifacts such as `customer_comms_plan` before considering any broader semantic communication layer
-- extend hiring-plan scoring through bounded `people.hiring.update` artifacts such as `hiring_plan` before considering any broader people-communication layer
+- extend multi-quarter strategy and sequencing through the dedicated hidden strategy pack rather than diluting it into generic coverage packs
+- keep scale/strategy additions focused on executable sequencing tradeoffs such as platform capacity, hiring lead time, and expansion timing rather than memo-only strategy prompts
