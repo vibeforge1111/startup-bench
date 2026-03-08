@@ -1,0 +1,258 @@
+{
+  "metadata": {
+    "scenario_id": "hidden_scale_finance_tradeoff_fresh_001",
+    "scenario_version": "0.1.0",
+    "benchmark_version": "0.2.0-draft",
+    "track": "scale",
+    "mode": "fresh",
+    "title": "Hidden Fresh Scale-Finance Sequencing Under Delivery and Capital Drag",
+    "summary": "A fresh hidden scale scenario where expansion momentum still exists, but support strain, concentrated treasury risk, and weaker financing quality now interact. The agent must sequence capacity investment and financing quality before the renewal cycle turns the growth story against the company.",
+    "difficulty": "frontier",
+    "time_horizon": {
+      "unit": "week",
+      "length": 22
+    },
+    "authoring_origin": "expert_authored",
+    "tags": ["scale", "fresh", "finance", "sequencing", "multi_quarter"]
+  },
+  "initial_state": {
+    "company": {
+      "stage": "growth",
+      "sector": "b2b_saas",
+      "business_model": "subscription"
+    },
+    "finance": {
+      "cash_usd": 2460000,
+      "restricted_cash_usd": 412000,
+      "monthly_burn_usd": 434000,
+      "monthly_revenue_usd": 331000,
+      "treasury_concentration": 0.83,
+      "dilution_index": 0.14
+    },
+    "product": {
+      "major_incidents_open": 1,
+      "roadmap_items": 10,
+      "onboarding_quality": 0.6
+    },
+    "customers": {
+      "paying_accounts": 239,
+      "monthly_churn_rate": 0.025,
+      "trust_score": 0.69,
+      "segments": [
+        {
+          "segment_id": "enterprise",
+          "accounts": 44,
+          "revenue_share": 0.58,
+          "monthly_churn_rate": 0.02,
+          "trust_score": 0.71,
+          "support_load_index": 0.5,
+          "expansion_potential": 0.81,
+          "competitor_pressure_index": 0.41
+        },
+        {
+          "segment_id": "mid_market",
+          "accounts": 195,
+          "revenue_share": 0.42,
+          "monthly_churn_rate": 0.031,
+          "trust_score": 0.67,
+          "support_load_index": 0.58,
+          "expansion_potential": 0.56,
+          "competitor_pressure_index": 0.45
+        }
+      ]
+    },
+    "sales": {
+      "pipeline_count": 21,
+      "weighted_pipeline_usd": 1790000,
+      "pricing": {
+        "current_price_index": 1.0
+      }
+    },
+    "operations": {
+      "support_backlog": 59,
+      "support_sla_breach_risk": 0.45
+    },
+    "team": {
+      "morale": 0.55,
+      "attrition_risk": 0.5,
+      "bandwidth_load": 0.89,
+      "headcount": 30,
+      "delivery_capacity_index": 0.58,
+      "hiring": {
+        "open_roles": 4,
+        "critical_roles_open": 2,
+        "sourced_candidates": 5,
+        "onsite_candidates": 1,
+        "offers_out": 0,
+        "time_to_fill_weeks": 10
+      }
+    },
+    "market": {
+      "competitor_pressure": "moderate",
+      "competitor_pressure_index": 0.46,
+      "pricing_pressure_index": 0.36,
+      "demand_index": 0.89,
+      "segment_signals": [
+        { "segment_id": "enterprise", "signal": "implementation_confidence_and_vendor_durability" },
+        { "segment_id": "mid_market", "signal": "faster_rollout_with_less_support_slack" }
+      ],
+      "latest_market_note": "Pipeline still looks real, but buyers are screening more for vendor durability and delivery follow-through before committing to wider deployments."
+    },
+    "risk": {
+      "financing_pressure": 0.81,
+      "regulatory_pressure": 0.08,
+      "counterparty_risk": 0.63,
+      "active_legal_matters": 0
+    },
+    "governance": {
+      "board_update_count": 1
+    },
+    "policy": {
+      "max_auto_price_increase_pct": 0.04
+    },
+    "sim": {
+      "current_time": "2027-03-09T09:00:00Z"
+    }
+  },
+  "latent_state": {
+    "true_problem": "delivery_confidence_and_financing_quality_are_both_now_board_level_issues",
+    "true_failure_mode": "support_and_capital_drag_turn_growth_momentum_into_a_weaker_raise"
+  },
+  "observation_surfaces": [
+    {
+      "surface_id": "scale_finance_dashboard",
+      "surface_type": "dashboard",
+      "refresh_policy": "daily",
+      "visible_fields": ["support_backlog", "trust_score", "runway_weeks", "financing_pressure"]
+    },
+    {
+      "surface_id": "capital_packet",
+      "surface_type": "board_portal",
+      "refresh_policy": "weekly",
+      "visible_fields": ["cash_usd", "restricted_cash_usd", "dilution_index", "weighted_pipeline_usd"]
+    }
+  ],
+  "tools": [
+    "metrics.query",
+    "metrics.report",
+    "product.roadmap.read",
+    "product.roadmap.write",
+    "ops.incident.read",
+    "ops.incident.respond",
+    "ops.support.read",
+    "ops.support.resolve",
+    "sales.pipeline.read",
+    "sales.pipeline.update",
+    "finance.plan.read",
+    "finance.plan.write",
+    "finance.treasury.read",
+    "finance.treasury.rebalance",
+    "finance.raise.propose",
+    "people.hiring.read",
+    "people.hiring.update",
+    "people.org.read",
+    "people.org.adjust",
+    "research.market.read",
+    "board.read",
+    "board.update",
+    "notes.read",
+    "notes.write",
+    "sim.advance"
+  ],
+  "event_model": {
+    "kind": "seeded_schedule",
+    "primitive_catalog": {
+      "rollout_demand_pull_forward": {
+        "operations": [
+          { "op": "increment", "path": "finance.monthly_revenue_usd", "value": 34000 },
+          { "op": "increment", "path": "sales.weighted_pipeline_usd", "value": 215000 },
+          { "op": "increment", "path": "operations.support_backlog", "value": 10 },
+          { "op": "increment", "path": "team.bandwidth_load", "value": 0.04 },
+          { "op": "clamp", "path": "team.bandwidth_load", "min": 0.0, "max": 1.5 },
+          { "op": "increment", "path": "market.demand_index", "value": 0.025 },
+          { "op": "clamp", "path": "market.demand_index", "min": 0.0, "max": 1.5 }
+        ]
+      },
+      "capital_and_treasury_drag": {
+        "operations": [
+          { "op": "increment", "path": "risk.financing_pressure", "value": 0.085 },
+          { "op": "clamp", "path": "risk.financing_pressure", "min": 0.0, "max": 1.0 },
+          { "op": "increment", "path": "risk.counterparty_risk", "value": 0.08 },
+          { "op": "clamp", "path": "risk.counterparty_risk", "min": 0.0, "max": 1.0 },
+          { "op": "increment", "path": "finance.treasury_concentration", "value": 0.05 },
+          { "op": "clamp", "path": "finance.treasury_concentration", "min": 0.0, "max": 1.0 },
+          { "op": "increment", "path": "finance.dilution_index", "value": 0.035 },
+          { "op": "clamp", "path": "finance.dilution_index", "min": 0.0, "max": 1.0 }
+        ]
+      },
+      "renewal_confidence_bill": {
+        "operations": [
+          { "op": "increment", "path": "operations.support_backlog", "value": 20 },
+          { "op": "increment", "path": "product.major_incidents_open", "value": 1 },
+          { "op": "increment", "path": "customers.trust_score", "value": -0.05 },
+          { "op": "clamp", "path": "customers.trust_score", "min": 0.0, "max": 1.0 },
+          { "op": "increment", "path": "customers.monthly_churn_rate", "value": 0.006 },
+          { "op": "increment", "path": "team.morale", "value": -0.05 },
+          { "op": "clamp", "path": "team.morale", "min": 0.0, "max": 1.0 },
+          { "op": "increment", "path": "team.attrition_risk", "value": 0.06 },
+          { "op": "clamp", "path": "team.attrition_risk", "min": 0.0, "max": 1.0 }
+        ]
+      }
+    },
+    "scheduled_events": [
+      {
+        "event_id": "ev_hidden_scale_finance_fresh_001",
+        "at_turn": 2,
+        "primitive_id": "rollout_demand_pull_forward",
+        "event_type": "rollout_demand_pull_forward",
+        "visible_message": "Rollout demand accelerated again and increased implementation pressure faster than the capacity plan."
+      },
+      {
+        "event_id": "ev_hidden_scale_finance_fresh_002",
+        "at_turn": 4,
+        "primitive_id": "capital_and_treasury_drag",
+        "event_type": "capital_and_treasury_drag",
+        "visible_message": "Treasury concentration and financing quality concerns started moving together against the company."
+      },
+      {
+        "event_id": "ev_hidden_scale_finance_fresh_003",
+        "at_turn": 6,
+        "primitive_id": "renewal_confidence_bill",
+        "event_type": "renewal_confidence_bill",
+        "visible_message": "Renewal confidence started reflecting support strain and vendor durability concerns rather than just pipeline momentum."
+      }
+    ]
+  },
+  "policy_constraints": [
+    {
+      "constraint_id": "no_unapproved_hiring",
+      "kind": "approval_required"
+    }
+  ],
+  "terminal_conditions": [
+    {
+      "condition_id": "horizon_end_22_weeks",
+      "kind": "horizon_end"
+    },
+    {
+      "condition_id": "bankruptcy",
+      "kind": "hard_failure"
+    }
+  ],
+  "evaluation": {
+    "outcome_components": [
+      { "component_id": "cash_efficiency", "weight": 0.14, "direction": "maximize" },
+      { "component_id": "revenue_quality", "weight": 0.1, "direction": "maximize" },
+      { "component_id": "customer_health", "weight": 0.16, "direction": "maximize" },
+      { "component_id": "product_health", "weight": 0.14, "direction": "maximize" },
+      { "component_id": "team_health", "weight": 0.14, "direction": "maximize" },
+      { "component_id": "risk_management", "weight": 0.17, "direction": "maximize" },
+      { "component_id": "strategic_coherence", "weight": 0.15, "direction": "maximize" }
+    ],
+    "constraints": [
+      { "constraint_id": "bankruptcy" },
+      { "constraint_id": "severe_trust_breach" },
+      { "constraint_id": "severe_financing_failure" }
+    ]
+  }
+}
