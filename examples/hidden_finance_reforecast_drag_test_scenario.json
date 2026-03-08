@@ -1,0 +1,104 @@
+{
+  "metadata": {
+    "scenario_id": "hidden_finance_reforecast_drag_test_001",
+    "scenario_version": "0.1.0",
+    "benchmark_version": "0.2.0-draft",
+    "track": "finance",
+    "mode": "test",
+    "title": "Hidden Finance Reforecast Drag Under Collections Miss",
+    "summary": "A hidden finance scenario where the next raise is still possible, but only if leadership updates the forecast fast enough when collections weaken and the old plan loses credibility.",
+    "difficulty": "hard",
+    "time_horizon": { "unit": "week", "length": 13 },
+    "authoring_origin": "expert_authored",
+    "tags": ["finance", "hidden_eval", "reforecast", "collections", "credibility"]
+  },
+  "initial_state": {
+    "company": { "stage": "series_a", "sector": "b2b_saas", "business_model": "subscription" },
+    "finance": {
+      "cash_usd": 1520000,
+      "restricted_cash_usd": 260000,
+      "monthly_burn_usd": 334000,
+      "monthly_revenue_usd": 205000,
+      "treasury_concentration": 0.63,
+      "dilution_index": 0.11
+    },
+    "customers": { "paying_accounts": 118, "monthly_churn_rate": 0.031, "trust_score": 0.69 },
+    "sales": { "pipeline_count": 8, "weighted_pipeline_usd": 540000, "pricing": { "current_price_index": 1.0 } },
+    "market": {
+      "competitor_pressure": "moderate",
+      "competitor_pressure_index": 0.47,
+      "pricing_pressure_index": 0.41,
+      "demand_index": 0.69,
+      "latest_market_note": "The capital market will still fund resets, but investors punish teams that cling to an outdated forecast after collections weaken."
+    },
+    "risk": { "counterparty_risk": 0.52, "financing_pressure": 0.74 },
+    "governance": { "board_update_count": 1 },
+    "policy": { "max_auto_price_increase_pct": 0.05 },
+    "sim": { "current_time": "2027-02-16T09:00:00Z" }
+  },
+  "latent_state": {
+    "true_liquidity_problem": "reforecast_speed_now_matters_as_much_as_raise_access",
+    "true_fundraising_market": "available_but_less_tolerant_of_old_assumptions"
+  },
+  "observation_surfaces": [
+    { "surface_id": "finance_dashboard", "surface_type": "dashboard", "refresh_policy": "realtime", "visible_fields": ["cash_usd", "liquid_cash_usd", "runway_weeks", "dilution_index"] },
+    { "surface_id": "board_packet", "surface_type": "board_portal", "refresh_policy": "weekly", "visible_fields": ["financing_pressure", "monthly_burn_usd", "monthly_revenue_usd"] }
+  ],
+  "tools": [
+    "metrics.query",
+    "metrics.report",
+    "finance.plan.read",
+    "finance.plan.write",
+    "finance.treasury.read",
+    "finance.treasury.rebalance",
+    "finance.raise.propose",
+    "research.market.read",
+    "sales.pipeline.read",
+    "sales.pipeline.update",
+    "board.read",
+    "board.update",
+    "notes.read",
+    "notes.write",
+    "sim.advance"
+  ],
+  "event_model": {
+    "kind": "seeded_schedule",
+    "primitive_catalog": {
+      "collections_miss": {
+        "operations": [
+          { "op": "increment", "path": "finance.monthly_revenue_usd", "value": -26000 },
+          { "op": "increment", "path": "sales.weighted_pipeline_usd", "value": -60000 },
+          { "op": "increment", "path": "risk.financing_pressure", "value": 0.08 },
+          { "op": "clamp", "path": "risk.financing_pressure", "min": 0.0, "max": 1.0 }
+        ]
+      },
+      "reforecast_bill": {
+        "operations": [
+          { "op": "increment", "path": "finance.dilution_index", "value": 0.04 },
+          { "op": "clamp", "path": "finance.dilution_index", "min": 0.0, "max": 1.0 },
+          { "op": "increment", "path": "risk.financing_pressure", "value": 0.07 },
+          { "op": "clamp", "path": "risk.financing_pressure", "min": 0.0, "max": 1.0 }
+        ]
+      }
+    },
+    "scheduled_events": [
+      { "event_id": "ev_hidden_fin_reforecast_001", "at_turn": 1, "primitive_id": "collections_miss", "event_type": "collections_miss", "visible_message": "Collections slipped again and exposed how stale the prior forecast had become." },
+      { "event_id": "ev_hidden_fin_reforecast_002", "at_turn": 2, "primitive_id": "reforecast_bill", "event_type": "reforecast_bill", "visible_message": "Investors widened the pricing penalty once the team looked slow to absorb the new collections reality." }
+    ]
+  },
+  "policy_constraints": [{ "constraint_id": "no_unapproved_hiring", "kind": "approval_required" }],
+  "terminal_conditions": [
+    { "condition_id": "horizon_end_13_weeks", "kind": "horizon_end" },
+    { "condition_id": "bankruptcy", "kind": "hard_failure" }
+  ],
+  "evaluation": {
+    "outcome_components": [
+      { "component_id": "cash_efficiency", "weight": 0.36, "direction": "maximize" },
+      { "component_id": "revenue_quality", "weight": 0.14, "direction": "maximize" },
+      { "component_id": "customer_health", "weight": 0.08, "direction": "maximize" },
+      { "component_id": "risk_management", "weight": 0.12, "direction": "maximize" },
+      { "component_id": "strategic_coherence", "weight": 0.3, "direction": "maximize" }
+    ],
+    "constraints": [{ "constraint_id": "bankruptcy" }, { "constraint_id": "severe_financing_failure" }]
+  }
+}

@@ -367,7 +367,8 @@
         "hidden test inventory >= 75",
         "growth is balanced across thin tracks",
         "promotion metadata and governance docs are updated"
-      ]
+      ],
+      "progress_notes": "Active hidden test inventory is now 60 after the operator hidden pack grew to 19 scenarios via multithread stall, finance reforecast drag, and onboarding-manager-gap families."
     },
     {
       "task_id": "BT-016",

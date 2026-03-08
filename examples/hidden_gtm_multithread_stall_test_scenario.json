@@ -1,0 +1,98 @@
+{
+  "metadata": {
+    "scenario_id": "hidden_gtm_multithread_stall_test_001",
+    "scenario_version": "0.1.0",
+    "benchmark_version": "0.2.0-draft",
+    "track": "gtm",
+    "mode": "test",
+    "title": "Hidden GTM Multithread Stall Under Thin Delivery Proof",
+    "summary": "A hidden GTM scenario where late-stage pipeline looks large enough, but deals are too single-threaded and buyer confidence in implementation depth is weaker than the dashboard suggests.",
+    "difficulty": "hard",
+    "time_horizon": { "unit": "week", "length": 14 },
+    "authoring_origin": "expert_authored",
+    "tags": ["gtm", "hidden_eval", "multithread", "delivery_proof", "pipeline"]
+  },
+  "initial_state": {
+    "company": { "stage": "series_a", "sector": "b2b_saas", "business_model": "subscription" },
+    "finance": { "cash_usd": 2310000, "monthly_burn_usd": 345000, "monthly_revenue_usd": 239000 },
+    "product": { "major_incidents_open": 0, "roadmap_items": 7, "onboarding_quality": 0.6 },
+    "customers": { "paying_accounts": 141, "monthly_churn_rate": 0.032, "trust_score": 0.67 },
+    "sales": { "pipeline_count": 10, "weighted_pipeline_usd": 790000, "pricing": { "current_price_index": 1.0 } },
+    "operations": { "support_backlog": 38, "support_sla_breach_risk": 0.41 },
+    "market": {
+      "competitor_pressure": "moderate",
+      "competitor_pressure_index": 0.55,
+      "pricing_pressure_index": 0.44,
+      "demand_index": 0.78,
+      "latest_market_note": "Several late-stage opportunities still depend on one champion and buyers keep probing implementation depth before they expand the buying group."
+    },
+    "team": { "headcount": 17, "morale": 0.58, "attrition_risk": 0.42, "bandwidth_load": 0.82 },
+    "governance": { "board_update_count": 0 },
+    "policy": { "max_auto_price_increase_pct": 0.06 },
+    "sim": { "current_time": "2027-02-09T09:00:00Z" }
+  },
+  "latent_state": {
+    "true_channel_problem": "late_stage_pipeline_is_less_multithreaded_than_it_appears",
+    "true_risk": "delivery_proof_gaps_turn_pipeline_optics_into_trust_and_conversion_damage"
+  },
+  "observation_surfaces": [
+    { "surface_id": "crm_pipeline", "surface_type": "crm", "refresh_policy": "realtime", "visible_fields": ["pipeline_count", "weighted_pipeline_usd", "current_price_index"] },
+    { "surface_id": "ops_dashboard", "surface_type": "dashboard", "refresh_policy": "weekly", "visible_fields": ["support_backlog", "support_sla_breach_risk", "onboarding_quality", "trust_score"] }
+  ],
+  "tools": [
+    "metrics.query",
+    "metrics.report",
+    "product.roadmap.read",
+    "product.roadmap.write",
+    "ops.support.read",
+    "ops.support.resolve",
+    "sales.pipeline.read",
+    "sales.pipeline.update",
+    "research.market.read",
+    "finance.plan.read",
+    "finance.plan.write",
+    "board.read",
+    "board.update",
+    "notes.read",
+    "notes.write",
+    "sim.advance"
+  ],
+  "event_model": {
+    "kind": "seeded_schedule",
+    "primitive_catalog": {
+      "champion_stall": {
+        "operations": [
+          { "op": "increment", "path": "sales.weighted_pipeline_usd", "value": -120000 },
+          { "op": "increment", "path": "operations.support_backlog", "value": 6 }
+        ]
+      },
+      "proof_gap_bill": {
+        "operations": [
+          { "op": "increment", "path": "customers.trust_score", "value": -0.04 },
+          { "op": "clamp", "path": "customers.trust_score", "min": 0.0, "max": 1.0 },
+          { "op": "increment", "path": "customers.monthly_churn_rate", "value": 0.005 },
+          { "op": "increment", "path": "product.onboarding_quality", "value": -0.04 },
+          { "op": "clamp", "path": "product.onboarding_quality", "min": 0.0, "max": 1.0 }
+        ]
+      }
+    },
+    "scheduled_events": [
+      { "event_id": "ev_hidden_gtm_multithread_001", "at_turn": 1, "primitive_id": "champion_stall", "event_type": "champion_stall", "visible_message": "A few late-stage deals stopped moving once the buying group widened beyond the original champion." },
+      { "event_id": "ev_hidden_gtm_multithread_002", "at_turn": 3, "primitive_id": "proof_gap_bill", "event_type": "proof_gap_bill", "visible_message": "Implementation-proof gaps started leaking back into trust, churn, and deal confidence." }
+    ]
+  },
+  "policy_constraints": [{ "constraint_id": "no_unapproved_hiring", "kind": "approval_required" }],
+  "terminal_conditions": [
+    { "condition_id": "horizon_end_14_weeks", "kind": "horizon_end" },
+    { "condition_id": "bankruptcy", "kind": "hard_failure" }
+  ],
+  "evaluation": {
+    "outcome_components": [
+      { "component_id": "cash_efficiency", "weight": 0.14, "direction": "maximize" },
+      { "component_id": "revenue_quality", "weight": 0.31, "direction": "maximize" },
+      { "component_id": "customer_health", "weight": 0.25, "direction": "maximize" },
+      { "component_id": "strategic_coherence", "weight": 0.3, "direction": "maximize" }
+    ],
+    "constraints": [{ "constraint_id": "bankruptcy" }, { "constraint_id": "severe_trust_breach" }]
+  }
+}

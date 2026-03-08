@@ -18,13 +18,13 @@ This document is the public-facing summary of hidden-pack promotions, fresh-pack
   - public manifest: [real_world_public_fresh_manifest.json](/C:/Users/USER/Desktop/startup-bench/examples/real_world_public_fresh_manifest.json)
   - status: active, clean
 
-- `operator-test-pack-0.5.0`
+- `operator-test-pack-0.6.0`
   - split: `test`
   - visibility: `hidden`
   - public manifest: [operator_public_test_manifest.json](/C:/Users/USER/Desktop/startup-bench/examples/operator_public_test_manifest.json)
   - status: active, clean
 
-- `operator-fresh-pack-0.5.0`
+- `operator-fresh-pack-0.6.0`
   - split: `fresh`
   - visibility: `hidden`
   - public manifest: [operator_public_fresh_manifest.json](/C:/Users/USER/Desktop/startup-bench/examples/operator_public_fresh_manifest.json)
@@ -134,6 +134,12 @@ This document is the public-facing summary of hidden-pack promotions, fresh-pack
   - status: retired
   - successor: `operator-test-pack-0.5.0`
 
+- `operator-test-pack-0.5.0`
+  - split: `test`
+  - visibility: `hidden`
+  - status: retired
+  - successor: `operator-test-pack-0.6.0`
+
 - `operator-fresh-pack-0.1.0`
   - split: `fresh`
   - visibility: `hidden`
@@ -157,6 +163,12 @@ This document is the public-facing summary of hidden-pack promotions, fresh-pack
   - visibility: `hidden`
   - status: retired
   - successor: `operator-fresh-pack-0.5.0`
+
+- `operator-fresh-pack-0.5.0`
+  - split: `fresh`
+  - visibility: `hidden`
+  - status: retired
+  - successor: `operator-fresh-pack-0.6.0`
 
 - `strategy-test-pack-0.1.0`
   - split: `test`

@@ -43,10 +43,10 @@ Current hidden `test` inventory across active packs:
 
 - strategy: `13`
 - coverage: `14`
-- operator: `16`
+- operator: `19`
 - real-world: `10`
 - canary: `4`
-- total hidden `test`: `57`
+- total hidden `test`: `60`
 
 Assessment:
 

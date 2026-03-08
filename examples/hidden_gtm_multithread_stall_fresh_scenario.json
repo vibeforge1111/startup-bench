@@ -1,0 +1,98 @@
+{
+  "metadata": {
+    "scenario_id": "hidden_gtm_multithread_stall_fresh_001",
+    "scenario_version": "0.1.0",
+    "benchmark_version": "0.2.0-draft",
+    "track": "gtm",
+    "mode": "fresh",
+    "title": "Hidden GTM Multithread Stall Under Buyer Scrutiny",
+    "summary": "A fresh hidden GTM variant where funnel optics look healthy, but buyer scrutiny on delivery depth exposes how single-threaded the best opportunities still are.",
+    "difficulty": "hard",
+    "time_horizon": { "unit": "week", "length": 14 },
+    "authoring_origin": "expert_authored",
+    "tags": ["gtm", "hidden_eval", "multithread", "delivery_proof", "pipeline"]
+  },
+  "initial_state": {
+    "company": { "stage": "series_a", "sector": "b2b_saas", "business_model": "subscription" },
+    "finance": { "cash_usd": 2380000, "monthly_burn_usd": 352000, "monthly_revenue_usd": 243000 },
+    "product": { "major_incidents_open": 0, "roadmap_items": 7, "onboarding_quality": 0.61 },
+    "customers": { "paying_accounts": 145, "monthly_churn_rate": 0.031, "trust_score": 0.68 },
+    "sales": { "pipeline_count": 11, "weighted_pipeline_usd": 825000, "pricing": { "current_price_index": 1.0 } },
+    "operations": { "support_backlog": 36, "support_sla_breach_risk": 0.39 },
+    "market": {
+      "competitor_pressure": "moderate",
+      "competitor_pressure_index": 0.54,
+      "pricing_pressure_index": 0.43,
+      "demand_index": 0.79,
+      "latest_market_note": "Buyers still like the category, but deeper deal stages now require proof that the delivery motion can handle broader stakeholder scrutiny."
+    },
+    "team": { "headcount": 18, "morale": 0.59, "attrition_risk": 0.41, "bandwidth_load": 0.81 },
+    "governance": { "board_update_count": 0 },
+    "policy": { "max_auto_price_increase_pct": 0.06 },
+    "sim": { "current_time": "2027-02-23T09:00:00Z" }
+  },
+  "latent_state": {
+    "true_channel_problem": "pipeline_depth_is_overstated_relative_to_buyer_consensus",
+    "true_risk": "weak_multithreading_turns_growth_story_into_trust_and_conversion_drag"
+  },
+  "observation_surfaces": [
+    { "surface_id": "crm_pipeline", "surface_type": "crm", "refresh_policy": "realtime", "visible_fields": ["pipeline_count", "weighted_pipeline_usd", "current_price_index"] },
+    { "surface_id": "ops_dashboard", "surface_type": "dashboard", "refresh_policy": "weekly", "visible_fields": ["support_backlog", "support_sla_breach_risk", "onboarding_quality", "trust_score"] }
+  ],
+  "tools": [
+    "metrics.query",
+    "metrics.report",
+    "product.roadmap.read",
+    "product.roadmap.write",
+    "ops.support.read",
+    "ops.support.resolve",
+    "sales.pipeline.read",
+    "sales.pipeline.update",
+    "research.market.read",
+    "finance.plan.read",
+    "finance.plan.write",
+    "board.read",
+    "board.update",
+    "notes.read",
+    "notes.write",
+    "sim.advance"
+  ],
+  "event_model": {
+    "kind": "seeded_schedule",
+    "primitive_catalog": {
+      "buyer_committee_stall": {
+        "operations": [
+          { "op": "increment", "path": "sales.weighted_pipeline_usd", "value": -110000 },
+          { "op": "increment", "path": "operations.support_backlog", "value": 5 }
+        ]
+      },
+      "proof_gap_bill": {
+        "operations": [
+          { "op": "increment", "path": "customers.trust_score", "value": -0.038 },
+          { "op": "clamp", "path": "customers.trust_score", "min": 0.0, "max": 1.0 },
+          { "op": "increment", "path": "customers.monthly_churn_rate", "value": 0.0045 },
+          { "op": "increment", "path": "product.onboarding_quality", "value": -0.035 },
+          { "op": "clamp", "path": "product.onboarding_quality", "min": 0.0, "max": 1.0 }
+        ]
+      }
+    },
+    "scheduled_events": [
+      { "event_id": "ev_hidden_gtm_multithread_fresh_001", "at_turn": 1, "primitive_id": "buyer_committee_stall", "event_type": "buyer_committee_stall", "visible_message": "Deal momentum slowed once wider buying committees started scrutinizing implementation readiness." },
+      { "event_id": "ev_hidden_gtm_multithread_fresh_002", "at_turn": 3, "primitive_id": "proof_gap_bill", "event_type": "proof_gap_bill", "visible_message": "Delivery-proof gaps started showing up in customer trust and expansion confidence." }
+    ]
+  },
+  "policy_constraints": [{ "constraint_id": "no_unapproved_hiring", "kind": "approval_required" }],
+  "terminal_conditions": [
+    { "condition_id": "horizon_end_14_weeks", "kind": "horizon_end" },
+    { "condition_id": "bankruptcy", "kind": "hard_failure" }
+  ],
+  "evaluation": {
+    "outcome_components": [
+      { "component_id": "cash_efficiency", "weight": 0.14, "direction": "maximize" },
+      { "component_id": "revenue_quality", "weight": 0.31, "direction": "maximize" },
+      { "component_id": "customer_health", "weight": 0.25, "direction": "maximize" },
+      { "component_id": "strategic_coherence", "weight": 0.3, "direction": "maximize" }
+    ],
+    "constraints": [{ "constraint_id": "bankruptcy" }, { "constraint_id": "severe_trust_breach" }]
+  }
+}
