@@ -16,6 +16,7 @@ from thestartupbench.scenario_loader import load_scenario
 REPO_ROOT = Path(__file__).resolve().parents[1]
 GTM_SCENARIO_PATH = REPO_ROOT / "examples" / "minimal_gtm_scenario.json"
 PEOPLE_SCENARIO_PATH = REPO_ROOT / "examples" / "minimal_people_scenario.json"
+FINANCE_SCENARIO_PATH = REPO_ROOT / "examples" / "minimal_finance_scenario.json"
 CANARY_GTM_SCENARIO_PATH = REPO_ROOT / "examples" / "hidden_canary_pricing_trap_test_scenario.json"
 CANARY_PEOPLE_SCENARIO_PATH = REPO_ROOT / "examples" / "hidden_canary_hiring_trap_test_scenario.json"
 ZOOM_CRISIS_SCENARIO_PATH = REPO_ROOT / "examples" / "real_world_zoom_security_freeze_test_scenario.json"
@@ -24,6 +25,30 @@ BOARD_STRATEGY_SCENARIO_PATH = REPO_ROOT / "examples" / "hidden_board_stakeholde
 
 
 class EvaluatorTests(unittest.TestCase):
+    def test_product_team_and_risk_subscores_drop_under_operational_stress(self) -> None:
+        scenario = load_scenario(FINANCE_SCENARIO_PATH)
+        healthy_world = initialize_world_state(scenario, seed=5)
+        stressed_world = initialize_world_state(scenario, seed=5)
+        stressed_world["product"]["onboarding_quality"] = 0.34
+        stressed_world["product"]["major_incidents_open"] = 2
+        stressed_world["operations"]["support_sla_breach_risk"] = 0.68
+        stressed_world["team"]["morale"] = 0.46
+        stressed_world["team"]["attrition_risk"] = 0.69
+        stressed_world["team"]["bandwidth_load"] = 1.02
+        stressed_world["team"]["hiring"] = {"open_roles": 6, "hiring_capacity_index": 0.15}
+        stressed_world["risk"]["financing_pressure"] = 0.91
+        stressed_world["risk"]["regulatory_pressure"] = 0.82
+        stressed_world["risk"]["counterparty_risk"] = 0.93
+        stressed_world["risk"]["active_legal_matters"] = 3
+        stressed_world["finance"]["treasury_concentration"] = 0.92
+
+        healthy = evaluate_dry_run(scenario=scenario, world_state=healthy_world)
+        stressed = evaluate_dry_run(scenario=scenario, world_state=stressed_world)
+
+        self.assertLess(stressed["subscores"]["product_health"], healthy["subscores"]["product_health"])
+        self.assertLess(stressed["subscores"]["team_health"], healthy["subscores"]["team_health"])
+        self.assertLess(stressed["subscores"]["risk_management"], healthy["subscores"]["risk_management"])
+
     def test_market_and_segment_pressure_reduce_gtm_scores(self) -> None:
         scenario = load_scenario(GTM_SCENARIO_PATH)
         healthy_world = initialize_world_state(scenario, seed=7)
@@ -78,11 +103,62 @@ class EvaluatorTests(unittest.TestCase):
                 },
             },
         )
+        execute_tool_call(
+            session,
+            {
+                "tool_name": "people.org.adjust",
+                "request_id": "req_people_eval_002",
+                "arguments": {
+                    "morale_delta": 0.08,
+                    "attrition_risk_delta": -0.1,
+                    "bandwidth_load_delta": -0.09,
+                    "monthly_burn_change_usd": 6000,
+                    "onboarding_quality_delta": 0.02,
+                },
+            },
+        )
         after = evaluate_dry_run(scenario=scenario, world_state=session.world_state)
 
         self.assertGreater(after["subscores"]["strategic_coherence"], before["subscores"]["strategic_coherence"])
         self.assertGreater(after["subscores"]["customer_health"], before["subscores"]["customer_health"])
+        self.assertGreater(after["subscores"]["team_health"], before["subscores"]["team_health"])
         self.assertGreater(after["scenario_score"], before["scenario_score"])
+
+    def test_extended_component_weights_affect_outcome_score(self) -> None:
+        scenario = load_scenario(FINANCE_SCENARIO_PATH)
+        scenario["evaluation"]["outcome_components"] = [
+            {"component_id": "cash_efficiency", "weight": 0.2, "direction": "maximize"},
+            {"component_id": "revenue_quality", "weight": 0.12, "direction": "maximize"},
+            {"component_id": "customer_health", "weight": 0.1, "direction": "maximize"},
+            {"component_id": "product_health", "weight": 0.16, "direction": "maximize"},
+            {"component_id": "team_health", "weight": 0.16, "direction": "maximize"},
+            {"component_id": "risk_management", "weight": 0.16, "direction": "maximize"},
+            {"component_id": "strategic_coherence", "weight": 0.1, "direction": "maximize"},
+        ]
+
+        healthy_world = initialize_world_state(scenario, seed=9)
+        stressed_world = initialize_world_state(scenario, seed=9)
+        stressed_world["product"]["onboarding_quality"] = 0.31
+        stressed_world["product"]["major_incidents_open"] = 2
+        stressed_world["operations"]["support_sla_breach_risk"] = 0.72
+        stressed_world["team"]["morale"] = 0.43
+        stressed_world["team"]["attrition_risk"] = 0.75
+        stressed_world["team"]["bandwidth_load"] = 1.05
+        stressed_world["team"]["hiring"] = {"open_roles": 7, "hiring_capacity_index": 0.1}
+        stressed_world["risk"]["financing_pressure"] = 0.94
+        stressed_world["risk"]["regulatory_pressure"] = 0.79
+        stressed_world["risk"]["counterparty_risk"] = 0.88
+        stressed_world["risk"]["active_legal_matters"] = 2
+        stressed_world["finance"]["treasury_concentration"] = 0.93
+
+        healthy = evaluate_dry_run(scenario=scenario, world_state=healthy_world)
+        stressed = evaluate_dry_run(scenario=scenario, world_state=stressed_world)
+
+        self.assertIn("product_health", healthy["subscores"])
+        self.assertIn("team_health", healthy["subscores"])
+        self.assertIn("risk_management", healthy["subscores"])
+        self.assertLess(stressed["outcome_score"], healthy["outcome_score"])
+        self.assertLess(stressed["scenario_score"], healthy["scenario_score"])
 
     def test_canary_pricing_trap_penalizes_unanswered_backlash_loop(self) -> None:
         result = run_baseline(
