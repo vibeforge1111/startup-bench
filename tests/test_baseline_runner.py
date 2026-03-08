@@ -22,6 +22,7 @@ PEOPLE_LEADERSHIP_SCENARIO_PATH = REPO_ROOT / "examples" / "minimal_people_leade
 LAUNCH_DISTRIBUTION_SCENARIO_PATH = REPO_ROOT / "examples" / "minimal_launch_distribution_scenario.json"
 GROWTH_EXPERIMENT_SCENARIO_PATH = REPO_ROOT / "examples" / "minimal_growth_experiment_scenario.json"
 BOARD_COMMUNICATION_SCENARIO_PATH = REPO_ROOT / "examples" / "minimal_board_communication_scenario.json"
+CUSTOMER_COMMUNICATION_SCENARIO_PATH = REPO_ROOT / "examples" / "minimal_customer_communication_scenario.json"
 BOARD_STRATEGY_SCENARIO_PATH = REPO_ROOT / "examples" / "hidden_board_stakeholder_conflict_test_scenario.json"
 BREX_TREASURY_SCENARIO_PATH = REPO_ROOT / "examples" / "real_world_brex_svb_treasury_shock_test_scenario.json"
 
@@ -373,6 +374,26 @@ class BaselineRunnerTests(unittest.TestCase):
         self.assertTrue(all("forecast" in action["arguments"] for action in board_updates))
         self.assertTrue(all("asks" in action["arguments"] for action in board_updates))
         self.assertEqual(strategic_details["board_update_quality_penalty"], 0.0)
+
+    def test_resilient_baseline_uses_customer_comms_plan_on_customer_communication_scenario(self) -> None:
+        result = run_baseline(
+            scenario_path=CUSTOMER_COMMUNICATION_SCENARIO_PATH,
+            baseline_id="heuristic_resilient_operator",
+            seed=23,
+            max_turns=6,
+        )
+
+        incident_responses = [
+            action
+            for turn in result["trace"]["turns"]
+            for action in turn["actions"]
+            if action["tool_name"] == "ops.incident.respond"
+        ]
+        strategic_details = result["score_report"]["evaluator_results"][0]["outputs"]["component_details"]["strategic_coherence"]
+
+        self.assertGreaterEqual(len(incident_responses), 1)
+        self.assertTrue(all("customer_comms_plan" in action["arguments"] for action in incident_responses))
+        self.assertEqual(strategic_details["customer_comms_quality_penalty"], 0.0)
 
     def test_long_horizon_baseline_uses_org_proposal_on_people_leadership_scenario(self) -> None:
         result = run_baseline(
