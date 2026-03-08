@@ -1,9 +1,9 @@
 {
   "manifest_version": "0.1.0",
   "benchmark_version": "0.2.0-draft",
-  "scenario_pack_version": "coverage-fresh-pack-0.6.0",
+  "scenario_pack_version": "coverage-fresh-pack-0.7.0",
   "split": "fresh",
-  "scenario_count": 9,
+  "scenario_count": 10,
   "scenarios": [
     {
       "scenario_id": "hidden_0to1_activation_loop_fresh_001",
@@ -58,6 +58,12 @@
       "track": "board",
       "mode": "fresh",
       "hidden_ref": "fresh_008"
+    },
+    {
+      "scenario_id": "hidden_customer_communication_fresh_001",
+      "track": "crisis",
+      "mode": "fresh",
+      "hidden_ref": "fresh_009"
     }
   ]
 }

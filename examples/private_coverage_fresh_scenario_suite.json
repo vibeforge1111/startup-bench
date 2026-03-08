@@ -1,7 +1,7 @@
 {
   "suite_version": "0.1.0",
   "benchmark_version": "0.2.0-draft",
-  "scenario_pack_version": "coverage-fresh-pack-0.6.0",
+  "scenario_pack_version": "coverage-fresh-pack-0.7.0",
   "split": "fresh",
   "scenarios": [
     {
@@ -56,6 +56,12 @@
       "scenario_id": "hidden_board_update_quality_fresh_001",
       "path": "hidden_board_update_quality_fresh_scenario.json",
       "track": "board",
+      "mode": "fresh"
+    },
+    {
+      "scenario_id": "hidden_customer_communication_fresh_001",
+      "path": "hidden_customer_communication_fresh_scenario.json",
+      "track": "crisis",
       "mode": "fresh"
     }
   ]
