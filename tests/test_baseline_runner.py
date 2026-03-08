@@ -21,6 +21,7 @@ FINANCE_FUNDRAISE_RESET_SCENARIO_PATH = REPO_ROOT / "examples" / "minimal_financ
 PEOPLE_LEADERSHIP_SCENARIO_PATH = REPO_ROOT / "examples" / "minimal_people_leadership_scenario.json"
 LAUNCH_DISTRIBUTION_SCENARIO_PATH = REPO_ROOT / "examples" / "minimal_launch_distribution_scenario.json"
 GROWTH_EXPERIMENT_SCENARIO_PATH = REPO_ROOT / "examples" / "minimal_growth_experiment_scenario.json"
+BOARD_COMMUNICATION_SCENARIO_PATH = REPO_ROOT / "examples" / "minimal_board_communication_scenario.json"
 BOARD_STRATEGY_SCENARIO_PATH = REPO_ROOT / "examples" / "hidden_board_stakeholder_conflict_test_scenario.json"
 BREX_TREASURY_SCENARIO_PATH = REPO_ROOT / "examples" / "real_world_brex_svb_treasury_shock_test_scenario.json"
 
@@ -351,6 +352,27 @@ class BaselineRunnerTests(unittest.TestCase):
         self.assertGreaterEqual(len(experiment_creates), 1)
         self.assertGreaterEqual(len(experiment_reviews), 1)
         self.assertTrue(experiment_creates[0]["arguments"]["experiment_name"])
+
+    def test_governance_baseline_keeps_board_update_quality_penalty_zero_on_board_communication_scenario(self) -> None:
+        result = run_baseline(
+            scenario_path=BOARD_COMMUNICATION_SCENARIO_PATH,
+            baseline_id="heuristic_governance_operator",
+            seed=23,
+            max_turns=6,
+        )
+
+        board_updates = [
+            action
+            for turn in result["trace"]["turns"]
+            for action in turn["actions"]
+            if action["tool_name"] == "board.update"
+        ]
+        strategic_details = result["score_report"]["evaluator_results"][0]["outputs"]["component_details"]["strategic_coherence"]
+
+        self.assertGreaterEqual(len(board_updates), 2)
+        self.assertTrue(all("forecast" in action["arguments"] for action in board_updates))
+        self.assertTrue(all("asks" in action["arguments"] for action in board_updates))
+        self.assertEqual(strategic_details["board_update_quality_penalty"], 0.0)
 
     def test_long_horizon_baseline_uses_org_proposal_on_people_leadership_scenario(self) -> None:
         result = run_baseline(

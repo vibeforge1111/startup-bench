@@ -19,6 +19,7 @@ FINANCE_FUNDRAISE_RESET_SCENARIO_PATH = REPO_ROOT / "examples" / "minimal_financ
 PEOPLE_LEADERSHIP_SCENARIO_PATH = REPO_ROOT / "examples" / "minimal_people_leadership_scenario.json"
 LAUNCH_DISTRIBUTION_SCENARIO_PATH = REPO_ROOT / "examples" / "minimal_launch_distribution_scenario.json"
 GROWTH_EXPERIMENT_SCENARIO_PATH = REPO_ROOT / "examples" / "minimal_growth_experiment_scenario.json"
+BOARD_COMMUNICATION_SCENARIO_PATH = REPO_ROOT / "examples" / "minimal_board_communication_scenario.json"
 
 
 class ScenarioLintTests(unittest.TestCase):
@@ -73,6 +74,13 @@ class ScenarioLintTests(unittest.TestCase):
 
     def test_growth_experiment_scenario_passes_lint(self) -> None:
         scenario = load_scenario(GROWTH_EXPERIMENT_SCENARIO_PATH)
+        result = lint_scenario_instance(scenario)
+
+        self.assertTrue(result.ok)
+        self.assertEqual(result.issues, [])
+
+    def test_board_communication_scenario_passes_lint(self) -> None:
+        scenario = load_scenario(BOARD_COMMUNICATION_SCENARIO_PATH)
         result = lint_scenario_instance(scenario)
 
         self.assertTrue(result.ok)
