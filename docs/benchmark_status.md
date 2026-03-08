@@ -258,14 +258,19 @@ Completed hidden operator breadth packs:
 
 Completed hidden strategy packs:
 
-- `5` hidden `test` scenarios in [private_strategy_test_scenario_suite.json](/C:/Users/USER/Desktop/startup-bench/examples/private_strategy_test_scenario_suite.json)
-- `5` hidden `fresh` scenarios in [private_strategy_fresh_scenario_suite.json](/C:/Users/USER/Desktop/startup-bench/examples/private_strategy_fresh_scenario_suite.json)
+- `10` hidden `test` scenarios in [private_strategy_test_scenario_suite.json](/C:/Users/USER/Desktop/startup-bench/examples/private_strategy_test_scenario_suite.json)
+- `10` hidden `fresh` scenarios in [private_strategy_fresh_scenario_suite.json](/C:/Users/USER/Desktop/startup-bench/examples/private_strategy_fresh_scenario_suite.json)
 - current strategy hidden coverage:
   - board stakeholder conflict
   - board financing truth under narrative pressure
   - board incident truth under customer escalation
   - delayed-consequence product quality debt
   - multi-quarter scale planning under capacity lag
+  - platform-sequencing under expansion pull-forward
+  - delayed-consequence product migration quality
+  - board product truth under readiness pressure
+  - GTM multi-quarter proof sequencing
+  - scale-finance interaction under tightening capital quality
 
 Completed hidden canary packs:
 

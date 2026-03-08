@@ -41,12 +41,12 @@ Current status: early but real
 
 Current hidden `test` inventory across active packs:
 
-- strategy: `9`
+- strategy: `10`
 - coverage: `11`
 - operator: `9`
 - real-world: `8`
 - canary: `2`
-- total hidden `test`: `39`
+- total hidden `test`: `40`
 
 Assessment:
 

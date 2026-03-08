@@ -48,11 +48,17 @@ Success targets:
 
 - `BT-003` hidden corpus expansion to `50`
   - milestone: `v0.9.5`
-  - focus: add at least `11` more hidden `test` scenarios across thin tracks
+  - focus: add at least `10` more hidden `test` scenarios across thin tracks
 
 - `BT-004` strategy pack expansion
   - milestone: `v0.9.5`
-  - focus: continue long-horizon additions with balanced track growth
+  - focus: continue long-horizon additions with balanced track growth after the new scale-finance interaction slice
+
+## Completed
+
+- `BT-010` scale-finance interaction strategy family
+  - milestone: `v0.9.5`
+  - focus: added a new long-horizon scale scenario plus hidden `test` and `fresh` variants, and promoted the strategy pack metadata
 
 ## Ready
 

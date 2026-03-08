@@ -89,7 +89,7 @@
         "growth is balanced across thin tracks",
         "promotion metadata updated"
       ],
-      "progress_notes": "Current hidden test inventory is 39 active scenarios across strategy, coverage, operator, real-world, and canary packs."
+      "progress_notes": "Current hidden test inventory is 40 active scenarios across strategy, coverage, operator, real-world, and canary packs."
     },
     {
       "task_id": "BT-004",
@@ -188,13 +188,20 @@
       "workstream": "corpus-scale",
       "milestone_id": "v0.9.5",
       "priority": "high",
-      "status": "ready",
+      "status": "completed",
       "benchmark_risk": "medium",
       "owner": "core-benchmark",
       "completion_criteria": [
         "new dev scenario exists",
         "hidden test and fresh variants exist",
         "strategy pack metadata and tests are updated"
+      ],
+      "artifacts": [
+        "examples/minimal_scale_finance_tradeoff_scenario.json",
+        "examples/hidden_scale_finance_tradeoff_test_scenario.json",
+        "examples/hidden_scale_finance_tradeoff_fresh_scenario.json",
+        "examples/private_strategy_test_scenario_suite.json",
+        "examples/private_strategy_fresh_scenario_suite.json"
       ]
     }
   ]

@@ -166,3 +166,4 @@ Current execution focus:
 - keep strategy-pack additions focused on executable delayed-consequence and sequencing tradeoffs such as platform capacity, migration quality, hiring lead time, and renewal timing rather than memo-only strategy prompts
 - extend board/product interaction coverage through truth-telling and launch-sequencing scenarios, not generic “board memo” judging
 - extend GTM sequencing in the strategy pack through multi-quarter proof, reference, and channel-timing tradeoffs rather than short-window pipeline-only pressure
+- extend scale strategy coverage through capacity-plus-financing interaction slices where delivery confidence and capital quality degrade together over multiple turns
