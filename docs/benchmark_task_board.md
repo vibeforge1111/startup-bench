@@ -42,9 +42,9 @@ Success targets:
   - milestone: `v0.10.0`
   - focus: wave launched and reviewer packets exported for founder, ops, and product reviewers; next step is collecting returns and logging score-vs-operator disagreements
 
-- `BT-012` canary depth batch 001
+- `BT-013` real-world depth batch 001
   - milestone: `v0.10.0`
-  - focus: add two more exploit-pressure canary families with fresh variants and keep the hidden-eval integrity lane growing alongside corpus scale
+  - focus: add two more real-world hidden scenarios with matching fresh variants so the crisis-derived pack keeps pace with strategy, coverage, and canary growth
 
 ## Completed
 
@@ -88,11 +88,11 @@ Success targets:
   - milestone: `v0.10.0`
   - focus: added board hiring truth, delayed-consequence product platform tax, and GTM efficiency sequencing families; strategy hidden `test` inventory is now `13` and benchmark-wide hidden `test` inventory is `53`
 
-## Ready
-
-- `BT-013` real-world depth batch 001
+- `BT-012` canary depth batch 001
   - milestone: `v0.10.0`
-  - focus: add two more real-world hidden scenarios with matching fresh variants
+  - focus: added treasury-shuffle and renewal-nudge exploit traps; canary hidden `test` inventory is now `4` and benchmark-wide hidden `test` inventory is `55`
+
+## Ready
 
 - `BT-014` external benchmark adoption pack
   - milestone: `v0.10.0`
@@ -109,7 +109,7 @@ Success targets:
 
 ## Next up by priority
 
-1. canary and real-world hidden depth
+1. real-world hidden depth
 2. calibration execution and operator review collection
 3. external benchmark adoption materials
 4. hidden inventory growth toward `75`

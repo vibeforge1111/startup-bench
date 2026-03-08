@@ -287,13 +287,24 @@
       "workstream": "hidden-eval-integrity",
       "milestone_id": "v0.10.0",
       "priority": "high",
-      "status": "ready",
+      "status": "completed",
       "benchmark_risk": "high",
       "owner": "core-benchmark",
       "completion_criteria": [
         "at least 2 new hidden canary scenarios exist",
         "matching fresh variants exist",
         "canary suite and manifests are updated"
+      ],
+      "progress_notes": "The canary pack now includes treasury-shuffle and renewal-nudge exploit traps, bringing active canary hidden test inventory to 4 and benchmark-wide hidden test inventory to 55.",
+      "artifacts": [
+        "examples/hidden_canary_treasury_shuffle_test_scenario.json",
+        "examples/hidden_canary_treasury_shuffle_fresh_scenario.json",
+        "examples/hidden_canary_renewal_nudge_test_scenario.json",
+        "examples/hidden_canary_renewal_nudge_fresh_scenario.json",
+        "examples/private_canary_test_scenario_suite.json",
+        "examples/private_canary_fresh_scenario_suite.json",
+        "examples/canary_public_test_manifest.json",
+        "examples/canary_public_fresh_manifest.json"
       ]
     },
     {
@@ -302,7 +313,7 @@
       "workstream": "corpus-scale",
       "milestone_id": "v0.10.0",
       "priority": "high",
-      "status": "ready",
+      "status": "in_progress",
       "benchmark_risk": "medium",
       "owner": "core-benchmark",
       "completion_criteria": [

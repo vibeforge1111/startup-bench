@@ -1,0 +1,190 @@
+{
+  "metadata": {
+    "scenario_id": "hidden_canary_renewal_nudge_fresh_001",
+    "scenario_version": "0.1.0",
+    "benchmark_version": "0.2.0-draft",
+    "track": "gtm",
+    "mode": "fresh",
+    "title": "Canary Renewal Nudge Trap Under Expansion Optics",
+    "summary": "A fresh hidden canary variant designed to catch policies that use a small automatic price increase when top-of-funnel demand still looks good but reference quality is slipping underneath the surface.",
+    "difficulty": "frontier",
+    "authoring_origin": "benchmark_canary",
+    "time_horizon": {
+      "unit": "week",
+      "length": 12
+    },
+    "tags": ["canary", "renewal_nudge_trap", "overfit_detection", "gtm"]
+  },
+  "initial_state": {
+    "company": {
+      "stage": "series_a",
+      "sector": "b2b_saas",
+      "business_model": "subscription"
+    },
+    "finance": {
+      "cash_usd": 2720000,
+      "monthly_burn_usd": 324000,
+      "monthly_revenue_usd": 295000
+    },
+    "product": {
+      "major_incidents_open": 0,
+      "roadmap_items": 7,
+      "onboarding_quality": 0.65
+    },
+    "customers": {
+      "paying_accounts": 149,
+      "monthly_churn_rate": 0.03,
+      "trust_score": 0.72,
+      "segments": [
+        {
+          "segment_id": "enterprise",
+          "accounts": 38,
+          "revenue_share": 0.61,
+          "monthly_churn_rate": 0.023,
+          "trust_score": 0.73,
+          "support_load_index": 0.47,
+          "expansion_potential": 0.79,
+          "competitor_pressure_index": 0.4
+        },
+        {
+          "segment_id": "mid_market",
+          "accounts": 111,
+          "revenue_share": 0.39,
+          "monthly_churn_rate": 0.035,
+          "trust_score": 0.71,
+          "support_load_index": 0.54,
+          "expansion_potential": 0.51,
+          "competitor_pressure_index": 0.45
+        }
+      ]
+    },
+    "sales": {
+      "pipeline_count": 16,
+      "weighted_pipeline_usd": 1030000,
+      "pricing": {
+        "current_price_index": 1.0
+      }
+    },
+    "operations": {
+      "support_backlog": 27,
+      "support_sla_breach_risk": 0.32
+    },
+    "team": {
+      "morale": 0.61,
+      "attrition_risk": 0.38,
+      "bandwidth_load": 0.75,
+      "headcount": 19
+    },
+    "market": {
+      "competitor_pressure": "moderate",
+      "competitor_pressure_index": 0.46,
+      "pricing_pressure_index": 0.37,
+      "demand_index": 0.87,
+      "latest_market_note": "Expansion optics remain strong, but buyers are relying more heavily on renewal references and delivery credibility."
+    },
+    "risk": {
+      "financing_pressure": 0.47,
+      "counterparty_risk": 0.18
+    },
+    "governance": {
+      "board_update_count": 0
+    },
+    "policy": {
+      "max_auto_price_increase_pct": 0.03
+    },
+    "sim": {
+      "current_time": "2026-12-14T09:00:00Z"
+    }
+  },
+  "latent_state": {
+    "true_canary": "automatic_price_nudge_should_fail",
+    "true_best_pattern": "repair_reference_quality_before_pricing"
+  },
+  "observation_surfaces": [
+    {
+      "surface_id": "renewal_dashboard",
+      "surface_type": "dashboard",
+      "refresh_policy": "daily",
+      "visible_fields": ["trust_score", "monthly_churn_rate", "weighted_pipeline_usd", "current_price_index", "support_backlog"]
+    }
+  ],
+  "tools": [
+    "metrics.query",
+    "metrics.report",
+    "sales.pipeline.read",
+    "sales.pipeline.update",
+    "sales.pricing.propose",
+    "ops.support.read",
+    "ops.support.resolve",
+    "research.market.read",
+    "board.read",
+    "board.update",
+    "notes.read",
+    "notes.write",
+    "sim.advance"
+  ],
+  "event_model": {
+    "kind": "seeded_schedule",
+    "primitive_catalog": {
+      "reference_softening": {
+        "operations": [
+          { "op": "increment", "path": "customers.trust_score", "value": -0.042 },
+          { "op": "clamp", "path": "customers.trust_score", "min": 0.0, "max": 1.0 },
+          { "op": "increment", "path": "customers.monthly_churn_rate", "value": 0.0045 },
+          { "op": "increment", "path": "sales.weighted_pipeline_usd", "value": -78000 },
+          { "op": "increment", "path": "operations.support_sla_breach_risk", "value": 0.055 },
+          { "op": "clamp", "path": "operations.support_sla_breach_risk", "min": 0.0, "max": 1.0 }
+        ]
+      },
+      "renewal_pressure": {
+        "operations": [
+          { "op": "increment", "path": "customers.trust_score", "value": -0.032 },
+          { "op": "clamp", "path": "customers.trust_score", "min": 0.0, "max": 1.0 },
+          { "op": "increment", "path": "customers.monthly_churn_rate", "value": 0.0035 },
+          { "op": "increment", "path": "sales.weighted_pipeline_usd", "value": -52000 },
+          { "op": "increment", "path": "finance.monthly_revenue_usd", "value": -15000 }
+        ]
+      }
+    },
+    "scheduled_events": [
+      {
+        "event_id": "ev_canary_renewal_fresh_001",
+        "at_turn": 2,
+        "primitive_id": "reference_softening",
+        "event_type": "reference_softening",
+        "visible_message": "Reference quality softened again and prospects started weighting delivery proof over pricing conversations."
+      },
+      {
+        "event_id": "ev_canary_renewal_fresh_002",
+        "at_turn": 3,
+        "primitive_id": "renewal_pressure",
+        "event_type": "renewal_pressure",
+        "visible_message": "Renewal pressure widened and made incremental price pressure look worse than it did on the dashboard."
+      }
+    ]
+  },
+  "policy_constraints": [],
+  "terminal_conditions": [
+    {
+      "condition_id": "horizon_end_12_weeks",
+      "kind": "horizon_end"
+    },
+    {
+      "condition_id": "bankruptcy",
+      "kind": "hard_failure"
+    }
+  ],
+  "evaluation": {
+    "outcome_components": [
+      { "component_id": "cash_efficiency", "weight": 0.1, "direction": "maximize" },
+      { "component_id": "revenue_quality", "weight": 0.28, "direction": "maximize" },
+      { "component_id": "customer_health", "weight": 0.3, "direction": "maximize" },
+      { "component_id": "risk_management", "weight": 0.12, "direction": "maximize" },
+      { "component_id": "strategic_coherence", "weight": 0.2, "direction": "maximize" }
+    ],
+    "constraints": [
+      { "constraint_id": "bankruptcy" },
+      { "constraint_id": "severe_trust_breach" }
+    ]
+  }
+}

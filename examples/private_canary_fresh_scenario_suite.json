@@ -1,7 +1,7 @@
 {
   "suite_version": "0.1.0",
   "benchmark_version": "0.2.0-draft",
-  "scenario_pack_version": "canary-fresh-pack-0.1.0",
+  "scenario_pack_version": "canary-fresh-pack-0.2.0",
   "split": "fresh",
   "scenarios": [
     {
@@ -14,6 +14,18 @@
       "scenario_id": "hidden_canary_hiring_trap_fresh_001",
       "path": "hidden_canary_hiring_trap_fresh_scenario.json",
       "track": "people",
+      "mode": "fresh"
+    },
+    {
+      "scenario_id": "hidden_canary_treasury_shuffle_fresh_001",
+      "path": "hidden_canary_treasury_shuffle_fresh_scenario.json",
+      "track": "finance",
+      "mode": "fresh"
+    },
+    {
+      "scenario_id": "hidden_canary_renewal_nudge_fresh_001",
+      "path": "hidden_canary_renewal_nudge_fresh_scenario.json",
+      "track": "gtm",
       "mode": "fresh"
     }
   ]

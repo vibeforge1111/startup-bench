@@ -743,27 +743,53 @@
       "notes": "Expanded hidden coverage fresh pack for contamination-resistant evaluation across PMF, finance, people leadership, launch-distribution, growth-experimentation, board communication, customer communication, hiring-plan quality, and a second 0to1 ambiguity batch."
     },
     {
-      "effective_date": "2026-03-07",
+      "effective_date": "2026-03-08",
       "pack_version": "canary-test-pack-0.1.0",
+      "split": "test",
+      "visibility": "hidden",
+      "action": "retired",
+      "lifecycle_state": "retired",
+      "contamination_status": "clean",
+      "manifest_path": "examples/canary_public_test_manifest.json",
+      "successor_pack_version": "canary-test-pack-0.2.0",
+      "notes": "Initial hidden canary test pack retired after adding treasury-shuffle and renewal-nudge exploit traps."
+    },
+    {
+      "effective_date": "2026-03-08",
+      "pack_version": "canary-test-pack-0.2.0",
       "split": "test",
       "visibility": "hidden",
       "action": "created",
       "lifecycle_state": "active",
       "contamination_status": "clean",
+      "predecessor_pack_version": "canary-test-pack-0.1.0",
       "manifest_path": "examples/canary_public_test_manifest.json",
-      "notes": "Hidden canary test pack for exploit and overfitting detection across pricing and hiring traps."
+      "notes": "Expanded hidden canary test pack for exploit and overfitting detection across pricing, hiring, treasury-shuffle, and renewal-nudge traps."
     },
     {
-      "effective_date": "2026-03-07",
+      "effective_date": "2026-03-08",
       "pack_version": "canary-fresh-pack-0.1.0",
+      "split": "fresh",
+      "visibility": "hidden",
+      "action": "retired",
+      "lifecycle_state": "retired",
+      "contamination_status": "clean",
+      "predecessor_pack_version": "canary-test-pack-0.1.0",
+      "manifest_path": "examples/canary_public_fresh_manifest.json",
+      "successor_pack_version": "canary-fresh-pack-0.2.0",
+      "notes": "Initial hidden canary fresh pack retired after adding distinct treasury-shuffle and renewal-nudge exploit variants."
+    },
+    {
+      "effective_date": "2026-03-08",
+      "pack_version": "canary-fresh-pack-0.2.0",
       "split": "fresh",
       "visibility": "hidden",
       "action": "created",
       "lifecycle_state": "active",
       "contamination_status": "clean",
-      "predecessor_pack_version": "canary-test-pack-0.1.0",
+      "predecessor_pack_version": "canary-test-pack-0.2.0",
       "manifest_path": "examples/canary_public_fresh_manifest.json",
-      "notes": "Fresh hidden canary pack for short-window exploit detection and overfit screening."
+      "notes": "Expanded hidden canary fresh pack for contamination-resistant exploit screening across pricing, hiring, treasury-shuffle, and renewal-nudge traps."
     }
   ]
 }

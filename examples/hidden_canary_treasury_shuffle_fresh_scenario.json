@@ -1,0 +1,167 @@
+{
+  "metadata": {
+    "scenario_id": "hidden_canary_treasury_shuffle_fresh_001",
+    "scenario_version": "0.1.0",
+    "benchmark_version": "0.2.0-draft",
+    "track": "finance",
+    "mode": "fresh",
+    "title": "Canary Treasury Shuffle Trap Under Cash Discipline",
+    "summary": "A fresh hidden canary variant designed to catch policies that pay for treasury reshuffling by default even when counterparty risk is already easing and the real problem is preserving optionality.",
+    "difficulty": "frontier",
+    "authoring_origin": "benchmark_canary",
+    "time_horizon": {
+      "unit": "week",
+      "length": 12
+    },
+    "tags": ["canary", "treasury_shuffle_trap", "overfit_detection", "finance"]
+  },
+  "initial_state": {
+    "company": {
+      "stage": "series_a",
+      "sector": "b2b_saas",
+      "business_model": "subscription"
+    },
+    "finance": {
+      "cash_usd": 1460000,
+      "monthly_burn_usd": 238000,
+      "monthly_revenue_usd": 211000,
+      "restricted_cash_usd": 132000,
+      "treasury_concentration": 0.76,
+      "dilution_index": 0.07
+    },
+    "product": {
+      "major_incidents_open": 0,
+      "roadmap_items": 5,
+      "onboarding_quality": 0.72
+    },
+    "customers": {
+      "paying_accounts": 121,
+      "monthly_churn_rate": 0.028,
+      "trust_score": 0.75
+    },
+    "sales": {
+      "pipeline_count": 10,
+      "weighted_pipeline_usd": 655000,
+      "pricing": {
+        "current_price_index": 1.0
+      }
+    },
+    "operations": {
+      "support_backlog": 16,
+      "support_sla_breach_risk": 0.16
+    },
+    "team": {
+      "morale": 0.64,
+      "attrition_risk": 0.32,
+      "bandwidth_load": 0.66,
+      "headcount": 15
+    },
+    "market": {
+      "competitor_pressure": "moderate",
+      "competitor_pressure_index": 0.41,
+      "pricing_pressure_index": 0.34,
+      "demand_index": 0.73,
+      "latest_market_note": "Customers are screening for disciplined operators and do not view treasury motion by itself as a buying signal."
+    },
+    "risk": {
+      "financing_pressure": 0.56,
+      "counterparty_risk": 0.22
+    },
+    "governance": {
+      "board_update_count": 0
+    },
+    "policy": {
+      "max_auto_price_increase_pct": 0.04
+    },
+    "sim": {
+      "current_time": "2026-12-07T09:00:00Z"
+    }
+  },
+  "latent_state": {
+    "true_canary": "reflexive_treasury_shuffle_should_fail",
+    "true_best_pattern": "hold_cash_and_reassess_counterparty_noise"
+  },
+  "observation_surfaces": [
+    {
+      "surface_id": "treasury_dashboard",
+      "surface_type": "dashboard",
+      "refresh_policy": "daily",
+      "visible_fields": ["cash_usd", "liquid_cash_usd", "treasury_concentration", "counterparty_risk", "runway_weeks"]
+    }
+  ],
+  "tools": [
+    "metrics.query",
+    "metrics.report",
+    "finance.plan.read",
+    "finance.plan.write",
+    "finance.treasury.read",
+    "finance.treasury.rebalance",
+    "research.market.read",
+    "board.read",
+    "board.update",
+    "notes.read",
+    "notes.write",
+    "sim.advance"
+  ],
+  "event_model": {
+    "kind": "seeded_schedule",
+    "primitive_catalog": {
+      "counterparty_stabilizes": {
+        "operations": [
+          { "op": "increment", "path": "risk.counterparty_risk", "value": -0.05 },
+          { "op": "clamp", "path": "risk.counterparty_risk", "min": 0.0, "max": 1.0 },
+          { "op": "increment", "path": "risk.financing_pressure", "value": -0.02 },
+          { "op": "clamp", "path": "risk.financing_pressure", "min": 0.0, "max": 1.0 }
+        ]
+      },
+      "cash_timing_slip": {
+        "operations": [
+          { "op": "increment", "path": "finance.cash_usd", "value": -80000 },
+          { "op": "clamp", "path": "finance.cash_usd", "min": 0.0 },
+          { "op": "increment", "path": "risk.financing_pressure", "value": 0.07 },
+          { "op": "clamp", "path": "risk.financing_pressure", "min": 0.0, "max": 1.0 }
+        ]
+      }
+    },
+    "scheduled_events": [
+      {
+        "event_id": "ev_canary_treasury_fresh_001",
+        "at_turn": 2,
+        "primitive_id": "counterparty_stabilizes",
+        "event_type": "counterparty_stabilizes",
+        "visible_message": "Treasury counterparties stabilized further and the risk signal softened without any intervention."
+      },
+      {
+        "event_id": "ev_canary_treasury_fresh_002",
+        "at_turn": 3,
+        "primitive_id": "cash_timing_slip",
+        "event_type": "cash_timing_slip",
+        "visible_message": "Cash timing slipped on a few invoices and made every avoidable treasury cost visible."
+      }
+    ]
+  },
+  "policy_constraints": [],
+  "terminal_conditions": [
+    {
+      "condition_id": "horizon_end_12_weeks",
+      "kind": "horizon_end"
+    },
+    {
+      "condition_id": "bankruptcy",
+      "kind": "hard_failure"
+    }
+  ],
+  "evaluation": {
+    "outcome_components": [
+      { "component_id": "cash_efficiency", "weight": 0.32, "direction": "maximize" },
+      { "component_id": "revenue_quality", "weight": 0.08, "direction": "maximize" },
+      { "component_id": "customer_health", "weight": 0.1, "direction": "maximize" },
+      { "component_id": "risk_management", "weight": 0.25, "direction": "maximize" },
+      { "component_id": "strategic_coherence", "weight": 0.25, "direction": "maximize" }
+    ],
+    "constraints": [
+      { "constraint_id": "bankruptcy" },
+      { "constraint_id": "severe_financing_failure" }
+    ]
+  }
+}

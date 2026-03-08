@@ -61,6 +61,8 @@ Synthetic calibration status:
 - healthy but on governance watchlist:
   - strategy board stakeholder conflict
 - added during pre-human hardening and not yet calibration-reviewed:
+  - canary treasury shuffle trap
+  - canary renewal nudge trap
   - strategy board financing truth
   - strategy board incident truth
   - strategy board hiring truth
@@ -307,11 +309,13 @@ Completed hidden strategy packs:
 
 Completed hidden canary packs:
 
-- `2` hidden `test` scenarios in [private_canary_test_scenario_suite.json](/C:/Users/USER/Desktop/startup-bench/examples/private_canary_test_scenario_suite.json)
-- `2` hidden `fresh` scenarios in [private_canary_fresh_scenario_suite.json](/C:/Users/USER/Desktop/startup-bench/examples/private_canary_fresh_scenario_suite.json)
+- `4` hidden `test` scenarios in [private_canary_test_scenario_suite.json](/C:/Users/USER/Desktop/startup-bench/examples/private_canary_test_scenario_suite.json)
+- `4` hidden `fresh` scenarios in [private_canary_fresh_scenario_suite.json](/C:/Users/USER/Desktop/startup-bench/examples/private_canary_fresh_scenario_suite.json)
 - current canary hidden coverage:
   - pricing hikes under trust fragility
   - hiring expansion under soft demand and thin liquidity
+  - treasury reshuffling under thin-runway cash discipline
+  - small renewal-pricing nudges under reference decay
 
 ## What Is Partially Done
 

@@ -45,8 +45,8 @@ Current hidden `test` inventory across active packs:
 - coverage: `14`
 - operator: `16`
 - real-world: `8`
-- canary: `2`
-- total hidden `test`: `53`
+- canary: `4`
+- total hidden `test`: `55`
 
 Assessment:
 
@@ -326,11 +326,11 @@ Implementation focus:
 
 ## Highest-value next implementations
 
-1. add canary depth batch `001` so exploit pressure grows with the broader hidden corpus
-2. add real-world depth batch `001` to keep crisis-derived hidden coverage from lagging the strategy and coverage packs
-3. complete operator calibration wave `002` by importing returned reviews and publishing disagreement logs
-4. publish an external benchmark adoption pack that explains hosted vs self-reported usage without overstating maturity
-5. push balanced hidden-corpus growth from `53` toward the `75`-scenario v0.10.0 target
+1. add real-world depth batch `001` to keep crisis-derived hidden coverage from lagging the strategy, coverage, and canary packs
+2. complete operator calibration wave `002` by importing returned reviews and publishing disagreement logs
+3. publish an external benchmark adoption pack that explains hosted vs self-reported usage without overstating maturity
+4. push balanced hidden-corpus growth from `55` toward the `75`-scenario v0.10.0 target
+5. add a second canary-depth batch only after the real-world lane catches up again
 
 ## Task system policy
 

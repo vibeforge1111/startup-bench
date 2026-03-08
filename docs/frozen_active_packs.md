@@ -6,7 +6,7 @@ This document records the active pack set for the `v0.9-precalibration` freeze.
 
 ## Active Hidden Test Packs
 
-- `canary-test-pack-0.1.0`
+- `canary-test-pack-0.2.0`
   - public manifest: [canary_public_test_manifest.json](/C:/Users/USER/Desktop/startup-bench/examples/canary_public_test_manifest.json)
   - focus: exploit and overfit detection for pricing and hiring traps
 - `operator-test-pack-0.5.0`
@@ -24,7 +24,7 @@ This document records the active pack set for the `v0.9-precalibration` freeze.
 
 ## Active Hidden Fresh Packs
 
-- `canary-fresh-pack-0.1.0`
+- `canary-fresh-pack-0.2.0`
 - `operator-fresh-pack-0.5.0`
 - `coverage-fresh-pack-0.9.0`
 - `strategy-fresh-pack-0.9.0`

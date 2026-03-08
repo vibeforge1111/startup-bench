@@ -54,13 +54,13 @@ This document is the public-facing summary of hidden-pack promotions, fresh-pack
   - public manifest: [coverage_public_fresh_manifest.json](/C:/Users/USER/Desktop/startup-bench/examples/coverage_public_fresh_manifest.json)
   - status: active, clean
 
-- `canary-test-pack-0.1.0`
+- `canary-test-pack-0.2.0`
   - split: `test`
   - visibility: `hidden`
   - public manifest: [canary_public_test_manifest.json](/C:/Users/USER/Desktop/startup-bench/examples/canary_public_test_manifest.json)
   - status: active, clean
 
-- `canary-fresh-pack-0.1.0`
+- `canary-fresh-pack-0.2.0`
   - split: `fresh`
   - visibility: `hidden`
   - public manifest: [canary_public_fresh_manifest.json](/C:/Users/USER/Desktop/startup-bench/examples/canary_public_fresh_manifest.json)
@@ -343,3 +343,14 @@ This document is the public-facing summary of hidden-pack promotions, fresh-pack
 - `fresh` packs are intended for short-lived, contamination-resistant reporting windows.
 - Promotions and retirements should update both this document and [public_pack_changelog.json](/C:/Users/USER/Desktop/startup-bench/examples/public_pack_changelog.json).
 - If a hidden pack is leaked or materially inferable, mark it contaminated in the JSON changelog, retire it, and publish the successor pack manifest.
+- `canary-test-pack-0.1.0`
+  - split: `test`
+  - visibility: `hidden`
+  - status: retired
+  - successor: `canary-test-pack-0.2.0`
+
+- `canary-fresh-pack-0.1.0`
+  - split: `fresh`
+  - visibility: `hidden`
+  - status: retired
+  - successor: `canary-fresh-pack-0.2.0`
