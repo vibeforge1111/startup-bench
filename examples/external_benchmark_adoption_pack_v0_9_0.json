@@ -1,0 +1,114 @@
+{
+  "adoption_pack_version": "0.1.0",
+  "adoption_pack_id": "external-adoption-v0.9.0-precalibration",
+  "benchmark_version": "0.9.0-precalibration",
+  "official_window_path": "examples/official_eval_window_v0_9_0.json",
+  "official_profile_path": "examples/official_eval_profile.json",
+  "governance_pack_path": "examples/leaderboard_governance_pack_v0_9_0.json",
+  "supported_user_types": [
+    {
+      "user_type": "external_research_team",
+      "description": "Independent teams that want to run the frozen benchmark profile and publish a self-reported result responsibly.",
+      "recommended_entry_type": "self_reported",
+      "allowed_runner_types": ["baseline", "script"],
+      "required_artifacts": ["run_manifest", "submission", "contamination_declaration", "repeat_summary"]
+    },
+    {
+      "user_type": "model_provider",
+      "description": "Model labs or API providers that want a documented route for publishing benchmark results during the frozen window.",
+      "recommended_entry_type": "self_reported",
+      "allowed_runner_types": ["script"],
+      "required_artifacts": ["run_manifest", "submission", "contamination_declaration", "system_summary"]
+    },
+    {
+      "user_type": "community_operator",
+      "description": "Users who want to reproduce the benchmark locally without asking for leaderboard placement.",
+      "recommended_entry_type": "local_reference",
+      "allowed_runner_types": ["baseline", "script"],
+      "required_artifacts": ["local_run_notes"]
+    }
+  ],
+  "execution_paths": [
+    {
+      "path_id": "hosted_reference",
+      "summary": "Hosted results remain benchmark-operated only; external users should treat this path as a reference lane rather than a request path.",
+      "commands": [
+        "python -m thestartupbench show-official-profile examples/official_eval_profile.json",
+        "python -m thestartupbench run-suite examples/dev_scenario_suite.json baseline --baseline-id heuristic_resilient_operator --seeds 1,2 --max-turns 4 --profile-path examples/official_eval_profile.json --output-dir tmp_out"
+      ],
+      "publication_expectations": [
+        "do not label an external run as hosted",
+        "use hosted results only as a comparison reference",
+        "keep hosted and self-reported tables separate"
+      ],
+      "non_claims": [
+        "an external reproduction is not a hosted benchmark result",
+        "a local run does not grant access to hidden benchmark traces"
+      ]
+    },
+    {
+      "path_id": "self_reported_window_run",
+      "summary": "The supported external publication lane during the current window. Use the frozen profile, emit a run manifest, build a submission artifact, and publish against the self-reported table only.",
+      "commands": [
+        "python -m thestartupbench show-official-profile examples/official_eval_profile.json",
+        "python -m thestartupbench emit-run-manifest examples/dev_scenario_suite.json baseline --seeds 1,2,3,4,5 --baseline-id <baseline-or-adapter> --max-turns 4 --profile-path examples/official_eval_profile.json --output-dir tmp_out",
+        "python -m thestartupbench run-suite examples/dev_scenario_suite.json baseline --baseline-id <baseline-or-adapter> --seeds 1,2,3,4,5 --max-turns 4 --profile-path examples/official_eval_profile.json --output-dir tmp_out",
+        "python -m thestartupbench build-submission --suite-report-paths tmp_out/suite_report.json --model-id <model-id> --provider <provider> --contamination-flag clean --output-dir tmp_out"
+      ],
+      "publication_expectations": [
+        "publish the run manifest and submission artifact",
+        "disclose repeat count, runtime, cost, and contamination flag",
+        "state that the result is self-reported against the frozen window",
+        "keep test and fresh reporting separate"
+      ],
+      "non_claims": [
+        "do not present a self-reported entry as benchmark-operated",
+        "do not collapse self-reported entries into the hosted table",
+        "do not call the current window a final public benchmark release"
+      ]
+    },
+    {
+      "path_id": "local_reference_use",
+      "summary": "A low-ceremony path for local benchmarking, method debugging, or adapter checks without any leaderboard implication.",
+      "commands": [
+        "python -m thestartupbench validate scenario examples/minimal_b2b_saas_scenario.json",
+        "python -m thestartupbench run-baseline examples/minimal_crisis_scenario.json heuristic_resilient_operator --seed 1 --max-turns 6 --output-dir tmp_out",
+        "python -m unittest discover -s tests -p \"test_*.py\""
+      ],
+      "publication_expectations": [
+        "label outputs as local or exploratory",
+        "avoid score claims tied to the official leaderboard window",
+        "include benchmark version and scenario/suite path when sharing results"
+      ],
+      "non_claims": [
+        "local reference runs are not official benchmark entries",
+        "passing local tests does not imply leaderboard eligibility"
+      ]
+    }
+  ],
+  "minimum_disclosures": [
+    "benchmark version",
+    "official window id when claiming window alignment",
+    "entry type",
+    "runner type",
+    "repeat count and seeds",
+    "runtime summary",
+    "cost summary when relevant",
+    "contamination declaration",
+    "known benchmark caveats"
+  ],
+  "non_claims": [
+    "TheStartupBench is still in a pre-human-calibration window and should not be described as fully benchmark-complete.",
+    "External users should not claim hosted status, hidden-trace access, or official leaderboard placement without benchmark-operated execution.",
+    "Self-reported results should not be described as benchmark-certified beyond the frozen-window reporting rules."
+  ],
+  "benchmark_caveats": [
+    "The current benchmark methodology is strong, but corpus scale and calibration maturity are still below the most widely used frontier benchmarks.",
+    "The external adoption pack is designed to improve disciplined usage, not to inflate benchmark maturity claims.",
+    "Pack rotation, contamination review, and operator-calibration evidence remain active benchmark operations, not finished history."
+  ],
+  "notes": [
+    "This pack is intentionally narrow and operational.",
+    "Use it together with the official window, governance pack, and frozen active pack set."
+  ]
+}

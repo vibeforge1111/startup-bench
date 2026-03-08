@@ -389,6 +389,14 @@ class ValidationTests(unittest.TestCase):
         self.assertTrue(result.ok)
         self.assertEqual(result.issues, [])
 
+    def test_external_adoption_pack_example_validates(self) -> None:
+        result = validate_artifact_file(
+            artifact_type="external-adoption-pack",
+            path=REPO_ROOT / "examples" / "external_benchmark_adoption_pack_v0_9_0.json",
+        )
+        self.assertTrue(result.ok)
+        self.assertEqual(result.issues, [])
+
     def test_hidden_pack_rotation_policy_example_validates(self) -> None:
         result = validate_artifact_file(
             artifact_type="hidden-pack-rotation-policy",

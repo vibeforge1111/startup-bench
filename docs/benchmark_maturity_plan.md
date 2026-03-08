@@ -301,6 +301,8 @@ Current execution artifact set:
 - [official_evaluation_window_v0_9_0.md](/C:/Users/USER/Desktop/startup-bench/docs/official_evaluation_window_v0_9_0.md)
 - [leaderboard_governance_pack_v0_9_0.json](/C:/Users/USER/Desktop/startup-bench/examples/leaderboard_governance_pack_v0_9_0.json)
 - [leaderboard_governance_pack_v0_9_0.md](/C:/Users/USER/Desktop/startup-bench/docs/leaderboard_governance_pack_v0_9_0.md)
+- [external_benchmark_adoption_pack_v0_9_0.json](/C:/Users/USER/Desktop/startup-bench/examples/external_benchmark_adoption_pack_v0_9_0.json)
+- [external_benchmark_adoption_pack_v0_9_0.md](/C:/Users/USER/Desktop/startup-bench/docs/external_benchmark_adoption_pack_v0_9_0.md)
 - [hidden_pack_rotation_policy_v0_9_0.json](/C:/Users/USER/Desktop/startup-bench/examples/hidden_pack_rotation_policy_v0_9_0.json)
 - [hidden_pack_rotation_policy_v0_9_0.md](/C:/Users/USER/Desktop/startup-bench/docs/hidden_pack_rotation_policy_v0_9_0.md)
 
@@ -327,10 +329,10 @@ Implementation focus:
 ## Highest-value next implementations
 
 1. complete operator calibration wave `002` by importing returned reviews and publishing disagreement logs
-2. publish an external benchmark adoption pack that explains hosted vs self-reported usage without overstating maturity
-3. push balanced hidden-corpus growth from `57` toward the `75`-scenario v0.10.0 target
-4. add the next strategy and operator depth batches only where calibration coverage will not lag promotion
-5. keep canary and real-world pack rotation tied to the official evaluation window
+2. push balanced hidden-corpus growth from `57` toward the `75`-scenario v0.10.0 target
+3. add the next strategy and operator depth batches only where calibration coverage will not lag promotion
+4. keep canary and real-world pack rotation tied to the official evaluation window
+5. convert the external adoption pack into lived release-note and reporting practice
 
 ## Task system policy
 

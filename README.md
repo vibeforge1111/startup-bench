@@ -178,6 +178,7 @@ thestartupbench/
 - [Benchmark status](docs/benchmark_status.md)
 - [Benchmark maturity plan](docs/benchmark_maturity_plan.md)
 - [Benchmark task board](docs/benchmark_task_board.md)
+- [External benchmark adoption pack](docs/external_benchmark_adoption_pack_v0_9_0.md)
 - [Coverage expansion policy](docs/coverage_expansion_policy.md)
 - [Coverage build plan](docs/coverage_build_plan.md)
 - [Known issues](docs/benchmark_known_issues.md)
@@ -252,7 +253,7 @@ python -m unittest discover -s tests -p "test_*.py"
 <summary><strong>Schemas and artifacts</strong></summary>
 
 **JSON Schemas:**
-`tsb_scenario`, `tsb_world_state`, `tsb_primitives`, `tsb_tool_manifest`, `tsb_tool_call`, `tsb_tool_response`, `tsb_evaluator_result`, `tsb_score_report`, `tsb_batch_report`, `tsb_scenario_suite`, `tsb_public_suite_manifest`, `tsb_official_eval_profile`, `tsb_run_manifest`, `tsb_suite_report`, `tsb_trace`, `tsb_submission`, `tsb_operator_review`, `tsb_operator_review_summary`, `tsb_calibration_report`, `tsb_calibration_study`, `tsb_review_packet`, `tsb_calibration_study_run`, `tsb_calibration_study_report`, `tsb_review_assignments`, `tsb_review_form_export`, `tsb_review_form_import`
+`tsb_scenario`, `tsb_world_state`, `tsb_primitives`, `tsb_tool_manifest`, `tsb_tool_call`, `tsb_tool_response`, `tsb_evaluator_result`, `tsb_score_report`, `tsb_batch_report`, `tsb_scenario_suite`, `tsb_public_suite_manifest`, `tsb_official_eval_profile`, `tsb_run_manifest`, `tsb_suite_report`, `tsb_trace`, `tsb_submission`, `tsb_operator_review`, `tsb_operator_review_summary`, `tsb_calibration_report`, `tsb_calibration_study`, `tsb_review_packet`, `tsb_calibration_study_run`, `tsb_calibration_study_report`, `tsb_review_assignments`, `tsb_review_form_export`, `tsb_review_form_import`, `tsb_external_adoption_pack`
 
 All schemas live in `schemas/` as `tsb_*.schema.json`.
 

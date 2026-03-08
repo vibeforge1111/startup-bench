@@ -339,13 +339,19 @@
       "workstream": "benchmark-operations",
       "milestone_id": "v0.10.0",
       "priority": "medium",
-      "status": "in_progress",
+      "status": "completed",
       "benchmark_risk": "medium",
       "owner": "core-benchmark",
       "completion_criteria": [
         "outside-run guide exists",
         "hosted vs self-reported path is documented for external users",
         "benchmark caveats remain explicit"
+      ],
+      "progress_notes": "A schema-backed external adoption pack now defines hosted-reference, self-reported, and local-reference paths with explicit non-claims so outside use can grow without overstating benchmark maturity.",
+      "artifacts": [
+        "schemas/tsb_external_adoption_pack.schema.json",
+        "examples/external_benchmark_adoption_pack_v0_9_0.json",
+        "docs/external_benchmark_adoption_pack_v0_9_0.md"
       ]
     },
     {
@@ -354,7 +360,7 @@
       "workstream": "corpus-scale",
       "milestone_id": "v0.10.0",
       "priority": "highest",
-      "status": "ready",
+      "status": "in_progress",
       "benchmark_risk": "high",
       "owner": "core-benchmark",
       "completion_criteria": [

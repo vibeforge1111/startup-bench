@@ -1,0 +1,111 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://thestartupbench.org/schemas/tsb_external_adoption_pack.schema.json",
+  "title": "TheStartupBench External Adoption Pack",
+  "type": "object",
+  "required": [
+    "adoption_pack_version",
+    "adoption_pack_id",
+    "benchmark_version",
+    "official_window_path",
+    "official_profile_path",
+    "governance_pack_path",
+    "supported_user_types",
+    "execution_paths",
+    "minimum_disclosures",
+    "non_claims",
+    "benchmark_caveats"
+  ],
+  "properties": {
+    "adoption_pack_version": { "type": "string" },
+    "adoption_pack_id": { "type": "string" },
+    "benchmark_version": { "type": "string" },
+    "official_window_path": { "type": "string" },
+    "official_profile_path": { "type": "string" },
+    "governance_pack_path": { "type": "string" },
+    "supported_user_types": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "user_type",
+          "description",
+          "recommended_entry_type",
+          "allowed_runner_types",
+          "required_artifacts"
+        ],
+        "properties": {
+          "user_type": { "type": "string" },
+          "description": { "type": "string" },
+          "recommended_entry_type": { "type": "string" },
+          "allowed_runner_types": {
+            "type": "array",
+            "minItems": 1,
+            "items": { "type": "string" }
+          },
+          "required_artifacts": {
+            "type": "array",
+            "minItems": 1,
+            "items": { "type": "string" }
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "execution_paths": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "path_id",
+          "summary",
+          "commands",
+          "publication_expectations",
+          "non_claims"
+        ],
+        "properties": {
+          "path_id": { "type": "string" },
+          "summary": { "type": "string" },
+          "commands": {
+            "type": "array",
+            "minItems": 1,
+            "items": { "type": "string" }
+          },
+          "publication_expectations": {
+            "type": "array",
+            "minItems": 1,
+            "items": { "type": "string" }
+          },
+          "non_claims": {
+            "type": "array",
+            "minItems": 1,
+            "items": { "type": "string" }
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "minimum_disclosures": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "type": "string" }
+    },
+    "non_claims": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "type": "string" }
+    },
+    "benchmark_caveats": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "type": "string" }
+    },
+    "notes": {
+      "type": "array",
+      "items": { "type": "string" }
+    }
+  },
+  "additionalProperties": false
+}

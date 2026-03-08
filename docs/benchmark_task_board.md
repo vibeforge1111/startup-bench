@@ -42,9 +42,9 @@ Success targets:
   - milestone: `v0.10.0`
   - focus: wave launched and reviewer packets exported for founder, ops, and product reviewers; next step is collecting returns and logging score-vs-operator disagreements
 
-- `BT-014` external benchmark adoption pack
+- `BT-015` hidden corpus expansion to `75`
   - milestone: `v0.10.0`
-  - focus: publish the outside-run and reporting guide without overstating benchmark maturity or benchmark-complete status
+  - focus: continue balanced hidden-pack growth from `57` toward `75` while keeping calibration, canary, and pack-rotation discipline intact
 
 ## Completed
 
@@ -96,11 +96,11 @@ Success targets:
   - milestone: `v0.10.0`
   - focus: added Airbnb demand-shock and Robinhood volatility-outage hidden variants; real-world hidden `test` inventory is now `10` and benchmark-wide hidden `test` inventory is `57`
 
-## Ready
-
-- `BT-015` hidden corpus expansion to `75`
+- `BT-014` external benchmark adoption pack
   - milestone: `v0.10.0`
-  - focus: finish the remaining balanced corpus growth needed for the v0.10.0 target
+  - focus: published the outside-run and reporting guide with explicit non-claims and machine-readable adoption rules
+
+## Ready
 
 - `BT-016` operator calibration wave 002 compilation
   - milestone: `v0.10.0`
@@ -110,10 +110,10 @@ Success targets:
 ## Next up by priority
 
 1. calibration execution and operator review collection
-2. external benchmark adoption materials
-3. hidden inventory growth toward `75`
-4. next strategy and operator depth where calibration will not lag
-5. pack rotation and leaderboard-window operations
+2. hidden inventory growth toward `75`
+3. next strategy and operator depth where calibration will not lag
+4. pack rotation and leaderboard-window operations
+5. external adoption pack usage and release-note follow-through
 
 ## Operating rules
 
