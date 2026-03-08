@@ -370,6 +370,62 @@ def _extract_board_update_summaries(turns: list[dict]) -> list[str]:
     return summaries
 
 
+def _extract_board_update_arguments(turns: list[dict], *, start_turn_index: int = 0) -> list[dict[str, Any]]:
+    updates: list[dict[str, Any]] = []
+    for index, turn in enumerate(turns):
+        if index < start_turn_index:
+            continue
+        for action in turn.get("actions", []):
+            if action.get("tool_name") != "board.update":
+                continue
+            arguments = action.get("arguments", {})
+            if isinstance(arguments, dict):
+                updates.append(arguments)
+            else:
+                updates.append({})
+    return updates
+
+
+def _score_board_update_artifact(
+    update: dict[str, Any] | None,
+    *,
+    required_forecast_fields: set[str],
+) -> dict[str, Any]:
+    if not update:
+        return {
+            "has_summary": False,
+            "has_forecast": False,
+            "has_asks": False,
+            "covered_required_forecast_fields": [],
+            "missing_required_forecast_fields": sorted(required_forecast_fields),
+        }
+
+    summary = update.get("summary")
+    forecast = update.get("forecast")
+    asks = update.get("asks")
+
+    has_summary = isinstance(summary, str) and bool(summary.strip())
+    has_forecast = isinstance(forecast, dict) and bool(forecast)
+    has_asks = isinstance(asks, list) and any(isinstance(item, str) and item.strip() for item in asks)
+
+    covered_required_forecast_fields: list[str] = []
+    if isinstance(forecast, dict):
+        for field in sorted(required_forecast_fields):
+            if field in forecast and forecast.get(field) is not None:
+                covered_required_forecast_fields.append(field)
+
+    missing_required_forecast_fields = [
+        field for field in sorted(required_forecast_fields) if field not in covered_required_forecast_fields
+    ]
+    return {
+        "has_summary": has_summary,
+        "has_forecast": has_forecast,
+        "has_asks": has_asks,
+        "covered_required_forecast_fields": covered_required_forecast_fields,
+        "missing_required_forecast_fields": missing_required_forecast_fields,
+    }
+
+
 def _behavioral_penalty(
     *,
     world_state: dict,
@@ -567,6 +623,7 @@ def _behavioral_penalty(
         finance_follow_up_count = 0
         market_read_count = 0
         board_read_count = 0
+        first_follow_up_turn: int | None = None
         if governance_turn_indices or customer_turn_indices:
             first_follow_up_turn = min(governance_turn_indices + customer_turn_indices)
             for turn in turns[first_follow_up_turn + 1 :]:
@@ -596,6 +653,26 @@ def _behavioral_penalty(
         final_major_incidents_open = int(world_state.get("product", {}).get("major_incidents_open", 0))
         final_support_backlog = float(world_state.get("operations", {}).get("support_backlog", 0.0))
         final_financing_pressure = float(world_state.get("risk", {}).get("financing_pressure", 0.0))
+        required_board_forecast_fields: set[str] = set()
+        if final_financing_pressure >= 0.75:
+            required_board_forecast_fields.update({"runway_weeks", "financing_pressure"})
+        if customer_turn_indices or trust_decline >= 0.04:
+            required_board_forecast_fields.add("trust_score")
+        if final_support_backlog >= 26:
+            required_board_forecast_fields.add("support_backlog")
+        if final_major_incidents_open > 0:
+            required_board_forecast_fields.add("major_incidents_open")
+
+        relevant_board_updates = _extract_board_update_arguments(
+            turns,
+            start_turn_index=(first_follow_up_turn + 1) if first_follow_up_turn is not None else 0,
+        )
+        latest_relevant_board_update = relevant_board_updates[-1] if relevant_board_updates else None
+        latest_board_update_quality = _score_board_update_artifact(
+            latest_relevant_board_update,
+            required_forecast_fields=required_board_forecast_fields,
+        )
+        board_update_quality_penalty = 0.0
 
         penalty = 0.0
         if governance_turn_indices and board_update_after_governance_count == 0:
@@ -620,6 +697,18 @@ def _behavioral_penalty(
             penalty += 0.02
         if final_support_backlog >= 26 and customer_turn_indices and support_follow_up_count == 0:
             penalty += 0.02
+        if latest_relevant_board_update is not None and not latest_board_update_quality["has_forecast"]:
+            board_update_quality_penalty += 0.02
+        if latest_relevant_board_update is not None and not latest_board_update_quality["has_asks"]:
+            board_update_quality_penalty += 0.015
+        if required_board_forecast_fields and latest_relevant_board_update is not None:
+            covered_required_fields = len(latest_board_update_quality["covered_required_forecast_fields"])
+            if covered_required_fields == 0:
+                board_update_quality_penalty += 0.025
+            elif covered_required_fields < len(required_board_forecast_fields):
+                board_update_quality_penalty += 0.015
+
+        penalty += board_update_quality_penalty
 
         penalty = _round_score(penalty)
         return penalty, {
@@ -644,6 +733,17 @@ def _behavioral_penalty(
             "market_read_count": market_read_count,
             "repeated_board_update": repeated_board_update,
             "unique_board_summaries": unique_board_summaries,
+            "board_update_quality_penalty": _round_score(board_update_quality_penalty),
+            "required_board_forecast_fields": sorted(required_board_forecast_fields),
+            "latest_board_update_has_summary": latest_board_update_quality["has_summary"],
+            "latest_board_update_has_forecast": latest_board_update_quality["has_forecast"],
+            "latest_board_update_has_asks": latest_board_update_quality["has_asks"],
+            "latest_board_update_covered_required_forecast_fields": latest_board_update_quality[
+                "covered_required_forecast_fields"
+            ],
+            "latest_board_update_missing_required_forecast_fields": latest_board_update_quality[
+                "missing_required_forecast_fields"
+            ],
             "final_major_incidents_open": final_major_incidents_open,
             "final_support_backlog": round(final_support_backlog, 2),
             "final_financing_pressure": round(final_financing_pressure, 4),
@@ -1017,7 +1117,7 @@ def evaluate_dry_run(*, scenario: dict, world_state: dict, trace_evidence: dict[
     evaluator_results = [
         EvaluatorResult(
             evaluator_id="tsb_programmatic_outcome_v1",
-            evaluator_version="0.1.0",
+            evaluator_version="0.1.1",
             status="ok",
             outputs={
                 "component_scores": component_scores,
