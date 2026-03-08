@@ -81,7 +81,7 @@
       "workstream": "corpus-scale",
       "milestone_id": "v0.9.5",
       "priority": "highest",
-      "status": "in_progress",
+      "status": "completed",
       "benchmark_risk": "medium",
       "owner": "core-benchmark",
       "completion_criteria": [
@@ -110,7 +110,7 @@
       "workstream": "corpus-scale",
       "milestone_id": "v0.9.5",
       "priority": "highest",
-      "status": "in_progress",
+      "status": "completed",
       "benchmark_risk": "medium",
       "owner": "core-benchmark",
       "completion_criteria": [
@@ -118,7 +118,7 @@
         "each added family has fresh/test variants",
         "strategy hidden suite remains distinct and valid"
       ],
-      "progress_notes": "Now covers board, product, scale, and gtm; still needs more total volume and depth."
+      "progress_notes": "Now covers board, product, scale, and gtm with valid hidden test and fresh variants across promoted long-horizon families."
     },
     {
       "task_id": "BT-005",
@@ -126,13 +126,21 @@
       "workstream": "calibration",
       "milestone_id": "v0.10.0",
       "priority": "highest",
-      "status": "ready",
+      "status": "in_progress",
       "benchmark_risk": "high",
       "owner": "calibration-taskforce",
       "completion_criteria": [
         "review roster assigned",
         "promoted strategy scenarios reviewed by operators",
         "score-vs-operator disagreements logged"
+      ],
+      "progress_notes": "Wave-002 strategy suite, study manifest, reviewer outreach, and compilation helper now exist; task stays in progress until real operator reviews are collected and disagreements are logged.",
+      "artifacts": [
+        "examples/human_review_wave_002_strategy_suite.json",
+        "examples/operator_human_review_wave_002_manifest.json",
+        "docs/human_review_wave_002.md",
+        "docs/reviewer_outreach_wave_002.md",
+        "scripts/compile_human_review_wave_002.ps1"
       ]
     },
     {

@@ -38,9 +38,9 @@ Success targets:
 
 ## In Progress
 
-- `BT-004` strategy pack expansion
-  - milestone: `v0.9.5`
-  - focus: continue long-horizon additions with balanced track growth after the new scale-finance interaction slice
+- `BT-005` operator calibration wave 002
+  - milestone: `v0.10.0`
+  - focus: execute human review against promoted strategy families added after wave 001, then log score-vs-operator disagreements
 
 ## Completed
 
@@ -56,6 +56,10 @@ Success targets:
   - milestone: `v0.9.5`
   - focus: added seven new hidden `test` scenarios across the operator pack to reach `50` active hidden `test` scenarios benchmark-wide
 
+- `BT-004` strategy pack expansion
+  - milestone: `v0.9.5`
+  - focus: broadened long-horizon coverage across board, product, scale, and GTM with valid hidden `test` and `fresh` variants
+
 - `BT-010` scale-finance interaction strategy family
   - milestone: `v0.9.5`
   - focus: added a new long-horizon scale scenario plus hidden `test` and `fresh` variants, and promoted the strategy pack metadata
@@ -65,10 +69,6 @@ Success targets:
   - focus: added three new hidden `0to1` scenario families plus a new public dev slice, and promoted the coverage pack metadata
 
 ## Ready
-
-- `BT-005` operator calibration wave 002
-  - milestone: `v0.10.0`
-  - focus: run operator review against promoted strategy families
 
 - `BT-006` official evaluation window freeze
   - milestone: `v0.10.0`
@@ -85,7 +85,7 @@ Success targets:
 ## Next up by priority
 
 1. strategy pack depth in product, board, scale, and gtm
-2. calibration execution planning
+2. calibration execution and operator review collection
 3. official evaluation freeze rules
 4. leaderboard operations and contamination workflow
 5. external benchmark adoption materials

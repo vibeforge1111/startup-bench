@@ -57,12 +57,20 @@ Synthetic calibration status:
 - added during pre-human hardening and not yet calibration-reviewed:
   - strategy board financing truth
   - strategy board incident truth
+- queued for human review wave 002:
+  - strategy platform sequencing
+  - strategy product migration sequencing
+  - strategy board product truth
+  - strategy GTM multi-quarter sequencing
+  - strategy scale-finance interaction
 
 Human handoff artifacts now exist:
 
 - [calibration_outcomes.md](/C:/Users/USER/Desktop/startup-bench/docs/calibration_outcomes.md)
 - [human_review_wave_001.md](/C:/Users/USER/Desktop/startup-bench/docs/human_review_wave_001.md)
 - [operator_human_review_wave_001_manifest.json](/C:/Users/USER/Desktop/startup-bench/examples/operator_human_review_wave_001_manifest.json)
+- [human_review_wave_002.md](/C:/Users/USER/Desktop/startup-bench/docs/human_review_wave_002.md)
+- [operator_human_review_wave_002_manifest.json](/C:/Users/USER/Desktop/startup-bench/examples/operator_human_review_wave_002_manifest.json)
 
 ## What Is Done
 

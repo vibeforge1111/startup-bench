@@ -1,0 +1,56 @@
+{
+  "study_version": "0.1.0",
+  "benchmark_version": "0.2.0-draft",
+  "study_id": "operator-human-review-wave-002",
+  "study_title": "Human Review Wave 002",
+  "review_targets": [
+    {
+      "target_id": "human-strategy-wave-002",
+      "suite_path": "examples/human_review_wave_002_strategy_suite.json",
+      "focus": "validate promoted strategy families added after the first human wave, with emphasis on financing truth, sequencing quality, and board-product readiness",
+      "baseline_runner_id": "heuristic_long_horizon_operator",
+      "seed": 1,
+      "max_turns": 6,
+      "required_scenarios": [
+        "hidden_board_financing_truth_test_001",
+        "hidden_board_incident_truth_test_001",
+        "hidden_scale_platform_sequence_test_001",
+        "hidden_product_migration_sequence_test_001",
+        "hidden_board_product_truth_test_001",
+        "hidden_gtm_multi_quarter_sequence_test_001",
+        "hidden_scale_finance_tradeoff_test_001"
+      ]
+    }
+  ],
+  "reviewer_targets": [
+    {
+      "role": "founder_ceo",
+      "functional_domain": "general_management",
+      "target_count": 3,
+      "stage_focus": "series_a_to_growth"
+    },
+    {
+      "role": "vp_product",
+      "functional_domain": "product_growth",
+      "target_count": 2,
+      "stage_focus": "series_a_to_series_c"
+    },
+    {
+      "role": "finance_or_ops_lead",
+      "functional_domain": "finance_operations",
+      "target_count": 3,
+      "stage_focus": "series_a_to_growth"
+    }
+  ],
+  "promotion_gates": {
+    "minimum_reviewers_per_target": 2,
+    "maximum_mean_absolute_rubric_gap": 0.6,
+    "minimum_recommendation_agreement_rate": 0.67,
+    "allow_disagreement_flags": true
+  },
+  "notes": [
+    "This wave exists because promoted strategy families were added after human review wave 001 and should not inherit calibration claims by proximity.",
+    "Disagreements should be logged as evaluator or scenario follow-up, not normalized away to preserve apparent benchmark progress.",
+    "Wave 002 is planning and execution infrastructure only until real operator reviews are collected."
+  ]
+}

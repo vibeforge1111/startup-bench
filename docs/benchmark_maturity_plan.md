@@ -280,6 +280,11 @@ Implementation focus:
 - record disagreements on scenario realism, solvability, and score direction
 - gate pack promotion on calibration completion
 
+Current execution artifact set:
+
+- [operator_human_review_wave_002_manifest.json](/C:/Users/USER/Desktop/startup-bench/examples/operator_human_review_wave_002_manifest.json)
+- [human_review_wave_002.md](/C:/Users/USER/Desktop/startup-bench/docs/human_review_wave_002.md)
+
 ### Workstream 3. Official benchmark operations
 
 Priority: high
