@@ -1,0 +1,168 @@
+{
+  "metadata": {
+    "scenario_id": "hidden_canary_launch_surge_test_001",
+    "scenario_version": "0.1.0",
+    "benchmark_version": "0.2.0-draft",
+    "track": "gtm",
+    "mode": "test",
+    "title": "Canary Launch Surge Trap Under Thin Readiness",
+    "summary": "A hidden canary scenario designed to catch policies that launch by default when demand and trust barely clear thresholds even though onboarding and support readiness are still weak.",
+    "difficulty": "frontier",
+    "authoring_origin": "benchmark_canary",
+    "time_horizon": {
+      "unit": "week",
+      "length": 12
+    },
+    "tags": ["canary", "launch_surge_trap", "overfit_detection", "gtm"]
+  },
+  "initial_state": {
+    "company": {
+      "stage": "series_a",
+      "sector": "b2b_saas",
+      "business_model": "subscription"
+    },
+    "finance": {
+      "cash_usd": 2520000,
+      "monthly_burn_usd": 332000,
+      "monthly_revenue_usd": 247000
+    },
+    "product": {
+      "major_incidents_open": 0,
+      "roadmap_items": 8,
+      "onboarding_quality": 0.53
+    },
+    "customers": {
+      "paying_accounts": 138,
+      "monthly_churn_rate": 0.034,
+      "trust_score": 0.63
+    },
+    "sales": {
+      "pipeline_count": 14,
+      "weighted_pipeline_usd": 912000,
+      "pricing": {
+        "current_price_index": 1.0
+      }
+    },
+    "operations": {
+      "support_backlog": 43,
+      "support_sla_breach_risk": 0.39
+    },
+    "team": {
+      "morale": 0.58,
+      "attrition_risk": 0.41,
+      "bandwidth_load": 0.82,
+      "headcount": 17
+    },
+    "market": {
+      "competitor_pressure": "moderate",
+      "competitor_pressure_index": 0.49,
+      "pricing_pressure_index": 0.35,
+      "demand_index": 0.79,
+      "latest_market_note": "Interest exists for a launch, but onboarding and support readiness still look too thin for an aggressive rollout."
+    },
+    "risk": {
+      "financing_pressure": 0.46,
+      "counterparty_risk": 0.17
+    },
+    "governance": {
+      "board_update_count": 0
+    },
+    "policy": {
+      "max_auto_price_increase_pct": 0.04
+    },
+    "sim": {
+      "current_time": "2026-12-07T09:00:00Z"
+    }
+  },
+  "latent_state": {
+    "true_canary": "launch_by_default_when_thresholds_barely_clear_should_fail",
+    "true_best_pattern": "stabilize_readiness_before_launch"
+  },
+  "observation_surfaces": [
+    {
+      "surface_id": "launch_dashboard",
+      "surface_type": "dashboard",
+      "refresh_policy": "daily",
+      "visible_fields": ["onboarding_quality", "support_backlog", "trust_score", "demand_index"]
+    }
+  ],
+  "tools": [
+    "metrics.query",
+    "metrics.report",
+    "product.roadmap.read",
+    "product.roadmap.write",
+    "product.launch",
+    "ops.support.read",
+    "ops.support.resolve",
+    "research.market.read",
+    "board.read",
+    "board.update",
+    "notes.read",
+    "notes.write",
+    "sim.advance"
+  ],
+  "event_model": {
+    "kind": "seeded_schedule",
+    "primitive_catalog": {
+      "launch_aftershock": {
+        "operations": [
+          { "op": "increment", "path": "operations.support_backlog", "value": 15 },
+          { "op": "increment", "path": "operations.support_sla_breach_risk", "value": 0.11 },
+          { "op": "clamp", "path": "operations.support_sla_breach_risk", "min": 0.0, "max": 1.0 },
+          { "op": "increment", "path": "customers.trust_score", "value": -0.04 },
+          { "op": "clamp", "path": "customers.trust_score", "min": 0.0, "max": 1.0 }
+        ]
+      },
+      "reference_pushback": {
+        "operations": [
+          { "op": "increment", "path": "customers.monthly_churn_rate", "value": 0.006 },
+          { "op": "clamp", "path": "customers.monthly_churn_rate", "min": 0.0, "max": 1.0 },
+          { "op": "increment", "path": "sales.weighted_pipeline_usd", "value": -95000 },
+          { "op": "increment", "path": "product.onboarding_quality", "value": -0.04 },
+          { "op": "clamp", "path": "product.onboarding_quality", "min": 0.0, "max": 1.0 }
+        ]
+      }
+    },
+    "scheduled_events": [
+      {
+        "event_id": "ev_canary_launch_surge_test_001",
+        "at_turn": 2,
+        "primitive_id": "launch_aftershock",
+        "event_type": "launch_aftershock",
+        "visible_message": "The market responded to launch noise, but support demand climbed faster than the team could absorb."
+      },
+      {
+        "event_id": "ev_canary_launch_surge_test_002",
+        "at_turn": 3,
+        "primitive_id": "reference_pushback",
+        "event_type": "reference_pushback",
+        "visible_message": "Early launch accounts hesitated because the path to value still looked rough."
+      }
+    ]
+  },
+  "policy_constraints": [],
+  "terminal_conditions": [
+    {
+      "condition_id": "horizon_end_12_weeks",
+      "kind": "horizon_end"
+    },
+    {
+      "condition_id": "bankruptcy",
+      "kind": "hard_failure"
+    }
+  ],
+  "evaluation": {
+    "outcome_components": [
+      { "component_id": "cash_efficiency", "weight": 0.08, "direction": "maximize" },
+      { "component_id": "revenue_quality", "weight": 0.12, "direction": "maximize" },
+      { "component_id": "customer_health", "weight": 0.28, "direction": "maximize" },
+      { "component_id": "product_health", "weight": 0.24, "direction": "maximize" },
+      { "component_id": "risk_management", "weight": 0.12, "direction": "maximize" },
+      { "component_id": "strategic_coherence", "weight": 0.16, "direction": "maximize" }
+    ],
+    "constraints": [
+      { "constraint_id": "bankruptcy" },
+      { "constraint_id": "severe_trust_breach" }
+    ]
+  }
+}

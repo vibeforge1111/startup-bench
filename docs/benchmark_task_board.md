@@ -44,7 +44,7 @@ Success targets:
 
 - `BT-015` hidden corpus expansion to `75`
   - milestone: `v0.10.0`
-  - focus: continue balanced hidden-pack growth from `63` toward `75` while keeping calibration, canary, and pack-rotation discipline intact
+  - focus: continue balanced hidden-pack growth from `65` toward `75` while keeping calibration, canary, and pack-rotation discipline intact
 
 ## Completed
 
@@ -99,6 +99,10 @@ Success targets:
 - `BT-014` external benchmark adoption pack
   - milestone: `v0.10.0`
   - focus: published the outside-run and reporting guide with explicit non-claims and machine-readable adoption rules
+
+- `BT-017` canary depth batch 002
+  - milestone: `v0.10.0`
+  - focus: added launch-surge and experiment-vanity exploit traps; canary hidden `test` inventory is now `6` and benchmark-wide hidden `test` inventory is `65`
 
 ## Ready
 

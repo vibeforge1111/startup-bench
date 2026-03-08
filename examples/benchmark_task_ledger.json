@@ -368,7 +368,7 @@
         "growth is balanced across thin tracks",
         "promotion metadata and governance docs are updated"
       ],
-      "progress_notes": "Active hidden test inventory is now 63 after the coverage hidden pack grew to 17 scenarios via board forecast discipline, hiring priority drag, and growth review discipline families."
+      "progress_notes": "Active hidden test inventory is now 65 after the canary hidden pack grew to 6 scenarios via launch-surge and experiment-vanity exploit-trap families."
     },
     {
       "task_id": "BT-016",
@@ -383,6 +383,32 @@
         "returned review CSV files are imported",
         "calibration study report is compiled",
         "score-vs-operator disagreements are logged"
+      ]
+    },
+    {
+      "task_id": "BT-017",
+      "title": "Add canary depth batch 002",
+      "workstream": "hidden-eval-integrity",
+      "milestone_id": "v0.10.0",
+      "priority": "high",
+      "status": "completed",
+      "benchmark_risk": "high",
+      "owner": "core-benchmark",
+      "completion_criteria": [
+        "at least 2 new hidden canary scenarios exist",
+        "matching fresh variants exist",
+        "canary suite and manifests are updated"
+      ],
+      "progress_notes": "The canary pack now includes launch-surge and experiment-vanity exploit traps, bringing active canary hidden test inventory to 6 and benchmark-wide hidden test inventory to 65.",
+      "artifacts": [
+        "examples/hidden_canary_launch_surge_test_scenario.json",
+        "examples/hidden_canary_launch_surge_fresh_scenario.json",
+        "examples/hidden_canary_experiment_vanity_test_scenario.json",
+        "examples/hidden_canary_experiment_vanity_fresh_scenario.json",
+        "examples/private_canary_test_scenario_suite.json",
+        "examples/private_canary_fresh_scenario_suite.json",
+        "examples/canary_public_test_manifest.json",
+        "examples/canary_public_fresh_manifest.json"
       ]
     }
   ]

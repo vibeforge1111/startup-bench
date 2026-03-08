@@ -1,7 +1,7 @@
 {
   "suite_version": "0.1.0",
   "benchmark_version": "0.2.0-draft",
-  "scenario_pack_version": "canary-fresh-pack-0.2.0",
+  "scenario_pack_version": "canary-fresh-pack-0.3.0",
   "split": "fresh",
   "scenarios": [
     {
@@ -25,6 +25,18 @@
     {
       "scenario_id": "hidden_canary_renewal_nudge_fresh_001",
       "path": "hidden_canary_renewal_nudge_fresh_scenario.json",
+      "track": "gtm",
+      "mode": "fresh"
+    },
+    {
+      "scenario_id": "hidden_canary_launch_surge_fresh_001",
+      "path": "hidden_canary_launch_surge_fresh_scenario.json",
+      "track": "gtm",
+      "mode": "fresh"
+    },
+    {
+      "scenario_id": "hidden_canary_experiment_vanity_fresh_001",
+      "path": "hidden_canary_experiment_vanity_fresh_scenario.json",
       "track": "gtm",
       "mode": "fresh"
     }

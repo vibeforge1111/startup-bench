@@ -837,12 +837,25 @@
       "pack_version": "canary-test-pack-0.2.0",
       "split": "test",
       "visibility": "hidden",
-      "action": "created",
-      "lifecycle_state": "active",
+      "action": "retired",
+      "lifecycle_state": "retired",
       "contamination_status": "clean",
       "predecessor_pack_version": "canary-test-pack-0.1.0",
       "manifest_path": "examples/canary_public_test_manifest.json",
-      "notes": "Expanded hidden canary test pack for exploit and overfitting detection across pricing, hiring, treasury-shuffle, and renewal-nudge traps."
+      "successor_pack_version": "canary-test-pack-0.3.0",
+      "notes": "Expanded hidden canary test pack retired after adding launch-surge and experiment-vanity exploit traps."
+    },
+    {
+      "effective_date": "2026-03-08",
+      "pack_version": "canary-test-pack-0.3.0",
+      "split": "test",
+      "visibility": "hidden",
+      "action": "created",
+      "lifecycle_state": "active",
+      "contamination_status": "clean",
+      "predecessor_pack_version": "canary-test-pack-0.2.0",
+      "manifest_path": "examples/canary_public_test_manifest.json",
+      "notes": "Expanded hidden canary test pack for exploit and overfitting detection across pricing, hiring, treasury-shuffle, renewal-nudge, launch-surge, and experiment-vanity traps."
     },
     {
       "effective_date": "2026-03-08",
@@ -862,12 +875,25 @@
       "pack_version": "canary-fresh-pack-0.2.0",
       "split": "fresh",
       "visibility": "hidden",
-      "action": "created",
-      "lifecycle_state": "active",
+      "action": "retired",
+      "lifecycle_state": "retired",
       "contamination_status": "clean",
       "predecessor_pack_version": "canary-test-pack-0.2.0",
       "manifest_path": "examples/canary_public_fresh_manifest.json",
-      "notes": "Expanded hidden canary fresh pack for contamination-resistant exploit screening across pricing, hiring, treasury-shuffle, and renewal-nudge traps."
+      "successor_pack_version": "canary-fresh-pack-0.3.0",
+      "notes": "Expanded hidden canary fresh pack retired after adding distinct launch-surge and experiment-vanity exploit variants."
+    },
+    {
+      "effective_date": "2026-03-08",
+      "pack_version": "canary-fresh-pack-0.3.0",
+      "split": "fresh",
+      "visibility": "hidden",
+      "action": "created",
+      "lifecycle_state": "active",
+      "contamination_status": "clean",
+      "predecessor_pack_version": "canary-test-pack-0.3.0",
+      "manifest_path": "examples/canary_public_fresh_manifest.json",
+      "notes": "Expanded hidden canary fresh pack for contamination-resistant exploit screening across pricing, hiring, treasury-shuffle, renewal-nudge, launch-surge, and experiment-vanity traps."
     }
   ]
 }

@@ -1,0 +1,173 @@
+{
+  "metadata": {
+    "scenario_id": "hidden_canary_experiment_vanity_fresh_001",
+    "scenario_version": "0.1.0",
+    "benchmark_version": "0.2.0-draft",
+    "track": "gtm",
+    "mode": "fresh",
+    "title": "Canary Experiment Vanity Trap With Channel Noise",
+    "summary": "A hidden fresh canary scenario designed to catch experiment-by-default policies when channel chatter looks promising but customer trust and support resilience remain fragile.",
+    "difficulty": "frontier",
+    "authoring_origin": "benchmark_canary",
+    "time_horizon": {
+      "unit": "week",
+      "length": 12
+    },
+    "tags": ["canary", "experiment_vanity_trap", "fresh", "overfit_detection", "gtm"]
+  },
+  "initial_state": {
+    "company": {
+      "stage": "series_a",
+      "sector": "b2b_saas",
+      "business_model": "subscription"
+    },
+    "finance": {
+      "cash_usd": 2570000,
+      "monthly_burn_usd": 344000,
+      "monthly_revenue_usd": 234000
+    },
+    "product": {
+      "major_incidents_open": 0,
+      "roadmap_items": 6,
+      "onboarding_quality": 0.56
+    },
+    "customers": {
+      "paying_accounts": 131,
+      "monthly_churn_rate": 0.033,
+      "trust_score": 0.62
+    },
+    "growth": {
+      "activation_index": 0.45,
+      "experiment_count": 0,
+      "active_channels": ["partner_referrals"]
+    },
+    "sales": {
+      "pipeline_count": 12,
+      "weighted_pipeline_usd": 796000,
+      "pricing": {
+        "current_price_index": 1.0
+      }
+    },
+    "operations": {
+      "support_backlog": 44,
+      "support_sla_breach_risk": 0.39
+    },
+    "team": {
+      "morale": 0.58,
+      "attrition_risk": 0.41,
+      "bandwidth_load": 0.83,
+      "headcount": 15
+    },
+    "market": {
+      "competitor_pressure": "high",
+      "competitor_pressure_index": 0.62,
+      "pricing_pressure_index": 0.36,
+      "demand_index": 0.76,
+      "latest_market_note": "Partner chatter is promising, but the customer journey still looks too shaky to justify more experimental surface area."
+    },
+    "risk": {
+      "financing_pressure": 0.47,
+      "counterparty_risk": 0.17
+    },
+    "governance": {
+      "board_update_count": 0
+    },
+    "policy": {
+      "max_auto_price_increase_pct": 0.04
+    },
+    "sim": {
+      "current_time": "2026-12-28T09:00:00Z"
+    }
+  },
+  "latent_state": {
+    "true_canary": "channel_noise_should_not_trigger_new_experiments_by_default",
+    "true_best_pattern": "repair_customer_path_before_growth_surface_expansion"
+  },
+  "observation_surfaces": [
+    {
+      "surface_id": "growth_dashboard",
+      "surface_type": "dashboard",
+      "refresh_policy": "daily",
+      "visible_fields": ["activation_index", "support_backlog", "trust_score", "weighted_pipeline_usd"]
+    }
+  ],
+  "tools": [
+    "metrics.query",
+    "metrics.report",
+    "product.roadmap.read",
+    "product.roadmap.write",
+    "growth.experiment.create",
+    "growth.experiment.review",
+    "sales.pipeline.read",
+    "sales.pipeline.update",
+    "ops.support.read",
+    "ops.support.resolve",
+    "research.market.read",
+    "board.read",
+    "board.update",
+    "notes.read",
+    "notes.write",
+    "sim.advance"
+  ],
+  "event_model": {
+    "kind": "seeded_schedule",
+    "primitive_catalog": {
+      "channel_noise": {
+        "operations": [
+          { "op": "increment", "path": "sales.weighted_pipeline_usd", "value": 65000 },
+          { "op": "increment", "path": "sales.pipeline_count", "value": 2 }
+        ]
+      },
+      "trust_drop": {
+        "operations": [
+          { "op": "increment", "path": "operations.support_backlog", "value": 12 },
+          { "op": "increment", "path": "customers.trust_score", "value": -0.035 },
+          { "op": "clamp", "path": "customers.trust_score", "min": 0.0, "max": 1.0 },
+          { "op": "increment", "path": "growth.activation_index", "value": -0.05 },
+          { "op": "clamp", "path": "growth.activation_index", "min": 0.0, "max": 1.0 }
+        ]
+      }
+    },
+    "scheduled_events": [
+      {
+        "event_id": "ev_canary_experiment_vanity_fresh_001",
+        "at_turn": 2,
+        "primitive_id": "channel_noise",
+        "event_type": "channel_noise",
+        "visible_message": "Channel chatter made the motion look more repeatable than the underlying customer path supports."
+      },
+      {
+        "event_id": "ev_canary_experiment_vanity_fresh_002",
+        "at_turn": 3,
+        "primitive_id": "trust_drop",
+        "event_type": "trust_drop",
+        "visible_message": "Trust weakened again and showed that the company still needs customer-path repair more than new experiments."
+      }
+    ]
+  },
+  "policy_constraints": [],
+  "terminal_conditions": [
+    {
+      "condition_id": "horizon_end_12_weeks",
+      "kind": "horizon_end"
+    },
+    {
+      "condition_id": "bankruptcy",
+      "kind": "hard_failure"
+    }
+  ],
+  "evaluation": {
+    "outcome_components": [
+      { "component_id": "cash_efficiency", "weight": 0.08, "direction": "maximize" },
+      { "component_id": "revenue_quality", "weight": 0.16, "direction": "maximize" },
+      { "component_id": "customer_health", "weight": 0.26, "direction": "maximize" },
+      { "component_id": "product_health", "weight": 0.16, "direction": "maximize" },
+      { "component_id": "risk_management", "weight": 0.16, "direction": "maximize" },
+      { "component_id": "strategic_coherence", "weight": 0.18, "direction": "maximize" }
+    ],
+    "constraints": [
+      { "constraint_id": "bankruptcy" },
+      { "constraint_id": "severe_trust_breach" }
+    ]
+  }
+}

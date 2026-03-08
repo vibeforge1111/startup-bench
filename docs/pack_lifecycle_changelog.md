@@ -54,13 +54,13 @@ This document is the public-facing summary of hidden-pack promotions, fresh-pack
   - public manifest: [coverage_public_fresh_manifest.json](/C:/Users/USER/Desktop/startup-bench/examples/coverage_public_fresh_manifest.json)
   - status: active, clean
 
-- `canary-test-pack-0.2.0`
+- `canary-test-pack-0.3.0`
   - split: `test`
   - visibility: `hidden`
   - public manifest: [canary_public_test_manifest.json](/C:/Users/USER/Desktop/startup-bench/examples/canary_public_test_manifest.json)
   - status: active, clean
 
-- `canary-fresh-pack-0.2.0`
+- `canary-fresh-pack-0.3.0`
   - split: `fresh`
   - visibility: `hidden`
   - public manifest: [canary_public_fresh_manifest.json](/C:/Users/USER/Desktop/startup-bench/examples/canary_public_fresh_manifest.json)
@@ -385,8 +385,20 @@ This document is the public-facing summary of hidden-pack promotions, fresh-pack
   - status: retired
   - successor: `canary-test-pack-0.2.0`
 
+- `canary-test-pack-0.2.0`
+  - split: `test`
+  - visibility: `hidden`
+  - status: retired
+  - successor: `canary-test-pack-0.3.0`
+
 - `canary-fresh-pack-0.1.0`
   - split: `fresh`
   - visibility: `hidden`
   - status: retired
   - successor: `canary-fresh-pack-0.2.0`
+
+- `canary-fresh-pack-0.2.0`
+  - split: `fresh`
+  - visibility: `hidden`
+  - status: retired
+  - successor: `canary-fresh-pack-0.3.0`

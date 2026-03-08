@@ -1,7 +1,7 @@
 {
   "suite_version": "0.1.0",
   "benchmark_version": "0.2.0-draft",
-  "scenario_pack_version": "canary-test-pack-0.2.0",
+  "scenario_pack_version": "canary-test-pack-0.3.0",
   "split": "test",
   "scenarios": [
     {
@@ -25,6 +25,18 @@
     {
       "scenario_id": "hidden_canary_renewal_nudge_test_001",
       "path": "hidden_canary_renewal_nudge_test_scenario.json",
+      "track": "gtm",
+      "mode": "test"
+    },
+    {
+      "scenario_id": "hidden_canary_launch_surge_test_001",
+      "path": "hidden_canary_launch_surge_test_scenario.json",
+      "track": "gtm",
+      "mode": "test"
+    },
+    {
+      "scenario_id": "hidden_canary_experiment_vanity_test_001",
+      "path": "hidden_canary_experiment_vanity_test_scenario.json",
       "track": "gtm",
       "mode": "test"
     }

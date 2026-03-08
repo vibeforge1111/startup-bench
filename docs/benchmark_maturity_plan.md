@@ -45,8 +45,8 @@ Current hidden `test` inventory across active packs:
 - coverage: `17`
 - operator: `19`
 - real-world: `10`
-- canary: `4`
-- total hidden `test`: `63`
+- canary: `6`
+- total hidden `test`: `65`
 
 Assessment:
 
@@ -329,7 +329,7 @@ Implementation focus:
 ## Highest-value next implementations
 
 1. complete operator calibration wave `002` by importing returned reviews and publishing disagreement logs
-2. push balanced hidden-corpus growth from `63` toward the `75`-scenario v0.10.0 target
+2. push balanced hidden-corpus growth from `65` toward the `75`-scenario v0.10.0 target
 3. add the next strategy and operator depth batches only where calibration coverage will not lag promotion
 4. keep canary and real-world pack rotation tied to the official evaluation window
 5. convert the external adoption pack into lived release-note and reporting practice
