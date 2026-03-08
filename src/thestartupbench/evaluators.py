@@ -426,6 +426,60 @@ def _score_board_update_artifact(
     }
 
 
+def _extract_incident_response_arguments(turns: list[dict], *, start_turn_index: int = 0) -> list[dict[str, Any]]:
+    responses: list[dict[str, Any]] = []
+    for index, turn in enumerate(turns):
+        if index < start_turn_index:
+            continue
+        for action in turn.get("actions", []):
+            if action.get("tool_name") != "ops.incident.respond":
+                continue
+            arguments = action.get("arguments", {})
+            if isinstance(arguments, dict):
+                responses.append(arguments)
+            else:
+                responses.append({})
+    return responses
+
+
+def _score_customer_comms_plan(
+    plan: dict[str, Any] | None,
+    *,
+    required_fields: set[str],
+) -> dict[str, Any]:
+    if not plan:
+        return {
+            "has_plan": False,
+            "covered_required_fields": [],
+            "missing_required_fields": sorted(required_fields),
+        }
+
+    covered_required_fields: list[str] = []
+    for field in sorted(required_fields):
+        value = plan.get(field)
+        if field == "summary" and isinstance(value, str) and value.strip():
+            covered_required_fields.append(field)
+        elif field == "delivery_channels" and isinstance(value, list) and any(
+            isinstance(item, str) and item.strip() for item in value
+        ):
+            covered_required_fields.append(field)
+        elif field == "affected_segments" and isinstance(value, list) and any(
+            isinstance(item, str) and item.strip() for item in value
+        ):
+            covered_required_fields.append(field)
+        elif field == "support_path" and isinstance(value, str) and value.strip():
+            covered_required_fields.append(field)
+        elif field == "next_update_hours" and isinstance(value, (int, float)) and float(value) > 0:
+            covered_required_fields.append(field)
+
+    missing_required_fields = [field for field in sorted(required_fields) if field not in covered_required_fields]
+    return {
+        "has_plan": True,
+        "covered_required_fields": covered_required_fields,
+        "missing_required_fields": missing_required_fields,
+    }
+
+
 def _behavioral_penalty(
     *,
     world_state: dict,
@@ -816,6 +870,30 @@ def _behavioral_penalty(
         monthly_burn_usd = float(finance_state.get("monthly_burn_usd", 0.0))
         liquid_cash_usd = float(finance_state.get("liquid_cash_usd", finance_state.get("cash_usd", 0.0)))
         liquid_cash_months = liquid_cash_usd / monthly_burn_usd if monthly_burn_usd > 0 else 0.0
+        final_support_backlog = float(world_state.get("operations", {}).get("support_backlog", 0.0))
+        required_customer_comms_fields: set[str] = set()
+        if security_crisis_detected:
+            required_customer_comms_fields.update({"summary", "delivery_channels", "next_update_hours"})
+            if final_support_backlog >= 30:
+                required_customer_comms_fields.add("support_path")
+            if final_trust <= 0.72:
+                required_customer_comms_fields.add("affected_segments")
+
+        relevant_incident_responses = _extract_incident_response_arguments(
+            turns,
+            start_turn_index=(first_crisis_turn + 1) if first_crisis_turn is not None else 0,
+        )
+        latest_relevant_incident_response = relevant_incident_responses[-1] if relevant_incident_responses else None
+        latest_customer_comms_plan = None
+        if latest_relevant_incident_response is not None:
+            candidate_plan = latest_relevant_incident_response.get("customer_comms_plan")
+            if isinstance(candidate_plan, dict):
+                latest_customer_comms_plan = candidate_plan
+        latest_customer_comms_quality = _score_customer_comms_plan(
+            latest_customer_comms_plan,
+            required_fields=required_customer_comms_fields,
+        )
+        customer_comms_quality_penalty = 0.0
 
         penalty = 0.0
         if security_crisis_detected and product_response_count == 0:
@@ -842,6 +920,16 @@ def _behavioral_penalty(
             penalty += 0.04
         if liquidity_crisis_detected and pipeline_actions_during_liquidity_crisis >= 1 and finance_follow_up_count == 0:
             penalty += 0.03
+        if security_crisis_detected and latest_relevant_incident_response is not None and not latest_customer_comms_quality["has_plan"]:
+            customer_comms_quality_penalty += 0.02
+        if security_crisis_detected and latest_customer_comms_quality["has_plan"]:
+            covered_required_fields = len(latest_customer_comms_quality["covered_required_fields"])
+            if covered_required_fields == 0:
+                customer_comms_quality_penalty += 0.025
+            elif covered_required_fields < len(required_customer_comms_fields):
+                customer_comms_quality_penalty += 0.015
+
+        penalty += customer_comms_quality_penalty
 
         penalty = _round_score(penalty)
         return penalty, {
@@ -859,6 +947,11 @@ def _behavioral_penalty(
             "unresolved_hiring_pressure": False,
             "trust_recovery": round(trust_recovery, 4),
             "product_response_count": product_response_count,
+            "customer_comms_quality_penalty": _round_score(customer_comms_quality_penalty),
+            "required_customer_comms_fields": sorted(required_customer_comms_fields),
+            "latest_customer_comms_has_plan": latest_customer_comms_quality["has_plan"],
+            "latest_customer_comms_covered_required_fields": latest_customer_comms_quality["covered_required_fields"],
+            "latest_customer_comms_missing_required_fields": latest_customer_comms_quality["missing_required_fields"],
             "board_update_after_crisis_count": board_update_after_crisis_count,
             "legal_follow_up_count": legal_follow_up_count,
             "finance_follow_up_count": finance_follow_up_count,
@@ -888,6 +981,11 @@ def _behavioral_penalty(
         "unresolved_hiring_pressure": False,
         "trust_recovery": 0.0,
         "product_response_count": 0,
+        "customer_comms_quality_penalty": 0.0,
+        "required_customer_comms_fields": [],
+        "latest_customer_comms_has_plan": False,
+        "latest_customer_comms_covered_required_fields": [],
+        "latest_customer_comms_missing_required_fields": [],
         "board_update_after_crisis_count": 0,
         "legal_follow_up_count": 0,
         "finance_follow_up_count": 0,
@@ -1117,7 +1215,7 @@ def evaluate_dry_run(*, scenario: dict, world_state: dict, trace_evidence: dict[
     evaluator_results = [
         EvaluatorResult(
             evaluator_id="tsb_programmatic_outcome_v1",
-            evaluator_version="0.1.1",
+            evaluator_version="0.1.2",
             status="ok",
             outputs={
                 "component_scores": component_scores,

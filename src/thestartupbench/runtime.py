@@ -763,6 +763,7 @@ def execute_tool_call(session: RuntimeSession, tool_call: dict) -> dict:
             "trust_recovery": float(arguments.get("trust_recovery", 0.05)),
             "churn_reduction": float(arguments.get("churn_reduction", 0.008)),
             "monthly_burn_increase_usd": float(arguments.get("monthly_burn_increase_usd", 12000)),
+            "customer_comms_plan": arguments.get("customer_comms_plan"),
         }
         apply_operations(
             session.world_state,
@@ -792,6 +793,7 @@ def execute_tool_call(session: RuntimeSession, tool_call: dict) -> dict:
                     "monthly_churn_rate": customers.get("monthly_churn_rate"),
                     "monthly_burn_usd": finance.get("monthly_burn_usd"),
                     "incident_response_count": operations.get("incident_response_count", 0),
+                    "customer_comms_plan": response_plan.get("customer_comms_plan"),
                 }
             },
             state_delta_summary={
@@ -800,6 +802,9 @@ def execute_tool_call(session: RuntimeSession, tool_call: dict) -> dict:
                 "customers.monthly_churn_rate": customers.get("monthly_churn_rate"),
                 "finance.monthly_burn_usd": finance.get("monthly_burn_usd"),
                 "operations.incident_response_count": operations.get("incident_response_count", 0),
+                "operations.last_incident_response.customer_comms_plan": "updated"
+                if response_plan.get("customer_comms_plan") is not None
+                else "unchanged",
             },
         )
 

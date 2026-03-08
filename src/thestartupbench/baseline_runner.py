@@ -170,6 +170,41 @@ def _people_org_proposal_payload(session: RuntimeSession) -> dict:
     }
 
 
+def _incident_customer_comms_plan(session: RuntimeSession) -> dict:
+    customers = session.world_state.get("customers", {})
+    operations = session.world_state.get("operations", {})
+    product = session.world_state.get("product", {})
+    risk = session.world_state.get("risk", {})
+
+    trust_score = float(customers.get("trust_score", 1.0))
+    support_backlog = float(operations.get("support_backlog", 0.0))
+    major_incidents_open = int(product.get("major_incidents_open", 0))
+    financing_pressure = float(risk.get("financing_pressure", 0.0))
+
+    summary = "Acknowledge the incident directly, explain the immediate containment path, and commit to a concrete next customer update."
+    affected_segments = ["enterprise", "mid_market"]
+    delivery_channels = ["status_page", "email"]
+    support_path = "route priority accounts through the incident queue and customer success follow-up"
+    next_update_hours = 6
+
+    if trust_score < 0.62 or support_backlog >= 42:
+        summary = "Use direct customer-facing communication that explains the issue, current mitigation, and how affected accounts will get support without waiting for a board narrative reset."
+        next_update_hours = 4
+    elif major_incidents_open == 0 and financing_pressure > 0.8:
+        summary = "Keep customer messaging factual and narrow so financial stress does not distort the external incident response."
+        affected_segments = ["enterprise"]
+        delivery_channels = ["email", "account_outreach"]
+        next_update_hours = 8
+
+    return {
+        "summary": summary,
+        "affected_segments": affected_segments,
+        "delivery_channels": delivery_channels,
+        "support_path": support_path,
+        "next_update_hours": next_update_hours,
+    }
+
+
 def _market_launch_payload(session: RuntimeSession) -> dict:
     product = session.world_state.get("product", {})
     customers = session.world_state.get("customers", {})
@@ -457,6 +492,7 @@ def _heuristic_resilient_actions(session: RuntimeSession, *, turn_index: int) ->
                     "trust_recovery": 0.06,
                     "churn_reduction": 0.01,
                     "monthly_burn_increase_usd": 9000,
+                    "customer_comms_plan": _incident_customer_comms_plan(session),
                 },
             }
         )
@@ -982,6 +1018,7 @@ def _heuristic_liquidity_actions(session: RuntimeSession, *, turn_index: int) ->
                     "trust_recovery": 0.04,
                     "churn_reduction": 0.006,
                     "monthly_burn_increase_usd": 7000,
+                    "customer_comms_plan": _incident_customer_comms_plan(session),
                 },
             }
         )
@@ -1127,6 +1164,7 @@ def _heuristic_governance_actions(session: RuntimeSession, *, turn_index: int) -
                     "trust_recovery": 0.05,
                     "churn_reduction": 0.006,
                     "monthly_burn_increase_usd": 7000,
+                    "customer_comms_plan": _incident_customer_comms_plan(session),
                 },
             }
         )
@@ -1378,6 +1416,7 @@ def _heuristic_long_horizon_actions(session: RuntimeSession, *, turn_index: int)
                     "trust_recovery": 0.05,
                     "churn_reduction": 0.008,
                     "monthly_burn_increase_usd": 8500,
+                    "customer_comms_plan": _incident_customer_comms_plan(session),
                 },
             }
         )
