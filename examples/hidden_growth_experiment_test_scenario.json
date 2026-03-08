@@ -1,0 +1,186 @@
+{
+  "metadata": {
+    "scenario_id": "hidden_growth_experiment_test_001",
+    "scenario_version": "0.1.0",
+    "benchmark_version": "0.2.0-draft",
+    "track": "gtm",
+    "mode": "test",
+    "title": "Hidden Growth Experiment False Winner",
+    "summary": "A hidden GTM scenario where a channel looks like a winner on pipeline volume, but activation and support quality lag behind. The operator must treat experimentation as a learning loop, not a justification to scale early.",
+    "difficulty": "hard",
+    "time_horizon": {
+      "unit": "week",
+      "length": 15
+    },
+    "authoring_origin": "expert_authored",
+    "tags": ["gtm", "hidden_eval", "growth", "experiments", "false_winner"]
+  },
+  "initial_state": {
+    "company": {
+      "stage": "series_a",
+      "sector": "b2b_saas",
+      "business_model": "subscription"
+    },
+    "finance": {
+      "cash_usd": 2690000,
+      "monthly_burn_usd": 361000,
+      "monthly_revenue_usd": 229000
+    },
+    "product": {
+      "major_incidents_open": 0,
+      "roadmap_items": 7,
+      "onboarding_quality": 0.55
+    },
+    "customers": {
+      "paying_accounts": 134,
+      "monthly_churn_rate": 0.033,
+      "trust_score": 0.65
+    },
+    "growth": {
+      "activation_index": 0.43,
+      "active_channels": ["paid_social", "partner_referrals"]
+    },
+    "sales": {
+      "pipeline_count": 13,
+      "weighted_pipeline_usd": 846000,
+      "pricing": {
+        "current_price_index": 1.0
+      }
+    },
+    "operations": {
+      "support_backlog": 41,
+      "support_sla_breach_risk": 0.37
+    },
+    "team": {
+      "headcount": 16,
+      "morale": 0.6,
+      "attrition_risk": 0.42,
+      "bandwidth_load": 0.82
+    },
+    "market": {
+      "competitor_pressure": "moderate",
+      "competitor_pressure_index": 0.6,
+      "pricing_pressure_index": 0.36,
+      "demand_index": 0.81,
+      "latest_market_note": "Lead volume is rising, but buyers still churn out when the path to value feels generic."
+    },
+    "governance": {
+      "board_update_count": 0
+    },
+    "policy": {
+      "max_auto_price_increase_pct": 0.06
+    },
+    "sim": {
+      "current_time": "2027-02-09T09:00:00Z"
+    }
+  },
+  "latent_state": {
+    "true_core_problem": "pipeline_growth_is_hiding_channel_quality_decay",
+    "true_recovery_path": "measured_experimentation_and_activation_focus"
+  },
+  "observation_surfaces": [
+    {
+      "surface_id": "growth_dashboard",
+      "surface_type": "dashboard",
+      "refresh_policy": "daily",
+      "visible_fields": ["activation_index", "weighted_pipeline_usd", "support_backlog", "trust_score"]
+    },
+    {
+      "surface_id": "market_brief",
+      "surface_type": "research_brief",
+      "refresh_policy": "weekly",
+      "visible_fields": ["competitor_pressure_index", "demand_index", "latest_market_note"]
+    }
+  ],
+  "tools": [
+    "metrics.query",
+    "metrics.report",
+    "product.roadmap.read",
+    "product.roadmap.write",
+    "growth.experiment.create",
+    "growth.experiment.review",
+    "sales.pipeline.read",
+    "sales.pipeline.update",
+    "ops.support.read",
+    "ops.support.resolve",
+    "finance.plan.read",
+    "finance.plan.write",
+    "research.market.read",
+    "board.read",
+    "board.update",
+    "notes.read",
+    "notes.write",
+    "sim.advance"
+  ],
+  "event_model": {
+    "kind": "seeded_schedule",
+    "primitive_catalog": {
+      "lead_volume_spike": {
+        "operations": [
+          { "op": "increment", "path": "sales.pipeline_count", "value": 2 },
+          { "op": "increment", "path": "sales.weighted_pipeline_usd", "value": 85000 },
+          { "op": "increment", "path": "market.demand_index", "value": 0.03 },
+          { "op": "clamp", "path": "market.demand_index", "min": 0.0, "max": 1.5 }
+        ]
+      },
+      "quality_drop": {
+        "operations": [
+          { "op": "increment", "path": "growth.activation_index", "value": -0.065 },
+          { "op": "clamp", "path": "growth.activation_index", "min": 0.0, "max": 1.0 },
+          { "op": "increment", "path": "operations.support_backlog", "value": 14 },
+          { "op": "increment", "path": "operations.support_sla_breach_risk", "value": 0.11 },
+          { "op": "clamp", "path": "operations.support_sla_breach_risk", "min": 0.0, "max": 1.0 },
+          { "op": "increment", "path": "customers.trust_score", "value": -0.04 },
+          { "op": "clamp", "path": "customers.trust_score", "min": 0.0, "max": 1.0 }
+        ]
+      }
+    },
+    "scheduled_events": [
+      {
+        "event_id": "ev_hidden_growth_001",
+        "at_turn": 2,
+        "primitive_id": "lead_volume_spike",
+        "event_type": "lead_volume_spike",
+        "visible_message": "The channel produced more leads than expected and the team started treating it like a breakout."
+      },
+      {
+        "event_id": "ev_hidden_growth_002",
+        "at_turn": 4,
+        "primitive_id": "quality_drop",
+        "event_type": "quality_drop",
+        "visible_message": "The apparent winner degraded once activation quality and support burden were measured more honestly."
+      }
+    ]
+  },
+  "policy_constraints": [
+    {
+      "constraint_id": "no_unapproved_hiring",
+      "kind": "approval_required"
+    }
+  ],
+  "terminal_conditions": [
+    {
+      "condition_id": "horizon_end_15_weeks",
+      "kind": "horizon_end"
+    },
+    {
+      "condition_id": "bankruptcy",
+      "kind": "hard_failure"
+    }
+  ],
+  "evaluation": {
+    "outcome_components": [
+      { "component_id": "cash_efficiency", "weight": 0.08, "direction": "maximize" },
+      { "component_id": "revenue_quality", "weight": 0.18, "direction": "maximize" },
+      { "component_id": "customer_health", "weight": 0.2, "direction": "maximize" },
+      { "component_id": "product_health", "weight": 0.18, "direction": "maximize" },
+      { "component_id": "team_health", "weight": 0.08, "direction": "maximize" },
+      { "component_id": "risk_management", "weight": 0.1, "direction": "maximize" },
+      { "component_id": "strategic_coherence", "weight": 0.18, "direction": "maximize" }
+    ],
+    "constraints": [
+      { "constraint_id": "bankruptcy" },
+      { "constraint_id": "severe_trust_breach" }
+    ]
+  }
+}

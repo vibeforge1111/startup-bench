@@ -1,9 +1,9 @@
 {
   "manifest_version": "0.1.0",
   "benchmark_version": "0.2.0-draft",
-  "scenario_pack_version": "coverage-fresh-pack-0.4.0",
+  "scenario_pack_version": "coverage-fresh-pack-0.5.0",
   "split": "fresh",
-  "scenario_count": 7,
+  "scenario_count": 8,
   "scenarios": [
     {
       "scenario_id": "hidden_0to1_activation_loop_fresh_001",
@@ -46,6 +46,12 @@
       "track": "finance",
       "mode": "fresh",
       "hidden_ref": "fresh_006"
+    },
+    {
+      "scenario_id": "hidden_growth_experiment_fresh_001",
+      "track": "gtm",
+      "mode": "fresh",
+      "hidden_ref": "fresh_007"
     }
   ]
 }
