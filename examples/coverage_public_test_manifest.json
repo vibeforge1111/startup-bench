@@ -1,9 +1,9 @@
 {
   "manifest_version": "0.1.0",
   "benchmark_version": "0.2.0-draft",
-  "scenario_pack_version": "coverage-test-pack-0.5.0",
+  "scenario_pack_version": "coverage-test-pack-0.6.0",
   "split": "test",
-  "scenario_count": 8,
+  "scenario_count": 9,
   "scenarios": [
     {
       "scenario_id": "hidden_0to1_activation_loop_test_001",
@@ -52,6 +52,12 @@
       "track": "gtm",
       "mode": "test",
       "hidden_ref": "test_007"
+    },
+    {
+      "scenario_id": "hidden_board_update_quality_test_001",
+      "track": "board",
+      "mode": "test",
+      "hidden_ref": "test_008"
     }
   ]
 }

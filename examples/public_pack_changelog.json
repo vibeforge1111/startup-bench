@@ -424,12 +424,25 @@
       "pack_version": "coverage-test-pack-0.5.0",
       "split": "test",
       "visibility": "hidden",
-      "action": "created",
-      "lifecycle_state": "active",
+      "action": "retired",
+      "lifecycle_state": "retired",
       "contamination_status": "clean",
       "predecessor_pack_version": "coverage-test-pack-0.4.0",
       "manifest_path": "examples/coverage_public_test_manifest.json",
-      "notes": "Expanded hidden coverage test pack spanning PMF, finance, people leadership, launch-distribution, and growth-experimentation coverage."
+      "successor_pack_version": "coverage-test-pack-0.6.0",
+      "notes": "Expanded hidden coverage test pack retired after adding a dedicated board-communication slice."
+    },
+    {
+      "effective_date": "2026-03-08",
+      "pack_version": "coverage-test-pack-0.6.0",
+      "split": "test",
+      "visibility": "hidden",
+      "action": "created",
+      "lifecycle_state": "active",
+      "contamination_status": "clean",
+      "predecessor_pack_version": "coverage-test-pack-0.5.0",
+      "manifest_path": "examples/coverage_public_test_manifest.json",
+      "notes": "Expanded hidden coverage test pack spanning PMF, finance, people leadership, launch-distribution, growth-experimentation, and dedicated board-communication coverage."
     },
     {
       "effective_date": "2026-03-08",
@@ -449,12 +462,25 @@
       "pack_version": "coverage-fresh-pack-0.5.0",
       "split": "fresh",
       "visibility": "hidden",
-      "action": "created",
-      "lifecycle_state": "active",
+      "action": "retired",
+      "lifecycle_state": "retired",
       "contamination_status": "clean",
       "predecessor_pack_version": "coverage-test-pack-0.5.0",
       "manifest_path": "examples/coverage_public_fresh_manifest.json",
-      "notes": "Expanded hidden coverage fresh pack for contamination-resistant evaluation across PMF, finance, people leadership, launch-distribution, and growth-experimentation coverage."
+      "successor_pack_version": "coverage-fresh-pack-0.6.0",
+      "notes": "Expanded hidden coverage fresh pack retired after adding a distinct board-communication variant."
+    },
+    {
+      "effective_date": "2026-03-08",
+      "pack_version": "coverage-fresh-pack-0.6.0",
+      "split": "fresh",
+      "visibility": "hidden",
+      "action": "created",
+      "lifecycle_state": "active",
+      "contamination_status": "clean",
+      "predecessor_pack_version": "coverage-test-pack-0.6.0",
+      "manifest_path": "examples/coverage_public_fresh_manifest.json",
+      "notes": "Expanded hidden coverage fresh pack for contamination-resistant evaluation across PMF, finance, people leadership, launch-distribution, growth-experimentation, and dedicated board-communication coverage."
     },
     {
       "effective_date": "2026-03-07",

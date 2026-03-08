@@ -1,7 +1,7 @@
 {
   "suite_version": "0.1.0",
   "benchmark_version": "0.2.0-draft",
-  "scenario_pack_version": "coverage-fresh-pack-0.5.0",
+  "scenario_pack_version": "coverage-fresh-pack-0.6.0",
   "split": "fresh",
   "scenarios": [
     {
@@ -50,6 +50,12 @@
       "scenario_id": "hidden_growth_experiment_fresh_001",
       "path": "hidden_growth_experiment_fresh_scenario.json",
       "track": "gtm",
+      "mode": "fresh"
+    },
+    {
+      "scenario_id": "hidden_board_update_quality_fresh_001",
+      "path": "hidden_board_update_quality_fresh_scenario.json",
+      "track": "board",
       "mode": "fresh"
     }
   ]
