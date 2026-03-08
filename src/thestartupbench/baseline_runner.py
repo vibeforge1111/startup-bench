@@ -170,6 +170,108 @@ def _people_org_proposal_payload(session: RuntimeSession) -> dict:
     }
 
 
+def _market_launch_payload(session: RuntimeSession) -> dict:
+    product = session.world_state.get("product", {})
+    customers = session.world_state.get("customers", {})
+    operations = session.world_state.get("operations", {})
+    market = session.world_state.get("market", {})
+    growth = session.world_state.get("growth", {})
+
+    onboarding_quality = float(product.get("onboarding_quality", 0.6))
+    support_backlog = float(operations.get("support_backlog", 0.0))
+    trust_score = float(customers.get("trust_score", 0.7))
+    demand_index = float(market.get("demand_index", 0.8))
+    activation_index = float(growth.get("activation_index", onboarding_quality))
+
+    launch_name = "Focused partner onboarding launch"
+    monthly_revenue_delta_usd = 10000.0
+    pipeline_count_delta = 1
+    weighted_pipeline_usd_delta = 60000.0
+    demand_index_delta = 0.03
+    trust_delta = 0.01
+    onboarding_quality_delta = 0.04
+    support_backlog_delta = 4.0
+    monthly_burn_change_usd = 6000.0
+    activation_delta = 0.05
+
+    if support_backlog > 48 or trust_score < 0.66:
+        launch_name = "Customer-safe staged launch"
+        weighted_pipeline_usd_delta = 45000.0
+        demand_index_delta = 0.02
+        trust_delta = 0.015
+        support_backlog_delta = 2.0
+        activation_delta = 0.04
+    elif onboarding_quality < 0.56 or activation_index < 0.46:
+        launch_name = "Guided onboarding release"
+        monthly_revenue_delta_usd = 8000.0
+        weighted_pipeline_usd_delta = 50000.0
+        onboarding_quality_delta = 0.05
+        activation_delta = 0.06
+    elif demand_index > 0.88:
+        launch_name = "Partner-ready expansion launch"
+        monthly_revenue_delta_usd = 13000.0
+        weighted_pipeline_usd_delta = 75000.0
+        support_backlog_delta = 5.0
+
+    return {
+        "launch_name": launch_name,
+        "monthly_revenue_delta_usd": monthly_revenue_delta_usd,
+        "pipeline_count_delta": pipeline_count_delta,
+        "weighted_pipeline_usd_delta": weighted_pipeline_usd_delta,
+        "demand_index_delta": demand_index_delta,
+        "trust_delta": trust_delta,
+        "onboarding_quality_delta": onboarding_quality_delta,
+        "support_backlog_delta": support_backlog_delta,
+        "monthly_burn_change_usd": monthly_burn_change_usd,
+        "activation_delta": activation_delta,
+    }
+
+
+def _market_growth_experiment_payload(session: RuntimeSession) -> dict:
+    market = session.world_state.get("market", {})
+    operations = session.world_state.get("operations", {})
+    product = session.world_state.get("product", {})
+    growth = session.world_state.get("growth", {})
+
+    competitor_pressure = float(market.get("competitor_pressure_index", market.get("competitor_pressure", 0.0)))
+    support_backlog = float(operations.get("support_backlog", 0.0))
+    onboarding_quality = float(product.get("onboarding_quality", 0.6))
+    activation_index = float(growth.get("activation_index", onboarding_quality))
+
+    experiment_name = "Partner enablement test"
+    channel = "partner_enablement"
+    budget_change_monthly_burn_usd = 3500.0
+    weighted_pipeline_usd_delta = 30000.0
+    demand_index_delta = 0.02
+    trust_delta = 0.0
+    activation_delta = 0.04
+
+    if support_backlog > 42 or onboarding_quality < 0.58:
+        experiment_name = "Guided onboarding activation test"
+        channel = "guided_onboarding"
+        weighted_pipeline_usd_delta = 22000.0
+        trust_delta = 0.01
+        activation_delta = 0.05
+    elif competitor_pressure > 0.62 and activation_index >= 0.48:
+        experiment_name = "Competitive partner proof test"
+        channel = "partner_referrals"
+        budget_change_monthly_burn_usd = 4200.0
+        weighted_pipeline_usd_delta = 36000.0
+        demand_index_delta = 0.025
+
+    experiment_count = int(growth.get("experiment_count", 0))
+    return {
+        "experiment_id": f"market_exp_{experiment_count + 1:03d}",
+        "experiment_name": experiment_name,
+        "channel": channel,
+        "budget_change_monthly_burn_usd": budget_change_monthly_burn_usd,
+        "weighted_pipeline_usd_delta": weighted_pipeline_usd_delta,
+        "demand_index_delta": demand_index_delta,
+        "trust_delta": trust_delta,
+        "activation_delta": activation_delta,
+    }
+
+
 def _heuristic_b2b_actions(session: RuntimeSession, *, turn_index: int) -> list[dict]:
     finance = session.world_state.get("finance", {})
     product = session.world_state.get("product", {})
@@ -504,9 +606,12 @@ def _heuristic_market_aware_actions(session: RuntimeSession, *, turn_index: int)
     sales = session.world_state.get("sales", {})
     governance = session.world_state.get("governance", {})
     market = session.world_state.get("market", {})
+    operations = session.world_state.get("operations", {})
     team = session.world_state.get("team", {})
     hiring = team.get("hiring", {})
     risk = session.world_state.get("risk", {})
+    growth = session.world_state.get("growth", {})
+    available_tools = set(session.scenario.get("tools", []))
     actions: list[dict] = []
     action_index = 0
 
@@ -585,6 +690,49 @@ def _heuristic_market_aware_actions(session: RuntimeSession, *, turn_index: int)
         )
         action_index += 1
 
+    if "growth.experiment.review" in available_tools and int(growth.get("experiment_count", 0)) > 0:
+        actions.append(
+            {
+                "tool_name": "growth.experiment.review",
+                "request_id": _next_request_id(turn_index, action_index),
+                "arguments": {},
+            }
+        )
+        action_index += 1
+
+    if (
+        "growth.experiment.create" in available_tools
+        and int(growth.get("experiment_count", 0)) == 0
+        and (
+            float(growth.get("activation_index", product.get("onboarding_quality", 0.0))) < 0.56
+            or competitor_pressure > 0.55
+            or float(operations.get("support_backlog", 0.0)) > 38
+        )
+    ):
+        actions.append(
+            {
+                "tool_name": "growth.experiment.create",
+                "request_id": _next_request_id(turn_index, action_index),
+                "arguments": _market_growth_experiment_payload(session),
+            }
+        )
+        action_index += 1
+
+    if (
+        "product.launch" in available_tools
+        and not product.get("last_launch")
+        and demand_index > 0.76
+        and float(customers.get("trust_score", 0.0)) > 0.62
+    ):
+        actions.append(
+            {
+                "tool_name": "product.launch",
+                "request_id": _next_request_id(turn_index, action_index),
+                "arguments": _market_launch_payload(session),
+            }
+        )
+        action_index += 1
+
     if int(hiring.get("open_roles", team.get("open_roles", 0))) > 0 and float(team.get("bandwidth_load", 0.0)) > 0.76:
         actions.append(
             {
@@ -600,6 +748,24 @@ def _heuristic_market_aware_actions(session: RuntimeSession, *, turn_index: int)
                     "bandwidth_load_delta": -0.05 if int(hiring.get("offers_out", 0)) >= 1 else -0.01,
                     "support_backlog_delta": -3 if int(hiring.get("offers_out", 0)) >= 1 else 0,
                     "onboarding_quality_delta": 0.012 if int(hiring.get("offers_out", 0)) >= 1 else 0.0,
+                },
+            }
+        )
+        action_index += 1
+
+    if "ops.support.resolve" in available_tools and (
+        float(operations.get("support_backlog", 0.0)) > 36 or float(operations.get("support_sla_breach_risk", 0.0)) > 0.36
+    ):
+        actions.append(
+            {
+                "tool_name": "ops.support.resolve",
+                "request_id": _next_request_id(turn_index, action_index),
+                "arguments": {
+                    "backlog_reduction": 14,
+                    "sla_risk_reduction": 0.14,
+                    "trust_recovery": 0.025,
+                    "churn_reduction": 0.004,
+                    "monthly_burn_increase_usd": 5500,
                 },
             }
         )
