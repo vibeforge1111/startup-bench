@@ -195,6 +195,146 @@ def _score_customer_health(world_state: dict) -> tuple[float, dict]:
     return score, details
 
 
+def _score_product_health(world_state: dict) -> tuple[float, dict]:
+    product = world_state.get("product", {})
+    operations = world_state.get("operations", {})
+    growth = world_state.get("growth", {})
+    customers = world_state.get("customers", {})
+
+    onboarding_quality = float(product.get("onboarding_quality", 0.5))
+    major_incidents_open = int(product.get("major_incidents_open", 0))
+    roadmap_items = float(product.get("roadmap_items", 0))
+    support_sla_breach_risk = float(operations.get("support_sla_breach_risk", 0.0))
+    activation_index = float(growth.get("activation_index", onboarding_quality))
+    trust_score = float(customers.get("trust_score", 0.7))
+
+    onboarding_component = _clamp(onboarding_quality)
+    reliability_component = 1.0 if major_incidents_open == 0 else _clamp(1.0 - (major_incidents_open / 3.0))
+    roadmap_focus_component = _clamp(1.0 - max(0.0, roadmap_items - 4.0) / 8.0)
+    support_component = _clamp(1.0 - support_sla_breach_risk)
+    activation_component = _clamp(activation_index)
+    trust_component = _clamp(trust_score)
+
+    score = _round_score(
+        onboarding_component * 0.26
+        + reliability_component * 0.24
+        + roadmap_focus_component * 0.12
+        + support_component * 0.14
+        + activation_component * 0.16
+        + trust_component * 0.08
+    )
+    details = {
+        "onboarding_quality": round(onboarding_quality, 4),
+        "major_incidents_open": major_incidents_open,
+        "roadmap_items": round(roadmap_items, 2),
+        "support_sla_breach_risk": round(support_sla_breach_risk, 4),
+        "activation_index": round(activation_index, 4),
+        "trust_score": round(trust_score, 4),
+        "onboarding_component_score": _round_score(onboarding_component),
+        "reliability_component_score": _round_score(reliability_component),
+        "roadmap_focus_component_score": _round_score(roadmap_focus_component),
+        "support_component_score": _round_score(support_component),
+        "activation_component_score": _round_score(activation_component),
+        "trust_component_score": _round_score(trust_component),
+    }
+    return score, details
+
+
+def _score_team_health(world_state: dict) -> tuple[float, dict]:
+    team = world_state.get("team", {})
+    hiring = team.get("hiring", {})
+
+    morale = float(team.get("morale", 0.7))
+    attrition_risk = float(team.get("attrition_risk", 0.2))
+    bandwidth_load = float(team.get("bandwidth_load", 0.7))
+    delivery_capacity = float(team.get("delivery_capacity_index", 0.6))
+    hiring_capacity = float(hiring.get("hiring_capacity_index", 0.0))
+    open_roles = int(hiring.get("open_roles", team.get("open_roles", 0)))
+    headcount = int(team.get("headcount", 0))
+
+    morale_component = _clamp(morale)
+    attrition_component = _clamp(1.0 - attrition_risk)
+    bandwidth_component = _clamp(1.0 - (bandwidth_load / 1.2))
+    delivery_component = _clamp(delivery_capacity)
+    hiring_component = _clamp(hiring_capacity)
+    open_role_burden = _clamp(1.0 - (open_roles / max(headcount + open_roles, 1)))
+
+    score = _round_score(
+        morale_component * 0.28
+        + attrition_component * 0.24
+        + bandwidth_component * 0.18
+        + delivery_component * 0.18
+        + hiring_component * 0.07
+        + open_role_burden * 0.05
+    )
+    details = {
+        "morale": round(morale, 4),
+        "attrition_risk": round(attrition_risk, 4),
+        "bandwidth_load": round(bandwidth_load, 4),
+        "delivery_capacity_index": round(delivery_capacity, 4),
+        "hiring_capacity_index": round(hiring_capacity, 4),
+        "open_roles": open_roles,
+        "headcount": headcount,
+        "morale_component_score": _round_score(morale_component),
+        "attrition_component_score": _round_score(attrition_component),
+        "bandwidth_component_score": _round_score(bandwidth_component),
+        "delivery_component_score": _round_score(delivery_component),
+        "hiring_component_score": _round_score(hiring_component),
+        "open_role_burden_score": _round_score(open_role_burden),
+    }
+    return score, details
+
+
+def _score_risk_management(world_state: dict) -> tuple[float, dict]:
+    finance = world_state.get("finance", {})
+    risk = world_state.get("risk", {})
+    product = world_state.get("product", {})
+    operations = world_state.get("operations", {})
+
+    financing_pressure = float(risk.get("financing_pressure", 0.0))
+    regulatory_pressure = float(risk.get("regulatory_pressure", 0.0))
+    counterparty_risk = float(risk.get("counterparty_risk", 0.0))
+    treasury_concentration = float(finance.get("treasury_concentration", 0.0))
+    major_incidents_open = int(product.get("major_incidents_open", 0))
+    active_legal_matters = int(risk.get("active_legal_matters", 0))
+    support_sla_breach_risk = float(operations.get("support_sla_breach_risk", 0.0))
+
+    financing_component = _clamp(1.0 - financing_pressure)
+    regulatory_component = _clamp(1.0 - regulatory_pressure)
+    counterparty_component = _clamp(1.0 - counterparty_risk)
+    concentration_component = _clamp(1.0 - (treasury_concentration / 1.2))
+    incident_component = 1.0 if major_incidents_open == 0 else _clamp(1.0 - (major_incidents_open / 3.0))
+    legal_component = _clamp(1.0 - (active_legal_matters / 4.0))
+    support_component = _clamp(1.0 - support_sla_breach_risk)
+
+    score = _round_score(
+        financing_component * 0.26
+        + regulatory_component * 0.22
+        + counterparty_component * 0.16
+        + concentration_component * 0.12
+        + incident_component * 0.12
+        + legal_component * 0.06
+        + support_component * 0.06
+    )
+    details = {
+        "financing_pressure": round(financing_pressure, 4),
+        "regulatory_pressure": round(regulatory_pressure, 4),
+        "counterparty_risk": round(counterparty_risk, 4),
+        "treasury_concentration": round(treasury_concentration, 4),
+        "major_incidents_open": major_incidents_open,
+        "active_legal_matters": active_legal_matters,
+        "support_sla_breach_risk": round(support_sla_breach_risk, 4),
+        "financing_component_score": _round_score(financing_component),
+        "regulatory_component_score": _round_score(regulatory_component),
+        "counterparty_component_score": _round_score(counterparty_component),
+        "concentration_component_score": _round_score(concentration_component),
+        "incident_component_score": _round_score(incident_component),
+        "legal_component_score": _round_score(legal_component),
+        "support_component_score": _round_score(support_component),
+    }
+    return score, details
+
+
 def _extract_alerts(turn: dict) -> list[str]:
     alerts: list[str] = []
     for action in turn.get("actions", []):
@@ -821,6 +961,9 @@ def evaluate_dry_run(*, scenario: dict, world_state: dict, trace_evidence: dict[
     cash_efficiency, cash_details = _score_cash_efficiency(world_state)
     revenue_quality, revenue_details = _score_revenue_quality(world_state)
     customer_health, customer_details = _score_customer_health(world_state)
+    product_health, product_details = _score_product_health(world_state)
+    team_health, team_details = _score_team_health(world_state)
+    risk_management, risk_details = _score_risk_management(world_state)
     strategic_coherence, strategy_details = _score_strategic_coherence(
         world_state,
         scenario=scenario,
@@ -831,6 +974,9 @@ def evaluate_dry_run(*, scenario: dict, world_state: dict, trace_evidence: dict[
         "cash_efficiency": cash_efficiency,
         "revenue_quality": revenue_quality,
         "customer_health": customer_health,
+        "product_health": product_health,
+        "team_health": team_health,
+        "risk_management": risk_management,
         "strategic_coherence": strategic_coherence,
     }
     outcome_score = _round_score(
@@ -879,6 +1025,9 @@ def evaluate_dry_run(*, scenario: dict, world_state: dict, trace_evidence: dict[
                     "cash_efficiency": cash_details,
                     "revenue_quality": revenue_details,
                     "customer_health": customer_details,
+                    "product_health": product_details,
+                    "team_health": team_details,
+                    "risk_management": risk_details,
                     "strategic_coherence": strategy_details,
                 },
             },
