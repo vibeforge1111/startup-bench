@@ -16,6 +16,7 @@ CRISIS_SCENARIO_PATH = REPO_ROOT / "examples" / "minimal_crisis_scenario.json"
 GTM_SCENARIO_PATH = REPO_ROOT / "examples" / "minimal_gtm_scenario.json"
 PRODUCT_SCENARIO_PATH = REPO_ROOT / "examples" / "minimal_product_scenario.json"
 PMF_SCENARIO_PATH = REPO_ROOT / "examples" / "minimal_0to1_false_signal_scenario.json"
+FINANCE_BRIDGE_SCENARIO_PATH = REPO_ROOT / "examples" / "minimal_finance_bridge_terms_scenario.json"
 BOARD_STRATEGY_SCENARIO_PATH = REPO_ROOT / "examples" / "hidden_board_stakeholder_conflict_test_scenario.json"
 BREX_TREASURY_SCENARIO_PATH = REPO_ROOT / "examples" / "real_world_brex_svb_treasury_shock_test_scenario.json"
 
@@ -180,6 +181,29 @@ class BaselineRunnerTests(unittest.TestCase):
             if action["tool_name"] == "board.read"
         ]
         self.assertGreaterEqual(len(governance_reads), 2)
+
+    def test_liquidity_baseline_outperforms_b2b_on_bridge_terms_finance_scenario(self) -> None:
+        b2b_style = run_baseline(
+            scenario_path=FINANCE_BRIDGE_SCENARIO_PATH,
+            baseline_id="heuristic_b2b_operator",
+            seed=7,
+            max_turns=5,
+        )
+        liquidity = run_baseline(
+            scenario_path=FINANCE_BRIDGE_SCENARIO_PATH,
+            baseline_id="heuristic_liquidity_operator",
+            seed=7,
+            max_turns=5,
+        )
+
+        self.assertGreater(
+            liquidity["score_report"]["scenario_score"],
+            b2b_style["score_report"]["scenario_score"],
+        )
+        liquidity_finance = liquidity["trace"]["state_snapshots"][-1]["state"].get("finance", {})
+        b2b_finance = b2b_style["trace"]["state_snapshots"][-1]["state"].get("finance", {})
+        self.assertIn("last_plan_update", liquidity_finance)
+        self.assertGreater(liquidity_finance.get("runway_weeks", 0), b2b_finance.get("runway_weeks", 0))
 
     def test_liquidity_baseline_outperforms_resilient_on_treasury_shock(self) -> None:
         resilient = run_baseline(
