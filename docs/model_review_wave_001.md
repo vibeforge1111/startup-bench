@@ -83,6 +83,26 @@ Hard rules:
 - return valid JSON only
 - use the assigned reviewer id for that lane
 
+## Provider-specific prompt packets
+
+If you want ready-to-send packets with the reviewer id already filled in:
+
+```powershell
+powershell -File scripts/export_model_review_wave_001_provider_packets.ps1 -Provider claude
+powershell -File scripts/export_model_review_wave_001_provider_packets.ps1 -Provider gemini
+```
+
+This emits:
+
+- `tmp_model_review_wave_001_provider_packets/claude/provider_prompt_export.json`
+- `tmp_model_review_wave_001_provider_packets/gemini/provider_prompt_export.json`
+
+Each provider folder contains one subfolder per scenario with:
+
+- `prompt.md`
+- `context.json`
+- `review_template.json`
+
 ## After model outputs come back
 
 Save each raw response under a directory like:
