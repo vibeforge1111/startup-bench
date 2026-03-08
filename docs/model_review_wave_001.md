@@ -103,6 +103,19 @@ Each provider folder contains one subfolder per scenario with:
 - `context.json`
 - `review_template.json`
 
+If you want one flat copy-paste file per provider per scenario:
+
+```powershell
+powershell -File scripts/export_model_review_wave_001_share_messages.ps1
+```
+
+This emits:
+
+- `tmp_model_review_wave_001_share_messages/claude/share_prompt_export.json`
+- `tmp_model_review_wave_001_share_messages/gemini/share_prompt_export.json`
+
+Each generated `*.txt` file is intended to be pasted into the target model as a single message.
+
 ## After model outputs come back
 
 Save each raw response under a directory like:
