@@ -40,8 +40,8 @@ Please review independently:
 - if you think the benchmark is rewarding the wrong thing, say so directly
 
 Your files:
-- Instructions: C:\Users\USER\Desktop\startup-bench\tmp_human_wave_002\founder_002\review_instructions.md
-- Form: C:\Users\USER\Desktop\startup-bench\tmp_human_wave_002\founder_002\review_form.csv
+- Instructions: C:\Users\USER\Desktop\startup-bench\tmp_human_wave_002\founder_001\review_instructions.md
+- Form: C:\Users\USER\Desktop\startup-bench\tmp_human_wave_002\founder_001\review_form.csv
 
 Return:
 - the completed `review_form.csv`
@@ -77,8 +77,8 @@ Please review independently:
 - if a run looks passive, benchmark-gamed, or operationally unserious, say so directly
 
 Your files:
-- Instructions: C:\Users\USER\Desktop\startup-bench\tmp_human_wave_002\ops_002\review_instructions.md
-- Form: C:\Users\USER\Desktop\startup-bench\tmp_human_wave_002\ops_002\review_form.csv
+- Instructions: C:\Users\USER\Desktop\startup-bench\tmp_human_wave_002\ops_001\review_instructions.md
+- Form: C:\Users\USER\Desktop\startup-bench\tmp_human_wave_002\ops_001\review_form.csv
 
 Return:
 - the completed `review_form.csv`
@@ -114,8 +114,8 @@ Please review independently:
 - if a scenario feels unrealistic or benchmark-gameable, note that directly
 
 Your files:
-- Instructions: C:\Users\USER\Desktop\startup-bench\tmp_human_wave_002\product_growth_002\review_instructions.md
-- Form: C:\Users\USER\Desktop\startup-bench\tmp_human_wave_002\product_growth_002\review_form.csv
+- Instructions: C:\Users\USER\Desktop\startup-bench\tmp_human_wave_002\product_001\review_instructions.md
+- Form: C:\Users\USER\Desktop\startup-bench\tmp_human_wave_002\product_001\review_form.csv
 
 Return:
 - the completed `review_form.csv`

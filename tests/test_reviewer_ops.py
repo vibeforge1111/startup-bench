@@ -17,6 +17,7 @@ from thestartupbench.validation import validate_artifact_file
 REPO_ROOT = Path(__file__).resolve().parents[1]
 EXAMPLES_DIR = REPO_ROOT / "examples"
 STUDY_MANIFEST_PATH = EXAMPLES_DIR / "operator_calibration_study_manifest.json"
+HUMAN_WAVE_002_MANIFEST_PATH = EXAMPLES_DIR / "operator_human_review_wave_002_manifest.json"
 ROSTER_PATH = EXAMPLES_DIR / "reviewer_roster_template.csv"
 
 
@@ -100,6 +101,28 @@ class ReviewerOpsTests(unittest.TestCase):
             self.assertEqual(review["notes"]["strengths"], ["Protected trust", "Stayed disciplined"])
             validation = validate_artifact_file(artifact_type="operator-review", path=review_path)
             self.assertTrue(validation.ok)
+
+    def test_wave_002_assignment_prefers_requested_reviewer_mix(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            temp_dir = Path(tmp_dir)
+            run_dir = temp_dir / "run"
+            assignment_dir = temp_dir / "assignments"
+            run_calibration_study(
+                study_manifest_path=HUMAN_WAVE_002_MANIFEST_PATH,
+                output_dir=run_dir,
+            )
+            result = assign_reviewer_taskforce(
+                study_manifest_path=HUMAN_WAVE_002_MANIFEST_PATH,
+                study_run_dir=run_dir,
+                roster_path=ROSTER_PATH,
+                output_dir=assignment_dir,
+            )
+
+            self.assertTrue(result["validation"]["ok"])
+            assignments = result["assignment_manifest"]["assignments"]
+            self.assertEqual(len(assignments), 3)
+            reviewer_ids = {assignment["reviewer_id"] for assignment in assignments}
+            self.assertEqual(reviewer_ids, {"founder_001", "product_001", "ops_001"})
 
 
 if __name__ == "__main__":

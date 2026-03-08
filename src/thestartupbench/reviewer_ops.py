@@ -95,24 +95,79 @@ def assign_reviewer_taskforce(
     assignment_rows: list[dict[str, object]] = []
     reviewer_cursor = 0
 
-    def pick_reviewers(target_count: int) -> list[dict[str, str]]:
-        selected: list[dict[str, str]] = []
+    def _candidate_priority(
+        reviewer: dict[str, str],
+        *,
+        preferred_role: str,
+        preferred_domain: str,
+    ) -> tuple[int, int]:
+        role = reviewer.get("role", "")
+        domain = reviewer.get("functional_domain", "")
+        if preferred_role and role == preferred_role and preferred_domain and domain == preferred_domain:
+            return (0, 0)
+        if preferred_role and role == preferred_role:
+            return (1, 0)
+        if preferred_domain and domain == preferred_domain:
+            return (2, 0)
+        return (3, 0)
+
+    def pick_reviewer(
+        *,
+        selected_ids: set[str],
+        preferred_role: str = "",
+        preferred_domain: str = "",
+    ) -> dict[str, str] | None:
         nonlocal reviewer_cursor
-        max_iterations = len(active_reviewers) * max(1, target_count)
-        iterations = 0
-        while len(selected) < target_count and iterations < max_iterations:
-            reviewer = active_reviewers[reviewer_cursor % len(active_reviewers)]
-            reviewer_cursor += 1
-            iterations += 1
-            if reviewer["reviewer_id"] in {item["reviewer_id"] for item in selected}:
-                continue
-            selected.append(reviewer)
-        return selected
+        if not active_reviewers:
+            return None
+        ordered_reviewers = [
+            active_reviewers[(reviewer_cursor + offset) % len(active_reviewers)]
+            for offset in range(len(active_reviewers))
+        ]
+        candidates = [
+            reviewer
+            for reviewer in ordered_reviewers
+            if reviewer["reviewer_id"] not in selected_ids
+        ]
+        if not candidates:
+            return None
+        candidates.sort(
+            key=lambda reviewer: _candidate_priority(
+                reviewer,
+                preferred_role=preferred_role,
+                preferred_domain=preferred_domain,
+            )
+        )
+        reviewer = candidates[0]
+        reviewer_cursor = (active_reviewers.index(reviewer) + 1) % len(active_reviewers)
+        return reviewer
 
     for target_run in study_run["target_runs"]:
         target = target_lookup[target_run["target_id"]]
         requested_reviewers = int(manifest["promotion_gates"]["minimum_reviewers_per_target"])
-        selected_reviewers = pick_reviewers(requested_reviewers)
+        selected_reviewers: list[dict[str, str]] = []
+        selected_ids: set[str] = set()
+        for reviewer_target in manifest.get("reviewer_targets", []):
+            target_count = int(reviewer_target.get("target_count", 0) or 0)
+            if target_count <= 0:
+                continue
+            reviewer = pick_reviewer(
+                selected_ids=selected_ids,
+                preferred_role=reviewer_target.get("role", ""),
+                preferred_domain=reviewer_target.get("functional_domain", ""),
+            )
+            if reviewer is None:
+                continue
+            selected_reviewers.append(reviewer)
+            selected_ids.add(reviewer["reviewer_id"])
+
+        while len(selected_reviewers) < requested_reviewers:
+            reviewer = pick_reviewer(selected_ids=selected_ids)
+            if reviewer is None:
+                break
+            selected_reviewers.append(reviewer)
+            selected_ids.add(reviewer["reviewer_id"])
+
         review_packet_path = Path(target_run["review_packet_path"])
         review_packet = load_json(review_packet_path)
         for reviewer in selected_reviewers:
