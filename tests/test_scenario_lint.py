@@ -27,6 +27,7 @@ PRODUCT_MIGRATION_SEQUENCE_SCENARIO_PATH = REPO_ROOT / "examples" / "minimal_pro
 BOARD_PRODUCT_TRUTH_SCENARIO_PATH = REPO_ROOT / "examples" / "minimal_board_product_truth_scenario.json"
 GTM_SEQUENCING_SCENARIO_PATH = REPO_ROOT / "examples" / "minimal_gtm_sequencing_scenario.json"
 SCALE_FINANCE_TRADEOFF_SCENARIO_PATH = REPO_ROOT / "examples" / "minimal_scale_finance_tradeoff_scenario.json"
+ZERO_TO_ONE_REPOSITIONING_SCENARIO_PATH = REPO_ROOT / "examples" / "minimal_0to1_repositioning_scenario.json"
 
 
 class ScenarioLintTests(unittest.TestCase):
@@ -137,6 +138,13 @@ class ScenarioLintTests(unittest.TestCase):
 
     def test_scale_finance_tradeoff_scenario_passes_lint(self) -> None:
         scenario = load_scenario(SCALE_FINANCE_TRADEOFF_SCENARIO_PATH)
+        result = lint_scenario_instance(scenario)
+
+        self.assertTrue(result.ok)
+        self.assertEqual(result.issues, [])
+
+    def test_zero_to_one_repositioning_scenario_passes_lint(self) -> None:
+        scenario = load_scenario(ZERO_TO_ONE_REPOSITIONING_SCENARIO_PATH)
         result = lint_scenario_instance(scenario)
 
         self.assertTrue(result.ok)

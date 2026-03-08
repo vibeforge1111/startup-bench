@@ -165,6 +165,14 @@ class ValidationTests(unittest.TestCase):
         self.assertTrue(result.ok)
         self.assertEqual(result.issues, [])
 
+    def test_zero_to_one_repositioning_scenario_example_validates(self) -> None:
+        result = validate_artifact_file(
+            artifact_type="scenario",
+            path=REPO_ROOT / "examples" / "minimal_0to1_repositioning_scenario.json",
+        )
+        self.assertTrue(result.ok)
+        self.assertEqual(result.issues, [])
+
     def test_finance_scenario_example_validates(self) -> None:
         result = validate_artifact_file(
             artifact_type="scenario",

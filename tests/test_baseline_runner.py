@@ -16,6 +16,7 @@ CRISIS_SCENARIO_PATH = REPO_ROOT / "examples" / "minimal_crisis_scenario.json"
 GTM_SCENARIO_PATH = REPO_ROOT / "examples" / "minimal_gtm_scenario.json"
 PRODUCT_SCENARIO_PATH = REPO_ROOT / "examples" / "minimal_product_scenario.json"
 PMF_SCENARIO_PATH = REPO_ROOT / "examples" / "minimal_0to1_false_signal_scenario.json"
+ZERO_TO_ONE_REPOSITIONING_SCENARIO_PATH = REPO_ROOT / "examples" / "minimal_0to1_repositioning_scenario.json"
 FINANCE_BRIDGE_SCENARIO_PATH = REPO_ROOT / "examples" / "minimal_finance_bridge_terms_scenario.json"
 FINANCE_FUNDRAISE_RESET_SCENARIO_PATH = REPO_ROOT / "examples" / "minimal_finance_fundraise_reset_scenario.json"
 PEOPLE_LEADERSHIP_SCENARIO_PATH = REPO_ROOT / "examples" / "minimal_people_leadership_scenario.json"
@@ -142,6 +143,38 @@ class BaselineRunnerTests(unittest.TestCase):
         )
         final_state = market_aware["trace"]["state_snapshots"][-1]["state"]
         self.assertGreaterEqual(final_state.get("market", {}).get("market_reads_count", 0), 1)
+
+    def test_market_aware_baseline_runs_experiment_loop_on_zero_to_one_repositioning(self) -> None:
+        dry_result = run_dry_scenario(ZERO_TO_ONE_REPOSITIONING_SCENARIO_PATH, seed=29)
+        market_aware = run_baseline(
+            scenario_path=ZERO_TO_ONE_REPOSITIONING_SCENARIO_PATH,
+            baseline_id="heuristic_market_aware_operator",
+            seed=29,
+            max_turns=6,
+        )
+
+        self.assertGreater(
+            market_aware["score_report"]["scenario_score"],
+            dry_result["score_report"]["scenario_score"],
+        )
+
+        experiment_creates = [
+            action
+            for turn in market_aware["trace"]["turns"]
+            for action in turn["actions"]
+            if action["tool_name"] == "growth.experiment.create"
+        ]
+        experiment_reviews = [
+            action
+            for turn in market_aware["trace"]["turns"]
+            for action in turn["actions"]
+            if action["tool_name"] == "growth.experiment.review"
+        ]
+
+        self.assertGreaterEqual(len(experiment_creates), 1)
+        self.assertGreaterEqual(len(experiment_reviews), 1)
+        final_state = market_aware["trace"]["state_snapshots"][-1]["state"]
+        self.assertGreaterEqual(final_state.get("growth", {}).get("experiment_count", 0), 1)
 
     def test_long_horizon_baseline_board_updates_are_state_aware_on_board_track(self) -> None:
         result = run_baseline(
