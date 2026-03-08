@@ -222,6 +222,27 @@ class BaselineRunnerTests(unittest.TestCase):
         final_state = long_horizon["trace"]["state_snapshots"][-1]["state"]
         self.assertGreaterEqual(final_state.get("team", {}).get("org_changes_count", 0), 1)
 
+    def test_long_horizon_baseline_uses_org_proposal_on_people_leadership_scenario(self) -> None:
+        result = run_baseline(
+            scenario_path=PEOPLE_LEADERSHIP_SCENARIO_PATH,
+            baseline_id="heuristic_long_horizon_operator",
+            seed=11,
+            max_turns=6,
+        )
+
+        org_proposals = [
+            action
+            for turn in result["trace"]["turns"]
+            for action in turn["actions"]
+            if action["tool_name"] == "people.org.propose"
+        ]
+
+        self.assertGreaterEqual(len(org_proposals), 1)
+        self.assertIn(org_proposals[0]["arguments"]["target_function"], {"customer_ops", "product", "operations"})
+        self.assertTrue(org_proposals[0]["arguments"]["summary"])
+        final_state = result["trace"]["state_snapshots"][-1]["state"]
+        self.assertGreaterEqual(final_state.get("team", {}).get("org_proposal_count", 0), 1)
+
     def test_liquidity_baseline_outperforms_resilient_on_treasury_shock(self) -> None:
         resilient = run_baseline(
             scenario_path=BREX_TREASURY_SCENARIO_PATH,
