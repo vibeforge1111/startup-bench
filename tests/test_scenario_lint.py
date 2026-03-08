@@ -16,6 +16,7 @@ PMF_SCENARIO_PATH = REPO_ROOT / "examples" / "minimal_0to1_pmf_search_scenario.j
 FALSE_SIGNAL_SCENARIO_PATH = REPO_ROOT / "examples" / "minimal_0to1_false_signal_scenario.json"
 FINANCE_BRIDGE_SCENARIO_PATH = REPO_ROOT / "examples" / "minimal_finance_bridge_terms_scenario.json"
 PEOPLE_LEADERSHIP_SCENARIO_PATH = REPO_ROOT / "examples" / "minimal_people_leadership_scenario.json"
+LAUNCH_DISTRIBUTION_SCENARIO_PATH = REPO_ROOT / "examples" / "minimal_launch_distribution_scenario.json"
 
 
 class ScenarioLintTests(unittest.TestCase):
@@ -49,6 +50,13 @@ class ScenarioLintTests(unittest.TestCase):
 
     def test_people_leadership_scenario_passes_lint(self) -> None:
         scenario = load_scenario(PEOPLE_LEADERSHIP_SCENARIO_PATH)
+        result = lint_scenario_instance(scenario)
+
+        self.assertTrue(result.ok)
+        self.assertEqual(result.issues, [])
+
+    def test_launch_distribution_scenario_passes_lint(self) -> None:
+        scenario = load_scenario(LAUNCH_DISTRIBUTION_SCENARIO_PATH)
         result = lint_scenario_instance(scenario)
 
         self.assertTrue(result.ok)

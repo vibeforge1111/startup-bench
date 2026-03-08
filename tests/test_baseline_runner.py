@@ -18,6 +18,7 @@ PRODUCT_SCENARIO_PATH = REPO_ROOT / "examples" / "minimal_product_scenario.json"
 PMF_SCENARIO_PATH = REPO_ROOT / "examples" / "minimal_0to1_false_signal_scenario.json"
 FINANCE_BRIDGE_SCENARIO_PATH = REPO_ROOT / "examples" / "minimal_finance_bridge_terms_scenario.json"
 PEOPLE_LEADERSHIP_SCENARIO_PATH = REPO_ROOT / "examples" / "minimal_people_leadership_scenario.json"
+LAUNCH_DISTRIBUTION_SCENARIO_PATH = REPO_ROOT / "examples" / "minimal_launch_distribution_scenario.json"
 BOARD_STRATEGY_SCENARIO_PATH = REPO_ROOT / "examples" / "hidden_board_stakeholder_conflict_test_scenario.json"
 BREX_TREASURY_SCENARIO_PATH = REPO_ROOT / "examples" / "real_world_brex_svb_treasury_shock_test_scenario.json"
 
@@ -221,6 +222,49 @@ class BaselineRunnerTests(unittest.TestCase):
         )
         final_state = long_horizon["trace"]["state_snapshots"][-1]["state"]
         self.assertGreaterEqual(final_state.get("team", {}).get("org_changes_count", 0), 1)
+
+    def test_market_aware_baseline_improves_on_dry_run_for_launch_distribution_scenario(self) -> None:
+        dry_result = run_dry_scenario(LAUNCH_DISTRIBUTION_SCENARIO_PATH, seed=19)
+        market_aware = run_baseline(
+            scenario_path=LAUNCH_DISTRIBUTION_SCENARIO_PATH,
+            baseline_id="heuristic_market_aware_operator",
+            seed=19,
+            max_turns=6,
+        )
+
+        self.assertGreater(
+            market_aware["score_report"]["scenario_score"],
+            dry_result["score_report"]["scenario_score"],
+        )
+        final_state = market_aware["trace"]["state_snapshots"][-1]["state"]
+        self.assertGreaterEqual(final_state.get("product", {}).get("launch_count", 0), 1)
+        self.assertGreaterEqual(final_state.get("growth", {}).get("experiment_count", 0), 1)
+
+    def test_market_aware_baseline_uses_launch_and_experiment_tools_on_launch_distribution_scenario(self) -> None:
+        result = run_baseline(
+            scenario_path=LAUNCH_DISTRIBUTION_SCENARIO_PATH,
+            baseline_id="heuristic_market_aware_operator",
+            seed=19,
+            max_turns=6,
+        )
+
+        launches = [
+            action
+            for turn in result["trace"]["turns"]
+            for action in turn["actions"]
+            if action["tool_name"] == "product.launch"
+        ]
+        experiments = [
+            action
+            for turn in result["trace"]["turns"]
+            for action in turn["actions"]
+            if action["tool_name"] == "growth.experiment.create"
+        ]
+
+        self.assertGreaterEqual(len(launches), 1)
+        self.assertGreaterEqual(len(experiments), 1)
+        self.assertTrue(launches[0]["arguments"]["launch_name"])
+        self.assertTrue(experiments[0]["arguments"]["experiment_name"])
 
     def test_long_horizon_baseline_uses_org_proposal_on_people_leadership_scenario(self) -> None:
         result = run_baseline(
