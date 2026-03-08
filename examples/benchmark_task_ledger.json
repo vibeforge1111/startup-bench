@@ -1,11 +1,11 @@
 {
   "ledger_version": "0.1.0",
   "benchmark_version": "0.2.0-draft",
-  "last_updated": "2026-03-08",
+  "last_updated": "2026-03-09",
   "milestones": [
     {
       "milestone_id": "v0.9.5",
-      "status": "completed",
+      "status": "in_progress",
       "objective": "Stabilize TheStartupBench as a serious internal benchmark candidate.",
       "success_targets": [
         "hidden test inventory >= 50",
@@ -44,7 +44,7 @@
       "workstream": "benchmark-operations",
       "milestone_id": "v0.9.5",
       "priority": "high",
-      "status": "completed",
+      "status": "in_progress",
       "benchmark_risk": "low",
       "owner": "core-benchmark",
       "completion_criteria": [
@@ -360,7 +360,7 @@
       "workstream": "corpus-scale",
       "milestone_id": "v0.10.0",
       "priority": "highest",
-      "status": "in_progress",
+      "status": "completed",
       "benchmark_risk": "high",
       "owner": "core-benchmark",
       "completion_criteria": [
@@ -518,6 +518,46 @@
         "examples/canary_public_test_manifest.json",
         "examples/canary_public_fresh_manifest.json"
       ]
+    },
+    {
+      "task_id": "BT-022",
+      "title": "Launch model review wave 001",
+      "workstream": "calibration",
+      "milestone_id": "v0.10.0",
+      "priority": "high",
+      "status": "completed",
+      "benchmark_risk": "medium",
+      "owner": "core-benchmark",
+      "completion_criteria": [
+        "a synthetic model review manifest exists",
+        "Codex, Claude, and Gemini prompt bundles can be exported",
+        "launcher and compile helpers exist"
+      ],
+      "progress_notes": "Model review wave 001 now exists as a synthetic shadow lane over the promoted strategy family, with a dedicated manifest, docs, launcher, compile helper, and prompt-bundle export path for Codex, Claude, and Gemini.",
+      "artifacts": [
+        "examples/operator_model_review_wave_001_manifest.json",
+        "docs/model_review_wave_001.md",
+        "scripts/launch_model_review_wave_001.ps1",
+        "scripts/compile_model_review_wave_001.ps1",
+        "docs/model_reviewer_panel.md",
+        "src/thestartupbench/model_reviewer_ops.py"
+      ]
+    },
+    {
+      "task_id": "BT-023",
+      "title": "Compile model review wave 001 returns",
+      "workstream": "calibration",
+      "milestone_id": "v0.10.0",
+      "priority": "high",
+      "status": "in_progress",
+      "benchmark_risk": "medium",
+      "owner": "core-benchmark",
+      "completion_criteria": [
+        "raw Codex, Claude, and Gemini review outputs are imported",
+        "synthetic-panel study report is compiled",
+        "benchmark-vs-model disagreement clusters are logged"
+      ],
+      "progress_notes": "Waiting on raw model-review outputs from Codex, Claude, and Gemini so the synthetic shadow wave can be compiled into a calibration study report."
     }
   ]
 }

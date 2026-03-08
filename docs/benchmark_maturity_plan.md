@@ -284,6 +284,8 @@ Current execution artifact set:
 
 - [operator_human_review_wave_002_manifest.json](/C:/Users/USER/Desktop/startup-bench/examples/operator_human_review_wave_002_manifest.json)
 - [human_review_wave_002.md](/C:/Users/USER/Desktop/startup-bench/docs/human_review_wave_002.md)
+- [operator_model_review_wave_001_manifest.json](/C:/Users/USER/Desktop/startup-bench/examples/operator_model_review_wave_001_manifest.json)
+- [model_review_wave_001.md](/C:/Users/USER/Desktop/startup-bench/docs/model_review_wave_001.md)
 
 ### Workstream 3. Official benchmark operations
 
@@ -328,11 +330,11 @@ Implementation focus:
 
 ## Highest-value next implementations
 
-1. complete operator calibration wave `002` by importing returned reviews and publishing disagreement logs
-2. keep hidden inventory above the `75`-scenario v0.10.0 target while calibration catches up
-3. add the next strategy and operator depth batches only where calibration coverage will not lag promotion
-4. keep canary and real-world pack rotation tied to the official evaluation window
-5. convert the external adoption pack into lived release-note and reporting practice
+1. compile model review wave `001` returns from Codex, Claude, and Gemini and log synthetic-panel disagreement clusters
+2. complete operator calibration wave `002` by importing returned reviews and publishing disagreement logs
+3. keep hidden inventory above the `75`-scenario v0.10.0 target while calibration catches up
+4. add the next strategy and operator depth batches only where calibration coverage will not lag promotion
+5. keep canary and real-world pack rotation tied to the official evaluation window
 
 ## Task system policy
 

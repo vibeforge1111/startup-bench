@@ -39,9 +39,9 @@ Provide:
 Return valid JSON only. Do not wrap the JSON in explanation.
 
 Recommended synthetic reviewer ids:
+- codex_reviewer_001
+- claude_reviewer_001
 - gemini_reviewer_001
-- opus_reviewer_001
-- gpt_reviewer_001
 
 ## Review rules
 

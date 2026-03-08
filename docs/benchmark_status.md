@@ -491,7 +491,8 @@ Partially done:
 - the reference tooling can now run a full study wave and compile partial study reports
 - the repo now includes practical docs for recruiting and guiding a human calibration taskforce
 - the repo now includes reviewer-facing CSV and Markdown form workflows for external operators
-- the repo now includes a clear synthetic-reviewer lane for Gemini, Opus, GPT, and other model panels
+- the repo now includes a clear synthetic-reviewer lane for Codex, Claude, Gemini, and other model panels
+- an explicit Codex, Claude, and Gemini model-review wave now exists for the promoted strategy family before further human escalation
 
 What remains inside this category:
 

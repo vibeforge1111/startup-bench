@@ -1,6 +1,6 @@
 # Model Reviewer Panel
 
-Last updated: 2026-03-07
+Last updated: 2026-03-09
 
 ## Goal
 
@@ -41,9 +41,9 @@ The synthetic panel is strongest as:
 
 For a first synthetic wave:
 
+- one Codex run
+- one Claude run
 - one Gemini run
-- one Claude Opus run
-- one GPT run
 
 All three should review the same exact packet independently.
 
@@ -99,9 +99,9 @@ Then you can feed the saved JSON files directly into:
 
 Use stable synthetic reviewer ids like:
 
+- `codex_reviewer_001`
+- `claude_reviewer_001`
 - `gemini_reviewer_001`
-- `opus_reviewer_001`
-- `gpt_reviewer_001`
 
 Suggested reviewer metadata:
 
@@ -150,7 +150,7 @@ Bad uses:
 
 1. Run the target hidden study wave.
 2. Export model-review bundles per scenario.
-3. Send the same scenario bundle separately to Gemini, Opus, and GPT.
+3. Send the same scenario bundle separately to Codex, Claude, and Gemini.
 4. Save each returned JSON review as its own file, or raw Markdown if the model wraps the JSON in fences.
 5. Import the raw responses:
 

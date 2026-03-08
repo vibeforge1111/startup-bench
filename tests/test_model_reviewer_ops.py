@@ -16,6 +16,7 @@ from thestartupbench.validation import validate_artifact_file
 REPO_ROOT = Path(__file__).resolve().parents[1]
 EXAMPLES_DIR = REPO_ROOT / "examples"
 STUDY_MANIFEST_PATH = EXAMPLES_DIR / "operator_calibration_study_manifest.json"
+MODEL_WAVE_001_MANIFEST_PATH = EXAMPLES_DIR / "operator_model_review_wave_001_manifest.json"
 OPERATOR_REVIEW_PATH = EXAMPLES_DIR / "minimal_operator_review.json"
 
 
@@ -91,6 +92,26 @@ class ModelReviewerOpsTests(unittest.TestCase):
                 path=imported_dir / "model_review_import.json",
             )
             self.assertTrue(manifest_validation.ok)
+
+    def test_export_model_review_bundles_for_model_wave_001_emits_strategy_shadow_bundles(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            temp_dir = Path(tmp_dir)
+            run_dir = temp_dir / "run"
+            bundle_dir = temp_dir / "bundles"
+
+            run_calibration_study(
+                study_manifest_path=MODEL_WAVE_001_MANIFEST_PATH,
+                output_dir=run_dir,
+            )
+            result = export_model_review_bundles(
+                study_run_dir=run_dir,
+                output_dir=bundle_dir,
+            )
+
+            self.assertTrue(result["validation"]["ok"])
+            export_manifest = result["export"]
+            self.assertEqual(export_manifest["bundle_count"], 7)
+            self.assertEqual(export_manifest["bundles"][0]["target_id"], "model-strategy-shadow-wave-001")
 
 
 if __name__ == "__main__":

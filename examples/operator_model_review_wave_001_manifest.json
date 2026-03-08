@@ -1,0 +1,56 @@
+{
+  "study_version": "0.1.0",
+  "benchmark_version": "0.2.0-draft",
+  "study_id": "operator-model-review-wave-001",
+  "study_title": "Model Review Wave 001",
+  "review_targets": [
+    {
+      "target_id": "model-strategy-shadow-wave-001",
+      "suite_path": "examples/human_review_wave_002_strategy_suite.json",
+      "focus": "use a Codex, Claude, and Gemini shadow panel to triage promoted strategy families before additional human calibration effort",
+      "baseline_runner_id": "heuristic_long_horizon_operator",
+      "seed": 1,
+      "max_turns": 6,
+      "required_scenarios": [
+        "hidden_board_financing_truth_test_001",
+        "hidden_board_incident_truth_test_001",
+        "hidden_scale_platform_sequence_test_001",
+        "hidden_product_migration_sequence_test_001",
+        "hidden_board_product_truth_test_001",
+        "hidden_gtm_multi_quarter_sequence_test_001",
+        "hidden_scale_finance_tradeoff_test_001"
+      ]
+    }
+  ],
+  "reviewer_targets": [
+    {
+      "role": "codex_reviewer",
+      "functional_domain": "synthetic_panel",
+      "target_count": 1,
+      "stage_focus": "series_a_to_growth"
+    },
+    {
+      "role": "claude_reviewer",
+      "functional_domain": "synthetic_panel",
+      "target_count": 1,
+      "stage_focus": "series_a_to_growth"
+    },
+    {
+      "role": "gemini_reviewer",
+      "functional_domain": "synthetic_panel",
+      "target_count": 1,
+      "stage_focus": "series_a_to_growth"
+    }
+  ],
+  "promotion_gates": {
+    "minimum_reviewers_per_target": 3,
+    "maximum_mean_absolute_rubric_gap": 0.75,
+    "minimum_recommendation_agreement_rate": 0.67,
+    "allow_disagreement_flags": true
+  },
+  "notes": [
+    "This wave is a synthetic shadow lane for Codex, Claude, and Gemini. It does not replace real operator review.",
+    "Use this wave to find disagreement clusters and to decide where scarce human calibration time should go next.",
+    "The target suite mirrors human review wave 002 so synthetic and human disagreement can be compared cleanly if human reviews arrive later."
+  ]
+}

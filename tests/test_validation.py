@@ -461,6 +461,14 @@ class ValidationTests(unittest.TestCase):
         self.assertTrue(result.ok)
         self.assertEqual(result.issues, [])
 
+    def test_operator_model_review_wave_001_manifest_validates(self) -> None:
+        result = validate_artifact_file(
+            artifact_type="calibration-study",
+            path=REPO_ROOT / "examples" / "operator_model_review_wave_001_manifest.json",
+        )
+        self.assertTrue(result.ok)
+        self.assertEqual(result.issues, [])
+
 
 if __name__ == "__main__":
     unittest.main()

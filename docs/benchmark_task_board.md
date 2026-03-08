@@ -1,6 +1,6 @@
 # Benchmark Task Board
 
-Last updated: 2026-03-08
+Last updated: 2026-03-09
 
 This board is the human-readable execution view of the benchmark maturity program in [benchmark_maturity_plan.md](/C:/Users/USER/Desktop/startup-bench/docs/benchmark_maturity_plan.md).
 
@@ -41,6 +41,10 @@ Success targets:
 - `BT-005` operator calibration wave 002
   - milestone: `v0.10.0`
   - focus: wave launched and reviewer packets exported for founder, ops, and product reviewers; next step is collecting returns and logging score-vs-operator disagreements
+
+- `BT-023` model review wave 001 compilation
+  - milestone: `v0.10.0`
+  - focus: synthetic shadow review for Codex, Claude, and Gemini is launched; next step is importing raw model reviews and compiling disagreement signals
 
 ## Completed
 
@@ -120,6 +124,10 @@ Success targets:
   - milestone: `v0.10.0`
   - focus: completed balanced hidden-pack growth to `75` active hidden `test` scenarios while keeping pack-rotation and canary coverage aligned
 
+- `BT-022` launch model review wave 001
+  - milestone: `v0.10.0`
+  - focus: added the Codex, Claude, and Gemini synthetic-panel wave with manifest, launcher, compile helper, and prompt-bundle export path over the promoted strategy family
+
 ## Ready
 
 - `BT-016` operator calibration wave 002 compilation
@@ -129,11 +137,11 @@ Success targets:
 
 ## Next up by priority
 
-1. calibration execution and operator review collection
-2. pack rotation and leaderboard-window operations
-3. next strategy and operator depth where calibration will not lag
-4. external adoption pack usage and release-note follow-through
-5. maintain hidden inventory above the `75` threshold with balanced rotations
+1. synthetic model review return collection for Codex, Claude, and Gemini
+2. calibration execution and operator review collection
+3. pack rotation and leaderboard-window operations
+4. next strategy and operator depth where calibration will not lag
+5. external adoption pack usage and release-note follow-through
 
 ## Operating rules
 
