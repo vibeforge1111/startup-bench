@@ -129,6 +129,47 @@ def _liquidity_board_update_payload(session: RuntimeSession) -> dict:
     }
 
 
+def _people_org_proposal_payload(session: RuntimeSession) -> dict:
+    operations = session.world_state.get("operations", {})
+    product = session.world_state.get("product", {})
+    team = session.world_state.get("team", {})
+    risk = session.world_state.get("risk", {})
+
+    support_backlog = float(operations.get("support_backlog", 0.0))
+    onboarding_quality = float(product.get("onboarding_quality", 1.0))
+    bandwidth_load = float(team.get("bandwidth_load", 0.0))
+    morale = float(team.get("morale", 1.0))
+    financing_pressure = float(risk.get("financing_pressure", 0.0))
+
+    summary = "Consolidate onboarding and support ownership under one accountable manager and narrow decision rights while the leadership bench resets."
+    target_function = "customer_ops"
+    expected_morale_delta = 0.03
+    expected_bandwidth_load_delta = -0.05
+    expected_monthly_burn_change_usd = 4000.0
+
+    if onboarding_quality < 0.58 and support_backlog < 52:
+        summary = "Reset product-delivery ownership so onboarding quality recovers before new roadmap commitments expand coordination debt."
+        target_function = "product"
+        expected_morale_delta = 0.02
+        expected_bandwidth_load_delta = -0.04
+    elif financing_pressure > 0.72 and bandwidth_load > 0.88:
+        summary = "Clarify operating ownership and manager escalation paths before adding headcount so the company can stabilize without a costly reorg spiral."
+        target_function = "operations"
+        expected_morale_delta = 0.02
+        expected_bandwidth_load_delta = -0.04
+        expected_monthly_burn_change_usd = 0.0
+    elif morale < 0.5 and bandwidth_load > 0.92:
+        summary = "Create a temporary leadership bench rotation for support and onboarding so manager load becomes explicit instead of leaking across the org."
+
+    return {
+        "summary": summary,
+        "target_function": target_function,
+        "expected_morale_delta": expected_morale_delta,
+        "expected_bandwidth_load_delta": expected_bandwidth_load_delta,
+        "expected_monthly_burn_change_usd": expected_monthly_burn_change_usd,
+    }
+
+
 def _heuristic_b2b_actions(session: RuntimeSession, *, turn_index: int) -> list[dict]:
     finance = session.world_state.get("finance", {})
     product = session.world_state.get("product", {})
@@ -1172,6 +1213,25 @@ def _heuristic_long_horizon_actions(session: RuntimeSession, *, turn_index: int)
                     "support_backlog_delta": -4 if int(hiring.get("offers_out", 0)) >= 1 else 0,
                     "onboarding_quality_delta": 0.015 if int(hiring.get("offers_out", 0)) >= 1 else 0.0,
                 },
+            }
+        )
+        action_index += 1
+
+    if (
+        "people.org.propose" in session.scenario.get("tools", [])
+        and not team.get("last_org_proposal")
+        and (
+            track == "people"
+            or float(team.get("morale", 1.0)) < 0.5
+            or float(team.get("attrition_risk", 0.0)) > 0.6
+            or float(team.get("bandwidth_load", 0.0)) > 0.9
+        )
+    ):
+        actions.append(
+            {
+                "tool_name": "people.org.propose",
+                "request_id": _next_request_id(turn_index, action_index),
+                "arguments": _people_org_proposal_payload(session),
             }
         )
         action_index += 1
