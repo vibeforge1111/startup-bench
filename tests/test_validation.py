@@ -373,6 +373,14 @@ class ValidationTests(unittest.TestCase):
         self.assertTrue(result.ok)
         self.assertEqual(result.issues, [])
 
+    def test_official_eval_window_example_validates(self) -> None:
+        result = validate_artifact_file(
+            artifact_type="official-eval-window",
+            path=REPO_ROOT / "examples" / "official_eval_window_v0_9_0.json",
+        )
+        self.assertTrue(result.ok)
+        self.assertEqual(result.issues, [])
+
     def test_run_manifest_example_validates(self) -> None:
         result = validate_artifact_file(
             artifact_type="run-manifest",
