@@ -42,6 +42,18 @@ This document is the public-facing summary of hidden-pack promotions, fresh-pack
   - public manifest: [strategy_public_fresh_manifest.json](/C:/Users/USER/Desktop/startup-bench/examples/strategy_public_fresh_manifest.json)
   - status: active, clean
 
+- `coverage-test-pack-0.2.0`
+  - split: `test`
+  - visibility: `hidden`
+  - public manifest: [coverage_public_test_manifest.json](/C:/Users/USER/Desktop/startup-bench/examples/coverage_public_test_manifest.json)
+  - status: active, clean
+
+- `coverage-fresh-pack-0.2.0`
+  - split: `fresh`
+  - visibility: `hidden`
+  - public manifest: [coverage_public_fresh_manifest.json](/C:/Users/USER/Desktop/startup-bench/examples/coverage_public_fresh_manifest.json)
+  - status: active, clean
+
 - `canary-test-pack-0.1.0`
   - split: `test`
   - visibility: `hidden`
@@ -145,6 +157,18 @@ This document is the public-facing summary of hidden-pack promotions, fresh-pack
   - visibility: `hidden`
   - status: retired
   - successor: `strategy-fresh-pack-0.3.0`
+
+- `coverage-test-pack-0.1.0`
+  - split: `test`
+  - visibility: `hidden`
+  - status: retired
+  - successor: `coverage-test-pack-0.2.0`
+
+- `coverage-fresh-pack-0.1.0`
+  - split: `fresh`
+  - visibility: `hidden`
+  - status: retired
+  - successor: `coverage-fresh-pack-0.2.0`
 
 ## Operational notes
 

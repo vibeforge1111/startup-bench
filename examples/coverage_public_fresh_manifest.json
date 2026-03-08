@@ -1,9 +1,9 @@
 {
   "manifest_version": "0.1.0",
   "benchmark_version": "0.2.0-draft",
-  "scenario_pack_version": "coverage-fresh-pack-0.1.0",
+  "scenario_pack_version": "coverage-fresh-pack-0.2.0",
   "split": "fresh",
-  "scenario_count": 4,
+  "scenario_count": 5,
   "scenarios": [
     {
       "scenario_id": "hidden_0to1_activation_loop_fresh_001",
@@ -28,6 +28,12 @@
       "track": "finance",
       "mode": "fresh",
       "hidden_ref": "fresh_003"
+    },
+    {
+      "scenario_id": "hidden_people_ownership_break_fresh_001",
+      "track": "people",
+      "mode": "fresh",
+      "hidden_ref": "fresh_004"
     }
   ]
 }
