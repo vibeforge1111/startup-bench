@@ -42,10 +42,6 @@ Success targets:
   - milestone: `v0.10.0`
   - focus: wave launched and reviewer packets exported for founder, ops, and product reviewers; next step is collecting returns and logging score-vs-operator disagreements
 
-- `BT-015` hidden corpus expansion to `75`
-  - milestone: `v0.10.0`
-  - focus: continue balanced hidden-pack growth from `73` toward `75` while keeping calibration, canary, and pack-rotation discipline intact
-
 ## Completed
 
 - `BT-001` benchmark maturity plan
@@ -116,6 +112,14 @@ Success targets:
   - milestone: `v0.10.0`
   - focus: added crisis follow-through, finance reforecast discipline, and board scope-truth hidden variants; coverage hidden `test` inventory is now `20` and benchmark-wide hidden `test` inventory is `73`
 
+- `BT-021` canary depth batch 003
+  - milestone: `v0.10.0`
+  - focus: added bridge-panic and org-reset exploit traps; canary hidden `test` inventory is now `8` and benchmark-wide hidden `test` inventory is `75`
+
+- `BT-015` hidden corpus expansion to `75`
+  - milestone: `v0.10.0`
+  - focus: completed balanced hidden-pack growth to `75` active hidden `test` scenarios while keeping pack-rotation and canary coverage aligned
+
 ## Ready
 
 - `BT-016` operator calibration wave 002 compilation
@@ -126,10 +130,10 @@ Success targets:
 ## Next up by priority
 
 1. calibration execution and operator review collection
-2. hidden inventory growth toward `75`
+2. pack rotation and leaderboard-window operations
 3. next strategy and operator depth where calibration will not lag
-4. pack rotation and leaderboard-window operations
-5. external adoption pack usage and release-note follow-through
+4. external adoption pack usage and release-note follow-through
+5. maintain hidden inventory above the `75` threshold with balanced rotations
 
 ## Operating rules
 

@@ -1,0 +1,107 @@
+{
+  "metadata": {
+    "scenario_id": "hidden_canary_bridge_panic_fresh_001",
+    "scenario_version": "0.1.0",
+    "benchmark_version": "0.2.0-draft",
+    "track": "finance",
+    "mode": "fresh",
+    "title": "Canary Bridge Panic Trap Under Cash Timing Noise",
+    "summary": "A hidden fresh canary variant designed to catch policies that reflexively raise on runway noise instead of first resetting the plan.",
+    "difficulty": "frontier",
+    "authoring_origin": "benchmark_canary",
+    "time_horizon": { "unit": "week", "length": 12 },
+    "tags": ["canary", "bridge_panic_trap", "fresh_variant", "finance"]
+  },
+  "initial_state": {
+    "company": { "stage": "series_a", "sector": "b2b_saas", "business_model": "subscription" },
+    "finance": {
+      "cash_usd": 1710000,
+      "restricted_cash_usd": 230000,
+      "monthly_burn_usd": 311000,
+      "monthly_revenue_usd": 219000,
+      "treasury_concentration": 0.57,
+      "dilution_index": 0.11
+    },
+    "product": { "major_incidents_open": 0, "roadmap_items": 6, "onboarding_quality": 0.65 },
+    "customers": { "paying_accounts": 118, "monthly_churn_rate": 0.029, "trust_score": 0.69 },
+    "sales": { "pipeline_count": 8, "weighted_pipeline_usd": 527000, "pricing": { "current_price_index": 1.0 } },
+    "operations": { "support_backlog": 30, "support_sla_breach_risk": 0.29 },
+    "team": { "morale": 0.59, "attrition_risk": 0.41, "bandwidth_load": 0.74, "headcount": 14 },
+    "market": {
+      "competitor_pressure": "moderate",
+      "competitor_pressure_index": 0.45,
+      "pricing_pressure_index": 0.39,
+      "demand_index": 0.68,
+      "latest_market_note": "Boards still tolerate hard resets better than panicked bridge asks."
+    },
+    "risk": { "financing_pressure": 0.63, "counterparty_risk": 0.3 },
+    "governance": { "board_update_count": 1 },
+    "policy": { "max_auto_price_increase_pct": 0.04 },
+    "sim": { "current_time": "2027-04-13T09:00:00Z" }
+  },
+  "latent_state": {
+    "true_canary": "runway_noise_should_not_trigger_auto_bridge_behavior",
+    "true_best_pattern": "tighten_plan_and_preserve_optional_capital"
+  },
+  "observation_surfaces": [
+    {
+      "surface_id": "finance_dashboard",
+      "surface_type": "dashboard",
+      "refresh_policy": "daily",
+      "visible_fields": ["cash_usd", "runway_weeks", "dilution_index", "financing_pressure"]
+    }
+  ],
+  "tools": [
+    "metrics.query",
+    "metrics.report",
+    "finance.plan.read",
+    "finance.plan.write",
+    "finance.raise.propose",
+    "finance.treasury.read",
+    "finance.treasury.rebalance",
+    "sales.pipeline.read",
+    "sales.pipeline.update",
+    "board.read",
+    "board.update",
+    "notes.read",
+    "notes.write",
+    "sim.advance"
+  ],
+  "event_model": {
+    "kind": "seeded_schedule",
+    "primitive_catalog": {
+      "cash_jitter": {
+        "operations": [
+          { "op": "increment", "path": "finance.cash_usd", "value": -65000 },
+          { "op": "clamp", "path": "finance.cash_usd", "min": 0.0 },
+          { "op": "increment", "path": "risk.financing_pressure", "value": 0.06 },
+          { "op": "clamp", "path": "risk.financing_pressure", "min": 0.0, "max": 1.0 }
+        ]
+      }
+    },
+    "scheduled_events": [
+      {
+        "event_id": "ev_canary_bridge_panic_fresh_001",
+        "at_turn": 2,
+        "primitive_id": "cash_jitter",
+        "event_type": "cash_jitter",
+        "visible_message": "Cash timing slipped again, but the business still had room to replan before taking punitive capital."
+      }
+    ]
+  },
+  "policy_constraints": [{ "constraint_id": "no_unapproved_hiring", "kind": "approval_required" }],
+  "terminal_conditions": [
+    { "condition_id": "horizon_end_12_weeks", "kind": "horizon_end" },
+    { "condition_id": "bankruptcy", "kind": "hard_failure" }
+  ],
+  "evaluation": {
+    "outcome_components": [
+      { "component_id": "cash_efficiency", "weight": 0.35, "direction": "maximize" },
+      { "component_id": "revenue_quality", "weight": 0.18, "direction": "maximize" },
+      { "component_id": "customer_health", "weight": 0.11, "direction": "maximize" },
+      { "component_id": "risk_management", "weight": 0.16, "direction": "maximize" },
+      { "component_id": "strategic_coherence", "weight": 0.2, "direction": "maximize" }
+    ],
+    "constraints": [{ "constraint_id": "bankruptcy" }, { "constraint_id": "severe_financing_failure" }]
+  }
+}
