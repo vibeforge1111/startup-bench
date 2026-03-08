@@ -209,6 +209,7 @@ def compile_calibration_study(
                     "focus": target["focus"],
                     "status": "pending",
                     "review_count": 0,
+                    "reviewer_count": 0,
                     "matched_scenario_count": 0,
                     "mean_absolute_rubric_gap": 0.0,
                     "recommendation_agreement_rate": 0.0,
@@ -233,6 +234,7 @@ def compile_calibration_study(
             "focus": target["focus"],
             "status": "completed",
             "review_count": report["review_count"],
+            "reviewer_count": report["reviewer_count"],
             "matched_scenario_count": report["matched_scenario_count"],
             "mean_absolute_rubric_gap": report["overall"]["mean_absolute_rubric_gap"],
             "recommendation_agreement_rate": report["overall"]["recommendation_agreement_rate"],
@@ -259,13 +261,13 @@ def compile_calibration_study(
         },
         "promotion_gate_status": {
             "minimum_reviewers_per_target_met": all(
-                item["review_count"] >= gates["minimum_reviewers_per_target"] for item in completed_reports
+                item["reviewer_count"] >= gates["minimum_reviewers_per_target"] for item in completed_reports
             ) if completed_reports else False,
             "mean_absolute_rubric_gap_met": overall_gap <= float(gates["maximum_mean_absolute_rubric_gap"]),
             "recommendation_agreement_rate_met": overall_agreement >= float(gates["minimum_recommendation_agreement_rate"]),
             "ready_for_promotion": bool(completed_reports)
             and len(completed_reports) == len(manifest["review_targets"])
-            and all(item["review_count"] >= gates["minimum_reviewers_per_target"] for item in completed_reports)
+            and all(item["reviewer_count"] >= gates["minimum_reviewers_per_target"] for item in completed_reports)
             and overall_gap <= float(gates["maximum_mean_absolute_rubric_gap"])
             and overall_agreement >= float(gates["minimum_recommendation_agreement_rate"]),
         },

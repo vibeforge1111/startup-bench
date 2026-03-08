@@ -56,6 +56,7 @@
           "focus",
           "status",
           "review_count",
+          "reviewer_count",
           "matched_scenario_count",
           "mean_absolute_rubric_gap",
           "recommendation_agreement_rate"
@@ -65,6 +66,7 @@
           "focus": { "type": "string" },
           "status": { "type": "string", "enum": ["pending", "completed"] },
           "review_count": { "type": "integer", "minimum": 0 },
+          "reviewer_count": { "type": "integer", "minimum": 0 },
           "matched_scenario_count": { "type": "integer", "minimum": 0 },
           "mean_absolute_rubric_gap": { "type": "number", "minimum": 0 },
           "recommendation_agreement_rate": { "type": "number", "minimum": 0, "maximum": 1 },
