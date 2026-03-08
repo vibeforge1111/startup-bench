@@ -471,6 +471,14 @@ class RuntimeTests(unittest.TestCase):
                     "bandwidth_load_delta": -0.08,
                     "support_backlog_delta": -4,
                     "onboarding_quality_delta": 0.02,
+                    "hiring_plan": {
+                        "summary": "Fill the customer-ops lead first, then reassess engineering capacity.",
+                        "priority_roles": ["customer_ops_lead", "senior_engineer"],
+                        "owner": "vp_ops",
+                        "success_metrics": ["time_to_fill_under_8_weeks", "support_backlog_down"],
+                        "hiring_pace": "one critical role at a time",
+                        "risk_guardrail": "freeze noncritical roles until delivery capacity recovers",
+                    },
                 },
             },
         )
@@ -482,6 +490,8 @@ class RuntimeTests(unittest.TestCase):
         self.assertEqual(self.session.world_state["team"]["bandwidth_load"], 0.84)
         self.assertGreater(self.session.world_state["team"]["delivery_capacity_index"], 0.0)
         self.assertEqual(self.session.world_state["finance"]["monthly_burn_usd"], 220000.0)
+        self.assertIn("last_hiring_plan", self.session.world_state["team"]["hiring"])
+        self.assertEqual(self.session.world_state["team"]["hiring"]["last_hiring_plan"]["owner"], "vp_ops")
 
     def test_people_org_propose_records_pending_change_without_mutating_team_state(self) -> None:
         response = execute_tool_call(

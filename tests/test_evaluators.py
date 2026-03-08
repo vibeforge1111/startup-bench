@@ -149,6 +149,134 @@ class EvaluatorTests(unittest.TestCase):
         self.assertGreater(after["subscores"]["team_health"], before["subscores"]["team_health"])
         self.assertGreater(after["scenario_score"], before["scenario_score"])
 
+    def test_people_track_penalizes_incomplete_hiring_plan_under_financing_and_demand_stress(self) -> None:
+        scenario = load_scenario(PEOPLE_SCENARIO_PATH)
+        world_state = initialize_world_state(scenario, seed=1)
+        world_state["market"]["demand_index"] = 0.74
+        world_state["sales"]["weighted_pipeline_usd"] = 610000
+        world_state["risk"]["financing_pressure"] = 0.61
+        world_state["team"]["hiring"] = {
+            "open_roles": 4,
+            "critical_roles_open": 2,
+            "sourced_candidates": 3,
+            "onsite_candidates": 1,
+            "offers_out": 0,
+            "hiring_capacity_index": 0.22,
+        }
+
+        def _people_trace(hiring_plan: dict | None) -> dict:
+            return {
+                "turns": [
+                    {
+                        "turn_index": 0,
+                        "actions": [
+                            {
+                                "tool_name": "metrics.report",
+                                "arguments": {},
+                                "response": {
+                                    "result": {
+                                        "report": {
+                                            "market": {"demand_index": 0.82},
+                                            "sales": {"weighted_pipeline_usd": 980000},
+                                            "alerts": ["market_demand_softening"],
+                                        }
+                                    }
+                                },
+                            },
+                            {"tool_name": "sim.advance", "arguments": {"advance_by": 1, "unit": "week"}},
+                        ],
+                        "events": [],
+                    },
+                    {
+                        "turn_index": 1,
+                        "actions": [
+                            {
+                                "tool_name": "metrics.report",
+                                "arguments": {},
+                                "response": {
+                                    "result": {
+                                        "report": {
+                                            "market": {"demand_index": 0.79},
+                                            "sales": {"weighted_pipeline_usd": 860000},
+                                            "alerts": ["market_demand_softening"],
+                                        }
+                                    }
+                                },
+                            },
+                            {
+                                "tool_name": "people.hiring.update",
+                                "arguments": {
+                                    "sourced_candidates_delta": 4,
+                                    "onsite_candidates_delta": 2,
+                                    "offers_out_delta": 1,
+                                    "accepted_hires": 0,
+                                    "monthly_burn_change_usd": 4000,
+                                    "hiring_plan": hiring_plan,
+                                },
+                            },
+                            {"tool_name": "sim.advance", "arguments": {"advance_by": 1, "unit": "week"}},
+                        ],
+                        "events": [],
+                    },
+                    {
+                        "turn_index": 2,
+                        "actions": [
+                            {
+                                "tool_name": "metrics.report",
+                                "arguments": {},
+                                "response": {
+                                    "result": {
+                                        "report": {
+                                            "market": {"demand_index": 0.76},
+                                            "sales": {"weighted_pipeline_usd": 730000},
+                                            "alerts": ["market_demand_softening"],
+                                        }
+                                    }
+                                },
+                            },
+                            {"tool_name": "sim.advance", "arguments": {"advance_by": 1, "unit": "week"}},
+                        ],
+                        "events": [],
+                    },
+                ]
+            }
+
+        incomplete_result = evaluate_dry_run(
+            scenario=scenario,
+            world_state=world_state,
+            trace_evidence=_people_trace({"summary": "We should keep hiring."}),
+        )
+        complete_result = evaluate_dry_run(
+            scenario=scenario,
+            world_state=world_state,
+            trace_evidence=_people_trace(
+                {
+                    "summary": "Prioritize the critical customer-ops and engineering roles while tying hiring pace to cash and delivery recovery.",
+                    "priority_roles": ["customer_ops_lead", "senior_engineer"],
+                    "owner": "vp_ops",
+                    "success_metrics": ["time_to_fill_under_8_weeks", "delivery_capacity_index_up", "support_backlog_down"],
+                    "hiring_pace": "advance one critical role at a time",
+                    "risk_guardrail": "freeze noncritical roles until demand and financing recover",
+                }
+            ),
+        )
+
+        incomplete_details = incomplete_result["evaluator_results"][0]["outputs"]["component_details"]["strategic_coherence"]
+        complete_details = complete_result["evaluator_results"][0]["outputs"]["component_details"]["strategic_coherence"]
+
+        self.assertGreater(incomplete_details["hiring_plan_quality_penalty"], 0.0)
+        self.assertTrue(incomplete_details["latest_hiring_plan_has_plan"])
+        self.assertEqual(
+            incomplete_details["required_hiring_plan_fields"],
+            ["hiring_pace", "owner", "priority_roles", "risk_guardrail", "success_metrics", "summary"],
+        )
+        self.assertEqual(complete_details["hiring_plan_quality_penalty"], 0.0)
+        self.assertEqual(complete_details["latest_hiring_plan_missing_required_fields"], [])
+        self.assertGreater(
+            incomplete_details["behavioral_penalty"],
+            complete_details["behavioral_penalty"],
+        )
+
     def test_extended_component_weights_affect_outcome_score(self) -> None:
         scenario = load_scenario(FINANCE_SCENARIO_PATH)
         scenario["evaluation"]["outcome_components"] = [
