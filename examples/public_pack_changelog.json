@@ -216,12 +216,25 @@
       "pack_version": "strategy-test-pack-0.3.0",
       "split": "test",
       "visibility": "hidden",
-      "action": "created",
-      "lifecycle_state": "active",
+      "action": "retired",
+      "lifecycle_state": "retired",
       "contamination_status": "clean",
       "predecessor_pack_version": "strategy-test-pack-0.2.0",
       "manifest_path": "examples/strategy_public_test_manifest.json",
-      "notes": "Supplemental hidden strategy test pack covering three board scenarios, delayed product debt, and multi-quarter scale planning."
+      "successor_pack_version": "strategy-test-pack-0.4.0",
+      "notes": "Supplemental hidden strategy test pack retired after adding a second multi-quarter scale sequencing slice focused on platform-capacity lead time."
+    },
+    {
+      "effective_date": "2026-03-08",
+      "pack_version": "strategy-test-pack-0.4.0",
+      "split": "test",
+      "visibility": "hidden",
+      "action": "created",
+      "lifecycle_state": "active",
+      "contamination_status": "clean",
+      "predecessor_pack_version": "strategy-test-pack-0.3.0",
+      "manifest_path": "examples/strategy_public_test_manifest.json",
+      "notes": "Supplemental hidden strategy test pack covering three board scenarios, delayed product debt, multi-quarter scale planning, and a second platform-sequencing scale slice."
     },
     {
       "effective_date": "2026-03-07",
@@ -253,12 +266,25 @@
       "pack_version": "strategy-fresh-pack-0.3.0",
       "split": "fresh",
       "visibility": "hidden",
-      "action": "created",
-      "lifecycle_state": "active",
+      "action": "retired",
+      "lifecycle_state": "retired",
       "contamination_status": "clean",
       "predecessor_pack_version": "strategy-test-pack-0.3.0",
       "manifest_path": "examples/strategy_public_fresh_manifest.json",
-      "notes": "Supplemental hidden strategy fresh pack for contamination-resistant long-horizon startup evaluation with broader board-governance coverage."
+      "successor_pack_version": "strategy-fresh-pack-0.4.0",
+      "notes": "Supplemental hidden strategy fresh pack retired after adding a distinct platform-sequencing variant for broader long-horizon scale coverage."
+    },
+    {
+      "effective_date": "2026-03-08",
+      "pack_version": "strategy-fresh-pack-0.4.0",
+      "split": "fresh",
+      "visibility": "hidden",
+      "action": "created",
+      "lifecycle_state": "active",
+      "contamination_status": "clean",
+      "predecessor_pack_version": "strategy-test-pack-0.4.0",
+      "manifest_path": "examples/strategy_public_fresh_manifest.json",
+      "notes": "Supplemental hidden strategy fresh pack for contamination-resistant long-horizon startup evaluation with broader board, product, and multi-quarter sequencing coverage."
     },
     {
       "effective_date": "2026-03-08",
