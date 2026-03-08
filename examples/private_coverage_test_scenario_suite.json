@@ -1,7 +1,7 @@
 {
   "suite_version": "0.1.0",
   "benchmark_version": "0.2.0-draft",
-  "scenario_pack_version": "coverage-test-pack-0.3.0",
+  "scenario_pack_version": "coverage-test-pack-0.4.0",
   "split": "test",
   "scenarios": [
     {
@@ -38,6 +38,12 @@
       "scenario_id": "hidden_launch_distribution_test_001",
       "path": "hidden_launch_distribution_test_scenario.json",
       "track": "gtm",
+      "mode": "test"
+    },
+    {
+      "scenario_id": "hidden_finance_signaling_dilution_test_001",
+      "path": "hidden_finance_signaling_dilution_test_scenario.json",
+      "track": "finance",
       "mode": "test"
     }
   ]

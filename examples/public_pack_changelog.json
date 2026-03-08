@@ -359,6 +359,55 @@
       "notes": "Expanded hidden coverage fresh pack for contamination-resistant evaluation across PMF, finance, people leadership, and launch-distribution families."
     },
     {
+      "effective_date": "2026-03-08",
+      "pack_version": "coverage-test-pack-0.3.0",
+      "split": "test",
+      "visibility": "hidden",
+      "action": "retired",
+      "lifecycle_state": "retired",
+      "contamination_status": "clean",
+      "manifest_path": "examples/coverage_public_test_manifest.json",
+      "successor_pack_version": "coverage-test-pack-0.4.0",
+      "notes": "Expanded hidden coverage test pack retired after adding a fundraising-quality and dilution signaling slice."
+    },
+    {
+      "effective_date": "2026-03-08",
+      "pack_version": "coverage-test-pack-0.4.0",
+      "split": "test",
+      "visibility": "hidden",
+      "action": "created",
+      "lifecycle_state": "active",
+      "contamination_status": "clean",
+      "predecessor_pack_version": "coverage-test-pack-0.3.0",
+      "manifest_path": "examples/coverage_public_test_manifest.json",
+      "notes": "Expanded hidden coverage test pack spanning PMF, launch distribution, people leadership, and richer fundraising-quality finance coverage."
+    },
+    {
+      "effective_date": "2026-03-08",
+      "pack_version": "coverage-fresh-pack-0.3.0",
+      "split": "fresh",
+      "visibility": "hidden",
+      "action": "retired",
+      "lifecycle_state": "retired",
+      "contamination_status": "clean",
+      "predecessor_pack_version": "coverage-test-pack-0.3.0",
+      "manifest_path": "examples/coverage_public_fresh_manifest.json",
+      "successor_pack_version": "coverage-fresh-pack-0.4.0",
+      "notes": "Expanded hidden coverage fresh pack retired after adding a structured-financing drag variant."
+    },
+    {
+      "effective_date": "2026-03-08",
+      "pack_version": "coverage-fresh-pack-0.4.0",
+      "split": "fresh",
+      "visibility": "hidden",
+      "action": "created",
+      "lifecycle_state": "active",
+      "contamination_status": "clean",
+      "predecessor_pack_version": "coverage-test-pack-0.4.0",
+      "manifest_path": "examples/coverage_public_fresh_manifest.json",
+      "notes": "Expanded hidden coverage fresh pack for contamination-resistant evaluation across PMF, launch distribution, people leadership, and richer fundraising-quality finance coverage."
+    },
+    {
       "effective_date": "2026-03-07",
       "pack_version": "canary-test-pack-0.1.0",
       "split": "test",

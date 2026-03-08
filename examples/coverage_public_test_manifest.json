@@ -1,9 +1,9 @@
 {
   "manifest_version": "0.1.0",
   "benchmark_version": "0.2.0-draft",
-  "scenario_pack_version": "coverage-test-pack-0.3.0",
+  "scenario_pack_version": "coverage-test-pack-0.4.0",
   "split": "test",
-  "scenario_count": 6,
+  "scenario_count": 7,
   "scenarios": [
     {
       "scenario_id": "hidden_0to1_activation_loop_test_001",
@@ -40,6 +40,12 @@
       "track": "gtm",
       "mode": "test",
       "hidden_ref": "test_005"
+    },
+    {
+      "scenario_id": "hidden_finance_signaling_dilution_test_001",
+      "track": "finance",
+      "mode": "test",
+      "hidden_ref": "test_006"
     }
   ]
 }

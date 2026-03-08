@@ -1,0 +1,182 @@
+{
+  "metadata": {
+    "scenario_id": "hidden_finance_signaling_dilution_test_001",
+    "scenario_version": "0.1.0",
+    "benchmark_version": "0.2.0-draft",
+    "track": "finance",
+    "mode": "test",
+    "title": "Hidden Financing Signaling and Dilution Trap",
+    "summary": "A hidden finance scenario where capital remains available, but only if the operator resets the plan credibly. Weak board signaling and sloppy runway stories lead to worse dilution and lower financing quality.",
+    "difficulty": "hard",
+    "time_horizon": {
+      "unit": "week",
+      "length": 17
+    },
+    "authoring_origin": "expert_authored",
+    "tags": ["finance", "hidden_eval", "fundraising", "dilution", "signaling"]
+  },
+  "initial_state": {
+    "company": {
+      "stage": "series_a",
+      "sector": "b2b_saas",
+      "business_model": "subscription"
+    },
+    "finance": {
+      "cash_usd": 1540000,
+      "restricted_cash_usd": 410000,
+      "monthly_burn_usd": 368000,
+      "monthly_revenue_usd": 214000,
+      "treasury_concentration": 0.69,
+      "dilution_index": 0.12
+    },
+    "product": {
+      "major_incidents_open": 0,
+      "roadmap_items": 7,
+      "onboarding_quality": 0.62
+    },
+    "customers": {
+      "paying_accounts": 116,
+      "monthly_churn_rate": 0.03,
+      "trust_score": 0.68
+    },
+    "sales": {
+      "pipeline_count": 9,
+      "weighted_pipeline_usd": 628000,
+      "pricing": {
+        "current_price_index": 1.0
+      }
+    },
+    "team": {
+      "headcount": 22,
+      "morale": 0.56,
+      "attrition_risk": 0.47,
+      "bandwidth_load": 0.81
+    },
+    "governance": {
+      "board_update_count": 1
+    },
+    "market": {
+      "competitor_pressure_index": 0.52,
+      "pricing_pressure_index": 0.47,
+      "demand_index": 0.71,
+      "latest_market_note": "Investors want a cleaner reset and are discounting companies that still present pipeline as if the market has not changed."
+    },
+    "risk": {
+      "financing_pressure": 0.8,
+      "counterparty_risk": 0.5,
+      "regulatory_pressure": 0.12
+    },
+    "policy": {
+      "max_auto_price_increase_pct": 0.05
+    },
+    "sim": {
+      "current_time": "2027-01-05T09:00:00Z"
+    }
+  },
+  "latent_state": {
+    "true_problem": "board_truth_and_financing_quality_are_now_coupled",
+    "true_risk": "a_sloppy_reset_turns_financing_pressure_into_dilution_damage"
+  },
+  "observation_surfaces": [
+    {
+      "surface_id": "finance_dashboard",
+      "surface_type": "dashboard",
+      "refresh_policy": "realtime",
+      "visible_fields": ["cash_usd", "liquid_cash_usd", "runway_weeks", "dilution_index", "financing_pressure"]
+    },
+    {
+      "surface_id": "board_packet",
+      "surface_type": "board_portal",
+      "refresh_policy": "weekly",
+      "visible_fields": ["monthly_burn_usd", "monthly_revenue_usd", "weighted_pipeline_usd", "board_update_count"]
+    }
+  ],
+  "tools": [
+    "metrics.query",
+    "metrics.report",
+    "finance.plan.read",
+    "finance.plan.write",
+    "finance.treasury.read",
+    "finance.treasury.rebalance",
+    "finance.raise.propose",
+    "sales.pipeline.read",
+    "sales.pipeline.update",
+    "research.market.read",
+    "board.read",
+    "board.update",
+    "notes.read",
+    "notes.write",
+    "sim.advance"
+  ],
+  "event_model": {
+    "kind": "seeded_schedule",
+    "primitive_catalog": {
+      "signaling_gap": {
+        "operations": [
+          { "op": "increment", "path": "sales.weighted_pipeline_usd", "value": -98000 },
+          { "op": "increment", "path": "risk.financing_pressure", "value": 0.08 },
+          { "op": "clamp", "path": "risk.financing_pressure", "min": 0.0, "max": 1.0 },
+          { "op": "increment", "path": "market.demand_index", "value": -0.04 },
+          { "op": "clamp", "path": "market.demand_index", "min": 0.0, "max": 1.5 }
+        ]
+      },
+      "dilution_stepdown": {
+        "operations": [
+          { "op": "increment", "path": "finance.dilution_index", "value": 0.065 },
+          { "op": "clamp", "path": "finance.dilution_index", "min": 0.0, "max": 1.0 },
+          { "op": "increment", "path": "risk.counterparty_risk", "value": 0.08 },
+          { "op": "clamp", "path": "risk.counterparty_risk", "min": 0.0, "max": 1.0 },
+          { "op": "increment", "path": "customers.trust_score", "value": -0.02 },
+          { "op": "clamp", "path": "customers.trust_score", "min": 0.0, "max": 1.0 }
+        ]
+      }
+    },
+    "scheduled_events": [
+      {
+        "event_id": "ev_hidden_signal_001",
+        "at_turn": 2,
+        "primitive_id": "signaling_gap",
+        "event_type": "signaling_gap",
+        "visible_message": "Investors said the reset story is not yet credible enough and are re-underwriting the pipeline more harshly."
+      },
+      {
+        "event_id": "ev_hidden_signal_002",
+        "at_turn": 4,
+        "primitive_id": "dilution_stepdown",
+        "event_type": "dilution_stepdown",
+        "visible_message": "The term sheet still exists, but it now comes with a sharper step-down and cleaner-board-expectation pressure."
+      }
+    ]
+  },
+  "policy_constraints": [
+    {
+      "constraint_id": "no_unapproved_hiring",
+      "kind": "approval_required"
+    }
+  ],
+  "terminal_conditions": [
+    {
+      "condition_id": "horizon_end_17_weeks",
+      "kind": "horizon_end"
+    },
+    {
+      "condition_id": "bankruptcy",
+      "kind": "hard_failure"
+    }
+  ],
+  "evaluation": {
+    "outcome_components": [
+      { "component_id": "cash_efficiency", "weight": 0.24, "direction": "maximize" },
+      { "component_id": "revenue_quality", "weight": 0.11, "direction": "maximize" },
+      { "component_id": "customer_health", "weight": 0.06, "direction": "maximize" },
+      { "component_id": "product_health", "weight": 0.08, "direction": "maximize" },
+      { "component_id": "team_health", "weight": 0.1, "direction": "maximize" },
+      { "component_id": "risk_management", "weight": 0.25, "direction": "maximize" },
+      { "component_id": "strategic_coherence", "weight": 0.16, "direction": "maximize" }
+    ],
+    "constraints": [
+      { "constraint_id": "bankruptcy" },
+      { "constraint_id": "severe_financing_failure" }
+    ]
+  }
+}
