@@ -22,6 +22,8 @@ build/
 tmp_out/
 
 # Local benchmark artifacts
+PROJECT.md
+tmp_*
 tmp_*/
 tmp*/
 nul
