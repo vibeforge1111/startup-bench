@@ -1,38 +1,35 @@
-```
-  _____ _          ____  _             _               ____                  _
- |_   _| |__   ___/ ___|| |_ __ _ _ __| |_ _   _ _ __ | __ )  ___ _ __   ___| |__
-   | | | '_ \ / _ \___ \| __/ _` | '__| __| | | | '_ \|  _ \ / _ \ '_ \ / __| '_ \
-   | | | | | |  __/___) | || (_| | |  | |_| |_| | |_) | |_) |  __/ | | | (__| | | |
-   |_| |_| |_|\___|____/ \__\__,_|_|   \__|\__,_| .__/|____/ \___|_| |_|\___|_| |_|
-                                                 |_|
-
-       Can your AI run a startup?
-
-       +-----------+     +-----------+     +-----------+
-       |  SCENARIO |---->|   AGENT   |---->|   SCORE   |
-       |           |     |           |     |           |
-       | cash: $2M |     | decisions |     | 0.72 pass |
-       | burn:$350K|     | tradeoffs |     | subscores |
-       | trust: 0.7|     | actions   |     | violations|
-       +-----------+     +-----------+     +-----------+
-            |                  |                 |
-            v                  v                 v
-       13 scenarios       32 tools         4 dimensions
-       4 difficulty      board comms      cash efficiency
-       hidden packs      hiring/firing    revenue quality
-       real-world        fundraising      customer health
-       events            incident mgmt    strategic fit
-```
+![TheStartupBench benchmark overview](docs/assets/readme-benchmark-hero.png)
 
 # TheStartupBench
 
 **A benchmark for evaluating how well AI agents operate a startup under uncertainty.**
 
-Most AI benchmarks test coding, math, or knowledge retrieval. TheStartupBench tests something different: can an AI make the messy, multi-dimensional tradeoffs that real startup operators face every week? Budget cuts vs. quality investment. Incident response vs. roadmap velocity. Honest board communication vs. optimistic forecasting. Hiring under pressure vs. burn discipline.
+Most AI benchmarks test coding, math, or retrieval. TheStartupBench tests something more operational: can an AI make the messy, sequential tradeoffs that real startup operators face every week? Budget cuts vs. product quality. Incident response vs. roadmap velocity. Honest board communication vs. optimistic forecasting. Hiring under pressure vs. burn discipline.
 
-The agent is dropped into a simulated startup with real financial state, customer metrics, team dynamics, and a board to report to. Events happen -- customers churn, infrastructure costs spike, key people leave, deals slip. The agent must respond using the same levers a real operator would: adjusting burn, resolving incidents, hiring, updating the board, managing pipeline, and deciding what to build next.
+The agent is dropped into a simulated company with real financial state, product quality, customer health, team dynamics, market pressure, and a board to report to. Events happen over time: customers churn, infrastructure costs spike, key people leave, renewals wobble, financing gets tighter, and support load compounds. The model has to operate through those changes using the same levers a real founder, COO, or staff operator would use: adjusting burn, resolving incidents, sequencing launches, managing pipeline, handling org issues, and deciding what to communicate upstream.
 
-Scoring is programmatic across four dimensions (cash efficiency, revenue quality, customer health, strategic coherence) with hard constraint checks (bankruptcy, trust collapse, compliance breach). No vibes. No LLM-as-judge on the outcome score.
+The benchmark is stateful and tool-driven rather than prompt-only. Models read metrics, act through constrained tools, advance the simulation week by week, and then get scored on the resulting world state. The visible public dev suite is already broad enough that frontier models can all pass the scenarios structurally, but still separate meaningfully on quality of judgment.
+
+Scoring is programmatic across seven outcome dimensions:
+
+- `cash efficiency`
+- `revenue quality`
+- `product health`
+- `customer health`
+- `team health`
+- `strategic coherence`
+- `risk management`
+
+Hard-failure gates then penalize or fail runs for outcomes like bankruptcy, catastrophic trust collapse, or severe financing breakdown. No vibes. No free-form LLM judge deciding the final score.
+
+What TheStartupBench is trying to measure:
+
+- whether a model can act like a startup operator, not just describe startup advice
+- whether decisions stay coherent across multiple weeks instead of a single polished answer
+- whether a model can trade off survival, trust, growth, product depth, and org health at the same time
+- whether frontier models differ on actual operating judgment before the human-calibration phase
+
+This repo is the reference implementation and research harness for that process: scenario specs, simulator primitives, scoring contracts, public/hidden suite machinery, calibration tooling, and provider-run comparison workflows.
 
 ## Early Results
 
@@ -58,7 +55,7 @@ This public dev suite is a research comparison surface, not an official hosted l
 
 2. **Run an agent.** The agent gets the initial state and a set of tools. Each turn, it reads metrics, makes decisions (hire, cut burn, resolve incidents, update the board, invest in quality...), then advances the simulation by one week. Events fire during advances -- cost shocks, customer escalations, deal closures, team departures.
 
-3. **Score the outcome.** After all turns complete, programmatic evaluators score the final world state across four weighted dimensions. Hard constraints (did the company go bankrupt? did trust collapse?) gate pass/fail. Each scenario weights the dimensions differently -- a board governance scenario weights strategic coherence at 0.45, while a crisis scenario weights customer health at 0.35.
+3. **Score the outcome.** After all turns complete, programmatic evaluators score the final world state across weighted outcome dimensions. Hard constraints (did the company go bankrupt? did trust collapse?) gate pass/fail. Each scenario weights the dimensions differently -- a board governance scenario can overweight strategic coherence, while a crisis scenario can overweight customer health and risk management.
 
 ## Scenarios
 
