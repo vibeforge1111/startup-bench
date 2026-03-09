@@ -17,7 +17,7 @@
        +-----------+     +-----------+     +-----------+
             |                  |                 |
             v                  v                 v
-       9 scenarios        32 tools         4 dimensions
+       13 scenarios       32 tools         4 dimensions
        4 difficulty      board comms      cash efficiency
        hidden packs      hiring/firing    revenue quality
        real-world        fundraising      customer health
@@ -36,15 +36,21 @@ Scoring is programmatic across four dimensions (cash efficiency, revenue quality
 
 ## Early Results
 
-### Full Public Dev Benchmark (9 scenarios)
+### Full Public Dev Benchmark (13 scenarios)
 
-| Model | Overall | Passes | 0to1 | b2b | Board | Crisis | Scale | GTM | Finance | People | Product |
-|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
-| Claude Opus 4.6 | **0.7217** | 8/9 | 0.530 | 0.665 | 0.692 | 0.685 | 0.802 | 0.706 | 0.833 | 0.805 | 0.778 |
-| Codex 5.4 High | 0.7203 | 9/9 | 0.578 | 0.685 | 0.700 | 0.687 | 0.811 | 0.720 | 0.835 | 0.712 | 0.754 |
-| Gemini 3.0 | 0.6614 | 8/9 | 0.547 | 0.634 | 0.632 | 0.676 | 0.790 | 0.603 | 0.772 | 0.665 | 0.634 |
+| Model | Overall | Passes |
+|---|---:|---:|
+| Codex | **74.06%** | 13/13 |
+| Claude Opus 4.6 | 72.99% | 13/13 |
+| Gemini | 66.93% | 13/13 |
 
-Claude leads on overall mean but failed the 0to1 scenario (bankruptcy). Codex is the only model to pass all 9. Gemini also failed 0to1.
+Current visible-suite read:
+
+- Codex won 9 of the 13 public dev scenarios and led overall on the expanded suite.
+- Claude won 4 of the 13 public dev scenarios and was strongest on `people`, `growth_experiment`, `gtm`, and effectively tied `finance`.
+- Gemini passed all 13 scenarios but trailed on leadership-, product-, and board-heavy slices.
+
+This public dev suite is a research comparison surface, not an official hosted leaderboard result.
 
 ## How It Works
 
@@ -64,8 +70,12 @@ Claude leads on overall mean but failed the 0to1 scenario (bankruptcy). Codex is
 | crisis | Trust Recovery | Seed | Two open incidents, 4.1% churn, and a renewal escalation incoming |
 | scale | Capacity Balance | Growth | Revenue growth strains reliability -- each surge creates new incidents |
 | gtm | Channel Mix Reset | Series A | Outbound is dying, a competitor is bundling, pipeline is softening |
+| gtm | Launch Distribution | Series A | Launch attention is available, but onboarding and support readiness are too weak for a broad rollout |
+| gtm | Growth Experiment Discipline | Series A | A tempting channel spike appears before activation and customer quality are strong enough to scale |
 | finance | Treasury Tradeoff | Series A | 83% treasury concentration, rising financing pressure, payment delays |
+| finance | Fundraise Reset | Series A | Runway can be extended, but only by balancing punitive dilution, signaling, and board truth cleanly |
 | people | Org Stability | Series B | Morale at 0.48, attrition risk at 0.64, a key manager about to leave |
+| people | Leadership Bench | Series B | A leadership gap creates ownership drift, onboarding pain, and manager-confidence risk |
 | product | Quality Debt | Series A | Launch bump drives demand but deferred quality bill hits support/trust |
 
 Additional hidden packs (test, fresh, canary, real-world, strategy) exist for anti-gaming and leaderboard integrity.

@@ -104,7 +104,7 @@ def _run_provider(*, model_id: str, prompt: str, repo_root: Path) -> str:
         codex_output_path = repo_root / "tmp_model_trial_wave_001_raw" / model_id / "_last_message.txt"
         command = (
             f"Get-Content -Raw '{prompt_path}' | "
-            f"codex -a never --sandbox read-only exec -C '{repo_root}' -o '{codex_output_path}' -"
+            f"codex exec --sandbox read-only -C '{repo_root}' -o '{codex_output_path}' -"
         )
         result = subprocess.run(
             ["powershell", "-Command", command],
@@ -115,8 +115,8 @@ def _run_provider(*, model_id: str, prompt: str, repo_root: Path) -> str:
         )
     elif model_id == "claude":
         command = (
-            f"$prompt = Get-Content -Raw '{prompt_path}'; "
-            "claude --print --permission-mode plan --output-format text $prompt"
+            f"Get-Content -Raw '{prompt_path}' | "
+            "claude --print --permission-mode plan --output-format text -"
         )
         result = subprocess.run(
             ["powershell", "-Command", command],
@@ -127,8 +127,8 @@ def _run_provider(*, model_id: str, prompt: str, repo_root: Path) -> str:
         )
     elif model_id == "gemini":
         command = (
-            f"$prompt = Get-Content -Raw '{prompt_path}'; "
-            "gemini --prompt $prompt --approval-mode plan --output-format text"
+            f"Get-Content -Raw '{prompt_path}' | "
+            "gemini --prompt - --approval-mode plan --output-format text"
         )
         result = subprocess.run(
             ["powershell", "-Command", command],

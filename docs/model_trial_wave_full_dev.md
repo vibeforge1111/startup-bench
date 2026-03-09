@@ -6,7 +6,7 @@ Use it after `model_trial_wave_001` is already working. The goal is to compare `
 
 ## Scope
 
-This wave uses all `9` public dev scenarios from [dev_scenario_suite.json](/C:/Users/USER/Desktop/startup-bench/examples/dev_scenario_suite.json).
+This wave uses all `13` public dev scenarios from [dev_scenario_suite.json](/C:/Users/USER/Desktop/startup-bench/examples/dev_scenario_suite.json).
 
 Tracks covered:
 
@@ -27,7 +27,7 @@ Use this as a research comparison, not as an official leaderboard claim.
 Recommended order:
 
 1. confirm `model_trial_wave_001` works
-2. generate `9` tool scripts for one model
+2. generate `13` tool scripts for one model
 3. run the full public dev wave for that model
 4. repeat for the other models
 5. compare score reports and traces
@@ -117,8 +117,12 @@ For each model, use the same scenario file but change the output path folder.
 | `crisis` | `examples/minimal_crisis_scenario.json` | `crisis` | `tmp_model_trial_full_dev_scripts/<model_id>/crisis_script.json` |
 | `scale` | `examples/minimal_scale_scenario.json` | `scale` | `tmp_model_trial_full_dev_scripts/<model_id>/scale_script.json` |
 | `gtm` | `examples/minimal_gtm_scenario.json` | `gtm` | `tmp_model_trial_full_dev_scripts/<model_id>/gtm_script.json` |
+| `launch_distribution` | `examples/minimal_launch_distribution_scenario.json` | `gtm` | `tmp_model_trial_full_dev_scripts/<model_id>/launch_distribution_script.json` |
+| `growth_experiment` | `examples/minimal_growth_experiment_scenario.json` | `gtm` | `tmp_model_trial_full_dev_scripts/<model_id>/growth_experiment_script.json` |
 | `finance` | `examples/minimal_finance_scenario.json` | `finance` | `tmp_model_trial_full_dev_scripts/<model_id>/finance_script.json` |
+| `finance_fundraise_reset` | `examples/minimal_finance_fundraise_reset_scenario.json` | `finance` | `tmp_model_trial_full_dev_scripts/<model_id>/finance_fundraise_reset_script.json` |
 | `people` | `examples/minimal_people_scenario.json` | `people` | `tmp_model_trial_full_dev_scripts/<model_id>/people_script.json` |
+| `people_leadership` | `examples/minimal_people_leadership_scenario.json` | `people` | `tmp_model_trial_full_dev_scripts/<model_id>/people_leadership_script.json` |
 | `product` | `examples/minimal_product_scenario.json` | `product` | `tmp_model_trial_full_dev_scripts/<model_id>/product_script.json` |
 
 Replace `<model_id>` with:
@@ -129,12 +133,20 @@ Replace `<model_id>` with:
 
 ## Run The Full Dev Wave
 
-After one model has all `9` script files, run:
+After one model has all `13` script files, run:
 
 ```powershell
 powershell -File scripts/run_model_trial_wave_full_dev.ps1 -ModelId codex
 powershell -File scripts/run_model_trial_wave_full_dev.ps1 -ModelId claude
 powershell -File scripts/run_model_trial_wave_full_dev.ps1 -ModelId gemini
+```
+
+Or generate and run in one step with the suite-aware helper:
+
+```powershell
+python scripts/run_model_trial_full_dev_providers.py --models codex --run-wave
+python scripts/run_model_trial_full_dev_providers.py --models claude --run-wave
+python scripts/run_model_trial_full_dev_providers.py --models gemini --run-wave
 ```
 
 Optional seed override:

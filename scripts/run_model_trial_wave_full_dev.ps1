@@ -9,65 +9,28 @@ param(
 $ErrorActionPreference = "Stop"
 
 $repoRoot = Split-Path -Parent $PSScriptRoot
+$examplesRoot = Join-Path $repoRoot "examples"
 $scriptRoot = Join-Path $repoRoot "tmp_model_trial_full_dev_scripts\$ModelId"
 $runRoot = Join-Path $repoRoot "tmp_model_trial_full_dev_runs\$ModelId"
+$suitePath = Join-Path $examplesRoot "dev_scenario_suite.json"
 
-$jobs = @(
-    @{
-        Name = "0to1"
-        Scenario = Join-Path $repoRoot "examples\minimal_0to1_scenario.json"
-        Script = Join-Path $scriptRoot "0to1_script.json"
-        Output = Join-Path $runRoot "0to1"
-    },
-    @{
-        Name = "b2b_saas"
-        Scenario = Join-Path $repoRoot "examples\minimal_b2b_saas_scenario.json"
-        Script = Join-Path $scriptRoot "b2b_saas_script.json"
-        Output = Join-Path $runRoot "b2b_saas"
-    },
-    @{
-        Name = "board"
-        Scenario = Join-Path $repoRoot "examples\minimal_board_scenario.json"
-        Script = Join-Path $scriptRoot "board_script.json"
-        Output = Join-Path $runRoot "board"
-    },
-    @{
-        Name = "crisis"
-        Scenario = Join-Path $repoRoot "examples\minimal_crisis_scenario.json"
-        Script = Join-Path $scriptRoot "crisis_script.json"
-        Output = Join-Path $runRoot "crisis"
-    },
-    @{
-        Name = "scale"
-        Scenario = Join-Path $repoRoot "examples\minimal_scale_scenario.json"
-        Script = Join-Path $scriptRoot "scale_script.json"
-        Output = Join-Path $runRoot "scale"
-    },
-    @{
-        Name = "gtm"
-        Scenario = Join-Path $repoRoot "examples\minimal_gtm_scenario.json"
-        Script = Join-Path $scriptRoot "gtm_script.json"
-        Output = Join-Path $runRoot "gtm"
-    },
-    @{
-        Name = "finance"
-        Scenario = Join-Path $repoRoot "examples\minimal_finance_scenario.json"
-        Script = Join-Path $scriptRoot "finance_script.json"
-        Output = Join-Path $runRoot "finance"
-    },
-    @{
-        Name = "people"
-        Scenario = Join-Path $repoRoot "examples\minimal_people_scenario.json"
-        Script = Join-Path $scriptRoot "people_script.json"
-        Output = Join-Path $runRoot "people"
-    },
-    @{
-        Name = "product"
-        Scenario = Join-Path $repoRoot "examples\minimal_product_scenario.json"
-        Script = Join-Path $scriptRoot "product_script.json"
-        Output = Join-Path $runRoot "product"
+if (-not (Test-Path $suitePath)) {
+    throw "Missing dev suite manifest: $suitePath"
+}
+
+$suite = Get-Content $suitePath -Raw | ConvertFrom-Json
+$jobs = @()
+
+foreach ($scenario in $suite.scenarios) {
+    $stem = [System.IO.Path]::GetFileNameWithoutExtension([string]$scenario.path)
+    $name = $stem -replace '^minimal_', '' -replace '_scenario$', ''
+    $jobs += @{
+        Name = $name
+        Scenario = Join-Path $examplesRoot $scenario.path
+        Script = Join-Path $scriptRoot "$name`_script.json"
+        Output = Join-Path $runRoot $name
     }
-)
+}
 
 foreach ($job in $jobs) {
     if (-not (Test-Path $job.Script)) {
