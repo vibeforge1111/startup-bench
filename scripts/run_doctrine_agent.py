@@ -533,7 +533,8 @@ def _doctrine_actions(session: RuntimeSession, doctrine: list[dict], *, turn_ind
 
     # Treasury rebalance: finance track uses lower threshold to reduce concentration risk
     treasury_concentration = float(finance.get("treasury_concentration", 0.0))
-    treasury_threshold = 0.55 if is_finance else 0.8
+    fin_pressure = float(risk.get("financing_pressure", 0.0))
+    treasury_threshold = 0.55 if (is_finance or fin_pressure > 0.5) else 0.8
     if treasury_concentration > treasury_threshold:
         actions.append({
             "tool_name": "finance.treasury.rebalance",
@@ -587,8 +588,8 @@ def _doctrine_actions(session: RuntimeSession, doctrine: list[dict], *, turn_ind
         })
         ai += 1
 
-    # Support backlog (baseline calibration)
-    if float(operations.get("support_backlog", 0.0)) > 28 or float(operations.get("support_sla_breach_risk", 0.0)) > 0.30:
+    # Support backlog: lower threshold to recover trust + reduce churn earlier
+    if float(operations.get("support_backlog", 0.0)) > 22 or float(operations.get("support_sla_breach_risk", 0.0)) > 0.26:
         actions.append({
             "tool_name": "ops.support.resolve",
             "request_id": _next_request_id(turn_index, ai),
@@ -667,6 +668,7 @@ def _doctrine_actions(session: RuntimeSession, doctrine: list[dict], *, turn_ind
         })
         ai += 1
     elif morale < 0.58 or attrition_risk > 0.52:
+        # Standard tier: team in distress
         actions.append({
             "tool_name": "people.org.adjust",
             "request_id": _next_request_id(turn_index, ai),
@@ -676,6 +678,20 @@ def _doctrine_actions(session: RuntimeSession, doctrine: list[dict], *, turn_ind
                 "bandwidth_load_delta": -0.08,
                 "monthly_burn_change_usd": 8000,
                 "onboarding_quality_delta": 0.02,
+            },
+        })
+        ai += 1
+    elif morale < 0.72 or attrition_risk > 0.35 or delivery_cap < 0.72:
+        # Maintenance tier: steady improvement with low burn cost
+        actions.append({
+            "tool_name": "people.org.adjust",
+            "request_id": _next_request_id(turn_index, ai),
+            "arguments": {
+                "morale_delta": 0.04,
+                "attrition_risk_delta": -0.05,
+                "bandwidth_load_delta": -0.04,
+                "monthly_burn_change_usd": 2500,
+                "onboarding_quality_delta": 0.01,
             },
         })
         ai += 1
