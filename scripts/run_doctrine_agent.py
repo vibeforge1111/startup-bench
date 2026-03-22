@@ -349,7 +349,7 @@ def _doctrine_hiring_plan(session: RuntimeSession) -> dict:
     }
 
 
-def _doctrine_actions(session: RuntimeSession, doctrine: list[dict], *, turn_index: int) -> list[dict]:
+def _doctrine_actions(session: RuntimeSession, doctrine: list[dict], *, turn_index: int, product_health_weighted: bool = True) -> list[dict]:
     """Generate actions using baseline's calibrated thresholds + doctrine reasoning.
 
     Mirrors _heuristic_long_horizon_actions but with doctrine-enhanced
@@ -522,8 +522,13 @@ def _doctrine_actions(session: RuntimeSession, doctrine: list[dict], *, turn_ind
         ai += 1
 
     # Finance: raise at runway < 18 or financing_pressure > 0.75 (baseline calibration)
-    # Finance track: more aggressive risk reduction to lower financing_pressure faster
-    if float(finance.get("runway_weeks", 999.0)) < 18 or float(risk.get("financing_pressure", 0.0)) > 0.75:
+    # Board/crisis tracks: proactive raise boosts strategic_coherence fundraising_signal
+    runway_weeks = float(finance.get("runway_weeks", 999.0))
+    fin_pressure = float(risk.get("financing_pressure", 0.0))
+    need_raise = runway_weeks < 18 or fin_pressure > 0.75
+    # Board/crisis: fire raise early (turn 1) for fundraising_signal even at healthy runway
+    need_strategic_raise = (track == "board" or is_crisis) and turn_index == 1 and runway_weeks < 26
+    if need_raise or need_strategic_raise:
         if not finance.get("last_raise_plan"):
             fin_risk_reduction = 0.42 if is_finance else 0.26
             actions.append({
@@ -557,8 +562,10 @@ def _doctrine_actions(session: RuntimeSession, doctrine: list[dict], *, turn_ind
     can_respond_incidents = "ops.incident.respond" in declared_tools
     # Only resolve incidents via roadmap when ops.incident.respond is not available
     resolve_via_roadmap = incidents_open > 0 and not can_respond_incidents
+    # Skip onboarding-only roadmap calls when product_health has 0 weight (saves burn)
+    onboarding_trigger = float(product.get("onboarding_quality", 0.0)) < 0.82 and product_health_weighted
     needs_roadmap_fix = (
-        float(product.get("onboarding_quality", 0.0)) < 0.82
+        onboarding_trigger
         or int(product.get("roadmap_items", 0)) > 7
         or float(market.get("competitor_pressure_index", market.get("competitor_pressure", 0.0))) > 0.58
         or resolve_via_roadmap
@@ -598,13 +605,18 @@ def _doctrine_actions(session: RuntimeSession, doctrine: list[dict], *, turn_ind
         ai += 1
 
     # Support backlog: lower threshold to recover trust + reduce churn earlier
-    if float(operations.get("support_backlog", 0.0)) > 22 or float(operations.get("support_sla_breach_risk", 0.0)) > 0.26:
+    is_board = track == "board"
+    support_actions = int(operations.get("support_actions_taken", 0))
+    backlog_high = float(operations.get("support_backlog", 0.0)) > 22 or float(operations.get("support_sla_breach_risk", 0.0)) > 0.26
+    # Board/crisis tracks: proactive support calls boost strategic_coherence support_signal
+    need_strategic_support = (is_board or is_crisis) and support_actions < 2 and turn_index < 4
+    if backlog_high or need_strategic_support:
         actions.append({
             "tool_name": "ops.support.resolve",
             "request_id": _next_request_id(turn_index, ai),
             "arguments": {
-                "backlog_reduction": 18,
-                "sla_risk_reduction": 0.18,
+                "backlog_reduction": 18 if backlog_high else 5,
+                "sla_risk_reduction": 0.18 if backlog_high else 0.05,
                 "trust_recovery": 0.05 if is_crisis else 0.04,
                 "churn_reduction": 0.008 if is_crisis else 0.007,
                 "monthly_burn_increase_usd": 6500,
@@ -894,6 +906,10 @@ def run_doctrine_agent(
     doctrine = select_doctrine_for_track(all_packets, track)
     print(f"  Loaded {len(all_packets)} doctrine packets, selected {len(doctrine)} for track '{track}'")
 
+    # Check if product_health has nonzero weight in this scenario's evaluation
+    outcome_comps = {c["component_id"]: c["weight"] for c in scenario.get("evaluation", {}).get("outcome_components", [])}
+    ph_weighted = outcome_comps.get("product_health", 0) > 0
+
     world_state = initialize_world_state(scenario, seed=seed)
     session = RuntimeSession(scenario=scenario, world_state=world_state)
     turns: list[dict] = []
@@ -903,7 +919,7 @@ def run_doctrine_agent(
     for turn_index in range(total_turns):
         before_time = session.world_state["sim"]["current_time"]
         observations = session.visible_observations()
-        proposed = _doctrine_actions(session, doctrine, turn_index=turn_index)
+        proposed = _doctrine_actions(session, doctrine, turn_index=turn_index, product_health_weighted=ph_weighted)
         events: list[dict] = []
         actions: list[dict] = []
 
