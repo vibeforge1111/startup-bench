@@ -373,6 +373,8 @@ def _doctrine_actions(session: RuntimeSession, doctrine: list[dict], *, turn_ind
     is_0to1 = track == "0to1"
     is_b2b_saas = track == "b2b_saas"
     is_crisis = track == "crisis"
+    is_finance = track == "finance"
+    is_people = track == "people"
 
     # Always read metrics first
     actions.append({
@@ -465,11 +467,29 @@ def _doctrine_actions(session: RuntimeSession, doctrine: list[dict], *, turn_ind
             "arguments": {"budget_changes": {"monthly_burn_usd": -15000}},
         })
         ai += 1
+    elif is_finance and turn_index == 0:
+        # Finance track: aggressive initial cut -- financing_pressure is high, need cash runway
+        burn = float(finance.get("monthly_burn_usd", 100000))
+        cut = max(30000, int(burn * 0.55))  # 55% cut for finance track
+        actions.append({
+            "tool_name": "finance.plan.write",
+            "request_id": _next_request_id(turn_index, ai),
+            "arguments": {"budget_changes": {"monthly_burn_usd": -cut}},
+        })
+        ai += 1
+    elif is_finance and turn_index == 6 and float(finance.get("monthly_burn_usd", 0)) > 80000:
+        # Finance track: second cut at turn 6 for burn_quality
+        actions.append({
+            "tool_name": "finance.plan.write",
+            "request_id": _next_request_id(turn_index, ai),
+            "arguments": {"budget_changes": {"monthly_burn_usd": -20000}},
+        })
+        ai += 1
     elif turn_index == 0 and not finance.get("last_plan_update"):
         # Generic: always write finance plan on turn 0 with proportional burn cut
         # Helps cash_efficiency + strategic_coherence (has_finance_plan flag)
         burn = float(finance.get("monthly_burn_usd", 100000))
-        cut = max(20000, int(burn * 0.4))  # 40% cut or $20k minimum
+        cut = max(20000, int(burn * 0.5))  # 50% cut or $20k minimum
         actions.append({
             "tool_name": "finance.plan.write",
             "request_id": _next_request_id(turn_index, ai),
@@ -524,7 +544,7 @@ def _doctrine_actions(session: RuntimeSession, doctrine: list[dict], *, turn_ind
     # Only resolve incidents via roadmap when ops.incident.respond is not available
     resolve_via_roadmap = incidents_open > 0 and not can_respond_incidents
     needs_roadmap_fix = (
-        float(product.get("onboarding_quality", 0.0)) < 0.7
+        float(product.get("onboarding_quality", 0.0)) < 0.82
         or int(product.get("roadmap_items", 0)) > 7
         or float(market.get("competitor_pressure_index", market.get("competitor_pressure", 0.0))) > 0.58
         or resolve_via_roadmap
@@ -561,7 +581,7 @@ def _doctrine_actions(session: RuntimeSession, doctrine: list[dict], *, turn_ind
         ai += 1
 
     # Support backlog (baseline calibration)
-    if float(operations.get("support_backlog", 0.0)) > 34 or float(operations.get("support_sla_breach_risk", 0.0)) > 0.38:
+    if float(operations.get("support_backlog", 0.0)) > 28 or float(operations.get("support_sla_breach_risk", 0.0)) > 0.30:
         actions.append({
             "tool_name": "ops.support.resolve",
             "request_id": _next_request_id(turn_index, ai),
@@ -619,7 +639,25 @@ def _doctrine_actions(session: RuntimeSession, doctrine: list[dict], *, turn_ind
         ai += 1
 
     # Org adjust for morale/attrition (baseline calibration)
-    if float(team.get("morale", 0.7)) < 0.58 or float(team.get("attrition_risk", 0.0)) > 0.52:
+    # People track with severe team metrics gets more aggressive intervention
+    morale = float(team.get("morale", 0.7))
+    attrition_risk = float(team.get("attrition_risk", 0.0))
+    bandwidth_load = float(team.get("bandwidth_load", 0.0))
+    if is_people and (morale < 0.65 or attrition_risk > 0.45 or bandwidth_load > 0.88):
+        # Crisis-level team intervention: bigger deltas, lower thresholds
+        actions.append({
+            "tool_name": "people.org.adjust",
+            "request_id": _next_request_id(turn_index, ai),
+            "arguments": {
+                "morale_delta": 0.10,
+                "attrition_risk_delta": -0.14,
+                "bandwidth_load_delta": -0.12,
+                "monthly_burn_change_usd": 5000,
+                "onboarding_quality_delta": 0.03,
+            },
+        })
+        ai += 1
+    elif morale < 0.58 or attrition_risk > 0.52:
         actions.append({
             "tool_name": "people.org.adjust",
             "request_id": _next_request_id(turn_index, ai),
@@ -759,7 +797,7 @@ def _doctrine_actions(session: RuntimeSession, doctrine: list[dict], *, turn_ind
         ai += 1
 
     # Board update (doctrine-enhanced)
-    if turn_index % 2 == 0 or int(governance.get("board_update_count", 0)) == 0:
+    if track == "board" or turn_index % 2 == 0 or int(governance.get("board_update_count", 0)) == 0:
         actions.append({
             "tool_name": "board.update",
             "request_id": _next_request_id(turn_index, ai),
