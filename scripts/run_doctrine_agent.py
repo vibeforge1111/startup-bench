@@ -465,11 +465,23 @@ def _doctrine_actions(session: RuntimeSession, doctrine: list[dict], *, turn_ind
             "arguments": {"budget_changes": {"monthly_burn_usd": -15000}},
         })
         ai += 1
-    elif float(finance.get("runway_weeks", 999.0)) < 28 and not finance.get("last_plan_update"):
+    elif turn_index == 0 and not finance.get("last_plan_update"):
+        # Generic: always write finance plan on turn 0 with proportional burn cut
+        # Helps cash_efficiency + strategic_coherence (has_finance_plan flag)
+        burn = float(finance.get("monthly_burn_usd", 100000))
+        cut = max(20000, int(burn * 0.4))  # 40% cut or $20k minimum
         actions.append({
             "tool_name": "finance.plan.write",
             "request_id": _next_request_id(turn_index, ai),
-            "arguments": {"budget_changes": {"monthly_burn_usd": -20000}},
+            "arguments": {"budget_changes": {"monthly_burn_usd": -cut}},
+        })
+        ai += 1
+    elif turn_index == 8 and float(finance.get("monthly_burn_usd", 0)) > 50000:
+        # Generic: second burn cut at turn 8 for longer scenarios
+        actions.append({
+            "tool_name": "finance.plan.write",
+            "request_id": _next_request_id(turn_index, ai),
+            "arguments": {"budget_changes": {"monthly_burn_usd": -15000}},
         })
         ai += 1
     elif track == "board" and not finance.get("last_plan_update") and turn_index <= 1:
@@ -520,7 +532,7 @@ def _doctrine_actions(session: RuntimeSession, doctrine: list[dict], *, turn_ind
     if needs_roadmap_fix:
         incident_delta = -min(incidents_open, 1) if resolve_via_roadmap else 0
         # 0to1: minimize burn increase from roadmap work to preserve cash efficiency
-        roadmap_burn = 2000 if (is_0to1 or is_b2b_saas or is_crisis) else 4000
+        roadmap_burn = 2000  # minimize burn increase across all tracks
         actions.append({
             "tool_name": "product.roadmap.write",
             "request_id": _next_request_id(turn_index, ai),
@@ -625,8 +637,7 @@ def _doctrine_actions(session: RuntimeSession, doctrine: list[dict], *, turn_ind
     burn_usd = float(finance.get("monthly_burn_usd", 0.0))
     pipeline_usd = float(sales.get("weighted_pipeline_usd", 0.0))
     demand = float(market.get("demand_index", 1.0))
-    if is_0to1 or is_b2b_saas or is_crisis:
-        # Track override: build pipeline EVERY turn for pipeline_coverage
+    if True:  # Build pipeline EVERY turn for pipeline_coverage across all tracks
         pipeline_delta = 70000
         actions.append({
             "tool_name": "sales.pipeline.update",
@@ -686,12 +697,10 @@ def _doctrine_actions(session: RuntimeSession, doctrine: list[dict], *, turn_ind
             "arguments": {"price_change_pct": pct},
         })
         ai += 1
-    elif trust_score >= 0.70 and pricing_pressure < 0.55 and current_price_idx < 1.08:
-        # Baseline: trust >= 0.76, pricing_pressure < 0.48, price_index < 1.03
-        # Doctrine: be more aggressive when trust is healthy and there's room
-        # Doctrine: "growth that compromises unit economics is fake growth"
-        # Higher increase when trust is strong, lower when marginal
-        pct = 0.04 if trust_score >= 0.76 else 0.02
+    elif trust_score >= 0.65 and pricing_pressure < 0.55 and current_price_idx < 1.20:
+        # Default: push toward price_index 1.20 for maximum pricing_signal score
+        # Use policy-safe increments, higher when trust is strong
+        pct = 0.06 if trust_score >= 0.76 else (0.04 if trust_score >= 0.70 else 0.02)
         actions.append({
             "tool_name": "sales.pricing.propose",
             "request_id": _next_request_id(turn_index, ai),
