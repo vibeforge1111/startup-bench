@@ -485,6 +485,14 @@ def _doctrine_actions(session: RuntimeSession, doctrine: list[dict], *, turn_ind
             "arguments": {"budget_changes": {"monthly_burn_usd": -20000}},
         })
         ai += 1
+    elif is_finance and turn_index == 12 and float(finance.get("monthly_burn_usd", 0)) > 60000:
+        # Finance track: third cut at turn 12 for burn_quality + cash_efficiency
+        actions.append({
+            "tool_name": "finance.plan.write",
+            "request_id": _next_request_id(turn_index, ai),
+            "arguments": {"budget_changes": {"monthly_burn_usd": -15000}},
+        })
+        ai += 1
     elif turn_index == 0 and not finance.get("last_plan_update"):
         # Generic: always write finance plan on turn 0 with proportional burn cut
         # Helps cash_efficiency + strategic_coherence (has_finance_plan flag)
@@ -517,7 +525,7 @@ def _doctrine_actions(session: RuntimeSession, doctrine: list[dict], *, turn_ind
     # Finance track: more aggressive risk reduction to lower financing_pressure faster
     if float(finance.get("runway_weeks", 999.0)) < 18 or float(risk.get("financing_pressure", 0.0)) > 0.75:
         if not finance.get("last_raise_plan"):
-            fin_risk_reduction = 0.35 if is_finance else 0.26
+            fin_risk_reduction = 0.42 if is_finance else 0.26
             actions.append({
                 "tool_name": "finance.raise.propose",
                 "request_id": _next_request_id(turn_index, ai),
@@ -536,10 +544,11 @@ def _doctrine_actions(session: RuntimeSession, doctrine: list[dict], *, turn_ind
     fin_pressure = float(risk.get("financing_pressure", 0.0))
     treasury_threshold = 0.55 if (is_finance or fin_pressure > 0.5) else 0.8
     if treasury_concentration > treasury_threshold:
+        target_conc = 0.15 if is_finance else 0.35
         actions.append({
             "tool_name": "finance.treasury.rebalance",
             "request_id": _next_request_id(turn_index, ai),
-            "arguments": {"target_concentration": 0.35, "rebalance_cost_usd": 7000},
+            "arguments": {"target_concentration": target_conc, "rebalance_cost_usd": 7000},
         })
         ai += 1
 
@@ -573,8 +582,8 @@ def _doctrine_actions(session: RuntimeSession, doctrine: list[dict], *, turn_ind
     # Incident response (baseline calibration + doctrine comms)
     if int(product.get("major_incidents_open", 0)) > 0:
         # Crisis track: more aggressive trust recovery and churn reduction
-        inc_trust = 0.08 if is_crisis else 0.05
-        inc_churn = 0.012 if is_crisis else 0.008
+        inc_trust = 0.08 if is_crisis else 0.07
+        inc_churn = 0.012 if is_crisis else 0.010
         actions.append({
             "tool_name": "ops.incident.respond",
             "request_id": _next_request_id(turn_index, ai),
@@ -596,8 +605,8 @@ def _doctrine_actions(session: RuntimeSession, doctrine: list[dict], *, turn_ind
             "arguments": {
                 "backlog_reduction": 18,
                 "sla_risk_reduction": 0.18,
-                "trust_recovery": 0.04 if is_crisis else 0.03,
-                "churn_reduction": 0.006 if is_crisis else 0.005,
+                "trust_recovery": 0.05 if is_crisis else 0.04,
+                "churn_reduction": 0.008 if is_crisis else 0.007,
                 "monthly_burn_increase_usd": 6500,
             },
         })
