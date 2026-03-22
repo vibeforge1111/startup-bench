@@ -567,13 +567,16 @@ def _doctrine_actions(session: RuntimeSession, doctrine: list[dict], *, turn_ind
 
     # Incident response (baseline calibration + doctrine comms)
     if int(product.get("major_incidents_open", 0)) > 0:
+        # Crisis track: more aggressive trust recovery and churn reduction
+        inc_trust = 0.08 if is_crisis else 0.05
+        inc_churn = 0.012 if is_crisis else 0.008
         actions.append({
             "tool_name": "ops.incident.respond",
             "request_id": _next_request_id(turn_index, ai),
             "arguments": {
                 "incident_reduction": 1,
-                "trust_recovery": 0.05,
-                "churn_reduction": 0.008,
+                "trust_recovery": inc_trust,
+                "churn_reduction": inc_churn,
                 "monthly_burn_increase_usd": 8500,
                 "customer_comms_plan": _doctrine_incident_comms(session),
             },
@@ -588,8 +591,8 @@ def _doctrine_actions(session: RuntimeSession, doctrine: list[dict], *, turn_ind
             "arguments": {
                 "backlog_reduction": 18,
                 "sla_risk_reduction": 0.18,
-                "trust_recovery": 0.03,
-                "churn_reduction": 0.005,
+                "trust_recovery": 0.04 if is_crisis else 0.03,
+                "churn_reduction": 0.006 if is_crisis else 0.005,
                 "monthly_burn_increase_usd": 6500,
             },
         })
