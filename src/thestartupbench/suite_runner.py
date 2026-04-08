@@ -53,7 +53,10 @@ def run_suite(
             "scenario_score_sem": campaign["aggregate_metrics"]["scenario_score_sem"],
             "scenario_score_ci95_low": campaign["aggregate_metrics"]["scenario_score_ci95_low"],
             "scenario_score_ci95_high": campaign["aggregate_metrics"]["scenario_score_ci95_high"],
+            "outcome_score_mean": campaign["aggregate_metrics"]["outcome_score_mean"],
+            "constraint_score_mean": campaign["aggregate_metrics"]["constraint_score_mean"],
             "pass_rate": campaign["aggregate_metrics"]["pass_rate"],
+            "total_tool_calls_mean": campaign["aggregate_metrics"]["total_tool_calls_mean"],
         }
         scenario_reports.append(report)
         track_groups[report["track"]].append(report)
@@ -70,7 +73,10 @@ def run_suite(
                 "scenario_score_sem": _round_metric(_sem(score_means)),
                 "scenario_score_ci95_low": _round_metric(score_ci95_low),
                 "scenario_score_ci95_high": _round_metric(score_ci95_high),
+                "outcome_score_mean": _round_metric(mean(report["outcome_score_mean"] for report in reports)),
+                "constraint_score_mean": _round_metric(mean(report["constraint_score_mean"] for report in reports)),
                 "pass_rate_mean": _round_metric(mean(report["pass_rate"] for report in reports)),
+                "total_tool_calls_mean": _round_metric(mean(report["total_tool_calls_mean"] for report in reports)),
             }
         )
 
@@ -90,7 +96,10 @@ def run_suite(
             "scenario_score_sem": _round_metric(_sem(overall_score_means)),
             "scenario_score_ci95_low": _round_metric(overall_ci95_low),
             "scenario_score_ci95_high": _round_metric(overall_ci95_high),
+            "outcome_score_mean": _round_metric(mean(report["outcome_score_mean"] for report in scenario_reports)),
+            "constraint_score_mean": _round_metric(mean(report["constraint_score_mean"] for report in scenario_reports)),
             "pass_rate_mean": _round_metric(mean(report["pass_rate"] for report in scenario_reports)),
+            "total_tool_calls_mean": _round_metric(mean(report["total_tool_calls_mean"] for report in scenario_reports)),
         },
         "track_summaries": track_summaries,
         "scenario_reports": scenario_reports,

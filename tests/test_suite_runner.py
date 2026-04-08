@@ -25,11 +25,20 @@ class SuiteRunnerTests(unittest.TestCase):
 
         self.assertTrue(result["validation"]["ok"])
         report = result["suite_report"]
-        self.assertEqual(report["overall"]["scenario_count"], 9)
+        self.assertEqual(report["overall"]["scenario_count"], 13)
         self.assertIn("scenario_score_ci95_low", report["overall"])
         self.assertIn("scenario_score_ci95_high", report["overall"])
-        self.assertEqual(len(report["scenario_reports"]), 9)
+        self.assertIn("outcome_score_mean", report["overall"])
+        self.assertIn("constraint_score_mean", report["overall"])
+        self.assertIn("total_tool_calls_mean", report["overall"])
+        self.assertEqual(len(report["scenario_reports"]), 13)
         self.assertIn("scenario_score_sem", report["scenario_reports"][0])
+        self.assertIn("outcome_score_mean", report["scenario_reports"][0])
+        self.assertIn("constraint_score_mean", report["scenario_reports"][0])
+        self.assertIn("total_tool_calls_mean", report["scenario_reports"][0])
+        self.assertIn("outcome_score_mean", report["track_summaries"][0])
+        self.assertIn("constraint_score_mean", report["track_summaries"][0])
+        self.assertIn("total_tool_calls_mean", report["track_summaries"][0])
         tracks = {item["track"] for item in report["track_summaries"]}
         self.assertEqual(tracks, {"0to1", "b2b_saas", "board", "crisis", "finance", "gtm", "people", "product", "scale"})
 

@@ -45,6 +45,9 @@ class SubmissionBuilderTests(unittest.TestCase):
         self.assertIn("sem", submission["evaluation"]["track_summaries"][0])
         self.assertIn("ci95_low", submission["evaluation"]["track_summaries"][0])
         self.assertIn("ci95_high", submission["evaluation"]["track_summaries"][0])
+        self.assertIn("outcome_score_mean", submission["evaluation"]["track_summaries"][0])
+        self.assertIn("constraint_score_mean", submission["evaluation"]["track_summaries"][0])
+        self.assertIn("total_tool_calls_mean", submission["evaluation"]["track_summaries"][0])
 
 
 if __name__ == "__main__":

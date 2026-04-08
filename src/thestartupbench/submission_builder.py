@@ -42,6 +42,9 @@ def build_submission(
     for track, reports in sorted(track_groups.items()):
         scores = [float(report["scenario_score_mean"]) for report in reports]
         pass_rates = [float(report["pass_rate"]) for report in reports]
+        outcome_scores = [float(report["outcome_score_mean"]) for report in reports if "outcome_score_mean" in report]
+        constraint_scores = [float(report["constraint_score_mean"]) for report in reports if "constraint_score_mean" in report]
+        tool_call_counts = [float(report["total_tool_calls_mean"]) for report in reports if "total_tool_calls_mean" in report]
         if len(scores) == 1:
             sem = 0.0
         else:
@@ -60,6 +63,21 @@ def build_submission(
                 "ci95_low": _round_metric(mean(scores) - (1.96 * sem)),
                 "ci95_high": _round_metric(mean(scores) + (1.96 * sem)),
                 "api_cost_usd": 0.0,
+                **(
+                    {"outcome_score_mean": _round_metric(mean(outcome_scores))}
+                    if outcome_scores
+                    else {}
+                ),
+                **(
+                    {"constraint_score_mean": _round_metric(mean(constraint_scores))}
+                    if constraint_scores
+                    else {}
+                ),
+                **(
+                    {"total_tool_calls_mean": _round_metric(mean(tool_call_counts))}
+                    if tool_call_counts
+                    else {}
+                ),
             }
         )
 

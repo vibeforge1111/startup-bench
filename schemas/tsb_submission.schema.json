@@ -46,7 +46,10 @@
               "sem": { "type": "number", "minimum": 0 },
               "ci95_low": { "type": "number" },
               "ci95_high": { "type": "number" },
-              "api_cost_usd": { "type": "number", "minimum": 0 }
+              "api_cost_usd": { "type": "number", "minimum": 0 },
+              "outcome_score_mean": { "type": "number" },
+              "constraint_score_mean": { "type": "number" },
+              "total_tool_calls_mean": { "type": "number", "minimum": 0 }
             },
             "additionalProperties": false
           }

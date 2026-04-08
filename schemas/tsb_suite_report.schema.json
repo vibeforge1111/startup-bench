@@ -20,7 +20,10 @@
         "scenario_score_sem": { "type": "number" },
         "scenario_score_ci95_low": { "type": "number" },
         "scenario_score_ci95_high": { "type": "number" },
-        "pass_rate_mean": { "type": "number" }
+        "outcome_score_mean": { "type": "number" },
+        "constraint_score_mean": { "type": "number" },
+        "pass_rate_mean": { "type": "number" },
+        "total_tool_calls_mean": { "type": "number", "minimum": 0 }
       },
       "additionalProperties": false
     },
@@ -36,7 +39,10 @@
           "scenario_score_sem": { "type": "number" },
           "scenario_score_ci95_low": { "type": "number" },
           "scenario_score_ci95_high": { "type": "number" },
-          "pass_rate_mean": { "type": "number" }
+          "outcome_score_mean": { "type": "number" },
+          "constraint_score_mean": { "type": "number" },
+          "pass_rate_mean": { "type": "number" },
+          "total_tool_calls_mean": { "type": "number", "minimum": 0 }
         },
         "additionalProperties": false
       }
@@ -54,7 +60,10 @@
           "scenario_score_sem": { "type": "number" },
           "scenario_score_ci95_low": { "type": "number" },
           "scenario_score_ci95_high": { "type": "number" },
-          "pass_rate": { "type": "number" }
+          "outcome_score_mean": { "type": "number" },
+          "constraint_score_mean": { "type": "number" },
+          "pass_rate": { "type": "number" },
+          "total_tool_calls_mean": { "type": "number", "minimum": 0 }
         },
         "additionalProperties": false
       }
