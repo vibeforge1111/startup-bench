@@ -32,8 +32,8 @@ class SuiteManifestTests(unittest.TestCase):
         self.assertTrue(result["validation"]["ok"])
         manifest = result["manifest"]
         self.assertEqual(manifest["split"], "test")
-        self.assertEqual(manifest["scenario_count"], 8)
-        self.assertEqual(manifest["scenario_pack_version"], "real-world-test-pack-0.3.0")
+        self.assertEqual(manifest["scenario_count"], 12)
+        self.assertEqual(manifest["scenario_pack_version"], "real-world-test-pack-0.5.0")
         self.assertNotIn("path", manifest["scenarios"][0])
         self.assertEqual(manifest["scenarios"][0]["hidden_ref"], "test_000")
 
@@ -43,8 +43,8 @@ class SuiteManifestTests(unittest.TestCase):
         self.assertTrue(result["validation"]["ok"])
         manifest = result["manifest"]
         self.assertEqual(manifest["split"], "test")
-        self.assertEqual(manifest["scenario_count"], 11)
-        self.assertEqual(manifest["scenario_pack_version"], "coverage-test-pack-0.8.0")
+        self.assertEqual(manifest["scenario_count"], 20)
+        self.assertEqual(manifest["scenario_pack_version"], "coverage-test-pack-0.11.0")
         self.assertNotIn("path", manifest["scenarios"][0])
         self.assertEqual(manifest["scenarios"][0]["hidden_ref"], "test_000")
 
