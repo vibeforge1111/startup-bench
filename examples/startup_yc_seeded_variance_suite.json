@@ -21,6 +21,24 @@
       "path": "minimal_product_seeded_variance_scenario.json",
       "track": "product",
       "mode": "dev"
+    },
+    {
+      "scenario_id": "people_seeded_variance_001",
+      "path": "minimal_people_seeded_variance_scenario.json",
+      "track": "people",
+      "mode": "dev"
+    },
+    {
+      "scenario_id": "board_product_seeded_variance_001",
+      "path": "minimal_board_seeded_variance_scenario.json",
+      "track": "board",
+      "mode": "dev"
+    },
+    {
+      "scenario_id": "scale_seeded_variance_001",
+      "path": "minimal_scale_seeded_variance_scenario.json",
+      "track": "scale",
+      "mode": "dev"
     }
   ]
 }
