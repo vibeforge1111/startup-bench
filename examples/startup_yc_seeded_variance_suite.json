@@ -1,0 +1,14 @@
+{
+  "suite_version": "0.1.0",
+  "benchmark_version": "0.2.0-draft",
+  "scenario_pack_version": "startup-yc-seeded-variance-0.1.0",
+  "split": "dev",
+  "scenarios": [
+    {
+      "scenario_id": "gtm_channel_seeded_variance_001",
+      "path": "minimal_gtm_seeded_variance_scenario.json",
+      "track": "gtm",
+      "mode": "dev"
+    }
+  ]
+}

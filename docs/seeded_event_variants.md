@@ -4,6 +4,8 @@ Startup Bench scenarios can now make scheduled events genuinely seed-dependent b
 
 This is useful when repeated-seed validation should measure more than command repeatability. A scenario can keep the same founder problem while varying the severity, timing pressure, or operational consequences of a scheduled event.
 
+The first public example is `examples/minimal_gtm_seeded_variance_scenario.json`, grouped by `examples/startup_yc_seeded_variance_suite.json`. It keeps the standard GTM channel-reset operating problem but varies the early market shock and later design-partner expansion signal by seed.
+
 ## Contract
 
 Each scheduled event may include:
