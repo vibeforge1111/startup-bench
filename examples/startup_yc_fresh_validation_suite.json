@@ -1,0 +1,80 @@
+{
+  "suite_version": "0.1.0",
+  "benchmark_version": "0.2.0-draft",
+  "scenario_pack_version": "startup-yc-fresh-validation-0.1.0",
+  "split": "fresh",
+  "scenarios": [
+    {
+      "scenario_id": "hidden_gtm_pipeline_reset_fresh_001",
+      "path": "hidden_gtm_pipeline_reset_fresh_scenario.json",
+      "track": "gtm",
+      "mode": "fresh"
+    },
+    {
+      "scenario_id": "hidden_gtm_procurement_slip_fresh_001",
+      "path": "hidden_gtm_procurement_slip_fresh_scenario.json",
+      "track": "gtm",
+      "mode": "fresh"
+    },
+    {
+      "scenario_id": "hidden_finance_liquidity_fresh_001",
+      "path": "hidden_finance_liquidity_fresh_scenario.json",
+      "track": "finance",
+      "mode": "fresh"
+    },
+    {
+      "scenario_id": "hidden_finance_reforecast_drag_fresh_001",
+      "path": "hidden_finance_reforecast_drag_fresh_scenario.json",
+      "track": "finance",
+      "mode": "fresh"
+    },
+    {
+      "scenario_id": "hidden_product_quality_debt_fresh_001",
+      "path": "hidden_product_quality_debt_fresh_scenario.json",
+      "track": "product",
+      "mode": "fresh"
+    },
+    {
+      "scenario_id": "hidden_product_migration_reliability_fresh_001",
+      "path": "hidden_product_migration_reliability_fresh_scenario.json",
+      "track": "product",
+      "mode": "fresh"
+    },
+    {
+      "scenario_id": "hidden_people_attrition_fresh_001",
+      "path": "hidden_people_attrition_fresh_scenario.json",
+      "track": "people",
+      "mode": "fresh"
+    },
+    {
+      "scenario_id": "hidden_people_onboarding_manager_gap_fresh_001",
+      "path": "hidden_people_onboarding_manager_gap_fresh_scenario.json",
+      "track": "people",
+      "mode": "fresh"
+    },
+    {
+      "scenario_id": "hidden_board_product_launch_truth_fresh_001",
+      "path": "hidden_board_product_launch_truth_fresh_scenario.json",
+      "track": "board",
+      "mode": "fresh"
+    },
+    {
+      "scenario_id": "hidden_board_product_reference_pushback_fresh_001",
+      "path": "hidden_board_product_reference_pushback_fresh_scenario.json",
+      "track": "board",
+      "mode": "fresh"
+    },
+    {
+      "scenario_id": "hidden_scale_enterprise_delivery_fresh_001",
+      "path": "hidden_scale_enterprise_delivery_fresh_scenario.json",
+      "track": "scale",
+      "mode": "fresh"
+    },
+    {
+      "scenario_id": "hidden_scale_support_capacity_fresh_001",
+      "path": "hidden_scale_support_capacity_fresh_scenario.json",
+      "track": "scale",
+      "mode": "fresh"
+    }
+  ]
+}
