@@ -5,6 +5,7 @@ from __future__ import annotations
 from copy import deepcopy
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta, timezone
+import random
 
 from .observations import project_surfaces
 from .primitive_engine import apply_operations, resolve_event_operations
@@ -53,6 +54,29 @@ def _flatten_world_state(world_state: dict) -> dict[str, object]:
     return flat
 
 
+def _select_seed_variant(event: dict, *, seed: int) -> dict | None:
+    variants = event.get("seed_variants")
+    if not isinstance(variants, list) or not variants:
+        return None
+
+    normalized = [variant for variant in variants if isinstance(variant, dict)]
+    if not normalized:
+        return None
+
+    rng = random.Random(f"{seed}:{event.get('event_id', '')}")
+    total_weight = sum(max(0.0, float(variant.get("weight", 1.0))) for variant in normalized)
+    if total_weight <= 0:
+        return normalized[rng.randrange(len(normalized))]
+
+    threshold = rng.random() * total_weight
+    running = 0.0
+    for variant in normalized:
+        running += max(0.0, float(variant.get("weight", 1.0)))
+        if threshold <= running:
+            return variant
+    return normalized[-1]
+
+
 @dataclass
 class RuntimeSession:
     scenario: dict
@@ -77,6 +101,7 @@ def _tool_result(tool_name: str, request_id: str, *, result: dict, state_delta_s
 
 def _process_due_events(session: RuntimeSession) -> list[dict]:
     current_turn = int(session.world_state["sim"]["current_turn"])
+    seed = int(session.world_state["sim"].get("seed", 0))
     processed_ids = set(session.world_state["sim"].setdefault("processed_event_ids", []))
     emitted: list[dict] = []
     for event in session.scenario.get("event_model", {}).get("scheduled_events", []):
@@ -85,16 +110,24 @@ def _process_due_events(session: RuntimeSession) -> list[dict]:
             continue
         if int(event.get("at_turn", 0)) > current_turn:
             continue
-        operation_deltas = apply_operations(
-            session.world_state,
-            resolve_event_operations(scenario=session.scenario, event=event),
-        )
+        operations = resolve_event_operations(scenario=session.scenario, event=event)
+        seed_variant = _select_seed_variant(event, seed=seed)
+        if seed_variant:
+            operations.extend(deepcopy(seed_variant.get("operations", [])))
+            if "effects" in seed_variant:
+                variant_event = {"effects": seed_variant["effects"]}
+                operations.extend(resolve_event_operations(scenario=session.scenario, event=variant_event))
+        operation_deltas = apply_operations(session.world_state, operations)
         visible_event = {
             "event_type": event.get("event_type", "scheduled_event"),
             "event_id": event_id,
             "message": event.get("visible_message", ""),
             "operation_count": len(operation_deltas),
         }
+        if seed_variant:
+            visible_event["seed_variant_id"] = seed_variant.get("variant_id", "")
+            if seed_variant.get("visible_message"):
+                visible_event["message"] = seed_variant["visible_message"]
         processed_ids.add(event_id)
         emitted.append(visible_event)
         session.event_log.append(visible_event)

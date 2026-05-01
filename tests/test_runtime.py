@@ -259,6 +259,74 @@ class RuntimeTests(unittest.TestCase):
         self.assertEqual(response["result"]["events_processed"][1]["event_id"], "ev_001")
         self.assertEqual(response["result"]["events_processed"][1]["operation_count"], 1)
 
+    def test_seed_variants_make_scheduled_events_seed_dependent(self) -> None:
+        scenario = load_scenario(SCENARIO_PATH)
+        scenario["event_model"]["scheduled_events"] = [
+            {
+                "event_id": "ev_seeded_001",
+                "at_turn": 1,
+                "event_type": "seeded_market_shock",
+                "visible_message": "A seeded market perturbation fired.",
+                "seed_variants": [
+                    {
+                        "variant_id": "soft_shock",
+                        "weight": 1,
+                        "visible_message": "A softer market shock hit pipeline quality.",
+                        "operations": [
+                            {"op": "increment", "path": "market.demand_index", "value": -0.02},
+                            {"op": "increment", "path": "sales.weighted_pipeline_usd", "value": -10000},
+                        ],
+                    },
+                    {
+                        "variant_id": "hard_shock",
+                        "weight": 1,
+                        "visible_message": "A harder market shock hit pipeline quality.",
+                        "operations": [
+                            {"op": "increment", "path": "market.demand_index", "value": -0.12},
+                            {"op": "increment", "path": "sales.weighted_pipeline_usd", "value": -60000},
+                        ],
+                    },
+                ],
+            }
+        ]
+
+        first = RuntimeSession(scenario=scenario, world_state=initialize_world_state(scenario, seed=0))
+        second = RuntimeSession(scenario=scenario, world_state=initialize_world_state(scenario, seed=1))
+        first_response = execute_tool_call(
+            first,
+            {
+                "tool_name": "sim.advance",
+                "request_id": "req_adv_seed_0",
+                "arguments": {"advance_by": 1, "unit": "week"},
+            },
+        )
+        second_response = execute_tool_call(
+            second,
+            {
+                "tool_name": "sim.advance",
+                "request_id": "req_adv_seed_1",
+                "arguments": {"advance_by": 1, "unit": "week"},
+            },
+        )
+
+        first_event = first_response["result"]["events_processed"][1]
+        second_event = second_response["result"]["events_processed"][1]
+        self.assertNotEqual(first_event["seed_variant_id"], second_event["seed_variant_id"])
+        self.assertNotEqual(first.world_state["market"]["demand_index"], second.world_state["market"]["demand_index"])
+        self.assertNotEqual(first.world_state["sales"]["weighted_pipeline_usd"], second.world_state["sales"]["weighted_pipeline_usd"])
+
+        first_repeat = RuntimeSession(scenario=scenario, world_state=initialize_world_state(scenario, seed=0))
+        first_repeat_response = execute_tool_call(
+            first_repeat,
+            {
+                "tool_name": "sim.advance",
+                "request_id": "req_adv_seed_0_repeat",
+                "arguments": {"advance_by": 1, "unit": "week"},
+            },
+        )
+        self.assertEqual(first_event["seed_variant_id"], first_repeat_response["result"]["events_processed"][1]["seed_variant_id"])
+        self.assertEqual(first.world_state["market"]["demand_index"], first_repeat.world_state["market"]["demand_index"])
+
     def test_board_read_and_update_track_governance_state(self) -> None:
         read_before = execute_tool_call(
             self.session,
