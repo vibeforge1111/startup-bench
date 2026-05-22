@@ -21,11 +21,11 @@ High-value contributions right now:
 
 ## What To Read First
 
-- [docs/getting_started.md](/C:/Users/USER/Desktop/startup-bench/docs/getting_started.md)
-- [docs/benchmark_status.md](/C:/Users/USER/Desktop/startup-bench/docs/benchmark_status.md)
-- [docs/benchmark_known_issues.md](/C:/Users/USER/Desktop/startup-bench/docs/benchmark_known_issues.md)
-- [docs/testing_coverage.md](/C:/Users/USER/Desktop/startup-bench/docs/testing_coverage.md)
-- [spec/README.md](/C:/Users/USER/Desktop/startup-bench/spec/README.md)
+- [docs/getting_started.md](docs/getting_started.md)
+- [docs/benchmark_status.md](docs/benchmark_status.md)
+- [docs/benchmark_known_issues.md](docs/benchmark_known_issues.md)
+- [docs/testing_coverage.md](docs/testing_coverage.md)
+- [spec/README.md](spec/README.md)
 
 ## Ground Rules
 
@@ -71,9 +71,9 @@ Human calibration is not the same as normal benchmarking.
 
 If you want to help later with calibration, read:
 
-- [docs/human_review_wave_001.md](/C:/Users/USER/Desktop/startup-bench/docs/human_review_wave_001.md)
-- [docs/reviewer_manual.md](/C:/Users/USER/Desktop/startup-bench/docs/reviewer_manual.md)
-- [docs/calibration_taskforce_strategy.md](/C:/Users/USER/Desktop/startup-bench/docs/calibration_taskforce_strategy.md)
+- [docs/human_review_wave_001.md](docs/human_review_wave_001.md)
+- [docs/reviewer_manual.md](docs/reviewer_manual.md)
+- [docs/calibration_taskforce_strategy.md](docs/calibration_taskforce_strategy.md)
 
 ## Current Priority
 
