@@ -74,6 +74,7 @@ def run_campaign(
                 scenario_path=scenario_path,
                 tool_calls_path=tool_calls_path,
                 seed=seed,
+                max_turns=max_turns,
             )
             runner_id = str(tool_calls_path.name)
         else:

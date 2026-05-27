@@ -16,7 +16,7 @@ from .trace_validation import validate_trace_integrity
 from .validation import validate_instance
 
 
-def run_tool_script(*, scenario_path: Path, tool_calls_path: Path, seed: int) -> dict:
+def run_tool_script(*, scenario_path: Path, tool_calls_path: Path, seed: int, max_turns: int | None = None) -> dict:
     scenario = load_scenario(scenario_path)
     tool_calls = load_json(tool_calls_path)
     if not isinstance(tool_calls, list):
@@ -30,7 +30,11 @@ def run_tool_script(*, scenario_path: Path, tool_calls_path: Path, seed: int) ->
         {"snapshot_id": "initial", "kind": "initial", "state": deepcopy(session.world_state)}
     ]
 
+    truncated_by_max_turns = False
     for turn_index, tool_call in enumerate(tool_calls):
+        if max_turns is not None and session.world_state["sim"]["current_turn"] >= max_turns:
+            truncated_by_max_turns = True
+            break
         if tool_call["tool_name"] not in declared_tools:
             raise ValueError(f"Tool '{tool_call['tool_name']}' is not declared by scenario '{scenario['metadata']['scenario_id']}'.")
         before_time = session.world_state["sim"]["current_time"]
@@ -89,6 +93,11 @@ def run_tool_script(*, scenario_path: Path, tool_calls_path: Path, seed: int) ->
     score_report = build_score_report(scenario=scenario, run_id=run_id, evaluation=evaluation)
     return {
         "run_id": run_id,
+        "script_control": {
+            "max_turns": max_turns,
+            "executed_tool_calls": len(turns),
+            "script_truncated_by_max_turns": truncated_by_max_turns,
+        },
         "tool_manifest": tool_manifest_for_names(scenario["tools"]),
         "trace": trace,
         "score_report": score_report,
