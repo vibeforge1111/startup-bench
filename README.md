@@ -251,6 +251,7 @@ python -m thestartupbench export-model-review-bundles tmp_out --output-dir tmp_m
 python -m thestartupbench import-model-reviews tmp_model_outputs --output-dir tmp_model_import
 python -m thestartupbench compile-calibration-study examples/operator_calibration_study_manifest.json --study-run-dir tmp_out --review-paths examples/minimal_operator_review.json --output-dir tmp_out
 python -m thestartupbench build-submission --suite-report-paths tmp_out/suite_report.json --model-id heuristic_resilient_operator --provider baseline --contamination-flag clean --output-dir tmp_out
+python -m thestartupbench export-self-improvement --scenario-path examples/minimal_0to1_scenario.json --baseline-trace tmp_out/baseline/trace.json --baseline-score-report tmp_out/baseline/score_report.json --candidate-trace tmp_out/candidate/trace.json --candidate-score-report tmp_out/candidate/score_report.json --tool-calls-path examples/minimal_tool_script.json --baseline-id heuristic_resilient_operator --output-dir tmp_out
 python -m unittest discover -s tests -p "test_*.py"
 ```
 
@@ -260,7 +261,7 @@ python -m unittest discover -s tests -p "test_*.py"
 <summary><strong>Schemas and artifacts</strong></summary>
 
 **JSON Schemas:**
-`tsb_scenario`, `tsb_world_state`, `tsb_primitives`, `tsb_tool_manifest`, `tsb_tool_call`, `tsb_tool_response`, `tsb_evaluator_result`, `tsb_score_report`, `tsb_batch_report`, `tsb_scenario_suite`, `tsb_public_suite_manifest`, `tsb_official_eval_profile`, `tsb_run_manifest`, `tsb_suite_report`, `tsb_trace`, `tsb_submission`, `tsb_operator_review`, `tsb_operator_review_summary`, `tsb_calibration_report`, `tsb_calibration_study`, `tsb_review_packet`, `tsb_calibration_study_run`, `tsb_calibration_study_report`, `tsb_review_assignments`, `tsb_review_form_export`, `tsb_review_form_import`, `tsb_external_adoption_pack`
+`tsb_scenario`, `tsb_world_state`, `tsb_primitives`, `tsb_tool_manifest`, `tsb_tool_call`, `tsb_tool_response`, `tsb_evaluator_result`, `tsb_score_report`, `tsb_batch_report`, `tsb_scenario_suite`, `tsb_public_suite_manifest`, `tsb_official_eval_profile`, `tsb_run_manifest`, `tsb_suite_report`, `tsb_trace`, `tsb_submission`, `tsb_operator_review`, `tsb_operator_review_summary`, `tsb_calibration_report`, `tsb_calibration_study`, `tsb_review_packet`, `tsb_calibration_study_run`, `tsb_calibration_study_report`, `tsb_review_assignments`, `tsb_review_form_export`, `tsb_review_form_import`, `tsb_external_adoption_pack`, `tsb_self_improvement_export`
 
 All schemas live in `schemas/` as `tsb_*.schema.json`.
 
