@@ -45,6 +45,7 @@ def _build_parser() -> argparse.ArgumentParser:
     script_parser.add_argument("scenario_path", help="Path to the scenario JSON file")
     script_parser.add_argument("tool_calls_path", help="Path to the tool-call JSON array")
     script_parser.add_argument("--seed", type=int, default=0, help="Seed used for the scripted run")
+    script_parser.add_argument("--max-turns", type=int, help="Optional cap on the number of simulated turns")
     script_parser.add_argument("--output-dir", help="Optional directory to write trace and score report artifacts")
 
     baseline_parser = subparsers.add_parser("run-baseline", help="Execute a built-in heuristic baseline")
@@ -158,6 +159,21 @@ def _build_parser() -> argparse.ArgumentParser:
     import_model_parser.add_argument("raw_dir", help="Directory containing raw model review responses")
     import_model_parser.add_argument("--output-dir", required=True, help="Directory to write imported operator-review JSON artifacts")
 
+    export_self_parser = subparsers.add_parser("export-self-improvement", help="Emit a canonical Startup Bench self-improvement export from existing artifacts")
+    export_self_parser.add_argument("--scenario-path", required=True, help="Path to the scenario JSON file")
+    export_self_parser.add_argument("--baseline-trace", required=True, help="Path to the baseline trace JSON")
+    export_self_parser.add_argument("--baseline-score-report", required=True, help="Path to the baseline score_report JSON")
+    export_self_parser.add_argument("--candidate-trace", required=True, help="Path to the candidate trace JSON")
+    export_self_parser.add_argument("--candidate-score-report", required=True, help="Path to the candidate score_report JSON")
+    export_self_parser.add_argument("--tool-calls-path", required=True, help="Path to the candidate tool-call script")
+    export_self_parser.add_argument("--baseline-id", required=True, help="Baseline id used for the baseline run")
+    export_self_parser.add_argument("--candidate-id", default="startup_operator_candidate", help="Candidate id for the export")
+    export_self_parser.add_argument("--seed", type=int, help="Optional seed override when traces lack one")
+    export_self_parser.add_argument("--max-turns", type=int, help="Optional max-turn cap recorded in the run signature")
+    export_self_parser.add_argument("--heldout-artifact-path", help="Optional heldout proof artifact path")
+    export_self_parser.add_argument("--trap-artifact-path", help="Optional trap proof artifact path")
+    export_self_parser.add_argument("--output-dir", help="Optional directory to write self_improvement_export.json")
+
     return parser
 
 
@@ -265,13 +281,20 @@ def _cmd_run_dry(scenario_path: str, seed: int, output_dir: str | None) -> int:
     return 0
 
 
-def _cmd_run_script(scenario_path: str, tool_calls_path: str, seed: int, output_dir: str | None) -> int:
+def _cmd_run_script(
+    scenario_path: str,
+    tool_calls_path: str,
+    seed: int,
+    max_turns: int | None,
+    output_dir: str | None,
+) -> int:
     from .script_runner import run_tool_script
 
     result = run_tool_script(
         scenario_path=Path(scenario_path),
         tool_calls_path=Path(tool_calls_path),
         seed=seed,
+        max_turns=max_turns,
     )
     if output_dir:
         out_dir = Path(output_dir)
@@ -648,6 +671,49 @@ def _cmd_import_model_reviews(raw_dir: str, output_dir: str) -> int:
     return 0 if result["validation"]["ok"] and result["import_result"]["rejected_count"] == 0 else 1
 
 
+def _cmd_export_self_improvement(
+    *,
+    scenario_path: str,
+    baseline_trace: str,
+    baseline_score_report: str,
+    candidate_trace: str,
+    candidate_score_report: str,
+    tool_calls_path: str,
+    baseline_id: str,
+    candidate_id: str,
+    seed: int | None,
+    max_turns: int | None,
+    heldout_artifact_path: str | None,
+    trap_artifact_path: str | None,
+    output_dir: str | None,
+) -> int:
+    from .self_improvement_export import build_and_validate_self_improvement_export
+
+    result = build_and_validate_self_improvement_export(
+        scenario_path=Path(scenario_path),
+        baseline_trace_path=Path(baseline_trace),
+        baseline_score_report_path=Path(baseline_score_report),
+        candidate_trace_path=Path(candidate_trace),
+        candidate_score_report_path=Path(candidate_score_report),
+        tool_calls_path=Path(tool_calls_path),
+        baseline_id=baseline_id,
+        candidate_id=candidate_id,
+        seed=seed,
+        max_turns=max_turns,
+        heldout_artifact_path=Path(heldout_artifact_path) if heldout_artifact_path else None,
+        trap_artifact_path=Path(trap_artifact_path) if trap_artifact_path else None,
+    )
+    if output_dir:
+        out_dir = Path(output_dir)
+        out_dir.mkdir(parents=True, exist_ok=True)
+        (out_dir / "self_improvement_export.json").write_text(
+            json.dumps(result["export"], indent=2),
+            encoding="utf-8",
+        )
+    print(json.dumps(result, indent=2))
+    return 0 if result["validation"]["ok"] else 1
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = _build_parser()
     args = parser.parse_args(argv)
@@ -672,7 +738,7 @@ def main(argv: list[str] | None = None) -> int:
     if args.command == "run-dry":
         return _cmd_run_dry(args.scenario_path, args.seed, args.output_dir)
     if args.command == "run-script":
-        return _cmd_run_script(args.scenario_path, args.tool_calls_path, args.seed, args.output_dir)
+        return _cmd_run_script(args.scenario_path, args.tool_calls_path, args.seed, args.max_turns, args.output_dir)
     if args.command == "run-baseline":
         return _cmd_run_baseline(
             args.scenario_path,
@@ -772,6 +838,22 @@ def main(argv: list[str] | None = None) -> int:
         return _cmd_export_model_review_bundles(args.study_run_dir, args.output_dir)
     if args.command == "import-model-reviews":
         return _cmd_import_model_reviews(args.raw_dir, args.output_dir)
+    if args.command == "export-self-improvement":
+        return _cmd_export_self_improvement(
+            scenario_path=args.scenario_path,
+            baseline_trace=args.baseline_trace,
+            baseline_score_report=args.baseline_score_report,
+            candidate_trace=args.candidate_trace,
+            candidate_score_report=args.candidate_score_report,
+            tool_calls_path=args.tool_calls_path,
+            baseline_id=args.baseline_id,
+            candidate_id=args.candidate_id,
+            seed=args.seed,
+            max_turns=args.max_turns,
+            heldout_artifact_path=args.heldout_artifact_path,
+            trap_artifact_path=args.trap_artifact_path,
+            output_dir=args.output_dir,
+        )
 
     parser.print_help()
     return 1

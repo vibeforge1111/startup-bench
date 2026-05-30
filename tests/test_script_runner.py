@@ -39,6 +39,20 @@ class ScriptRunnerTests(unittest.TestCase):
         self.assertEqual(final_state["finance"]["cash_usd"], 886500.0)
         self.assertGreater(result["score_report"]["scenario_score"], 0.0)
 
+    def test_script_runner_records_max_turn_cap(self) -> None:
+        result = run_tool_script(
+            scenario_path=SCENARIO_PATH,
+            tool_calls_path=TOOL_SCRIPT_PATH,
+            seed=29,
+            max_turns=1,
+        )
+
+        script_control = result["script_control"]
+        final_state = result["trace"]["state_snapshots"][-1]["state"]
+        self.assertEqual(script_control["max_turns"], 1)
+        self.assertFalse(script_control["script_truncated_by_max_turns"])
+        self.assertEqual(final_state["sim"]["current_turn"], 1)
+
     def test_script_runner_rejects_undeclared_tool_calls(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
             script_path = Path(tmp_dir) / "bad_script.json"

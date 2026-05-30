@@ -44,6 +44,7 @@ SCHEMA_BY_ARTIFACT_TYPE = {
     "score-report": "tsb_score_report.schema.json",
     "batch-report": "tsb_batch_report.schema.json",
     "suite-report": "tsb_suite_report.schema.json",
+    "self-improvement-export": "tsb_self_improvement_export.schema.json",
 }
 
 

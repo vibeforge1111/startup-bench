@@ -62,6 +62,7 @@ Machine-readable schemas:
 - `../schemas/tsb_review_assignments.schema.json`
 - `../schemas/tsb_review_form_export.schema.json`
 - `../schemas/tsb_review_form_import.schema.json`
+- `../schemas/tsb_self_improvement_export.schema.json`
 
 Example:
 

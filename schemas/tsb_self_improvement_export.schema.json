@@ -1,0 +1,300 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://thestartupbench.org/schemas/tsb_self_improvement_export.schema.json",
+  "title": "TheStartupBench Self Improvement Export",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "generated_at",
+    "benchmark",
+    "scenario",
+    "run_signature",
+    "candidate_lock",
+    "baseline",
+    "candidate",
+    "comparison",
+    "heldout",
+    "trap",
+    "raw_artifacts",
+    "claim_boundary"
+  ],
+  "properties": {
+    "schema_version": { "const": "tsb_self_improvement_export.v1" },
+    "generated_at": { "type": "string", "format": "date-time" },
+    "benchmark": {
+      "type": "object",
+      "required": ["benchmark_name", "benchmark_version", "scaffold_version"],
+      "properties": {
+        "benchmark_name": { "type": "string" },
+        "benchmark_version": { "type": "string" },
+        "scaffold_version": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "scenario": {
+      "type": "object",
+      "required": ["scenario_id", "scenario_version", "track", "mode", "scenario_path", "scenario_sha256"],
+      "properties": {
+        "scenario_id": { "type": "string" },
+        "scenario_version": { "type": "string" },
+        "track": { "type": "string" },
+        "mode": { "type": "string" },
+        "scenario_path": { "type": "string" },
+        "scenario_sha256": { "$ref": "#/$defs/sha256" }
+      },
+      "additionalProperties": false
+    },
+    "run_signature": {
+      "type": "object",
+      "required": ["schema_version", "digest", "payload"],
+      "properties": {
+        "schema_version": { "const": "tsb_self_improvement_run_signature.v1" },
+        "digest": { "$ref": "#/$defs/sha256" },
+        "payload": {
+          "type": "object",
+          "required": [
+            "baseline_id",
+            "candidate_id",
+            "scenario_path",
+            "scenario_sha256",
+            "tool_calls_path",
+            "tool_calls_sha256",
+            "seeds",
+            "max_turns"
+          ],
+          "properties": {
+            "baseline_id": { "type": "string" },
+            "candidate_id": { "type": "string" },
+            "scenario_path": { "type": "string" },
+            "scenario_sha256": { "$ref": "#/$defs/sha256" },
+            "tool_calls_path": { "type": "string" },
+            "tool_calls_sha256": { "$ref": "#/$defs/sha256" },
+            "seeds": {
+              "type": "array",
+              "items": { "type": "integer" },
+              "minItems": 1
+            },
+            "max_turns": { "type": ["integer", "null"], "minimum": 1 }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "candidate_lock": {
+      "type": "object",
+      "required": [
+        "lock_state",
+        "target_kind",
+        "target_path",
+        "target_sha256",
+        "scenario_sha256",
+        "created_before_evaluation"
+      ],
+      "properties": {
+        "lock_state": { "const": "locked" },
+        "target_kind": { "const": "startup_operator_tool_calls" },
+        "target_path": { "type": "string" },
+        "target_sha256": { "$ref": "#/$defs/sha256" },
+        "scenario_sha256": { "$ref": "#/$defs/sha256" },
+        "created_before_evaluation": { "const": true }
+      },
+      "additionalProperties": false
+    },
+    "baseline": { "$ref": "#/$defs/run_summary" },
+    "candidate": { "$ref": "#/$defs/run_summary" },
+    "comparison": {
+      "type": "object",
+      "required": ["metric", "candidate_minus_baseline", "candidate_beats_baseline"],
+      "properties": {
+        "metric": { "const": "scenario_score" },
+        "candidate_minus_baseline": { "type": "number" },
+        "candidate_beats_baseline": { "type": "boolean" }
+      },
+      "additionalProperties": false
+    },
+    "heldout": {
+      "type": "object",
+      "required": ["status", "pass", "candidate_visible", "claim_boundary"],
+      "properties": {
+        "status": { "enum": ["not_supplied", "passed", "blocked"] },
+        "pass": { "type": "boolean" },
+        "candidate_visible": { "type": "boolean" },
+        "artifact_ref": { "type": ["string", "null"] },
+        "claim_boundary": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "trap": {
+      "type": "object",
+      "required": ["status", "pass", "claim_boundary"],
+      "properties": {
+        "status": { "enum": ["not_supplied", "passed", "blocked"] },
+        "pass": { "type": "boolean" },
+        "artifact_ref": { "type": ["string", "null"] },
+        "claim_boundary": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "raw_artifacts": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/artifact_ref" },
+      "minItems": 1
+    },
+    "claim_boundary": {
+      "type": "object",
+      "required": [
+        "score_claim_allowed",
+        "improvement_claim_allowed",
+        "public_ready",
+        "network_absorbable",
+        "required_before_claim"
+      ],
+      "properties": {
+        "score_claim_allowed": { "const": false },
+        "improvement_claim_allowed": { "const": false },
+        "public_ready": { "const": false },
+        "network_absorbable": { "const": false },
+        "required_before_claim": {
+          "type": "array",
+          "items": { "type": "string" },
+          "contains": { "const": "bind_export_into_immutable_spark_qa_proof_bundle" }
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false,
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "heldout": {
+            "properties": { "status": { "const": "passed" } },
+            "required": ["status"]
+          }
+        },
+        "required": ["heldout"]
+      },
+      "then": {
+        "properties": {
+          "heldout": {
+            "properties": {
+              "pass": { "const": true },
+              "candidate_visible": { "const": false },
+              "artifact_ref": { "type": "string" }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "heldout": {
+            "properties": { "status": { "const": "not_supplied" } },
+            "required": ["status"]
+          }
+        },
+        "required": ["heldout"]
+      },
+      "then": {
+        "properties": {
+          "heldout": {
+            "properties": {
+              "pass": { "const": false },
+              "artifact_ref": { "type": "null" }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "trap": {
+            "properties": { "status": { "const": "passed" } },
+            "required": ["status"]
+          }
+        },
+        "required": ["trap"]
+      },
+      "then": {
+        "properties": {
+          "trap": {
+            "properties": {
+              "pass": { "const": true },
+              "artifact_ref": { "type": "string" }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "trap": {
+            "properties": { "status": { "const": "not_supplied" } },
+            "required": ["status"]
+          }
+        },
+        "required": ["trap"]
+      },
+      "then": {
+        "properties": {
+          "trap": {
+            "properties": {
+              "pass": { "const": false },
+              "artifact_ref": { "type": "null" }
+            }
+          }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "run_summary": {
+      "type": "object",
+      "required": [
+        "run_id",
+        "runner_id",
+        "seed",
+        "scenario_score",
+        "outcome_score",
+        "constraint_score",
+        "pass",
+        "violation_count",
+        "trace_ref",
+        "score_report_ref"
+      ],
+      "properties": {
+        "run_id": { "type": "string" },
+        "runner_id": { "type": "string" },
+        "seed": { "type": "integer" },
+        "scenario_score": { "type": "number" },
+        "outcome_score": { "type": "number" },
+        "constraint_score": { "type": "number" },
+        "pass": { "type": "boolean" },
+        "violation_count": { "type": "integer", "minimum": 0 },
+        "trace_ref": { "$ref": "#/$defs/artifact_ref" },
+        "score_report_ref": { "$ref": "#/$defs/artifact_ref" }
+      },
+      "additionalProperties": false
+    },
+    "artifact_ref": {
+      "type": "object",
+      "required": ["artifact_type", "path", "sha256", "bytes"],
+      "properties": {
+        "artifact_type": { "type": "string" },
+        "path": { "type": "string" },
+        "sha256": { "$ref": "#/$defs/sha256" },
+        "bytes": { "type": "integer", "minimum": 0 }
+      },
+      "additionalProperties": false
+    }
+  }
+}
