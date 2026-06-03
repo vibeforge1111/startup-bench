@@ -22,6 +22,7 @@ def _build_parser() -> argparse.ArgumentParser:
     validate_parser.add_argument("artifact_type", help="Artifact type, e.g. scenario, trace, submission")
     validate_parser.add_argument("path", help="Path to the JSON artifact")
 
+    parser.add_argument("--output", help="Path to write output to (default: stdout)")
     check_trace_parser = subparsers.add_parser("check-trace", help="Run structural integrity checks on a trace")
     check_trace_parser.add_argument("path", help="Path to the trace JSON file")
 
