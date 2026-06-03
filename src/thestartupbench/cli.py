@@ -39,6 +39,7 @@ def _build_parser() -> argparse.ArgumentParser:
     run_parser = subparsers.add_parser("run-dry", help="Run a zero-action dry execution for a scenario")
     run_parser.add_argument("scenario_path", help="Path to the scenario JSON file")
     run_parser.add_argument("--seed", type=int, default=0, help="Seed used for the dry run")
+    parser.add_argument("--progress", action="store_true", help="Show progress indicators")
     run_parser.add_argument("--output-dir", help="Optional directory to write trace and score report artifacts")
 
     script_parser = subparsers.add_parser("run-script", help="Execute a scripted sequence of tool calls")
