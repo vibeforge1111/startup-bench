@@ -45,6 +45,7 @@ def _build_parser() -> argparse.ArgumentParser:
     script_parser.add_argument("scenario_path", help="Path to the scenario JSON file")
     script_parser.add_argument("tool_calls_path", help="Path to the tool-call JSON array")
     script_parser.add_argument("--seed", type=int, default=0, help="Seed used for the scripted run")
+    parser.add_argument("--dry-run", action="store_true", help="Validate without executing")
     script_parser.add_argument("--output-dir", help="Optional directory to write trace and score report artifacts")
 
     baseline_parser = subparsers.add_parser("run-baseline", help="Execute a built-in heuristic baseline")
