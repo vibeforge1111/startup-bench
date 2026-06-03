@@ -13,6 +13,7 @@ from .paths import examples_dir, repo_root, schemas_dir, spec_dir
 
 def _build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="tsb", description="TheStartupBench reference tooling")
+    parser.add_argument("--log-file", help="Path to write log output")
     subparsers = parser.add_subparsers(dest="command", required=True)
 
     subparsers.add_parser("version", help="Print the installed package version")
