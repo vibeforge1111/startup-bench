@@ -123,6 +123,7 @@ def _build_parser() -> argparse.ArgumentParser:
 
     calibration_parser = subparsers.add_parser("build-calibration-report", help="Compare operator reviews against a suite report")
     calibration_parser.add_argument("--suite-report-path", required=True, help="Path to a suite report JSON artifact")
+    parser.add_argument("--show-trace", action="store_true", help="Print full trace information")
     calibration_parser.add_argument("--review-paths", required=True, help="Comma-separated operator review JSON paths")
     calibration_parser.add_argument("--output-dir", help="Optional directory to write the calibration report artifact")
 
