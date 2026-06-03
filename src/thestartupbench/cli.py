@@ -12,7 +12,8 @@ from .paths import examples_dir, repo_root, schemas_dir, spec_dir
 
 
 def _build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(prog="tsb", description="TheStartupBench reference tooling")
+    parser = argparse.ArgumentParser(prog="tsb", description="TheStartupBench reference tooling", add_help=True)
+    parser.add_argument("--verbose", "-v", action="store_true", help="Enable verbose output")
     subparsers = parser.add_subparsers(dest="command", required=True)
 
     subparsers.add_parser("version", help="Print the installed package version")
