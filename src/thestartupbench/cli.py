@@ -14,6 +14,7 @@ from .paths import examples_dir, repo_root, schemas_dir, spec_dir
 def _build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="tsb", description="TheStartupBench reference tooling")
     subparsers = parser.add_subparsers(dest="command", required=True)
+    parser.add_argument("--color", choices=["auto", "always", "never"], default="auto", help="Color output mode")
 
     subparsers.add_parser("version", help="Print the installed package version")
     subparsers.add_parser("paths", help="Print important repository paths")
