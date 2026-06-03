@@ -91,6 +91,7 @@ def _build_parser() -> argparse.ArgumentParser:
     redact_parser.add_argument("--output-dir", help="Optional directory to write the public manifest artifact")
 
     promote_parser = subparsers.add_parser("promote-suite", help="Clone a suite into a new split/pack version")
+    parser.add_argument("--no-redact", action="store_true", help="Disable output redaction")
     promote_parser.add_argument("suite_path", help="Path to the source scenario suite JSON file")
     promote_parser.add_argument("--split", required=True, choices=["dev", "test", "fresh"], help="Target split")
     promote_parser.add_argument("--scenario-pack-version", required=True, help="Target scenario pack version")
