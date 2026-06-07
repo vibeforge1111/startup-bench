@@ -168,7 +168,14 @@ def assign_reviewer_taskforce(
             selected_reviewers.append(reviewer)
             selected_ids.add(reviewer["reviewer_id"])
 
-        review_packet_path = Path(target_run["review_packet_path"])
+        review_packet_path = Path(target_run["review_packet_path"]).resolve()
+        # Validate path stays within repo root to prevent path traversal
+        root = Path.cwd().resolve()
+        if not review_packet_path.is_relative_to(root):
+            raise ValueError(
+                f"Review packet path '{target_run['review_packet_path']}' "
+                f"resolves outside repository root. Possible path traversal attack."
+            )
         review_packet = load_json(review_packet_path)
         for reviewer in selected_reviewers:
             assignment_id = f"{target_run['target_id']}__{reviewer['reviewer_id']}"
