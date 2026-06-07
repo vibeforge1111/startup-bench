@@ -1246,7 +1246,7 @@ def execute_tool_call(session: RuntimeSession, tool_call: dict) -> dict:
         )
 
     if tool_name == "sim.advance":
-        amount = int(arguments.get("advance_by", 1))
+        amount = max(1, int(arguments.get("advance_by", 1)))
         unit = arguments.get("unit", "week")
         before = session.world_state["sim"]["current_time"]
         after = _advance_time(before, amount=amount, unit=unit)
