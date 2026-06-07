@@ -61,7 +61,7 @@ def _score_cash_efficiency(world_state: dict) -> tuple[float, dict]:
     elif net_burn_usd <= 0:
         burn_quality = 1.0
     else:
-        burn_quality = _clamp(1.0 - (net_burn_usd / monthly_burn_usd))
+        burn_quality = _clamp(1.0 - (net_burn_usd / max(1.0, monthly_burn_usd)))
     concentration_score = _clamp(1.0 - (treasury_concentration / 1.2))
     if cash_usd <= 0:
         liquidity_score = 0.0
@@ -107,10 +107,10 @@ def _score_revenue_quality(world_state: dict) -> tuple[float, dict]:
     if monthly_burn_usd <= 0:
         revenue_coverage = 1.0
     else:
-        revenue_coverage = _clamp((monthly_revenue_usd / monthly_burn_usd) / 1.2)
+        revenue_coverage = _clamp((monthly_revenue_usd / max(1.0, monthly_burn_usd)) / 1.2)
 
     expected_pipeline_floor = max(monthly_burn_usd * 6.0, 1.0)
-    pipeline_coverage = _clamp(weighted_pipeline_usd / expected_pipeline_floor)
+    pipeline_coverage = _clamp(weighted_pipeline_usd / max(1.0, expected_pipeline_floor))
     pricing_signal = _clamp(current_price_index / 1.2)
     demand_signal = _clamp(demand_index / 1.1)
     competitor_signal = _clamp(1.0 - competitor_pressure)
