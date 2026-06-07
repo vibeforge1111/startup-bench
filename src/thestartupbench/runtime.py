@@ -50,7 +50,10 @@ def _flatten_world_state(world_state: dict) -> dict[str, object]:
                 stack.append((dotted, nested_value))
         else:
             flat[prefix] = value
-            flat[prefix.split(".")[-1]] = value
+            # Only use short key if no collision with existing dotted key
+            short_key = prefix.split(".")[-1]
+            if short_key not in flat:
+                flat[short_key] = value
     return flat
 
 
