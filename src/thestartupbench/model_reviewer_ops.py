@@ -257,7 +257,12 @@ def import_model_reviews(*, raw_dir: Path, output_dir: Path) -> dict:
             rejected_files.append({"path": str(path), "message": str(exc)})
             continue
 
-        review_filename = f"{review['reviewer']['reviewer_id']}__{review['scenario']['scenario_id']}.json"
+        reviewer_id = review['reviewer']['reviewer_id']
+        scenario_id = review['scenario']['scenario_id']
+        # Sanitize filename components to prevent path traversal
+        safe_reviewer = Path(reviewer_id).name
+        safe_scenario = Path(scenario_id).name
+        review_filename = f"{safe_reviewer}__{safe_scenario}.json"
         review_path = output_dir / review_filename
         review_path.write_text(json.dumps(review, indent=2) + "\n", encoding="utf-8")
         imported_review_paths.append(str(review_path))
