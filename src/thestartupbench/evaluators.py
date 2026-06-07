@@ -1051,6 +1051,98 @@ def _behavioral_penalty(
             "rigid_loop_penalty_applied": rigid_loop_penalty_applied,
         }
 
+    if track == "finance":
+        finance_event_types = {
+            "revenue_timing_slip", "pricing_penalty", "liquidity_freeze",
+            "revenue_relief", "investor_recut", "stepdown_terms",
+            "collections_drag", "pipeline_softening", "margin_reversal",
+            "counterparty_delay", "timing_shock", "dilution_jump",
+            "confidence_penalty", "cash_access_drag", "budget_delay",
+            "lender_pressure", "prepay_pullforward", "term_hardening",
+            "market_penalty", "cash_conversion_slip", "liquidity_pressure_reset",
+            "renewal_softness", "bridge_discount_widening",
+            "structured_capital_drag", "board_patience_drop",
+            "late_receivable_relief", "collections_slip",
+        }
+        substantive_finance_tools = {
+            "finance.plan.write", "finance.raise.propose",
+            "finance.treasury.rebalance", "finance.treasury.read",
+            "finance.plan.read", "board.update",
+        }
+        adverse_turn_indices = [
+            index
+            for index, turn in enumerate(turns)
+            if any(event.get("event_type") in finance_event_types for event in turn.get("events", []))
+        ]
+        finance_response_tools_after_adverse: list[str] = []
+        if adverse_turn_indices:
+            first_adverse_turn = adverse_turn_indices[0]
+            for turn in turns[first_adverse_turn + 1 :]:
+                for action in turn.get("actions", []):
+                    finance_response_tools_after_adverse.append(str(action.get("tool_name", "")))
+        unanswered_adverse_events = (
+            len(adverse_turn_indices)
+            if adverse_turn_indices and not any(
+                tool in substantive_finance_tools for tool in finance_response_tools_after_adverse
+            )
+            else 0
+        )
+
+        first_report = _extract_metrics_report(turns[0])
+        initial_runway = float(first_report.get("finance", {}).get("runway_weeks", 0.0) or 0.0)
+        final_finance = world_state.get("finance", {})
+        final_runway = float(final_finance.get("runway_weeks", 0.0))
+        runway_decline = max(0.0, initial_runway - final_runway)
+        final_financing_pressure = float(world_state.get("risk", {}).get("financing_pressure", 0.0))
+        final_treasury_concentration = float(final_finance.get("treasury_concentration", 0.0))
+        has_finance_plan_action = any(
+            tool in {"finance.plan.write", "finance.raise.propose"}
+            for tool in finance_response_tools_after_adverse
+        )
+        has_treasury_rebalance = "finance.treasury.rebalance" in finance_response_tools_after_adverse
+
+        penalty = 0.0
+        if unanswered_adverse_events > 0:
+            penalty += 0.35
+        if final_financing_pressure >= 0.72 and not has_finance_plan_action:
+            penalty += 0.15
+        if final_runway < 20 and not has_finance_plan_action:
+            penalty += 0.1
+        if runway_decline >= 6 and not has_finance_plan_action:
+            penalty += 0.08
+        if final_treasury_concentration > 0.72 and not has_treasury_rebalance:
+            penalty += 0.08
+        if rigid_loop_penalty_applied and adverse_turn_indices:
+            penalty += 0.05
+
+        penalty = _round_score(penalty)
+        return penalty, {
+            "behavioral_penalty": penalty,
+            "adverse_event_count": len(adverse_turn_indices),
+            "unanswered_adverse_events": unanswered_adverse_events,
+            "support_alert_turn_count": 0,
+            "support_actions_after_adverse_event": 0,
+            "trust_decline": 0.0,
+            "soft_demand_alert_turn_count": 0,
+            "demand_decline": 0.0,
+            "pipeline_decline_ratio": 0.0,
+            "hiring_response_count": 0,
+            "finance_response_count": sum(
+                1
+                for tool in finance_response_tools_after_adverse
+                if tool in {"finance.plan.write", "finance.raise.propose"}
+            ),
+            "unresolved_hiring_pressure": False,
+            "runway_decline": round(runway_decline, 4),
+            "initial_runway": round(initial_runway, 4),
+            "final_runway": round(final_runway, 4),
+            "final_financing_pressure": round(final_financing_pressure, 4),
+            "final_treasury_concentration": round(final_treasury_concentration, 4),
+            "has_finance_plan_action": has_finance_plan_action,
+            "has_treasury_rebalance": has_treasury_rebalance,
+            "rigid_loop_penalty_applied": rigid_loop_penalty_applied,
+        }
+
     return 0.0, {
         "behavioral_penalty": 0.0,
         "adverse_event_count": 0,
