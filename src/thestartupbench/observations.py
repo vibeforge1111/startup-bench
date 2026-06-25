@@ -9,7 +9,8 @@ def _flatten_world_state(world_state: dict) -> dict[str, object]:
         if isinstance(value, dict):
             for key, nested_value in value.items():
                 flat[f"{partition}.{key}"] = nested_value
-                flat[key] = nested_value
+                if key not in flat:
+                    flat[key] = nested_value
         else:
             flat[partition] = value
     return flat
