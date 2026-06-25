@@ -4,12 +4,18 @@ from __future__ import annotations
 
 import csv
 import json
+import re
 from collections import defaultdict
 from pathlib import Path
 
 from .paths import repo_root
 from .scenario_loader import load_json
 from .validation import raise_if_invalid, validate_instance
+
+def _sanitize_component(name: str) -> str:
+    """Strip path separators and traversal sequences from directory components."""
+    return re.sub(r"[^a-zA-Z0-9_\-]", "_", name)
+
 
 REVIEW_FORM_COLUMNS = [
     "reviewer_id",
@@ -227,7 +233,7 @@ def export_review_forms(
         by_reviewer[assignment["reviewer_id"]].append(assignment)
 
     for reviewer_id, assignments in sorted(by_reviewer.items()):
-        reviewer_dir = output_dir / reviewer_id
+        reviewer_dir = output_dir / _sanitize_component(reviewer_id)
         reviewer_dir.mkdir(parents=True, exist_ok=True)
         markdown_lines = [
             f"# Review Packet Assignments for {reviewer_id}",

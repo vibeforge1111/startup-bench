@@ -10,6 +10,11 @@ from .paths import repo_root
 from .scenario_loader import load_json
 from .validation import raise_if_invalid, validate_instance
 
+def _sanitize_component(name: str) -> str:
+    """Strip path separators and traversal sequences from directory components."""
+    return re.sub(r"[^a-zA-Z0-9_\-]", "_", name)
+
+
 PROMPT_TEMPLATE = """# TheStartupBench Synthetic Reviewer Prompt
 
 You are acting as a startup operator reviewer for TheStartupBench.
@@ -186,7 +191,7 @@ def export_model_review_bundles(*, study_run_dir: Path, output_dir: Path) -> dic
                 "rubric_keys": packet["rubric_keys"],
             }
 
-            bundle_dir = output_dir / packet["target_id"] / scenario_id
+            bundle_dir = output_dir / _sanitize_component(packet["target_id"]) / _sanitize_component(scenario_id)
             bundle_dir.mkdir(parents=True, exist_ok=True)
             prompt_path = bundle_dir / "prompt.md"
             context_path = bundle_dir / "context.json"
