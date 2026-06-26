@@ -72,8 +72,16 @@ Recommended synthetic reviewer ids:
 def _resolve_path(path_str: str) -> Path:
     path = Path(path_str)
     if path.is_absolute():
-        return path
-    return repo_root() / path
+        # Validate absolute paths stay within repo root
+        resolved = path.resolve()
+        root = repo_root().resolve()
+        if not resolved.is_relative_to(root):
+            raise ValueError(
+                f"Path '{path_str}' resolves outside repository root. "
+                f"Possible path traversal attack."
+            )
+        return resolved
+    return (repo_root() / path).resolve()
 
 
 def _extract_json_object(text: str) -> dict:
