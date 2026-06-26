@@ -363,7 +363,10 @@ def import_review_forms(*, forms_dir: Path, output_dir: Path) -> dict:
                     "benchmark_gaming_signals": _split_notes(row.get("benchmark_gaming_signals", "")),
                 },
             }
-            review_filename = f"{row['reviewer_id']}__{row['scenario_id']}.json"
+            # Sanitize filename components to prevent path traversal
+            safe_reviewer = Path(row['reviewer_id']).name
+            safe_scenario = Path(row['scenario_id']).name
+            review_filename = f"{safe_reviewer}__{safe_scenario}.json"
             review_path = output_dir / review_filename
             raise_if_invalid(artifact_type="operator-review", instance=review, path=review_path)
             review_path.write_text(json.dumps(review, indent=2), encoding="utf-8")
