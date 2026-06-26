@@ -1252,7 +1252,7 @@ def execute_tool_call(session: RuntimeSession, tool_call: dict) -> dict:
         after = _advance_time(before, amount=amount, unit=unit)
         weeks = amount
         if unit == "day":
-            weeks = max(1, amount // 7)
+            weeks = max(0, amount // 7)
         elif unit == "month":
             weeks = amount * 4
         elif unit == "quarter":
