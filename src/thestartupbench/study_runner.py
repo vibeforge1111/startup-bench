@@ -64,7 +64,14 @@ def run_calibration_study(*, study_manifest_path: Path, output_dir: Path) -> dic
 
     target_runs = []
     for target in manifest["review_targets"]:
-        suite_path = _resolve_path(target["suite_path"])
+        suite_path = _resolve_path(target["suite_path"]).resolve()
+        # Validate suite_path stays within allowed directory
+        base_dir = Path.cwd().resolve()
+        if not suite_path.is_relative_to(base_dir):
+            raise ValueError(
+                f"Suite path '{target['suite_path']}' resolves outside base directory. "
+                f"Possible path traversal attack."
+            )
         suite = load_scenario_suite(suite_path)
         target_dir = targets_dir / target["target_id"]
         target_dir.mkdir(parents=True, exist_ok=True)
@@ -83,6 +90,12 @@ def run_calibration_study(*, study_manifest_path: Path, output_dir: Path) -> dic
         scenario_entries = []
         for entry in suite["scenarios"]:
             scenario_path = (suite_path.parent / entry["path"]).resolve()
+            # Validate scenario path stays within suite directory
+            if not scenario_path.is_relative_to(suite_path.parent.resolve()):
+                raise ValueError(
+                    f"Scenario path '{entry['path']}' resolves outside suite directory. "
+                    f"Possible path traversal attack."
+                )
             scenario = load_scenario(scenario_path)
             scenario_run_artifacts = _write_scenario_run_artifacts(
                 scenario_path=scenario_path,
