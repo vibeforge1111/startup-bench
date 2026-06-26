@@ -36,7 +36,13 @@ def run_suite(
     track_groups: dict[str, list[dict]] = defaultdict(list)
 
     for entry in suite["scenarios"]:
-        scenario_path = suite_dir / entry["path"]
+        scenario_path = (suite_dir / entry["path"]).resolve()
+        # Validate path stays within suite directory to prevent path traversal
+        if not scenario_path.is_relative_to(suite_dir.resolve()):
+            raise ValueError(
+                f"Scenario path '{entry['path']}' resolves outside suite directory. "
+                f"Possible path traversal attack."
+            )
         campaign = run_campaign(
             scenario_path=scenario_path,
             runner_type=runner_type,
