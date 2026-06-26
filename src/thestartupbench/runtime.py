@@ -100,12 +100,15 @@ def _tool_result(tool_name: str, request_id: str, *, result: dict, state_delta_s
 
 
 def _process_due_events(session: RuntimeSession) -> list[dict]:
-    current_turn = int(session.world_state["sim"]["current_turn"])
-    seed = int(session.world_state["sim"].get("seed", 0))
-    processed_ids = set(session.world_state["sim"].setdefault("processed_event_ids", []))
+    sim_state = session.world_state.get("sim", {})
+    current_turn = int(sim_state.get("current_turn", 0))
+    seed = int(sim_state.get("seed", 0))
+    processed_ids = set(sim_state.setdefault("processed_event_ids", []))
     emitted: list[dict] = []
     for event in session.scenario.get("event_model", {}).get("scheduled_events", []):
-        event_id = event["event_id"]
+        event_id = event.get("event_id", "")
+        if not event_id:
+            continue
         if event_id in processed_ids:
             continue
         if int(event.get("at_turn", 0)) > current_turn:
